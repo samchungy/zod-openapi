@@ -1,0 +1,14 @@
+# managed by skuba
+.idea/*
+.vscode/*
+
+.cdk.staging/
+.serverless/
+cdk.out/
+node_modules*/
+
+/coverage*/
+/dist*/
+/lib*/
+/tmp*/
+# end managed by skuba

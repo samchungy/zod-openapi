@@ -1,0 +1,54 @@
+{
+  "name": "zod-openapi",
+  "version": "0.0.0-semantically-released",
+  "description": "Zod OpenAPI Plugin",
+  "homepage": "https://github.com/seek-oss/zod-openapi#readme",
+  "bugs": {
+    "url": "https://github.com/seek-oss/zod-openapi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/seek-oss/zod-openapi.git"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "./lib-commonjs/index.js",
+  "module": "./lib-es2015/index.js",
+  "types": "./lib-types/index.d.ts",
+  "files": [
+    "lib*/**/*.d.ts",
+    "lib*/**/*.js",
+    "lib*/**/*.js.map",
+    "lib*/**/*.json"
+  ],
+  "scripts": {
+    "build": "skuba build-package",
+    "commit": "cz",
+    "format": "skuba format",
+    "lint": "skuba lint",
+    "release": "yarn build && skuba release",
+    "test": "skuba test",
+    "test:ci": "skuba test --coverage",
+    "test:watch": "skuba test --watch"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^16.18.3",
+    "commitizen": "^4.2.4",
+    "skuba": "6.0.0"
+  },
+  "engines": {
+    "node": ">=16.11"
+  },
+  "skuba": {
+    "entryPoint": "src/index.ts",
+    "template": "oss-npm-package",
+    "type": "package",
+    "version": "6.0.0"
+  }
+}
