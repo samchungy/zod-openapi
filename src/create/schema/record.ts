@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodRecord, ZodTypeAny } from 'zod';
 
-import { createSchemaOrRef } from './schema';
+import { createSchemaOrRef } from '.';
 
 export const createRecordSchema = (
   zodRecord: ZodRecord<any, any>,

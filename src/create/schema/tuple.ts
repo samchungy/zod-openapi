@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodTuple, ZodTypeAny } from 'zod';
 
-import { createSchemaOrRef } from './schema';
+import { createSchemaOrRef } from '.';
 
 export const createTupleSchema = (
   zodTuple: ZodTuple<any, any>,

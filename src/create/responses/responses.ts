@@ -8,7 +8,7 @@ import {
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from '../document';
-import { createSchemaOrRef } from '../schema/schema';
+import { createSchemaOrRef } from '../schema';
 
 export const createMediaTypeSchema = (
   schemaObject?: AnyZodObject | oas31.SchemaObject | oas31.ReferenceObject,

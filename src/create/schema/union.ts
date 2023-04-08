@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodTypeAny, ZodUnion } from 'zod';
 
-import { createSchemaOrRef } from './schema';
+import { createSchemaOrRef } from '.';
 
 export const createUnionSchema = (
   zodUnion: ZodUnion<any>,

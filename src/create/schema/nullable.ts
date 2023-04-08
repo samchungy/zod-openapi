@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodNullable, ZodTypeAny } from 'zod';
 
-import { createSchemaOrRef } from './schema';
+import { createSchemaOrRef } from '.';
 
 export const createNullableSchemaObject = (
   zodNullable: ZodNullable<any>,
