@@ -1,7 +1,2 @@
-/**
- * Writes the module name to stdout.
- * Thrilling stuff.
- */
-export const log = () =>
-  /* eslint-disable-next-line no-console */
-  console.log('zod-openapi');
+export * from './create/document';
+export * from './extendZod';
