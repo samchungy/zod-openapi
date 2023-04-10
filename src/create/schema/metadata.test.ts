@@ -65,7 +65,7 @@ describe('createSchemaWithMetadata', () => {
       ],
     };
 
-    const ref = z.string().openapi({ schemaRef: 'ref' });
+    const ref = z.string().openapi({ ref: 'ref' });
 
     const result = createSchemaWithMetadata(
       ref.optional().openapi({ description: 'hello' }),
@@ -79,7 +79,7 @@ describe('createSchemaWithMetadata', () => {
       $ref: '#/components/schemas/og',
     };
 
-    const ref = z.string().openapi({ schemaRef: 'og' });
+    const ref = z.string().openapi({ ref: 'og' });
 
     const result = createSchemaWithMetadata(ref.optional());
 
@@ -91,7 +91,7 @@ describe('createSchemaWithMetadata', () => {
       allOf: [{ $ref: '#/components/schemas/ref2' }, { default: 'a' }],
     };
 
-    const ref = z.string().openapi({ schemaRef: 'ref2' });
+    const ref = z.string().openapi({ ref: 'ref2' });
 
     const result = createSchemaWithMetadata(ref.optional().default('a'));
 
@@ -116,7 +116,7 @@ describe('createSchemaWithMetadata', () => {
       },
       required: ['b'],
     };
-    const object1 = z.object({ a: z.string() }).openapi({ schemaRef: 'a' });
+    const object1 = z.object({ a: z.string() }).openapi({ ref: 'a' });
     const object2 = object1.extend({ b: z.string() });
 
     const result = createSchemaWithMetadata(

@@ -65,7 +65,7 @@ describe('createObjectSchema', () => {
       },
       required: ['obj1', 'obj2'],
     };
-    const object1 = z.object({ a: z.string() }).openapi({ schemaRef: 'obj1' });
+    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
     const object2 = object1.extend({ b: z.string() });
     const result = createObjectSchema(
       z.object({

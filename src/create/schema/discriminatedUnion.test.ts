@@ -67,12 +67,12 @@ describe('createDiscriminatedUnionSchema', () => {
           .object({
             type: z.literal('a'),
           })
-          .openapi({ schemaRef: 'a' }),
+          .openapi({ ref: 'a' }),
         z
           .object({
             type: z.literal('b'),
           })
-          .openapi({ schemaRef: 'b' }),
+          .openapi({ ref: 'b' }),
       ]),
     );
 
@@ -100,12 +100,12 @@ describe('createDiscriminatedUnionSchema', () => {
           .object({
             type: z.literal('c'),
           })
-          .openapi({ schemaRef: 'c' }),
+          .openapi({ ref: 'c' }),
         z
           .object({
             type: z.enum(['d', 'e']),
           })
-          .openapi({ schemaRef: 'd' }),
+          .openapi({ ref: 'd' }),
       ]),
     );
 

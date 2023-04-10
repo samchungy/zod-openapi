@@ -21,7 +21,7 @@ import {
   ZodUnion,
 } from 'zod';
 
-import { components } from '../../components';
+import { getComponents } from '../../components';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -133,6 +133,7 @@ export const createRegisteredSchema = <
   zodSchema: ZodType<Output, Def, Input>,
   schemaRef: string,
 ): oas31.ReferenceObject => {
+  const components = getComponents();
   const component = components.schema[schemaRef];
   if (component) {
     if (component.zodSchema !== zodSchema) {
@@ -166,7 +167,7 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  const schemaRef = zodSchema._def.openapi?.schemaRef;
+  const schemaRef = zodSchema._def.openapi?.ref;
   if (schemaRef) {
     return createRegisteredSchema(zodSchema, schemaRef);
   }

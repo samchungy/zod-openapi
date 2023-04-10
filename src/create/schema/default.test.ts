@@ -30,7 +30,7 @@ describe('createDefaultSchema', () => {
       ],
     };
     const result = createDefaultSchema(
-      z.string().openapi({ schemaRef: 'ref' }).optional().default('a'),
+      z.string().openapi({ ref: 'ref' }).optional().default('a'),
     );
 
     expect(result).toEqual(expected);

@@ -27,14 +27,14 @@ export const mapDiscriminator = (
   zodObjects: AnyZodObject[],
   discriminator: string,
 ) => {
-  if (zodObjects.some((obj) => !obj._def.openapi?.schemaRef)) {
+  if (zodObjects.some((obj) => !obj._def.openapi?.ref)) {
     return undefined;
   }
 
   const mapping = zodObjects.reduce<
     NonNullable<oas31.DiscriminatorObject['mapping']>
   >((acc, zodObject) => {
-    const schemaRef = zodObject._def.openapi?.schemaRef as string;
+    const schemaRef = zodObject._def.openapi?.ref as string;
     const value = (zodObject.shape as ZodRawShape)[discriminator];
 
     if (value instanceof ZodEnum) {

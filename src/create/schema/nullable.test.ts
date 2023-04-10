@@ -28,7 +28,7 @@ describe('createNullableSchema', () => {
         },
       ],
     };
-    const registered = z.string().openapi({ schemaRef: 'a' });
+    const registered = z.string().openapi({ ref: 'a' });
     const result = createNullableSchema(registered.optional().nullable());
 
     expect(result).toEqual(expected);
@@ -91,7 +91,7 @@ describe('createNullableSchema', () => {
       },
       required: ['b'],
     };
-    const object1 = z.object({ a: z.string() }).openapi({ schemaRef: 'a' });
+    const object1 = z.object({ a: z.string() }).openapi({ ref: 'a' });
     const object2 = object1.extend({ b: z.string() });
 
     const result = createNullableSchema(
