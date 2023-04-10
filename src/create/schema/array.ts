@@ -10,7 +10,9 @@ export const createArraySchema = (
   return {
     type: 'array',
     items: createSchemaOrRef(zodType),
-    minItems: zodArray._def.minLength?.value,
-    maxItems: zodArray._def.maxLength?.value,
+    minItems:
+      zodArray._def.exactLength?.value ?? zodArray._def.minLength?.value,
+    maxItems:
+      zodArray._def.exactLength?.value ?? zodArray._def.maxLength?.value,
   };
 };

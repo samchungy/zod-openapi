@@ -46,7 +46,6 @@ export const mapDiscriminator = (
 
     const literalValue = (value?._def as ZodLiteralDef<unknown>).value;
 
-    // This should never happen because Zod checks the disciminator type but to keep the types happy
     if (typeof literalValue !== 'string') {
       throw new Error(
         `Discriminator ${discriminator} could not be found in one of the values of a discriminated union`,

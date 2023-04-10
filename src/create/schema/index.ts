@@ -30,8 +30,9 @@ import { createDefaultSchema } from './default';
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 import { createEnumSchema } from './enum';
 import { createLiteralSchema } from './literal';
+import { createSchemaWithMetadata } from './metadata';
 import { createNullSchema } from './null';
-import { createNullableSchemaObject } from './nullable';
+import { createNullableSchema } from './nullable';
 import { createNumberSchema } from './number';
 import { createObjectSchema } from './object';
 import { createOptionalSchema } from './optional';
@@ -40,7 +41,7 @@ import { createStringSchema } from './string';
 import { createTupleSchema } from './tuple';
 import { createUnionSchema } from './union';
 
-const createSchema = <
+export const createSchema = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
@@ -56,7 +57,7 @@ const createSchema = <
   }
 
   if (zodSchema instanceof ZodBoolean) {
-    return createBooleanSchema();
+    return createBooleanSchema(zodSchema);
   }
 
   if (zodSchema instanceof ZodEnum) {
@@ -88,11 +89,11 @@ const createSchema = <
   }
 
   if (zodSchema instanceof ZodNull) {
-    return createNullSchema();
+    return createNullSchema(zodSchema);
   }
 
   if (zodSchema instanceof ZodNullable) {
-    return createNullableSchemaObject(zodSchema);
+    return createNullableSchema(zodSchema);
   }
 
   if (zodSchema instanceof ZodOptional) {
@@ -112,27 +113,51 @@ const createSchema = <
   }
 
   if (zodSchema instanceof ZodDate) {
-    return createDateSchema();
+    return createDateSchema(zodSchema);
+  }
+
+  if (!zodSchema._def.openapi?.type) {
+    throw new Error(
+      `Unknown schema ${zodSchema.toString()}. Please assign it a manual type`,
+    );
   }
 
   return {};
 };
 
-// const createSchemaWithMetadata = <
-//   Output = any,
-//   Def extends ZodTypeDef = ZodTypeDef,
-//   Input = Output,
-// >(
-//   zodSchema: ZodType<Output, Def, Input>,
-// ): oas31.SchemaObject | oas31.ReferenceObject => {
-//   const schemaOrRef = createSchema(zodSchema);
+export const createRegisteredSchema = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
+  schemaRef: string,
+): oas31.ReferenceObject => {
+  const component = components.schema[schemaRef];
+  if (component) {
+    if (component.zodSchema !== zodSchema) {
+      throw new Error(`schemaRef "${schemaRef}" is already registered`);
+    }
+    return {
+      $ref: createComponentSchemaRef(schemaRef),
+    };
+  }
 
-//   if ('$ref' in schemaOrRef) {
-//     return {
+  // Optional Objects can return a reference object
+  const schemaOrRef = createSchemaWithMetadata(zodSchema);
+  if ('$ref' in schemaOrRef) {
+    throw new Error('Unexpected Error: received a reference object');
+  }
 
-//     }
-//   }
-// };
+  components.schema[schemaRef] = {
+    schemaObject: schemaOrRef,
+    zodSchema,
+  };
+
+  return {
+    $ref: createComponentSchemaRef(schemaRef),
+  };
+};
 
 export const createSchemaOrRef = <
   Output = any,
@@ -142,31 +167,11 @@ export const createSchemaOrRef = <
   zodSchema: ZodType<Output, Def, Input>,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   const schemaRef = zodSchema._def.openapi?.schemaRef;
-
-  if (!schemaRef) {
-    return createSchema(zodSchema);
+  if (schemaRef) {
+    return createRegisteredSchema(zodSchema, schemaRef);
   }
 
-  const component = components.schema[schemaRef];
-
-  if (component && component.zodSchema !== zodSchema) {
-    throw new Error(`schemaRef "${schemaRef}" is already registered`);
-  }
-
-  // Optional Objects can return a reference object
-  const schemaOrRefObject = createSchema(zodSchema);
-  if ('$ref' in schemaOrRefObject) {
-    throw new Error('Unexpected Error: received a reference object');
-  }
-
-  components.schema[schemaRef] = {
-    schemaObject: schemaOrRefObject,
-    zodSchema,
-  };
-
-  return {
-    $ref: createComponentSchemaRef(schemaRef),
-  };
+  return createSchemaWithMetadata(zodSchema);
 };
 
 export const createComponentSchemaRef = (schemaRef: string) =>

@@ -4,6 +4,6 @@ import { ZodLiteral } from 'zod';
 export const createLiteralSchema = (
   zodLiteral: ZodLiteral<any>,
 ): oas31.SchemaObject => ({
-  type: typeof zodLiteral as oas31.SchemaObject['type'],
+  type: typeof zodLiteral.value as oas31.SchemaObject['type'],
   enum: [zodLiteral._def.value],
 });

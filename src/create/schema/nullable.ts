@@ -3,7 +3,7 @@ import { ZodNullable, ZodTypeAny } from 'zod';
 
 import { createSchemaOrRef } from '.';
 
-export const createNullableSchemaObject = (
+export const createNullableSchema = (
   zodNullable: ZodNullable<any>,
 ): oas31.SchemaObject => {
   const schemaOrReference = createSchemaOrRef(
@@ -12,37 +12,36 @@ export const createNullableSchemaObject = (
 
   if ('$ref' in schemaOrReference) {
     return {
-      allOf: [schemaOrReference, { type: 'null' }],
+      oneOf: mapNullOf([schemaOrReference]),
     };
   }
 
-  const { type, anyOf, oneOf, allOf, ...schema } = schemaOrReference;
-
-  if (oneOf) {
+  if (schemaOrReference.oneOf) {
+    const { oneOf, ...schema } = schemaOrReference;
     return {
       oneOf: mapNullOf(oneOf),
       ...schema,
     };
   }
 
-  if (allOf) {
+  if (schemaOrReference.allOf) {
     return {
-      oneOf: [{ allOf }, { type: 'null' }],
+      oneOf: [schemaOrReference, { type: 'null' }],
     };
   }
 
-  if (anyOf) {
+  if (schemaOrReference.anyOf) {
+    const { anyOf, ...schema } = schemaOrReference;
     return {
       anyOf: mapNullOf(anyOf),
       ...schema,
     };
   }
 
+  const { type, ...schema } = schemaOrReference;
+
   return {
     type: mapNullType(type),
-    oneOf,
-    allOf,
-    anyOf,
     ...schema,
   };
 };
