@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createRecordSchema } from './record';
 
@@ -15,7 +16,9 @@ describe('createRecordSchema', () => {
         type: 'string',
       },
     };
-    const result = createRecordSchema(z.record(z.string()));
+    const schema = z.record(z.string());
+
+    const result = createRecordSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

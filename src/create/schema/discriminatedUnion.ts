@@ -7,13 +7,18 @@ import {
   ZodRawShape,
 } from 'zod';
 
+import { Components } from '../components';
+
 import { createComponentSchemaRef, createSchemaOrRef } from '.';
 
 export const createDiscriminatedUnionSchema = (
   zodDiscriminatedUnion: ZodDiscriminatedUnion<any, any>,
+  components: Components,
 ): oas31.SchemaObject => {
   const options = zodDiscriminatedUnion.options as AnyZodObject[];
-  const schemas = options.map((option) => createSchemaOrRef(option));
+  const schemas = options.map((option) =>
+    createSchemaOrRef(option, components),
+  );
   return {
     oneOf: schemas,
     discriminator: mapDiscriminator(

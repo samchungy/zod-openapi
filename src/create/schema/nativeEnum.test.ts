@@ -21,7 +21,9 @@ describe('createNativeEnumSchema', () => {
       Right = 'Right',
     }
 
-    const result = createNativeEnumSchema(z.nativeEnum(Direction));
+    const schema = z.nativeEnum(Direction);
+
+    const result = createNativeEnumSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -38,8 +40,9 @@ describe('createNativeEnumSchema', () => {
       Left,
       Right,
     }
+    const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(z.nativeEnum(Direction));
+    const result = createNativeEnumSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -57,7 +60,9 @@ describe('createNativeEnumSchema', () => {
       Right = 'Right',
     }
 
-    const result = createNativeEnumSchema(z.nativeEnum(Direction));
+    const schema = z.nativeEnum(Direction);
+
+    const result = createNativeEnumSchema(schema);
 
     expect(result).toEqual(expected);
   });

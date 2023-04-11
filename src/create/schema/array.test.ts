@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createArraySchema } from './array';
 
@@ -15,7 +16,9 @@ describe('createArraySchema', () => {
         type: 'string',
       },
     };
-    const result = createArraySchema(z.array(z.string()));
+    const schema = z.array(z.string());
+
+    const result = createArraySchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -29,7 +32,9 @@ describe('createArraySchema', () => {
       minItems: 0,
       maxItems: 10,
     };
-    const result = createArraySchema(z.array(z.string()).min(0).max(10));
+    const schema = z.array(z.string()).min(0).max(10);
+
+    const result = createArraySchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -43,7 +48,9 @@ describe('createArraySchema', () => {
       minItems: 10,
       maxItems: 10,
     };
-    const result = createArraySchema(z.array(z.string()).length(10));
+    const schema = z.array(z.string()).length(10);
+
+    const result = createArraySchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

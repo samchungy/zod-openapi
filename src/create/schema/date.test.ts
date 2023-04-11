@@ -12,7 +12,9 @@ describe('createDateSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const result = createDateSchema(z.date());
+    const schema = z.date();
+
+    const result = createDateSchema(schema);
 
     expect(result).toEqual(expected);
   });

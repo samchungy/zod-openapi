@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createTupleSchema } from './tuple';
 
@@ -24,7 +25,9 @@ describe('createTupleSchema', () => {
       minItems: 2,
       maxItems: 2,
     };
-    const result = createTupleSchema(z.tuple([z.string(), z.number()]));
+    const schema = z.tuple([z.string(), z.number()]);
+
+    const result = createTupleSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -46,9 +49,9 @@ describe('createTupleSchema', () => {
         type: 'boolean',
       },
     };
-    const result = createTupleSchema(
-      z.tuple([z.string(), z.number()]).rest(z.boolean()),
-    );
+    const schema = z.tuple([z.string(), z.number()]).rest(z.boolean());
+
+    const result = createTupleSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -59,7 +62,9 @@ describe('createTupleSchema', () => {
       minItems: 0,
       maxItems: 0,
     };
-    const result = createTupleSchema(z.tuple([]));
+    const schema = z.tuple([]);
+
+    const result = createTupleSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

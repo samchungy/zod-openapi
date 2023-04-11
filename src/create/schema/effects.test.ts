@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createEffectsSchema } from './effects';
 
@@ -12,9 +13,9 @@ describe('createEffectsSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const result = createEffectsSchema(
-      z.preprocess((arg) => String(arg), z.string()),
-    );
+    const schema = z.preprocess((arg) => String(arg), z.string());
+
+    const result = createEffectsSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -23,11 +24,11 @@ describe('createEffectsSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const result = createEffectsSchema(
-      z.string().refine((str) => {
-        str.startsWith('bla');
-      }),
-    );
+    const schema = z.string().refine((str) => {
+      str.startsWith('bla');
+    });
+
+    const result = createEffectsSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

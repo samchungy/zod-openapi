@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createObjectSchema } from './object';
 
@@ -17,12 +18,12 @@ describe('createObjectSchema', () => {
       },
       required: ['a'],
     };
-    const result = createObjectSchema(
-      z.object({
-        a: z.string(),
-        b: z.string().optional(),
-      }),
-    );
+    const schema = z.object({
+      a: z.string(),
+      b: z.string().optional(),
+    });
+
+    const result = createObjectSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -38,11 +39,11 @@ describe('createObjectSchema', () => {
       required: ['a'],
       additionalProperties: true,
     };
-    const result = createObjectSchema(
-      z.strictObject({
-        a: z.string(),
-      }),
-    );
+    const schema = z.strictObject({
+      a: z.string(),
+    });
+
+    const result = createObjectSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -67,12 +68,12 @@ describe('createObjectSchema', () => {
     };
     const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
     const object2 = object1.extend({ b: z.string() });
-    const result = createObjectSchema(
-      z.object({
-        obj1: object1,
-        obj2: object2,
-      }),
-    );
+    const schema = z.object({
+      obj1: object1,
+      obj2: object2,
+    });
+
+    const result = createObjectSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

@@ -13,7 +13,9 @@ describe('createEnumSchema', () => {
       type: 'string',
       enum: ['a', 'b'],
     };
-    const result = createEnumSchema(z.enum(['a', 'b']));
+    const schema = z.enum(['a', 'b']);
+
+    const result = createEnumSchema(schema);
 
     expect(result).toEqual(expected);
   });

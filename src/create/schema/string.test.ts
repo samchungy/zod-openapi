@@ -12,7 +12,9 @@ describe('createStringSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const result = createStringSchema(z.string());
+    const schema = z.string();
+
+    const result = createStringSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -22,7 +24,9 @@ describe('createStringSchema', () => {
       type: 'string',
       pattern: '^hello',
     };
-    const result = createStringSchema(z.string().regex(/^hello/));
+    const schema = z.string().regex(/^hello/);
+
+    const result = createStringSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -33,7 +37,9 @@ describe('createStringSchema', () => {
       minLength: 0,
       maxLength: 1,
     };
-    const result = createStringSchema(z.string().min(0).max(1));
+    const schema = z.string().min(0).max(1);
+
+    const result = createStringSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -43,7 +49,9 @@ describe('createStringSchema', () => {
       type: 'string',
       minLength: 1,
     };
-    const result = createStringSchema(z.string().nonempty());
+    const schema = z.string().nonempty();
+
+    const result = createStringSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -54,7 +62,9 @@ describe('createStringSchema', () => {
       minLength: 1,
       maxLength: 1,
     };
-    const result = createStringSchema(z.string().length(1));
+    const schema = z.string().length(1);
+
+    const result = createStringSchema(schema);
 
     expect(result).toEqual(expected);
   });

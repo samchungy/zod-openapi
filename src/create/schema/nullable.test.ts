@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createNullableSchema } from './nullable';
 
@@ -12,7 +13,9 @@ describe('createNullableSchema', () => {
     const expected: oas31.SchemaObject = {
       type: ['string', 'null'],
     };
-    const result = createNullableSchema(z.string().nullable());
+    const schema = z.string().nullable();
+
+    const result = createNullableSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -29,7 +32,9 @@ describe('createNullableSchema', () => {
       ],
     };
     const registered = z.string().openapi({ ref: 'a' });
-    const result = createNullableSchema(registered.optional().nullable());
+    const schema = registered.optional().nullable();
+
+    const result = createNullableSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -60,11 +65,11 @@ describe('createNullableSchema', () => {
         },
       ],
     };
-    const result = createNullableSchema(
-      z
-        .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
-        .nullable(),
-    );
+    const schema = z
+      .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
+      .nullable();
+
+    const result = createNullableSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });
@@ -93,14 +98,9 @@ describe('createNullableSchema', () => {
     };
     const object1 = z.object({ a: z.string() }).openapi({ ref: 'a' });
     const object2 = object1.extend({ b: z.string() });
+    const schema = z.object({ b: object2.nullable() }).nullable();
 
-    const result = createNullableSchema(
-      z
-        .object({
-          b: object2.nullable(),
-        })
-        .nullable(),
-    );
+    const result = createNullableSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

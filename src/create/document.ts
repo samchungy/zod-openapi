@@ -2,8 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { stringify } from 'yaml';
 import { AnyZodObject } from 'zod';
 
-import { createComponents } from '../components';
-
+import { getDefaultComponents } from './components';
 import { createPaths } from './paths';
 
 export interface ZodOpenApiMediaTypeObject
@@ -23,6 +22,7 @@ export interface ZodOpenApiRequestBodyObject
 export interface ZodOpenApiResponseObject
   extends Omit<oas31.ResponseObject, 'content'> {
   content?: ZodOpenApiContentObject;
+  responseHeaders?: AnyZodObject;
 }
 
 export interface ZodOpenApiResponsesObject
@@ -33,9 +33,14 @@ export interface ZodOpenApiResponsesObject
     | oas31.ReferenceObject;
 }
 
+export type ZodOpenApiParameters = {
+  [type in oas31.ParameterLocation]?: AnyZodObject;
+};
+
 export interface ZodOpenApiOperationObject
   extends Omit<oas31.OperationObject, 'requestBody' | 'responses'> {
   requestBody?: ZodOpenApiRequestBodyObject;
+  requestParams?: ZodOpenApiParameters;
   responses: ZodOpenApiResponsesObject;
 }
 
@@ -67,16 +72,28 @@ export interface ZodOpenApiObject
 
 export const createDocument = (
   params: ZodOpenApiObject,
-): oas31.OpenAPIObject => ({
-  ...params,
-  paths: createPaths(params.paths),
-  webhooks: createPaths(params.webhooks),
-  components: createComponents(),
-});
+): oas31.OpenAPIObject => {
+  const components = getDefaultComponents();
+  return {
+    ...params,
+    paths: createPaths(params.paths, components),
+    webhooks: createPaths(params.webhooks, components),
+  };
+};
 
-export const createDocumentJson = (params: ZodOpenApiObject): string => {
+export const createDocumentJson = (
+  params: ZodOpenApiObject,
+  jsonOptions?: {
+    replacer?: Parameters<typeof JSON.stringify>[1];
+    options?: Parameters<typeof JSON.stringify>[2];
+  },
+): string => {
   const document = createDocument(params);
-  return JSON.stringify(document, undefined, 2);
+  return JSON.stringify(
+    document,
+    jsonOptions?.replacer,
+    jsonOptions?.options ?? 2,
+  );
 };
 
 export const createDocumentYaml = (

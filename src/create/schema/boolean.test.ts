@@ -12,7 +12,9 @@ describe('createBooleanSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'boolean',
     };
-    const result = createBooleanSchema(z.boolean());
+    const schema = z.boolean();
+
+    const result = createBooleanSchema(schema);
 
     expect(result).toEqual(expected);
   });

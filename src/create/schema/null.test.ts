@@ -12,7 +12,9 @@ describe('createNullSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'null',
     };
-    const result = createNullSchema(z.null());
+    const schema = z.null();
+
+    const result = createNullSchema(schema);
 
     expect(result).toEqual(expected);
   });

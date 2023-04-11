@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 
@@ -33,15 +34,18 @@ describe('createDiscriminatedUnionSchema', () => {
         },
       ],
     };
+    const schema = z.discriminatedUnion('type', [
+      z.object({
+        type: z.literal('a'),
+      }),
+      z.object({
+        type: z.literal('b'),
+      }),
+    ]);
+
     const result = createDiscriminatedUnionSchema(
-      z.discriminatedUnion('type', [
-        z.object({
-          type: z.literal('a'),
-        }),
-        z.object({
-          type: z.literal('b'),
-        }),
-      ]),
+      schema,
+      getDefaultComponents(),
     );
 
     expect(result).toEqual(expected);
@@ -61,19 +65,22 @@ describe('createDiscriminatedUnionSchema', () => {
         },
       },
     };
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal('a'),
+        })
+        .openapi({ ref: 'a' }),
+      z
+        .object({
+          type: z.literal('b'),
+        })
+        .openapi({ ref: 'b' }),
+    ]);
+
     const result = createDiscriminatedUnionSchema(
-      z.discriminatedUnion('type', [
-        z
-          .object({
-            type: z.literal('a'),
-          })
-          .openapi({ ref: 'a' }),
-        z
-          .object({
-            type: z.literal('b'),
-          })
-          .openapi({ ref: 'b' }),
-      ]),
+      schema,
+      getDefaultComponents(),
     );
 
     expect(result).toEqual(expected);
@@ -94,19 +101,22 @@ describe('createDiscriminatedUnionSchema', () => {
         },
       },
     };
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal('c'),
+        })
+        .openapi({ ref: 'c' }),
+      z
+        .object({
+          type: z.enum(['d', 'e']),
+        })
+        .openapi({ ref: 'd' }),
+    ]);
+
     const result = createDiscriminatedUnionSchema(
-      z.discriminatedUnion('type', [
-        z
-          .object({
-            type: z.literal('c'),
-          })
-          .openapi({ ref: 'c' }),
-        z
-          .object({
-            type: z.enum(['d', 'e']),
-          })
-          .openapi({ ref: 'd' }),
-      ]),
+      schema,
+      getDefaultComponents(),
     );
 
     expect(result).toEqual(expected);

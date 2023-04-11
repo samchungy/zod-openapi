@@ -12,7 +12,9 @@ describe('createNumberSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'number',
     };
-    const result = createNumberSchema(z.number());
+    const schema = z.number();
+
+    const result = createNumberSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -21,7 +23,9 @@ describe('createNumberSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'integer',
     };
-    const result = createNumberSchema(z.number().int());
+    const schema = z.number().int();
+
+    const result = createNumberSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -32,7 +36,9 @@ describe('createNumberSchema', () => {
       minimum: 0,
       maximum: 10,
     };
-    const result = createNumberSchema(z.number().lt(10).gt(0));
+    const schema = z.number().lt(10).gt(0);
+
+    const result = createNumberSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -45,7 +51,9 @@ describe('createNumberSchema', () => {
       maximum: 10,
       exclusiveMaximum: 10,
     };
-    const result = createNumberSchema(z.number().lte(10).gte(0));
+    const schema = z.number().lte(10).gte(0);
+
+    const result = createNumberSchema(schema);
 
     expect(result).toEqual(expected);
   });

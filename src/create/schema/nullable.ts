@@ -1,13 +1,17 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodNullable, ZodTypeAny } from 'zod';
 
+import { Components } from '../components';
+
 import { createSchemaOrRef } from '.';
 
 export const createNullableSchema = (
   zodNullable: ZodNullable<any>,
+  components: Components,
 ): oas31.SchemaObject => {
   const schemaOrReference = createSchemaOrRef(
     zodNullable.unwrap() as ZodTypeAny,
+    components,
   );
 
   if ('$ref' in schemaOrReference) {

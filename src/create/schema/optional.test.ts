@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createOptionalSchema } from './optional';
 
@@ -12,7 +13,9 @@ describe('createOptionalSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const result = createOptionalSchema(z.string().optional());
+    const schema = z.string().optional();
+
+    const result = createOptionalSchema(schema, getDefaultComponents());
 
     expect(result).toEqual(expected);
   });

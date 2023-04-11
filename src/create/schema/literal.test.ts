@@ -13,7 +13,9 @@ describe('createLiteralSchema', () => {
       type: 'string',
       enum: ['a'],
     };
-    const result = createLiteralSchema(z.literal('a'));
+    const schema = z.literal('a');
+
+    const result = createLiteralSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -23,7 +25,9 @@ describe('createLiteralSchema', () => {
       type: 'number',
       enum: [2],
     };
-    const result = createLiteralSchema(z.literal(2));
+    const schema = z.literal(2);
+
+    const result = createLiteralSchema(schema);
 
     expect(result).toEqual(expected);
   });
@@ -33,7 +37,9 @@ describe('createLiteralSchema', () => {
       type: 'boolean',
       enum: [true],
     };
-    const result = createLiteralSchema(z.literal(true));
+    const schema = z.literal(true);
+
+    const result = createLiteralSchema(schema);
 
     expect(result).toEqual(expected);
   });

@@ -22,7 +22,7 @@ import {
   ZodUnion,
 } from 'zod';
 
-import { getComponents } from '../components';
+import { Components } from '../components';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -50,6 +50,7 @@ export const createSchema = <
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
+  components: Components,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodSchema instanceof ZodString) {
     return createStringSchema(zodSchema);
@@ -72,23 +73,23 @@ export const createSchema = <
   }
 
   if (zodSchema instanceof ZodNativeEnum) {
-    // TODO return createNativeEnumSchema(zodSchema);
+    return createNativeEnumSchema(zodSchema);
   }
 
   if (zodSchema instanceof ZodArray) {
-    return createArraySchema(zodSchema);
+    return createArraySchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodObject) {
-    return createObjectSchema(zodSchema);
+    return createObjectSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodUnion) {
-    return createUnionSchema(zodSchema);
+    return createUnionSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodDiscriminatedUnion) {
-    return createDiscriminatedUnionSchema(zodSchema);
+    return createDiscriminatedUnionSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodNull) {
@@ -96,23 +97,23 @@ export const createSchema = <
   }
 
   if (zodSchema instanceof ZodNullable) {
-    return createNullableSchema(zodSchema);
+    return createNullableSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodOptional) {
-    return createOptionalSchema(zodSchema);
+    return createOptionalSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodDefault) {
-    return createDefaultSchema(zodSchema);
+    return createDefaultSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodRecord) {
-    return createRecordSchema(zodSchema);
+    return createRecordSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodTuple) {
-    return createTupleSchema(zodSchema);
+    return createTupleSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodDate) {
@@ -124,7 +125,7 @@ export const createSchema = <
     (zodSchema._def.effect.type === 'refinement' ||
       zodSchema._def.effect.type === 'preprocess')
   ) {
-    return createEffectsSchema(zodSchema);
+    return createEffectsSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodNativeEnum) {
@@ -147,8 +148,8 @@ export const createRegisteredSchema = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   schemaRef: string,
+  components: Components,
 ): oas31.ReferenceObject => {
-  const components = getComponents();
   const component = components.schema[schemaRef];
   if (component) {
     if (component.zodSchema !== zodSchema) {
@@ -160,7 +161,7 @@ export const createRegisteredSchema = <
   }
 
   // Optional Objects can return a reference object
-  const schemaOrRef = createSchemaWithMetadata(zodSchema);
+  const schemaOrRef = createSchemaWithMetadata(zodSchema, components);
   if ('$ref' in schemaOrRef) {
     throw new Error('Unexpected Error: received a reference object');
   }
@@ -181,13 +182,14 @@ export const createSchemaOrRef = <
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
+  components: Components,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   const schemaRef = zodSchema._def.openapi?.ref;
   if (schemaRef) {
-    return createRegisteredSchema(zodSchema, schemaRef);
+    return createRegisteredSchema(zodSchema, schemaRef, components);
   }
 
-  return createSchemaWithMetadata(zodSchema);
+  return createSchemaWithMetadata(zodSchema, components);
 };
 
 export const createComponentSchemaRef = (schemaRef: string) =>
