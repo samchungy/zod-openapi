@@ -5,6 +5,7 @@ import {
   ZodDate,
   ZodDefault,
   ZodDiscriminatedUnion,
+  ZodEffects,
   ZodEnum,
   ZodLiteral,
   ZodNativeEnum,
@@ -21,16 +22,18 @@ import {
   ZodUnion,
 } from 'zod';
 
-import { getComponents } from '../../components';
+import { getComponents } from '../components';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
 import { createDateSchema } from './date';
 import { createDefaultSchema } from './default';
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
+import { createEffectsSchema } from './effects';
 import { createEnumSchema } from './enum';
 import { createLiteralSchema } from './literal';
 import { createSchemaWithMetadata } from './metadata';
+import { createNativeEnumSchema } from './nativeEnum';
 import { createNullSchema } from './null';
 import { createNullableSchema } from './nullable';
 import { createNumberSchema } from './number';
@@ -114,6 +117,18 @@ export const createSchema = <
 
   if (zodSchema instanceof ZodDate) {
     return createDateSchema(zodSchema);
+  }
+
+  if (
+    zodSchema instanceof ZodEffects &&
+    (zodSchema._def.effect.type === 'refinement' ||
+      zodSchema._def.effect.type === 'preprocess')
+  ) {
+    return createEffectsSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodNativeEnum) {
+    return createNativeEnumSchema(zodSchema);
   }
 
   if (!zodSchema._def.openapi?.type) {
