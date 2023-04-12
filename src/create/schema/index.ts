@@ -22,7 +22,7 @@ import {
   ZodUnion,
 } from 'zod';
 
-import { Components } from '../components';
+import { Components, createComponentSchemaRef } from '../components';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -150,7 +150,7 @@ export const createRegisteredSchema = <
   schemaRef: string,
   components: Components,
 ): oas31.ReferenceObject => {
-  const component = components.schema[schemaRef];
+  const component = components.schemas[schemaRef];
   if (component) {
     if (component.zodSchema !== zodSchema) {
       throw new Error(`schemaRef "${schemaRef}" is already registered`);
@@ -166,7 +166,7 @@ export const createRegisteredSchema = <
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  components.schema[schemaRef] = {
+  components.schemas[schemaRef] = {
     schemaObject: schemaOrRef,
     zodSchema,
   };
@@ -191,6 +191,3 @@ export const createSchemaOrRef = <
 
   return createSchemaWithMetadata(zodSchema, components);
 };
-
-export const createComponentSchemaRef = (schemaRef: string) =>
-  `#/components/schemas/${schemaRef}`;

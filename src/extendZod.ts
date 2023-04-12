@@ -12,7 +12,16 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
   extends Omit<oas31.SchemaObject, 'example'> {
   examples?: [TInferred, ...TInferred[]];
   default?: T extends ZodDate ? string : TInferred;
-  schemaRef?: string;
+  ref?: string;
+  param?: Partial<oas31.ParameterObject> & {
+    example?: TInferred;
+    examples?: {
+      [param: string]:
+        | (oas31.ExampleObject & { value: TInferred })
+        | oas31.ReferenceObject;
+    };
+    ref?: string;
+  };
 }
 
 interface ZodOpenApiExtendMetadata {
@@ -48,7 +57,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
     return;
   }
   zod.ZodSchema.prototype.openapi = function (openapi) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
     const result = new (this as any).constructor({
       ...this._def,
       openapi,
@@ -67,7 +76,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
     const extendResult = zodObjectExtend.apply(this, args);
     extendResult._def.extendMetadata = {
       extends: this,
-      extendsRef: extendResult._def.openapi?.schemaRef,
+      extendsRef: extendResult._def.openapi?.ref,
     };
     delete extendResult._def.openapi;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return

@@ -11,11 +11,14 @@ export const createComponentParamRef = (ref: string) =>
 export const createBaseParameter = (
   schema: ZodType,
   components: Components,
-): oas31.BaseParameterObject => ({
-  schema: createSchemaOrRef(schema, components),
-  required: schema.isOptional() ? true : undefined,
-  ...schema._def.openapi?.param,
-});
+): oas31.BaseParameterObject => {
+  const { ref, ...rest } = schema._def.openapi?.param ?? {};
+  return {
+    schema: createSchemaOrRef(schema, components),
+    required: schema.isOptional() ? true : undefined,
+    ...rest,
+  };
+};
 
 const createRegisteredParam = (
   zodSchema: ZodType,
@@ -27,9 +30,10 @@ const createRegisteredParam = (
   const component = components.parameters[ref];
   if (component) {
     if (
-      component.zodSchema !== zodSchema ||
-      component.paramObject.in !== type ||
-      component.paramObject.name !== name
+      !('$ref' in component.paramObject) &&
+      (component.zodSchema !== zodSchema ||
+        component.paramObject.in !== type ||
+        component.paramObject.name !== name)
     ) {
       throw new Error(`parameterRef "${ref}" is already registered`);
     }

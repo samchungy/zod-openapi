@@ -1,9 +1,9 @@
 import { oas31 } from 'openapi3-ts';
 import { UnknownKeysParam, ZodObject, ZodRawShape } from 'zod';
 
-import { Components } from '../components';
+import { Components, createComponentSchemaRef } from '../components';
 
-import { createComponentSchemaRef, createSchemaOrRef } from '.';
+import { createSchemaOrRef } from '.';
 
 export const createObjectSchema = <
   T extends ZodRawShape,

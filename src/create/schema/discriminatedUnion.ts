@@ -7,9 +7,9 @@ import {
   ZodRawShape,
 } from 'zod';
 
-import { Components } from '../components';
+import { Components, createComponentSchemaRef } from '../components';
 
-import { createComponentSchemaRef, createSchemaOrRef } from '.';
+import { createSchemaOrRef } from '.';
 
 export const createDiscriminatedUnionSchema = (
   zodDiscriminatedUnion: ZodDiscriminatedUnion<any, any>,

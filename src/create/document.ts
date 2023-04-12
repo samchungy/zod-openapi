@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { stringify } from 'yaml';
 import { AnyZodObject } from 'zod';
 
-import { getDefaultComponents } from './components';
+import { createComponents, getDefaultComponents } from './components';
 import { createPaths } from './paths';
 
 export interface ZodOpenApiMediaTypeObject
@@ -63,21 +63,34 @@ export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
   [path: string]: ZodOpenApiPathItemObject;
 }
 
+export interface ZodOpenApiComponentsObject
+  extends Omit<oas31.ComponentsObject, 'schemas'> {
+  schemas?: {
+    [schema: string]: AnyZodObject | oas31.SchemaObject | oas31.ReferenceObject;
+  };
+}
+
 export interface ZodOpenApiObject
-  extends Omit<oas31.OpenAPIObject, 'openapi' | 'paths' | 'webhooks'> {
+  extends Omit<
+    oas31.OpenAPIObject,
+    'openapi' | 'paths' | 'webhooks' | 'components'
+  > {
   openapi: '3.1.0';
   paths?: ZodOpenApiPathsObject;
   webhooks?: ZodOpenApiPathsObject;
+  components?: ZodOpenApiComponentsObject;
 }
 
 export const createDocument = (
-  params: ZodOpenApiObject,
+  zodOpenApiObject: ZodOpenApiObject,
 ): oas31.OpenAPIObject => {
-  const components = getDefaultComponents();
+  const components = getDefaultComponents(zodOpenApiObject.components);
+
   return {
-    ...params,
-    paths: createPaths(params.paths, components),
-    webhooks: createPaths(params.webhooks, components),
+    ...zodOpenApiObject,
+    paths: createPaths(zodOpenApiObject.paths, components),
+    webhooks: createPaths(zodOpenApiObject.webhooks, components),
+    components: createComponents(zodOpenApiObject.components, components),
   };
 };
 
