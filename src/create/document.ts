@@ -116,6 +116,6 @@ export const createDocumentYaml = (
     options?: Parameters<typeof stringify>[2];
   } = {},
 ): string => {
-  const documentJson = createDocumentJson(params);
-  return stringify(documentJson, yamlOptions.replacer, yamlOptions.options);
+  const document = createDocument(params);
+  return stringify(document, yamlOptions.replacer, yamlOptions.options);
 };
