@@ -36,7 +36,11 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "openapi3-ts": "4.0.4",
+    "yaml": "2.2.1",
+    "zod": "3.21.4"
+  },
   "devDependencies": {
     "@types/node": "^16.18.3",
     "commitizen": "^4.2.4",

@@ -10,9 +10,7 @@ extendZodWithOpenApi(z);
 
 describe('createTupleSchema', () => {
   it('creates an array schema', () => {
-    // FIXME: https://github.com/metadevpro/openapi3-ts/pull/109/files
-    // const expected: oas31.SchemaObject = {
-    const expected = {
+    const expected: oas31.SchemaObject = {
       type: 'array',
       prefixItems: [
         {
@@ -33,9 +31,7 @@ describe('createTupleSchema', () => {
   });
 
   it('creates an array schema with additionalProperties', () => {
-    // FIXME: https://github.com/metadevpro/openapi3-ts/pull/109/files
-    // const expected: oas31.SchemaObject = {
-    const expected = {
+    const expected: oas31.SchemaObject = {
       type: 'array',
       prefixItems: [
         {
