@@ -21,8 +21,8 @@ const mapRanges = (
   const minimum = zodNumberChecks.min?.value;
   const maximum = zodNumberChecks.max?.value;
   return {
-    minimum,
-    maximum,
+    ...(minimum !== undefined && { minimum }),
+    ...(maximum !== undefined && { maximum }),
     ...(zodNumberChecks.min?.inclusive && { exclusiveMinimum: minimum }),
     ...(zodNumberChecks.max?.inclusive && { exclusiveMaximum: maximum }),
   };

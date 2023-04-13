@@ -20,7 +20,7 @@ describe('createArraySchema', () => {
 
     const result = createArraySchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates min and max', () => {
@@ -36,7 +36,7 @@ describe('createArraySchema', () => {
 
     const result = createArraySchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates exact length', () => {
@@ -52,6 +52,6 @@ describe('createArraySchema', () => {
 
     const result = createArraySchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

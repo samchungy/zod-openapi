@@ -17,6 +17,6 @@ describe('createOptionalSchema', () => {
 
     const result = createOptionalSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

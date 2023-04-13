@@ -17,6 +17,6 @@ describe('createEnumSchema', () => {
 
     const result = createEnumSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

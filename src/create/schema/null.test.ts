@@ -16,6 +16,6 @@ describe('createNullSchema', () => {
 
     const result = createNullSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

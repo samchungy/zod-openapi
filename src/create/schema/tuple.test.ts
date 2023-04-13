@@ -27,7 +27,7 @@ describe('createTupleSchema', () => {
 
     const result = createTupleSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates an array schema with additionalProperties', () => {
@@ -49,7 +49,7 @@ describe('createTupleSchema', () => {
 
     const result = createTupleSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates an empty array schema', () => {
@@ -62,6 +62,6 @@ describe('createTupleSchema', () => {
 
     const result = createTupleSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

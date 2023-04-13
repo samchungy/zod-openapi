@@ -19,12 +19,13 @@ export const createDiscriminatedUnionSchema = (
   const schemas = options.map((option) =>
     createSchemaOrRef(option, components),
   );
+  const discriminator = mapDiscriminator(
+    options,
+    zodDiscriminatedUnion.discriminator as string,
+  );
   return {
     oneOf: schemas,
-    discriminator: mapDiscriminator(
-      options,
-      zodDiscriminatedUnion.discriminator as string,
-    ),
+    ...(discriminator && { discriminator }),
   };
 };
 

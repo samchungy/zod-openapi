@@ -16,6 +16,6 @@ describe('createDateSchema', () => {
 
     const result = createDateSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

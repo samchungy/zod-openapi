@@ -17,7 +17,7 @@ describe('createEffectsSchema', () => {
 
     const result = createEffectsSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a schema from refine', () => {
@@ -30,6 +30,6 @@ describe('createEffectsSchema', () => {
 
     const result = createEffectsSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

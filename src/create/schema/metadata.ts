@@ -15,9 +15,10 @@ export const createSchemaWithMetadata = <
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   const { ref, param, ...additionalMetadata } = zodSchema._def.openapi ?? {};
   const schemaOrRef = createSchema(zodSchema, components);
+  const description = zodSchema.description;
 
   return enhanceWithMetadata(schemaOrRef, {
-    description: zodSchema.description,
+    ...(description && { description }),
     ...additionalMetadata,
   });
 };

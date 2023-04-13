@@ -25,7 +25,7 @@ describe('createNativeEnumSchema', () => {
 
     const result = createNativeEnumSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a number schema from an number enum', () => {
@@ -44,7 +44,7 @@ describe('createNativeEnumSchema', () => {
 
     const result = createNativeEnumSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a string and number schema from a mixed enum', () => {
@@ -64,6 +64,6 @@ describe('createNativeEnumSchema', () => {
 
     const result = createNativeEnumSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

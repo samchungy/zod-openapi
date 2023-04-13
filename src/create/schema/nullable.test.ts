@@ -17,7 +17,7 @@ describe('createNullableSchema', () => {
 
     const result = createNullableSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates an oneOf nullable schema for registered schemas', () => {
@@ -36,7 +36,7 @@ describe('createNullableSchema', () => {
 
     const result = createNullableSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates an anyOf nullable schema', () => {
@@ -71,7 +71,7 @@ describe('createNullableSchema', () => {
 
     const result = createNullableSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a nullable allOf nullable schema', () => {
@@ -102,6 +102,6 @@ describe('createNullableSchema', () => {
 
     const result = createNullableSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

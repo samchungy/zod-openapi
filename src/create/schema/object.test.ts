@@ -25,7 +25,7 @@ describe('createObjectSchema', () => {
 
     const result = createObjectSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a object with strict', () => {
@@ -45,7 +45,7 @@ describe('createObjectSchema', () => {
 
     const result = createObjectSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates an extended object', () => {
@@ -75,6 +75,6 @@ describe('createObjectSchema', () => {
 
     const result = createObjectSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

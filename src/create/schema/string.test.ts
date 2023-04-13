@@ -16,7 +16,7 @@ describe('createStringSchema', () => {
 
     const result = createStringSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a string schema with a pattern', () => {
@@ -28,7 +28,7 @@ describe('createStringSchema', () => {
 
     const result = createStringSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a string schema with min and max', () => {
@@ -41,7 +41,7 @@ describe('createStringSchema', () => {
 
     const result = createStringSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a string schema with nonempty', () => {
@@ -53,7 +53,7 @@ describe('createStringSchema', () => {
 
     const result = createStringSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a string schema with a set length', () => {
@@ -66,7 +66,7 @@ describe('createStringSchema', () => {
 
     const result = createStringSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it.each`
@@ -83,7 +83,7 @@ describe('createStringSchema', () => {
         format,
       };
       const result = createStringSchema(zodString);
-      expect(result).toEqual(expected);
+      expect(result).toStrictEqual(expected);
     },
   );
 });

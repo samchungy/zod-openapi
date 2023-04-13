@@ -208,6 +208,8 @@ describe('createSchemaOrRef', () => {
     ${'ZodTuple'}              | ${zodTuple}              | ${expectedZodTuple}
     ${'ZodUnion'}              | ${zodUnion}              | ${expectedZodUnion}
   `('creates a schema for $zodType', ({ schema, expected }) => {
-    expect(createSchemaOrRef(schema, getDefaultComponents())).toEqual(expected);
+    expect(createSchemaOrRef(schema, getDefaultComponents())).toStrictEqual(
+      expected,
+    );
   });
 });

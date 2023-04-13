@@ -48,7 +48,7 @@ describe('createDiscriminatedUnionSchema', () => {
       getDefaultComponents(),
     );
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a oneOf schema with discriminator mapping when schemas are registered', () => {
@@ -83,7 +83,7 @@ describe('createDiscriminatedUnionSchema', () => {
       getDefaultComponents(),
     );
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a oneOf schema with discriminator mapping when schemas with enums are registered', () => {
@@ -119,6 +119,6 @@ describe('createDiscriminatedUnionSchema', () => {
       getDefaultComponents(),
     );
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

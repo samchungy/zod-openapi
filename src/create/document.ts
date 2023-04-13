@@ -1,6 +1,6 @@
 import { oas31 } from 'openapi3-ts';
 import { stringify } from 'yaml';
-import { AnyZodObject } from 'zod';
+import { AnyZodObject, ZodType } from 'zod';
 
 import { createComponents, getDefaultComponents } from './components';
 import { createPaths } from './paths';
@@ -67,7 +67,7 @@ export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
 export interface ZodOpenApiComponentsObject
   extends Omit<oas31.ComponentsObject, 'schemas'> {
   schemas?: {
-    [schema: string]: AnyZodObject | oas31.SchemaObject | oas31.ReferenceObject;
+    [schema: string]: ZodType | oas31.SchemaObject | oas31.ReferenceObject;
   };
 }
 

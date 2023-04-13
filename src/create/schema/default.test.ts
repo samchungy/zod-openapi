@@ -18,7 +18,7 @@ describe('createDefaultSchema', () => {
 
     const result = createDefaultSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('adds a default property to a registered schema', () => {
@@ -36,6 +36,6 @@ describe('createDefaultSchema', () => {
 
     const result = createDefaultSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

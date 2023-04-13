@@ -18,7 +18,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('adds .describe metadata', () => {
@@ -30,7 +30,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('overrides .describe metadata with .openapi metadata', () => {
@@ -43,7 +43,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('overrides type with .openapi type metadata', () => {
@@ -54,7 +54,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('adds allOf to $refs', () => {
@@ -75,7 +75,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('adds allOf to $refs only if there is new metadata', () => {
@@ -89,7 +89,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('adds to a registered schema', () => {
@@ -102,7 +102,7 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('adds to the last element of an allOf schema', () => {
@@ -131,6 +131,6 @@ describe('createSchemaWithMetadata', () => {
 
     const result = createSchemaWithMetadata(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

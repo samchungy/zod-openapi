@@ -16,6 +16,6 @@ describe('createBooleanSchema', () => {
 
     const result = createBooleanSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

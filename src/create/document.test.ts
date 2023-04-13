@@ -40,9 +40,6 @@ const simpleZodOpenApiObject: ZodOpenApiObject = {
               'application/json': {
                 schema,
               },
-              'text/something': {
-                schema: {},
-              },
             },
           },
         },

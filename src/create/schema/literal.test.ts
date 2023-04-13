@@ -17,7 +17,7 @@ describe('createLiteralSchema', () => {
 
     const result = createLiteralSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a number enum schema', () => {
@@ -29,7 +29,7 @@ describe('createLiteralSchema', () => {
 
     const result = createLiteralSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a boolean enum schema', () => {
@@ -41,6 +41,6 @@ describe('createLiteralSchema', () => {
 
     const result = createLiteralSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

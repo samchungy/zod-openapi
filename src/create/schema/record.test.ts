@@ -20,6 +20,6 @@ describe('createRecordSchema', () => {
 
     const result = createRecordSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

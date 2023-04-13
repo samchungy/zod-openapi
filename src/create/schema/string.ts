@@ -5,11 +5,17 @@ export const createStringSchema = (
   zodString: ZodString,
 ): oas31.SchemaObject => {
   const zodStringChecks = getZodStringChecks(zodString);
+  const format = mapStringFormat(zodStringChecks);
+  const pattern = mapRegex(zodStringChecks);
+  const minLength = zodStringChecks.length?.value ?? zodStringChecks.min?.value;
+  const maxLength = zodStringChecks.length?.value ?? zodStringChecks.max?.value;
+
   return {
     type: 'string',
-    format: mapStringFormat(zodStringChecks),
-    pattern: mapRegex(zodStringChecks),
-    ...mapLengthProperties(zodStringChecks),
+    ...(format && { format }),
+    ...(pattern && { pattern }),
+    ...(minLength !== undefined && { minLength }),
+    ...(maxLength !== undefined && { maxLength }),
   };
 };
 
@@ -23,13 +29,6 @@ const getZodStringChecks = (zodString: ZodString): ZodStringCheckMap =>
     acc[check.kind] = check as any;
     return acc;
   }, {});
-
-const mapLengthProperties = (
-  zodStringChecks: ZodStringCheckMap,
-): Pick<oas31.SchemaObject, 'maxLength' | 'minLength'> => ({
-  minLength: zodStringChecks.length?.value ?? zodStringChecks.min?.value,
-  maxLength: zodStringChecks.length?.value ?? zodStringChecks.max?.value,
-});
 
 const mapRegex = (
   zodStringChecks: ZodStringCheckMap,

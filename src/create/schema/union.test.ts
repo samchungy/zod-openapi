@@ -24,6 +24,6 @@ describe('createUnionSchema', () => {
 
     const result = createUnionSchema(schema, getDefaultComponents());
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

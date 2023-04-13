@@ -16,7 +16,7 @@ describe('createNumberSchema', () => {
 
     const result = createNumberSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a integer schema', () => {
@@ -27,7 +27,7 @@ describe('createNumberSchema', () => {
 
     const result = createNumberSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a number schema with lt or gt', () => {
@@ -40,7 +40,7 @@ describe('createNumberSchema', () => {
 
     const result = createNumberSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 
   it('creates a number schema with lte or gte', () => {
@@ -55,6 +55,6 @@ describe('createNumberSchema', () => {
 
     const result = createNumberSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toStrictEqual(expected);
   });
 });
