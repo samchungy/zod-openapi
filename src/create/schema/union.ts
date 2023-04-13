@@ -14,6 +14,6 @@ export const createUnionSchema = (
     createSchemaOrRef(option, components),
   );
   return {
-    oneOf: schemas,
+    anyOf: schemas,
   };
 };

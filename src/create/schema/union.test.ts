@@ -9,9 +9,9 @@ import { createUnionSchema } from './union';
 extendZodWithOpenApi(z);
 
 describe('createUnionSchema', () => {
-  it('creates a oneOf schema for a union', () => {
+  it('creates a anyOf schema for a union', () => {
     const expected: oas31.SchemaObject = {
-      oneOf: [
+      anyOf: [
         {
           type: 'string',
         },

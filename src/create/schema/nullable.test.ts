@@ -39,9 +39,9 @@ describe('createNullableSchema', () => {
     expect(result).toEqual(expected);
   });
 
-  it('creates an oneOf nullable schema', () => {
+  it('creates an anyOf nullable schema', () => {
     const expected: oas31.SchemaObject = {
-      oneOf: [
+      anyOf: [
         {
           type: 'object',
           properties: {
