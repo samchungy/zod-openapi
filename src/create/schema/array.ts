@@ -1,13 +1,13 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodArray, ZodTypeAny } from 'zod';
 
-import { Components } from '../components';
+import { ComponentsObject } from '../components';
 
 import { createSchemaOrRef } from '.';
 
 export const createArraySchema = (
   zodArray: ZodArray<any, any>,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject => {
   const zodType = zodArray._def.type as ZodTypeAny;
   const minItems =

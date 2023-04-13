@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { AnyZodObject, ZodType } from 'zod';
 
-import { Components } from './components';
+import { ComponentsObject } from './components';
 import { ZodOpenApiContentObject, ZodOpenApiMediaTypeObject } from './document';
 import { createSchemaOrRef } from './schema';
 
@@ -11,7 +11,7 @@ export const createMediaTypeSchema = (
     | oas31.SchemaObject
     | oas31.ReferenceObject
     | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject | oas31.ReferenceObject | undefined => {
   if (!schemaObject) {
     return undefined;
@@ -26,7 +26,7 @@ export const createMediaTypeSchema = (
 
 export const createMediaTypeObject = (
   mediaTypeObject: ZodOpenApiMediaTypeObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.MediaTypeObject | undefined => {
   if (!mediaTypeObject) {
     return undefined;
@@ -40,7 +40,7 @@ export const createMediaTypeObject = (
 
 export const createContent = (
   contentObject: ZodOpenApiContentObject,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ContentObject =>
   Object.entries(contentObject).reduce<oas31.ContentObject>(
     (acc, [path, zodOpenApiMediaTypeObject]): oas31.ContentObject => {

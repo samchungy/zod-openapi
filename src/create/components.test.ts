@@ -1,11 +1,15 @@
 import { z } from 'zod';
 
-import { Components, getDefaultComponents } from './components';
+import {
+  ComponentsObject,
+  createComponents,
+  getDefaultComponents,
+} from './components';
 
 describe('getDefaultComponents', () => {
   it('returns default components', () => {
     const result = getDefaultComponents();
-    const expected: Components = {
+    const expected: ComponentsObject = {
       parameters: {},
       schemas: {},
     };
@@ -31,7 +35,7 @@ describe('getDefaultComponents', () => {
         },
       },
     });
-    const expected: Components = {
+    const expected: ComponentsObject = {
       parameters: {
         a: {
           paramObject: {
@@ -58,5 +62,19 @@ describe('getDefaultComponents', () => {
       },
     };
     expect(result).toStrictEqual(expected);
+  });
+});
+
+describe('createComponents', () => {
+  it('creates components object as undefined', () => {
+    const componentsObject = createComponents(
+      {},
+      {
+        parameters: {},
+        schemas: {},
+      },
+    );
+
+    expect(componentsObject).toBeUndefined();
   });
 });

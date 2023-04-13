@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
-import { Components } from './components';
+import { ComponentsObject } from './components';
 import { ZodOpenApiOperationObject, ZodOpenApiParameters } from './document';
 import { createSchemaOrRef } from './schema';
 
@@ -10,7 +10,7 @@ export const createComponentParamRef = (ref: string) =>
 
 export const createBaseParameter = (
   schema: ZodType,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
   return {
@@ -25,7 +25,7 @@ const createRegisteredParam = (
   ref: string,
   type: keyof ZodOpenApiParameters,
   name: string,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ReferenceObject => {
   const component = components.parameters[ref];
   if (component) {
@@ -66,7 +66,7 @@ export const createParamOrRef = (
   schema: ZodType,
   type: keyof ZodOpenApiParameters,
   name: string,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ParameterObject | oas31.ReferenceObject => {
   const ref = schema?._def?.openapi?.param?.ref;
 
@@ -84,7 +84,7 @@ export const createParamOrRef = (
 export const createParameters = (
   type: keyof ZodOpenApiParameters,
   zodObject: AnyZodObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] => {
   if (!zodObject) {
     return [];
@@ -98,7 +98,7 @@ export const createParameters = (
 
 const createRequestParams = (
   requestParams: ZodOpenApiParameters | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): NonNullable<oas31.OperationObject['parameters']> => {
   if (!requestParams) {
     return [];
@@ -126,7 +126,7 @@ const createRequestParams = (
 
 export const createParametersObject = (
   operationObject: ZodOpenApiOperationObject,
-  components: Components,
+  components: ComponentsObject,
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined => {
   const { requestParams, parameters } = operationObject;
 

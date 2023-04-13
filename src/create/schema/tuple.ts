@@ -1,13 +1,13 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodTuple, ZodTypeAny } from 'zod';
 
-import { Components } from '../components';
+import { ComponentsObject } from '../components';
 
 import { createSchemaOrRef } from '.';
 
 export const createTupleSchema = (
   zodTuple: ZodTuple<any, any>,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject => {
   const items = zodTuple.items as ZodTypeAny[];
   const rest = zodTuple._def.rest as ZodTypeAny;
@@ -20,7 +20,7 @@ export const createTupleSchema = (
 
 const mapPrefixItems = (
   items: ZodTypeAny[],
-  components: Components,
+  components: ComponentsObject,
 ):
   | { prefixItems: (oas31.SchemaObject | oas31.ReferenceObject)[] }
   | undefined =>
@@ -31,7 +31,7 @@ const mapPrefixItems = (
 const mapItemProperties = (
   items: ZodTypeAny[],
   rest: ZodTypeAny,
-  components: Components,
+  components: ComponentsObject,
 ): Pick<oas31.SchemaObject, 'items' | 'minItems' | 'maxItems'> => {
   if (!rest) {
     return {

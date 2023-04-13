@@ -3,7 +3,7 @@ import { AnyZodObject, ZodType } from 'zod';
 
 import { isISpecificationExtension } from '../specificationExtension';
 
-import { Components } from './components';
+import { ComponentsObject } from './components';
 import { createContent } from './content';
 import {
   ZodOpenApiResponseObject,
@@ -13,7 +13,7 @@ import { createBaseParameter } from './parameters';
 
 export const createResponseHeaders = (
   responseHeaders: AnyZodObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ResponseObject['headers'] => {
   if (!responseHeaders) {
     return undefined;
@@ -29,7 +29,7 @@ export const createResponseHeaders = (
 
 export const createHeaders = (
   responseObject: ZodOpenApiResponseObject,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ResponseObject['headers'] => {
   const { responseHeaders, headers } = responseObject;
 
@@ -47,7 +47,7 @@ export const createHeaders = (
 
 export const createResponse = (
   responseObject: ZodOpenApiResponseObject | oas31.ReferenceObject,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ResponseObject | oas31.ReferenceObject => {
   if ('$ref' in responseObject) {
     return responseObject;
@@ -64,7 +64,7 @@ export const createResponse = (
 
 export const createResponses = (
   responsesObject: ZodOpenApiResponsesObject,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ResponsesObject =>
   Object.entries(responsesObject).reduce<oas31.ResponsesObject>(
     (

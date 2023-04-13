@@ -9,7 +9,7 @@ export interface Schema {
   schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
 }
 
-interface SchemaComponent {
+interface SchemaComponentObject {
   [ref: string]: Schema | undefined;
 }
 
@@ -18,18 +18,18 @@ export interface Parameter {
   paramObject: oas31.ParameterObject | oas31.ReferenceObject;
 }
 
-interface ParamComponent {
+interface ParametersComponentObject {
   [ref: string]: Parameter | undefined;
 }
 
-export interface Components {
-  schemas: SchemaComponent;
-  parameters: ParamComponent;
+export interface ComponentsObject {
+  schemas: SchemaComponentObject;
+  parameters: ParametersComponentObject;
 }
 
 export const getDefaultComponents = (
   componentsObject?: ZodOpenApiComponentsObject,
-): Components => {
+): ComponentsObject => {
   const defaultComponents = { schemas: {}, parameters: {} };
   if (!componentsObject) {
     return defaultComponents;
@@ -41,9 +41,9 @@ export const getDefaultComponents = (
   return defaultComponents;
 };
 
-export const createSchemas = (
+const createSchemas = (
   schemas: ZodOpenApiComponentsObject['schemas'],
-  components: Components,
+  components: ComponentsObject,
 ): void => {
   if (!schemas) {
     return;
@@ -68,9 +68,9 @@ export const createSchemas = (
   });
 };
 
-export const createParameters = (
+const createParameters = (
   parameters: ZodOpenApiComponentsObject['parameters'],
-  components: Components,
+  components: ComponentsObject,
 ): void => {
   if (!parameters) {
     return;
@@ -92,7 +92,7 @@ export const createComponentSchemaRef = (schemaRef: string) =>
 
 export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.ComponentsObject | undefined => {
   const schemas = createSchemaComponents(components.schemas);
   const parameters = createParamComponents(components.parameters);
@@ -112,7 +112,7 @@ export const createComponents = (
 };
 
 export const createSchemaComponents = (
-  component: SchemaComponent,
+  component: SchemaComponentObject,
 ): oas31.ComponentsObject['schemas'] => {
   const components = Object.entries(component).reduce<
     NonNullable<oas31.ComponentsObject['schemas']>
@@ -127,7 +127,7 @@ export const createSchemaComponents = (
 };
 
 export const createParamComponents = (
-  component: ParamComponent,
+  component: ParametersComponentObject,
 ): oas31.ComponentsObject['parameters'] => {
   const components = Object.entries(component).reduce<
     NonNullable<oas31.ComponentsObject['parameters']>

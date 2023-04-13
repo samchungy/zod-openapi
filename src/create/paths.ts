@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 
 import { isISpecificationExtension } from '../specificationExtension';
 
-import { Components } from './components';
+import { ComponentsObject } from './components';
 import { createContent } from './content';
 import {
   ZodOpenApiOperationObject,
@@ -15,7 +15,7 @@ import { createResponses } from './responses';
 
 const createRequestBody = (
   requestBodyObject: ZodOpenApiRequestBodyObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.RequestBodyObject | undefined => {
   if (!requestBodyObject) {
     return undefined;
@@ -28,7 +28,7 @@ const createRequestBody = (
 
 const createOperation = (
   operationObject: ZodOpenApiOperationObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.OperationObject | undefined => {
   if (!operationObject) {
     return undefined;
@@ -47,7 +47,7 @@ const createOperation = (
 
 export const createPathItem = (
   pathObject: ZodOpenApiPathItemObject,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.PathItemObject => ({
   ...pathObject,
   get: createOperation(pathObject.get, components),
@@ -62,7 +62,7 @@ export const createPathItem = (
 
 export const createPaths = (
   pathsObject: ZodOpenApiPathsObject | undefined,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.PathsObject | undefined => {
   if (!pathsObject) {
     return undefined;

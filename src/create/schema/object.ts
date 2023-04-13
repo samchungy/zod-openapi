@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { UnknownKeysParam, ZodObject, ZodRawShape } from 'zod';
 
-import { Components, createComponentSchemaRef } from '../components';
+import { ComponentsObject, createComponentSchemaRef } from '../components';
 
 import { createSchemaOrRef } from '.';
 
@@ -10,7 +10,7 @@ export const createObjectSchema = <
   UnknownKeys extends UnknownKeysParam = UnknownKeysParam,
 >(
   zodObject: ZodObject<T, UnknownKeys, any, any, any>,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject => {
   if (zodObject._def.extendMetadata?.extendsRef) {
     return createExtendedSchema(
@@ -32,7 +32,7 @@ export const createExtendedSchema = (
   zodObject: ZodObject<any, any, any, any, any>,
   baseZodObject: ZodObject<any, any, any, any, any>,
   schemaRef: string,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject => {
   const diffShape = createShapeDiff(
     baseZodObject._def.shape() as ZodRawShape,
@@ -62,7 +62,7 @@ const createShapeDiff = (
 export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
   strict: boolean,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject => ({
   type: 'object',
   properties: mapProperties(shape, components),
@@ -86,7 +86,7 @@ export const mapRequired = (
 
 export const mapProperties = (
   shape: ZodRawShape,
-  components: Components,
+  components: ComponentsObject,
 ): oas31.SchemaObject['properties'] =>
   Object.entries(shape).reduce<NonNullable<oas31.SchemaObject['properties']>>(
     (acc, [key, zodSchema]): NonNullable<oas31.SchemaObject['properties']> => {
