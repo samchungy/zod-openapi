@@ -103,12 +103,12 @@ export const createComponents = (
     ...rest
   } = componentsObject ?? {};
 
-  const componentsObj: oas31.ComponentsObject = {
+  const finalComponents: oas31.ComponentsObject = {
     ...rest,
     ...(schemas && { schemas }),
     ...(parameters && { parameters }),
   };
-  return Object.keys(componentsObj).length ? componentsObj : undefined;
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
 export const createSchemaComponents = (
