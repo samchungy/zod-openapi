@@ -7,6 +7,7 @@ import {
   ZodDiscriminatedUnion,
   ZodEffects,
   ZodEnum,
+  ZodIntersection,
   ZodLiteral,
   ZodNativeEnum,
   ZodNull,
@@ -31,6 +32,7 @@ import { createDefaultSchema } from './default';
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 import { createEffectsSchema } from './effects';
 import { createEnumSchema } from './enum';
+import { createIntersectionSchema } from './intersection';
 import { createLiteralSchema } from './literal';
 import { createSchemaWithMetadata } from './metadata';
 import { createNativeEnumSchema } from './nativeEnum';
@@ -130,6 +132,10 @@ export const createSchema = <
 
   if (zodSchema instanceof ZodNativeEnum) {
     return createNativeEnumSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodIntersection) {
+    return createIntersectionSchema(zodSchema, components);
   }
 
   if (!zodSchema._def.openapi?.type) {
