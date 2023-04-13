@@ -1,5 +1,5 @@
 import { oas31 } from 'openapi3-ts';
-import { ZodObject, ZodType } from 'zod';
+import { ZodType } from 'zod';
 
 import { ZodOpenApiComponentsObject } from './document';
 import { createSchemaOrRef } from './schema';
@@ -54,7 +54,7 @@ export const createSchemas = (
       throw new Error(`schemaRef "${key}" is already registered`);
     }
 
-    if (schema instanceof ZodObject) {
+    if (schema instanceof ZodType) {
       components.schemas[key] = {
         schemaObject: createSchemaOrRef(schema, components),
         zodSchema: schema,
