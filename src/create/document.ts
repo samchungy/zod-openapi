@@ -11,7 +11,8 @@ export interface ZodOpenApiMediaTypeObject
 }
 
 export interface ZodOpenApiContentObject {
-  [mediatype: string]: ZodOpenApiMediaTypeObject;
+  'application/json'?: ZodOpenApiMediaTypeObject;
+  [mediatype: string]: ZodOpenApiMediaTypeObject | undefined;
 }
 
 export interface ZodOpenApiRequestBodyObject

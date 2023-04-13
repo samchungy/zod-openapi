@@ -93,11 +93,23 @@ export const createComponentSchemaRef = (schemaRef: string) =>
 export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject | undefined,
   components: Components,
-): oas31.ComponentsObject => ({
-  ...componentsObject,
-  schemas: createSchemaComponents(components.schemas),
-  parameters: createParamComponents(components.parameters),
-});
+): oas31.ComponentsObject | undefined => {
+  const schemas = createSchemaComponents(components.schemas);
+  const parameters = createParamComponents(components.parameters);
+
+  const {
+    schemas: _schemas,
+    parameters: _parameters,
+    ...rest
+  } = componentsObject ?? {};
+
+  const componentsObj: oas31.ComponentsObject = {
+    ...rest,
+    ...(schemas && { schemas }),
+    ...(parameters && { parameters }),
+  };
+  return Object.keys(componentsObj).length ? componentsObj : undefined;
+};
 
 export const createSchemaComponents = (
   component: SchemaComponent,

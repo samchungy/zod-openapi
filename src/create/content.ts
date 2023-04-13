@@ -25,20 +25,33 @@ export const createMediaTypeSchema = (
 };
 
 export const createMediaTypeObject = (
-  mediaTypeObject: ZodOpenApiMediaTypeObject,
+  mediaTypeObject: ZodOpenApiMediaTypeObject | undefined,
   components: Components,
-): oas31.MediaTypeObject => ({
-  ...mediaTypeObject,
-  schema: createMediaTypeSchema(mediaTypeObject.schema, components),
-});
+): oas31.MediaTypeObject | undefined => {
+  if (!mediaTypeObject) {
+    return undefined;
+  }
+
+  return {
+    ...mediaTypeObject,
+    schema: createMediaTypeSchema(mediaTypeObject.schema, components),
+  };
+};
 
 export const createContent = (
   contentObject: ZodOpenApiContentObject,
   components: Components,
 ): oas31.ContentObject =>
   Object.entries(contentObject).reduce<oas31.ContentObject>(
-    (acc, [path, mediaTypeObject]): oas31.ContentObject => {
-      acc[path] = createMediaTypeObject(mediaTypeObject, components);
+    (acc, [path, zodOpenApiMediaTypeObject]): oas31.ContentObject => {
+      const mediaTypeObject = createMediaTypeObject(
+        zodOpenApiMediaTypeObject,
+        components,
+      );
+
+      if (mediaTypeObject) {
+        acc[path] = mediaTypeObject;
+      }
       return acc;
     },
     {},
