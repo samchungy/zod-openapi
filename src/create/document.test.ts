@@ -102,6 +102,16 @@ describe('createDocumentJson', () => {
         "paths": {
           "/jobs": {
             "get": {
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "b",
+                  "schema": {
+                    "type": "string"
+                  },
+                  "required": true
+                }
+              ],
               "requestBody": {
                 "content": {
                   "application/json": {
@@ -138,16 +148,7 @@ describe('createDocumentJson', () => {
                     }
                   }
                 }
-              },
-              "parameters": [
-                {
-                  "in": "path",
-                  "name": "b",
-                  "schema": {
-                    "type": "string"
-                  }
-                }
-              ]
+              }
             }
           }
         }
@@ -168,6 +169,11 @@ describe('createDocumentJson', () => {
         "paths": {
           "/jobs": {
             "get": {
+              "parameters": [
+                {
+                  "$ref": "#/components/parameters/b"
+                }
+              ],
               "requestBody": {
                 "content": {
                   "application/json": {
@@ -204,12 +210,7 @@ describe('createDocumentJson', () => {
                     }
                   }
                 }
-              },
-              "parameters": [
-                {
-                  "$ref": "#/components/parameters/b"
-                }
-              ]
+              }
             }
           }
         },
@@ -225,7 +226,8 @@ describe('createDocumentJson', () => {
               "name": "b",
               "schema": {
                 "type": "string"
-              }
+              },
+              "required": true
             }
           }
         }
@@ -246,6 +248,12 @@ describe('createDocumentYaml', () => {
       paths:
         /jobs:
           get:
+            parameters:
+              - in: path
+                name: b
+                schema:
+                  type: string
+                required: true
             requestBody:
               content:
                 application/json:
@@ -268,11 +276,6 @@ describe('createDocumentYaml', () => {
                           type: string
                       required:
                         - a
-            parameters:
-              - in: path
-                name: b
-                schema:
-                  type: string
       "
     `);
   });
@@ -288,6 +291,8 @@ describe('createDocumentYaml', () => {
       paths:
         /jobs:
           get:
+            parameters:
+              - $ref: "#/components/parameters/b"
             requestBody:
               content:
                 application/json:
@@ -310,8 +315,6 @@ describe('createDocumentYaml', () => {
                           $ref: "#/components/schemas/a"
                       required:
                         - a
-            parameters:
-              - $ref: "#/components/parameters/b"
       components:
         schemas:
           a:
@@ -322,6 +325,7 @@ describe('createDocumentYaml', () => {
             name: b
             schema:
               type: string
+            required: true
       "
     `);
   });

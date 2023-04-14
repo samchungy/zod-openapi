@@ -1,10 +1,15 @@
+import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
+
+import { extendZodWithOpenApi } from '../extendZod';
 
 import {
   ComponentsObject,
   createComponents,
   getDefaultComponents,
 } from './components';
+
+extendZodWithOpenApi(z);
 
 describe('getDefaultComponents', () => {
   it('returns default components', () => {
@@ -76,5 +81,108 @@ describe('createComponents', () => {
     );
 
     expect(componentsObject).toBeUndefined();
+  });
+
+  it('creates a components object', () => {
+    const expected: oas31.ComponentsObject = {
+      parameters: {
+        a: {
+          in: 'header',
+          name: 'some-header',
+          schema: {
+            type: 'string',
+          },
+        },
+      },
+      schemas: {
+        a: {
+          type: 'string',
+        },
+      },
+    };
+    const componentsObject = createComponents(
+      {},
+      {
+        parameters: {
+          a: {
+            paramObject: {
+              in: 'header',
+              name: 'some-header',
+              schema: {
+                type: 'string',
+              },
+            },
+            zodSchema: z.string().openapi({ param: { ref: 'a' } }),
+          },
+        },
+        schemas: {
+          a: {
+            schemaObject: {
+              type: 'string',
+            },
+            zodSchema: z.string().openapi({ ref: 'a' }),
+          },
+        },
+      },
+    );
+
+    expect(componentsObject).toStrictEqual(expected);
+  });
+
+  it('merges with existing components', () => {
+    const expected: oas31.ComponentsObject = {
+      examples: {
+        a: {
+          description: 'hello',
+        },
+      },
+      parameters: {
+        a: {
+          in: 'header',
+          name: 'some-header',
+          schema: {
+            type: 'string',
+          },
+        },
+      },
+      schemas: {
+        a: {
+          type: 'string',
+        },
+      },
+    };
+    const componentsObject = createComponents(
+      {
+        examples: {
+          a: {
+            description: 'hello',
+          },
+        },
+      },
+      {
+        parameters: {
+          a: {
+            paramObject: {
+              in: 'header',
+              name: 'some-header',
+              schema: {
+                type: 'string',
+              },
+            },
+            zodSchema: z.string().openapi({ param: { ref: 'a' } }),
+          },
+        },
+        schemas: {
+          a: {
+            schemaObject: {
+              type: 'string',
+            },
+            zodSchema: z.string().openapi({ ref: 'a' }),
+          },
+        },
+      },
+    );
+
+    expect(componentsObject).toStrictEqual(expected);
   });
 });

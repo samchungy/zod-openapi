@@ -5,7 +5,7 @@ import { ComponentsObject } from './components';
 import { ZodOpenApiContentObject, ZodOpenApiMediaTypeObject } from './document';
 import { createSchemaOrRef } from './schema';
 
-export const createMediaTypeSchema = (
+const createMediaTypeSchema = (
   schemaObject:
     | AnyZodObject
     | oas31.SchemaObject
@@ -24,7 +24,7 @@ export const createMediaTypeSchema = (
   return createSchemaOrRef(schemaObject, components);
 };
 
-export const createMediaTypeObject = (
+const createMediaTypeObject = (
   mediaTypeObject: ZodOpenApiMediaTypeObject | undefined,
   components: ComponentsObject,
 ): oas31.MediaTypeObject | undefined => {

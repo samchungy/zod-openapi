@@ -28,7 +28,7 @@ export interface ComponentsObject {
 }
 
 export const getDefaultComponents = (
-  componentsObject?: ZodOpenApiComponentsObject,
+  componentsObject?: Pick<ZodOpenApiComponentsObject, 'schemas' | 'parameters'>,
 ): ComponentsObject => {
   const defaultComponents = { schemas: {}, parameters: {} };
   if (!componentsObject) {
@@ -89,29 +89,24 @@ const createParameters = (
 
 export const createComponentSchemaRef = (schemaRef: string) =>
   `#/components/schemas/${schemaRef}`;
-
 export const createComponents = (
-  componentsObject: ZodOpenApiComponentsObject | undefined,
+  componentsObject:
+    | Omit<ZodOpenApiComponentsObject, 'schemas' | 'parameters'>
+    | undefined,
   components: ComponentsObject,
 ): oas31.ComponentsObject | undefined => {
   const schemas = createSchemaComponents(components.schemas);
   const parameters = createParamComponents(components.parameters);
 
-  const {
-    schemas: _schemas,
-    parameters: _parameters,
-    ...rest
-  } = componentsObject ?? {};
-
   const finalComponents: oas31.ComponentsObject = {
-    ...rest,
+    ...componentsObject,
     ...(schemas && { schemas }),
     ...(parameters && { parameters }),
   };
   return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
-export const createSchemaComponents = (
+const createSchemaComponents = (
   component: SchemaComponentObject,
 ): oas31.ComponentsObject['schemas'] => {
   const components = Object.entries(component).reduce<
@@ -126,7 +121,7 @@ export const createSchemaComponents = (
   return Object.keys(components).length ? components : undefined;
 };
 
-export const createParamComponents = (
+const createParamComponents = (
   component: ParametersComponentObject,
 ): oas31.ComponentsObject['parameters'] => {
   const components = Object.entries(component).reduce<

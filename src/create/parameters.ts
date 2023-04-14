@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
 import { ComponentsObject } from './components';
-import { ZodOpenApiOperationObject, ZodOpenApiParameters } from './document';
+import { ZodOpenApiParameters } from './document';
 import { createSchemaOrRef } from './schema';
 
 export const createComponentParamRef = (ref: string) =>
@@ -13,10 +13,12 @@ export const createBaseParameter = (
   components: ComponentsObject,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
+  const schemaOrRef = createSchemaOrRef(schema, components);
+  const required = !schema.isOptional();
   return {
-    schema: createSchemaOrRef(schema, components),
-    required: schema.isOptional() ? true : undefined,
     ...rest,
+    ...(schema && { schema: schemaOrRef }),
+    ...(required && { required }),
   };
 };
 
@@ -62,7 +64,7 @@ const createRegisteredParam = (
   };
 };
 
-export const createParamOrRef = (
+const createParamOrRef = (
   schema: ZodType,
   type: keyof ZodOpenApiParameters,
   name: string,
@@ -81,7 +83,7 @@ export const createParamOrRef = (
   };
 };
 
-export const createParameters = (
+const createParameters = (
   type: keyof ZodOpenApiParameters,
   zodObject: AnyZodObject | undefined,
   components: ComponentsObject,
@@ -125,11 +127,10 @@ const createRequestParams = (
 };
 
 export const createParametersObject = (
-  operationObject: ZodOpenApiOperationObject,
+  parameters: (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined,
+  requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined => {
-  const { requestParams, parameters } = operationObject;
-
   const createdParams = createRequestParams(requestParams, components);
   const combinedParameters: oas31.OperationObject['parameters'] = [
     ...(parameters ? parameters : []),
