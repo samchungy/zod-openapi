@@ -22,6 +22,9 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
     };
     ref?: string;
   };
+  header?: Partial<oas31.HeaderObject> & {
+    ref?: string;
+  };
 }
 
 interface ZodOpenApiExtendMetadata {

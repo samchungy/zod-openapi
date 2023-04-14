@@ -17,6 +17,7 @@ describe('getDefaultComponents', () => {
     const expected: ComponentsObject = {
       parameters: {},
       schemas: {},
+      headers: {},
     };
     expect(result).toStrictEqual(expected);
   });
@@ -37,6 +38,13 @@ describe('getDefaultComponents', () => {
         a: aSchema,
         b: {
           type: 'string',
+        },
+      },
+      headers: {
+        a: {
+          schema: {
+            type: 'string',
+          },
         },
       },
     });
@@ -65,6 +73,15 @@ describe('getDefaultComponents', () => {
           },
         },
       },
+      headers: {
+        a: {
+          headerObject: {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
     };
     expect(result).toStrictEqual(expected);
   });
@@ -77,6 +94,7 @@ describe('createComponents', () => {
       {
         parameters: {},
         schemas: {},
+        headers: {},
       },
     );
 
@@ -99,6 +117,13 @@ describe('createComponents', () => {
           type: 'string',
         },
       },
+      headers: {
+        a: {
+          schema: {
+            type: 'string',
+          },
+        },
+      },
     };
     const componentsObject = createComponents(
       {},
@@ -119,6 +144,16 @@ describe('createComponents', () => {
           a: {
             schemaObject: {
               type: 'string',
+            },
+            zodSchema: z.string().openapi({ ref: 'a' }),
+          },
+        },
+        headers: {
+          a: {
+            headerObject: {
+              schema: {
+                type: 'string',
+              },
             },
             zodSchema: z.string().openapi({ ref: 'a' }),
           },
@@ -150,6 +185,13 @@ describe('createComponents', () => {
           type: 'string',
         },
       },
+      headers: {
+        a: {
+          schema: {
+            type: 'string',
+          },
+        },
+      },
     };
     const componentsObject = createComponents(
       {
@@ -178,6 +220,15 @@ describe('createComponents', () => {
               type: 'string',
             },
             zodSchema: z.string().openapi({ ref: 'a' }),
+          },
+        },
+        headers: {
+          a: {
+            headerObject: {
+              schema: {
+                type: 'string',
+              },
+            },
           },
         },
       },

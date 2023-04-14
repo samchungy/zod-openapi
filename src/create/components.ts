@@ -22,21 +22,35 @@ interface ParametersComponentObject {
   [ref: string]: Parameter | undefined;
 }
 
+export interface Header {
+  zodSchema?: ZodType;
+  headerObject: oas31.HeaderObject | oas31.ReferenceObject;
+}
+
+interface HeadersComponentObject {
+  [ref: string]: Header | undefined;
+}
+
 export interface ComponentsObject {
   schemas: SchemaComponentObject;
   parameters: ParametersComponentObject;
+  headers: HeadersComponentObject;
 }
 
 export const getDefaultComponents = (
-  componentsObject?: Pick<ZodOpenApiComponentsObject, 'schemas' | 'parameters'>,
+  componentsObject?: Pick<
+    ZodOpenApiComponentsObject,
+    'schemas' | 'parameters' | 'headers'
+  >,
 ): ComponentsObject => {
-  const defaultComponents = { schemas: {}, parameters: {} };
+  const defaultComponents = { schemas: {}, parameters: {}, headers: {} };
   if (!componentsObject) {
     return defaultComponents;
   }
 
   createSchemas(componentsObject.schemas, defaultComponents);
   createParameters(componentsObject.parameters, defaultComponents);
+  createHeaders(componentsObject.headers, defaultComponents);
 
   return defaultComponents;
 };
@@ -87,21 +101,42 @@ const createParameters = (
   });
 };
 
+const createHeaders = (
+  headers: ZodOpenApiComponentsObject['headers'],
+  components: ComponentsObject,
+): void => {
+  if (!headers) {
+    return;
+  }
+  return Object.entries(headers).forEach(([key, schema]) => {
+    const component = components.headers[key];
+    if (component) {
+      throw new Error(`header "${key}" is already registered`);
+    }
+
+    components.headers[key] = {
+      headerObject: schema,
+    };
+  });
+};
+
 export const createComponentSchemaRef = (schemaRef: string) =>
   `#/components/schemas/${schemaRef}`;
 export const createComponents = (
   componentsObject:
-    | Omit<ZodOpenApiComponentsObject, 'schemas' | 'parameters'>
+    | Omit<ZodOpenApiComponentsObject, 'schemas' | 'parameters' | 'headers'>
     | undefined,
   components: ComponentsObject,
 ): oas31.ComponentsObject | undefined => {
   const schemas = createSchemaComponents(components.schemas);
   const parameters = createParamComponents(components.parameters);
+  const headers = createHeaderComponents(components.headers);
 
   const finalComponents: oas31.ComponentsObject = {
     ...componentsObject,
     ...(schemas && { schemas }),
     ...(parameters && { parameters }),
+    ...(headers && { headers }),
   };
   return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
@@ -129,6 +164,21 @@ const createParamComponents = (
   >((acc, [key, value]) => {
     if (value) {
       acc[key] = value.paramObject;
+    }
+    return acc;
+  }, {});
+
+  return Object.keys(components).length ? components : undefined;
+};
+
+const createHeaderComponents = (
+  component: HeadersComponentObject,
+): oas31.ComponentsObject['headers'] => {
+  const components = Object.entries(component).reduce<
+    NonNullable<oas31.ComponentsObject['headers']>
+  >((acc, [key, value]) => {
+    if (value) {
+      acc[key] = value.headerObject;
     }
     return acc;
   }, {});

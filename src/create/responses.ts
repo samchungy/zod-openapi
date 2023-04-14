@@ -1,7 +1,5 @@
 import { oas31 } from 'openapi3-ts';
-import { AnyZodObject, ZodType } from 'zod';
-
-import { isISpecificationExtension } from '../specificationExtension';
+import { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
 import { ComponentsObject } from './components';
 import { createContent } from './content';
@@ -10,6 +8,8 @@ import {
   ZodOpenApiResponsesObject,
 } from './document';
 import { createBaseParameter } from './parameters';
+import { createSchemaOrRef } from './schema';
+import { isISpecificationExtension } from './specificationExtension';
 
 export const createResponseHeaders = (
   responseHeaders: AnyZodObject | undefined,
@@ -19,20 +19,83 @@ export const createResponseHeaders = (
     return undefined;
   }
 
-  return Object.entries(responseHeaders).reduce<
+  return Object.entries(responseHeaders.shape as ZodRawShape).reduce<
     NonNullable<oas31.ResponseObject['headers']>
   >((acc, [key, zodSchema]: [string, ZodType]) => {
-    acc[key] = createBaseParameter(zodSchema, components);
+    acc[key] = createHeaderOrRef(zodSchema, components);
     return acc;
   }, {});
 };
 
-export const createHeaders = (
-  responseObject: ZodOpenApiResponseObject,
+const createHeaderOrRef = (
+  schema: ZodType,
+  components: ComponentsObject,
+): oas31.BaseParameterObject | oas31.ReferenceObject => {
+  const ref = schema?._def?.openapi?.header?.ref;
+
+  if (ref) {
+    return createRegisteredHeader(schema, ref, components);
+  }
+
+  return createBaseHeader(schema, components);
+};
+
+export const createBaseHeader = (
+  schema: ZodType,
+  components: ComponentsObject,
+): oas31.BaseParameterObject => {
+  const { ref, ...rest } = schema._def.openapi?.header ?? {};
+  const schemaOrRef = createSchemaOrRef(schema, components);
+  const required = !schema.isOptional();
+  return {
+    ...rest,
+    ...(schema && { schema: schemaOrRef }),
+    ...(required && { required }),
+  };
+};
+
+const createRegisteredHeader = (
+  zodSchema: ZodType,
+  ref: string,
+  components: ComponentsObject,
+): oas31.ReferenceObject => {
+  const component = components.headers[ref];
+  if (component) {
+    if (
+      !('$ref' in component.headerObject) &&
+      component.zodSchema !== zodSchema
+    ) {
+      throw new Error(`header "${ref}" is already registered`);
+    }
+    return {
+      $ref: createComponentHeaderRef(ref),
+    };
+  }
+
+  // Optional Objects can return a reference object
+  const baseParamOrRef = createBaseParameter(zodSchema, components);
+  if ('$ref' in baseParamOrRef) {
+    throw new Error('Unexpected Error: received a reference object');
+  }
+
+  components.headers[ref] = {
+    headerObject: baseParamOrRef,
+    zodSchema,
+  };
+
+  return {
+    $ref: createComponentHeaderRef(ref),
+  };
+};
+
+export const createComponentHeaderRef = (ref: string) =>
+  `#/components/headers/${ref}`;
+
+const createHeaders = (
+  headers: oas31.ResponseObject['headers'],
+  responseHeaders: AnyZodObject | undefined,
   components: ComponentsObject,
 ): oas31.ResponseObject['headers'] => {
-  const { responseHeaders, headers } = responseObject;
-
   if (!responseHeaders && !headers) {
     return undefined;
   }
@@ -45,7 +108,7 @@ export const createHeaders = (
   };
 };
 
-export const createResponse = (
+const createResponse = (
   responseObject: ZodOpenApiResponseObject | oas31.ReferenceObject,
   components: ComponentsObject,
 ): oas31.ResponseObject | oas31.ReferenceObject => {
@@ -53,11 +116,13 @@ export const createResponse = (
     return responseObject;
   }
 
-  const { content, ...rest } = responseObject;
+  const { content, headers, responseHeaders, ...rest } = responseObject;
+
+  const maybeHeaders = createHeaders(headers, responseHeaders, components);
 
   return {
     ...rest,
-    headers: createHeaders(responseObject, components),
+    ...(maybeHeaders && { headers: maybeHeaders }),
     ...(content && { content: createContent(content, components) }),
   };
 };
