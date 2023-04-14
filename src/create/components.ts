@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { ZodType } from 'zod';
 
 import { ZodOpenApiComponentsObject } from './document';
-import { createSchemaOrRef } from './schema';
+import { createSchemaWithMetadata } from './schema/metadata';
 
 export interface Schema {
   zodSchema?: ZodType;
@@ -70,7 +70,7 @@ const createSchemas = (
 
     if (schema instanceof ZodType) {
       components.schemas[key] = {
-        schemaObject: createSchemaOrRef(schema, components),
+        schemaObject: createSchemaWithMetadata(schema, components),
         zodSchema: schema,
       };
       return;
