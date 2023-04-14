@@ -81,6 +81,9 @@ const componentZodOpenApiObject: ZodOpenApiObject = {
                 schema: registered,
               },
             },
+            responseHeaders: z.object({
+              'my-header': z.string().openapi({ header: { ref: 'my-header' } }),
+            }),
           },
         },
       },
@@ -194,6 +197,11 @@ describe('createDocumentJson', () => {
               "responses": {
                 "200": {
                   "description": "200 OK",
+                  "headers": {
+                    "my-header": {
+                      "$ref": "#/components/headers/my-header"
+                    }
+                  },
                   "content": {
                     "application/json": {
                       "schema": {
@@ -224,6 +232,14 @@ describe('createDocumentJson', () => {
             "b": {
               "in": "path",
               "name": "b",
+              "schema": {
+                "type": "string"
+              },
+              "required": true
+            }
+          },
+          "headers": {
+            "my-header": {
               "schema": {
                 "type": "string"
               },
@@ -306,6 +322,9 @@ describe('createDocumentYaml', () => {
             responses:
               "200":
                 description: 200 OK
+                headers:
+                  my-header:
+                    $ref: "#/components/headers/my-header"
                 content:
                   application/json:
                     schema:
@@ -323,6 +342,11 @@ describe('createDocumentYaml', () => {
           b:
             in: path
             name: b
+            schema:
+              type: string
+            required: true
+        headers:
+          my-header:
             schema:
               type: string
             required: true
