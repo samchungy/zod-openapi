@@ -63,20 +63,22 @@ const createSchemas = (
     return;
   }
   return Object.entries(schemas).forEach(([key, schema]) => {
+    const ref =
+      schema instanceof ZodType ? schema._def.openapi?.ref ?? key : key;
     const component = components.schemas[key];
     if (component) {
-      throw new Error(`schemaRef "${key}" is already registered`);
+      throw new Error(`schemaRef "${ref}" is already registered`);
     }
 
     if (schema instanceof ZodType) {
-      components.schemas[key] = {
+      components.schemas[ref] = {
         schemaObject: createSchemaWithMetadata(schema, components),
         zodSchema: schema,
       };
       return;
     }
 
-    components.schemas[key] = {
+    components.schemas[ref] = {
       schemaObject: schema,
     };
   });
