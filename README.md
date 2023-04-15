@@ -298,6 +298,20 @@ Wherever `title` is used in schemas across the document, it will instead be crea
 
 This can be an extremely powerful way to generate better Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
 
+To display components which are not referenced by simply add the Zod Schema to the schema components directly.
+
+eg.
+
+```typescript
+{
+  "components": {
+    "schemas": {
+      MyJobSchema // note: this will register this Zod Schema as MyJobSchema unless `ref` is specified on the type
+    }
+  }
+}
+```
+
 #### Parameters
 
 Query, Path, Header & Cookie parameters can be similarly registered:
