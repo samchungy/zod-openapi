@@ -1,10 +1,18 @@
 # zod-openapi
 
+A Typescript library to create full OpenAPI 3 documentation from [Zod](https://github.com/colinhacks/zod) Types.
+
 [![npm version](https://img.shields.io/npm/v/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
 [![npm downloads](https://img.shields.io/npm/dm/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
-A Typescript library to create full OpenAPI 3 documentation from Zod Schemas.
+## Install
+
+Install via npm:
+
+```bash
+npm install zod zod-openapi
+```
 
 ## API
 
