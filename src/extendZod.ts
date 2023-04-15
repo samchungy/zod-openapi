@@ -1,4 +1,4 @@
-import { oas31 } from 'openapi3-ts';
+import { oas30, oas31 } from 'openapi3-ts';
 import {
   UnknownKeysParam,
   ZodDate,
@@ -8,8 +8,11 @@ import {
   z,
 } from 'zod';
 
+type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
+
 interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
-  extends Omit<oas31.SchemaObject, 'example'> {
+  extends SchemaObject {
+  example?: TInferred;
   examples?: [TInferred, ...TInferred[]];
   default?: T extends ZodDate ? string : TInferred;
   ref?: string;
@@ -22,7 +25,7 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
     };
     ref?: string;
   };
-  header?: Partial<oas31.HeaderObject> & {
+  header?: Partial<oas31.HeaderObject & oas30.HeaderObject> & {
     ref?: string;
   };
 }

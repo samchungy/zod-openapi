@@ -2,7 +2,7 @@
 
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
-A Typescript library to create full OpenAPI 3.1 documentation from Zod Schemas.
+A Typescript library to create full OpenAPI 3 documentation from Zod Schemas.
 
 ## API
 
@@ -311,6 +311,14 @@ const header = z.string().openapi({
   header: { ref: 'some-header' },
 });
 ```
+
+## Supported OpenAPI Versions
+
+- '3.0.0',
+- '3.0.1',
+- '3.0.2',
+- '3.0.3',
+- '3.1.0',
 
 ## Supported Zod Schema
 

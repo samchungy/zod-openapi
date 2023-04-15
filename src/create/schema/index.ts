@@ -59,7 +59,7 @@ export const createSchema = <
   }
 
   if (zodSchema instanceof ZodNumber) {
-    return createNumberSchema(zodSchema);
+    return createNumberSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodBoolean) {
@@ -75,7 +75,7 @@ export const createSchema = <
   }
 
   if (zodSchema instanceof ZodNativeEnum) {
-    return createNativeEnumSchema(zodSchema);
+    return createNativeEnumSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodArray) {
@@ -131,7 +131,7 @@ export const createSchema = <
   }
 
   if (zodSchema instanceof ZodNativeEnum) {
-    return createNativeEnumSchema(zodSchema);
+    return createNativeEnumSchema(zodSchema, components);
   }
 
   if (zodSchema instanceof ZodIntersection) {

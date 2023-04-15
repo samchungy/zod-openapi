@@ -1,12 +1,16 @@
-import { oas31 } from 'openapi3-ts';
+import { oas30, oas31 } from 'openapi3-ts';
 import { ZodType } from 'zod';
 
-import { ZodOpenApiComponentsObject } from './document';
+import { ZodOpenAPIVersion, ZodOpenApiComponentsObject } from './document';
 import { createSchemaWithMetadata } from './schema/metadata';
 
 export interface Schema {
   zodSchema?: ZodType;
-  schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+  schemaObject:
+    | oas31.SchemaObject
+    | oas31.ReferenceObject
+    | oas30.SchemaObject
+    | oas30.ReferenceObject;
 }
 
 interface SchemaComponentObject {
@@ -15,7 +19,11 @@ interface SchemaComponentObject {
 
 export interface Parameter {
   zodSchema?: ZodType;
-  paramObject: oas31.ParameterObject | oas31.ReferenceObject;
+  paramObject:
+    | oas31.ParameterObject
+    | oas31.ReferenceObject
+    | oas30.ParameterObject
+    | oas30.ReferenceObject;
 }
 
 interface ParametersComponentObject {
@@ -24,7 +32,11 @@ interface ParametersComponentObject {
 
 export interface Header {
   zodSchema?: ZodType;
-  headerObject: oas31.HeaderObject | oas31.ReferenceObject;
+  headerObject:
+    | oas31.HeaderObject
+    | oas31.ReferenceObject
+    | oas30.HeaderObject
+    | oas30.ReferenceObject;
 }
 
 interface HeadersComponentObject {
@@ -35,6 +47,7 @@ export interface ComponentsObject {
   schemas: SchemaComponentObject;
   parameters: ParametersComponentObject;
   headers: HeadersComponentObject;
+  openapi: ZodOpenAPIVersion;
 }
 
 export const getDefaultComponents = (
@@ -42,8 +55,14 @@ export const getDefaultComponents = (
     ZodOpenApiComponentsObject,
     'schemas' | 'parameters' | 'headers'
   >,
+  openapi: ZodOpenAPIVersion = '3.1.0',
 ): ComponentsObject => {
-  const defaultComponents = { schemas: {}, parameters: {}, headers: {} };
+  const defaultComponents = {
+    schemas: {},
+    parameters: {},
+    headers: {},
+    openapi,
+  };
   if (!componentsObject) {
     return defaultComponents;
   }
@@ -150,7 +169,7 @@ const createSchemaComponents = (
     NonNullable<oas31.ComponentsObject['schemas']>
   >((acc, [key, value]) => {
     if (value) {
-      acc[key] = value.schemaObject;
+      acc[key] = value.schemaObject as oas31.SchemaObject;
     }
     return acc;
   }, {});
@@ -165,7 +184,7 @@ const createParamComponents = (
     NonNullable<oas31.ComponentsObject['parameters']>
   >((acc, [key, value]) => {
     if (value) {
-      acc[key] = value.paramObject;
+      acc[key] = value.paramObject as oas31.ParameterObject;
     }
     return acc;
   }, {});
@@ -180,7 +199,7 @@ const createHeaderComponents = (
     NonNullable<oas31.ComponentsObject['headers']>
   >((acc, [key, value]) => {
     if (value) {
-      acc[key] = value.headerObject;
+      acc[key] = value.headerObject as oas31.HeaderObject;
     }
     return acc;
   }, {});

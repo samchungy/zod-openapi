@@ -1,7 +1,8 @@
-import { oas31 } from 'openapi3-ts';
+import { oas30, oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createNumberSchema } from './number';
 
@@ -14,7 +15,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number();
 
-    const result = createNumberSchema(schema);
+    const result = createNumberSchema(schema, getDefaultComponents());
 
     expect(result).toStrictEqual(expected);
   });
@@ -25,7 +26,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().int();
 
-    const result = createNumberSchema(schema);
+    const result = createNumberSchema(schema, getDefaultComponents());
 
     expect(result).toStrictEqual(expected);
   });
@@ -38,7 +39,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().lt(10).gt(0);
 
-    const result = createNumberSchema(schema);
+    const result = createNumberSchema(schema, getDefaultComponents());
 
     expect(result).toStrictEqual(expected);
   });
@@ -53,7 +54,25 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().lte(10).gte(0);
 
-    const result = createNumberSchema(schema);
+    const result = createNumberSchema(schema, getDefaultComponents());
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('creates a number schema with lte or gte in openapi 3.0.0', () => {
+    const expected: oas30.SchemaObject = {
+      type: 'number',
+      minimum: 0,
+      exclusiveMinimum: true,
+      maximum: 10,
+      exclusiveMaximum: true,
+    };
+    const schema = z.number().lte(10).gte(0);
+
+    const result = createNumberSchema(
+      schema,
+      getDefaultComponents({}, '3.0.0'),
+    );
 
     expect(result).toStrictEqual(expected);
   });

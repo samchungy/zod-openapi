@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { getDefaultComponents } from '../components';
 
 import { createNativeEnumSchema } from './nativeEnum';
 
@@ -23,7 +24,7 @@ describe('createNativeEnumSchema', () => {
 
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(schema);
+    const result = createNativeEnumSchema(schema, getDefaultComponents());
 
     expect(result).toStrictEqual(expected);
   });
@@ -42,7 +43,7 @@ describe('createNativeEnumSchema', () => {
     }
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(schema);
+    const result = createNativeEnumSchema(schema, getDefaultComponents());
 
     expect(result).toStrictEqual(expected);
   });
@@ -62,7 +63,38 @@ describe('createNativeEnumSchema', () => {
 
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(schema);
+    const result = createNativeEnumSchema(schema, getDefaultComponents());
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('creates a oneOf string and number schema from a mixed enum in openapi 3.0.0', () => {
+    const expected: oas31.SchemaObject = {
+      oneOf: [
+        {
+          type: 'string',
+          enum: ['Right'],
+        },
+        {
+          type: 'number',
+          enum: [0, 1, 2],
+        },
+      ],
+    };
+
+    enum Direction {
+      Up,
+      Down,
+      Left,
+      Right = 'Right',
+    }
+
+    const schema = z.nativeEnum(Direction);
+
+    const result = createNativeEnumSchema(
+      schema,
+      getDefaultComponents({}, '3.0.0'),
+    );
 
     expect(result).toStrictEqual(expected);
   });

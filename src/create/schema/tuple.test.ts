@@ -64,4 +64,28 @@ describe('createTupleSchema', () => {
 
     expect(result).toStrictEqual(expected);
   });
+
+  it('creates an array schema with additionalProperties in openapi 3.0.0', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'array',
+      items: {
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+          {
+            type: 'boolean',
+          },
+        ],
+      },
+    };
+    const schema = z.tuple([z.string(), z.number()]).rest(z.boolean());
+
+    const result = createTupleSchema(schema, getDefaultComponents({}, '3.0.0'));
+
+    expect(result).toStrictEqual(expected);
+  });
 });

@@ -1,7 +1,9 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodNullable, ZodTypeAny } from 'zod';
 
+import { satisfiesVersion } from '../../openapi';
 import { ComponentsObject } from '../components';
+import { ZodOpenAPIVersion } from '../document';
 
 import { createSchemaOrRef } from '.';
 
@@ -14,43 +16,45 @@ export const createNullableSchema = (
     components,
   );
 
-  if ('$ref' in schemaOrReference) {
+  if ('$ref' in schemaOrReference || schemaOrReference.allOf) {
     return {
-      oneOf: mapNullOf([schemaOrReference]),
+      oneOf: mapNullOf([schemaOrReference], components.openapi),
     };
   }
 
   if (schemaOrReference.oneOf) {
     const { oneOf, ...schema } = schemaOrReference;
     return {
-      oneOf: mapNullOf(oneOf),
+      oneOf: mapNullOf(oneOf, components.openapi),
       ...schema,
-    };
-  }
-
-  if (schemaOrReference.allOf) {
-    return {
-      oneOf: [schemaOrReference, { type: 'null' }],
     };
   }
 
   if (schemaOrReference.anyOf) {
     const { anyOf, ...schema } = schemaOrReference;
     return {
-      anyOf: mapNullOf(anyOf),
+      anyOf: mapNullOf(anyOf, components.openapi),
       ...schema,
     };
   }
 
   const { type, ...schema } = schemaOrReference;
 
+  if (satisfiesVersion(components.openapi, '3.1.0')) {
+    return {
+      type: mapNullType(type),
+      ...schema,
+    };
+  }
+
   return {
-    type: mapNullType(type),
+    type,
+    nullable: true,
     ...schema,
   };
 };
 
-export const mapNullType = (
+const mapNullType = (
   type: oas31.SchemaObject['type'],
 ): oas31.SchemaObject['type'] => {
   if (!type) {
@@ -66,7 +70,10 @@ export const mapNullType = (
 
 const mapNullOf = (
   ofSchema: (oas31.SchemaObject | oas31.ReferenceObject)[],
-): (oas31.SchemaObject | oas31.ReferenceObject)[] => [
-  ...ofSchema,
-  { type: 'null' },
-];
+  openapi: ZodOpenAPIVersion,
+): (oas31.SchemaObject | oas31.ReferenceObject)[] => {
+  if (satisfiesVersion(openapi, '3.1.0')) {
+    return [...ofSchema, { type: 'null' }];
+  }
+  return [...ofSchema, { nullable: true }];
+};

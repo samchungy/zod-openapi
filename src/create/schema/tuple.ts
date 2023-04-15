@@ -1,6 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodTuple, ZodTypeAny } from 'zod';
 
+import { satisfiesVersion } from '../../openapi';
 import { ComponentsObject } from '../components';
 
 import { createSchemaOrRef } from '.';
@@ -13,7 +14,6 @@ export const createTupleSchema = (
   const rest = zodTuple._def.rest as ZodTypeAny;
   return {
     type: 'array',
-    ...mapPrefixItems(items, components),
     ...mapItemProperties(items, rest, components),
   } as oas31.SchemaObject;
 };
@@ -21,26 +21,49 @@ export const createTupleSchema = (
 const mapPrefixItems = (
   items: ZodTypeAny[],
   components: ComponentsObject,
-):
-  | { prefixItems: (oas31.SchemaObject | oas31.ReferenceObject)[] }
-  | undefined =>
-  items.length
-    ? { prefixItems: items.map((item) => createSchemaOrRef(item, components)) }
-    : undefined;
+): oas31.SchemaObject['prefixItems'] | undefined => {
+  if (items.length) {
+    return items.map((item) => createSchemaOrRef(item, components));
+  }
+  return undefined;
+};
 
 const mapItemProperties = (
   items: ZodTypeAny[],
   rest: ZodTypeAny,
   components: ComponentsObject,
-): Pick<oas31.SchemaObject, 'items' | 'minItems' | 'maxItems'> => {
+): Pick<
+  oas31.SchemaObject,
+  'items' | 'minItems' | 'maxItems' | 'prefixItems'
+> => {
+  const prefixItems = mapPrefixItems(items, components);
+
+  if (satisfiesVersion(components.openapi, '3.1.0')) {
+    if (!rest) {
+      return {
+        maxItems: items.length,
+        minItems: items.length,
+        ...(prefixItems && { prefixItems }),
+      };
+    }
+
+    return {
+      items: createSchemaOrRef(rest, components),
+      ...(prefixItems && { prefixItems }),
+    };
+  }
+
   if (!rest) {
     return {
       maxItems: items.length,
       minItems: items.length,
+      ...(prefixItems && { items: { oneOf: prefixItems } }),
     };
   }
 
   return {
-    items: createSchemaOrRef(rest, components),
+    ...(prefixItems && {
+      items: { oneOf: [...prefixItems, createSchemaOrRef(rest, components)] },
+    }),
   };
 };

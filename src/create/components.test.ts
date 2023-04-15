@@ -18,6 +18,7 @@ describe('getDefaultComponents', () => {
       parameters: {},
       schemas: {},
       headers: {},
+      openapi: '3.1.0',
     };
     expect(result).toStrictEqual(expected);
   });
@@ -82,6 +83,7 @@ describe('getDefaultComponents', () => {
           },
         },
       },
+      openapi: '3.1.0',
     };
     expect(result).toStrictEqual(expected);
   });
@@ -95,6 +97,7 @@ describe('createComponents', () => {
         parameters: {},
         schemas: {},
         headers: {},
+        openapi: '3.1.0',
       },
     );
 
@@ -158,6 +161,7 @@ describe('createComponents', () => {
             zodSchema: z.string().openapi({ ref: 'a' }),
           },
         },
+        openapi: '3.1.0',
       },
     );
 
@@ -231,6 +235,7 @@ describe('createComponents', () => {
             },
           },
         },
+        openapi: '3.1.0',
       },
     );
 
