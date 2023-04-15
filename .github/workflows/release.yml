@@ -1,12 +1,14 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - beta
-      - master
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version you wish to release eg. v0.5.0'
+        required: true
+        type: string
 
-permissions: {}
+permissions: { contents: 'write' }
 
 jobs:
   release:
@@ -20,16 +22,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js 16.x
+      - name: Check Draft
+        run: isDraft=$(gh release view ${{ inputs.version }} --json isDraft --jq '.isDraft'); $isDraft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Publish to npm
-        run: yarn release
+      - name: Version
+        run: npm version ${{ inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.SEEK_OSS_CI_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push Tags
+        run: git push origin && git push --tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Draft
+        run: gh release edit ${{ inputs.version }} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
