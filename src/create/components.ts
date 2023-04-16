@@ -1,7 +1,7 @@
 import { oas30, oas31 } from 'openapi3-ts';
 import { ZodType } from 'zod';
 
-import { ZodOpenAPIVersion, ZodOpenApiComponentsObject } from './document';
+import { ZodOpenApiComponentsObject, ZodOpenApiVersion } from './document';
 import { createSchemaWithMetadata } from './schema/metadata';
 
 export interface Schema {
@@ -47,7 +47,7 @@ export interface ComponentsObject {
   schemas: SchemaComponentObject;
   parameters: ParametersComponentObject;
   headers: HeadersComponentObject;
-  openapi: ZodOpenAPIVersion;
+  openapi: ZodOpenApiVersion;
 }
 
 export const getDefaultComponents = (
@@ -55,7 +55,7 @@ export const getDefaultComponents = (
     ZodOpenApiComponentsObject,
     'schemas' | 'parameters' | 'headers'
   >,
-  openapi: ZodOpenAPIVersion = '3.1.0',
+  openapi: ZodOpenApiVersion = '3.1.0',
 ): ComponentsObject => {
   const defaultComponents = {
     schemas: {},

@@ -3,7 +3,7 @@ import { ZodNumber, ZodNumberCheck } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
 import { ComponentsObject } from '../components';
-import { ZodOpenAPIVersion } from '../document';
+import { ZodOpenApiVersion } from '../document';
 
 export const createNumberSchema = (
   zodNumber: ZodNumber,
@@ -19,7 +19,7 @@ export const createNumberSchema = (
 
 const mapRanges = (
   zodNumberChecks: ZodNumberCheckMap,
-  openapi: ZodOpenAPIVersion,
+  openapi: ZodOpenApiVersion,
 ): Pick<
   oas31.SchemaObject | oas30.SchemaObject,
   'minimum' | 'maximum' | 'exclusiveMinimum' | 'exclusiveMaximum'
