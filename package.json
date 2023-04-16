@@ -26,7 +26,7 @@
     "commit": "cz",
     "format": "skuba format",
     "lint": "skuba lint",
-    "release": "yarn build && skuba release",
+    "release": "yarn build && npm publish",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
     "test:watch": "skuba test --watch"
