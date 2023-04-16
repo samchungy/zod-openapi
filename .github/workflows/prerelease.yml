@@ -1,9 +1,9 @@
-name: Release
+name: Prerelease
 
 on:
   release:
     types:
-      - released
+      - prereleased
 
 permissions: {}
 
@@ -12,7 +12,6 @@ jobs:
     name: Version & Publish
     permissions:
       contents: write
-      pull-requests: 'write'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -29,12 +28,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Create Release Branch
+      - name: Create Beta Branch
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout -b release
-          git push --force origin release --set-upstream
+          git checkout -b beta
+          git push --force origin beta --set-upstream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,15 +53,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: release
-
-      - name: Raise Release PR
-        run: |
-          gh pr create -H release -B master --title "Release ${{ github.event.release.tag_name }}" --body "Please merge this with a Merge Request to update master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DESTINATION_BRANCH: beta
 
       - name: Publish to npm
-        run: yarn release
+        run: yarn release --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

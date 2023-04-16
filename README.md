@@ -384,6 +384,10 @@ eg.
 z.custom().openapi({ type: 'string' });
 ```
 
+## Ecosystem
+
+- [https://github.com/samchungy/eslint-plugin-zod-openapi](eslint-plugin-zod-openapi) - Eslint rules for zod-openapi. Includes features such as autogenerating Typescript comments for your Zod types based on your description example or examples and deprecated fields.
+
 ## Development
 
 ### Prerequisites
