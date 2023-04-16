@@ -415,15 +415,23 @@ yarn format
 yarn lint
 ```
 
-### Package
+### Release
 
-```shell
-# Compile source
-yarn build
+To release a new version
 
-# Review bundle
-npm pack
-```
+1. Create a [new GitHub Release](https://github.com/samchungy/eslint-plugin-zod-openapi/releases/new)
+2. Select `🏷️ Choose a tag`, enter a version number. eg. `v1.2.0` and click `+ Create new tag: vX.X.X on publish`.
+3. Click the `Generate release notes` button and adjust the description.
+4. Tick the `Set as the latest release` box and click `Publish release`. This will trigger the `Release` workflow.
+5. Check the `Pull Requests` tab for a PR labelled `Release vX.X.X`.
+6. Click `Merge Pull Request` on that Pull Request to update master with the new package version.
+
+To release a new beta version
+
+1. Create a [new GitHub Release](https://github.com/samchungy/eslint-plugin-zod-openapi/releases/new)
+2. Select `🏷️ Choose a tag`, enter a version number with a `-beta.X` . eg. `v1.2.0-beta.1` and click `+ Create new tag: vX.X.X-beta.X on publish`.
+3. Click the `Generate release notes` button and adjust the description.
+4. Tick the `Set as a pre-release` box and click `Publish release`. This will trigger the `Prerelease` workflow.
 
 ## Credits
 
