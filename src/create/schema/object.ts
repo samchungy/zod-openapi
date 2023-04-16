@@ -67,7 +67,7 @@ export const createObjectSchemaFromShape = (
   type: 'object',
   properties: mapProperties(shape, components),
   required: mapRequired(shape),
-  ...(strict && { additionalProperties: strict }),
+  ...(strict && { additionalProperties: false }),
 });
 
 export const mapRequired = (

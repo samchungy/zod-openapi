@@ -37,7 +37,7 @@ describe('createObjectSchema', () => {
         },
       },
       required: ['a'],
-      additionalProperties: true,
+      additionalProperties: false,
     };
     const schema = z.strictObject({
       a: z.string(),
