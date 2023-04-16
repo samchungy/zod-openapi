@@ -2,6 +2,8 @@ import { oas30, oas31 } from 'openapi3-ts';
 import { stringify } from 'yaml';
 import { AnyZodObject, ZodType } from 'zod';
 
+import { OpenApiVersion } from '../openapi';
+
 import { createComponents, getDefaultComponents } from './components';
 import { createPaths } from './paths';
 
@@ -82,14 +84,14 @@ export interface ZodOpenApiComponentsObject
   };
 }
 
-export type ZodOpenAPIVersion = '3.0.0' | '3.0.1' | '3.0.2' | '3.0.3' | '3.1.0';
+export type ZodOpenApiVersion = OpenApiVersion;
 
 export interface ZodOpenApiObject
   extends Omit<
     oas31.OpenAPIObject,
     'openapi' | 'paths' | 'webhooks' | 'components'
   > {
-  openapi: ZodOpenAPIVersion;
+  openapi: ZodOpenApiVersion;
   paths?: ZodOpenApiPathsObject;
   webhooks?: ZodOpenApiPathsObject;
   components?: ZodOpenApiComponentsObject;

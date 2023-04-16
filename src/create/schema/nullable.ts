@@ -3,7 +3,7 @@ import { ZodNullable, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
 import { ComponentsObject } from '../components';
-import { ZodOpenAPIVersion } from '../document';
+import { ZodOpenApiVersion } from '../document';
 
 import { createSchemaOrRef } from '.';
 
@@ -70,7 +70,7 @@ const mapNullType = (
 
 const mapNullOf = (
   ofSchema: (oas31.SchemaObject | oas31.ReferenceObject)[],
-  openapi: ZodOpenAPIVersion,
+  openapi: ZodOpenApiVersion,
 ): (oas31.SchemaObject | oas31.ReferenceObject)[] => {
   if (satisfiesVersion(openapi, '3.1.0')) {
     return [...ofSchema, { type: 'null' }];
