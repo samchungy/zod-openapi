@@ -52,6 +52,9 @@
   "engines": {
     "node": ">=16.11"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "skuba": {
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
