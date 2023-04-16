@@ -11,35 +11,61 @@ export const createNumberSchema = (
 ): oas31.SchemaObject => {
   const zodNumberChecks = getZodNumberChecks(zodNumber);
 
+  const minimum = mapMinimum(zodNumberChecks, components.openapi);
+  const maximum = mapMaximum(zodNumberChecks, components.openapi);
+
   return {
     type: mapNumberType(zodNumberChecks),
-    ...(mapRanges(zodNumberChecks, components.openapi) as oas31.SchemaObject), // union types are too pesky to drill through
+    ...(minimum && (minimum as oas31.SchemaObject)), // Union types are not easy to tame
+    ...(maximum && (maximum as oas31.SchemaObject)),
   };
 };
 
-const mapRanges = (
-  zodNumberChecks: ZodNumberCheckMap,
+export const mapNumberChecks = () => {};
+
+export const mapMaximum = (
+  zodNumberCheck: ZodNumberCheckMap,
   openapi: ZodOpenApiVersion,
-): Pick<
-  oas31.SchemaObject | oas30.SchemaObject,
-  'minimum' | 'maximum' | 'exclusiveMinimum' | 'exclusiveMaximum'
-> => {
-  const minimum = zodNumberChecks.min?.value;
-  const maximum = zodNumberChecks.max?.value;
+):
+  | Pick<
+      oas31.SchemaObject | oas30.SchemaObject,
+      'maximum' | 'exclusiveMaximum'
+    >
+  | undefined => {
+  if (!zodNumberCheck.max) {
+    return undefined;
+  }
 
-  const exclusiveMinimum = zodNumberChecks.min?.inclusive;
-  const exclusiveMaximum = zodNumberChecks.max?.inclusive;
+  const maximum = zodNumberCheck.max.value;
+  if (zodNumberCheck.max.inclusive) {
+    return { ...(maximum !== undefined && { maximum }) };
+  }
+  if (satisfiesVersion(openapi, '3.1.0')) {
+    return { exclusiveMaximum: maximum };
+  }
+  return { maximum, exclusiveMaximum: true };
+};
+export const mapMinimum = (
+  zodNumberCheck: ZodNumberCheckMap,
+  openapi: ZodOpenApiVersion,
+):
+  | Pick<
+      oas31.SchemaObject | oas30.SchemaObject,
+      'minimum' | 'exclusiveMinimum'
+    >
+  | undefined => {
+  if (!zodNumberCheck.min) {
+    return undefined;
+  }
 
-  return {
-    ...(minimum !== undefined && { minimum }),
-    ...(maximum !== undefined && { maximum }),
-    ...(exclusiveMinimum && {
-      exclusiveMinimum: satisfiesVersion(openapi, '3.1.0') ? minimum : true,
-    }),
-    ...(exclusiveMaximum && {
-      exclusiveMaximum: satisfiesVersion(openapi, '3.1.0') ? maximum : true,
-    }),
-  };
+  const minimum = zodNumberCheck.min.value;
+  if (zodNumberCheck.min.inclusive) {
+    return { ...(minimum !== undefined && { minimum }) };
+  }
+  if (satisfiesVersion(openapi, '3.1.0')) {
+    return { exclusiveMinimum: minimum };
+  }
+  return { minimum, exclusiveMinimum: true };
 };
 
 type ZodNumberCheckMap = {

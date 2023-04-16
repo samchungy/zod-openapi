@@ -34,8 +34,8 @@ describe('createNumberSchema', () => {
   it('creates a number schema with lt or gt', () => {
     const expected: oas31.SchemaObject = {
       type: 'number',
-      minimum: 0,
-      maximum: 10,
+      exclusiveMinimum: 0,
+      exclusiveMaximum: 10,
     };
     const schema = z.number().lt(10).gt(0);
 
@@ -48,9 +48,7 @@ describe('createNumberSchema', () => {
     const expected: oas31.SchemaObject = {
       type: 'number',
       minimum: 0,
-      exclusiveMinimum: 0,
       maximum: 10,
-      exclusiveMaximum: 10,
     };
     const schema = z.number().lte(10).gte(0);
 
@@ -63,11 +61,27 @@ describe('createNumberSchema', () => {
     const expected: oas30.SchemaObject = {
       type: 'number',
       minimum: 0,
+      maximum: 10,
+    };
+    const schema = z.number().lte(10).gte(0);
+
+    const result = createNumberSchema(
+      schema,
+      getDefaultComponents({}, '3.0.0'),
+    );
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('creates a number schema with lt or gt in openapi 3.0.0', () => {
+    const expected: oas30.SchemaObject = {
+      type: 'number',
+      minimum: 0,
       exclusiveMinimum: true,
       maximum: 10,
       exclusiveMaximum: true,
     };
-    const schema = z.number().lte(10).gte(0);
+    const schema = z.number().lt(10).gt(0);
 
     const result = createNumberSchema(
       schema,
