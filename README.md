@@ -429,7 +429,7 @@ To release a new version
 To release a new beta version
 
 1. Create a [new GitHub Release](https://github.com/samchungy/zod-openapi/releases/new)
-2. Select `🏷️ Choose a tag`, enter a version number with a `-beta.X` . eg. `v1.2.0-beta.1` and click `+ Create new tag: vX.X.X-beta.X on publish`.
+2. Select `🏷️ Choose a tag`, enter a version number with a `-beta.X` suffix eg. `v1.2.0-beta.1` and click `+ Create new tag: vX.X.X-beta.X on publish`.
 3. Click the `Generate release notes` button and adjust the description.
 4. Tick the `Set as a pre-release` box and click `Publish release`. This will trigger the `Prerelease` workflow.
 
