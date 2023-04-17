@@ -10,6 +10,7 @@ export const createPreprocessSchema = (
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (state.type === 'output') {
+    state.effectType = 'output';
     return createSchemaOrRef(zodPreprocess._def.schema as ZodType, state);
   }
 

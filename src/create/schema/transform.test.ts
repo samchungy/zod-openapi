@@ -20,6 +20,15 @@ describe('createTransformSchema', () => {
 
       expect(result).toStrictEqual(expected);
     });
+
+    it('changes the state effectType to input', () => {
+      const schema = z.string().transform((str) => str.length);
+      const state = createInputState();
+
+      createTransformSchema(schema, state);
+
+      expect(state.effectType).toBe('input');
+    });
   });
 
   describe('output', () => {

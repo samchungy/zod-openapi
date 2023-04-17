@@ -3,8 +3,9 @@ import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
 import { createInputState, createOutputState } from '../../test/state';
+import { getDefaultComponents } from '../components';
 
-import { createSchemaOrRef } from '.';
+import { SchemaState, createSchemaOrRef } from '.';
 
 extendZodWithOpenApi(z);
 
@@ -280,6 +281,28 @@ describe('createSchemaOrRef', () => {
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
       expected,
+    );
+  });
+
+  it('throws an error when an ZodEffect input component is referenced in an output', () => {
+    const inputSchema = z
+      .object({ a: z.string().transform((arg) => arg.length) })
+      .openapi({ ref: 'a' });
+    const components = getDefaultComponents();
+    const state: SchemaState = {
+      components,
+      type: 'input',
+    };
+    createSchemaOrRef(inputSchema, state);
+
+    const outputState: SchemaState = {
+      components,
+      type: 'output',
+    };
+
+    const outputSchema = z.object({ a: inputSchema });
+    expect(() => createSchemaOrRef(outputSchema, outputState)).toThrow(
+      'schemaRef "a" was created with a ZodEffect meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap the ZodEffect in a ZodPipeline to verify the contents of the effect',
     );
   });
 });

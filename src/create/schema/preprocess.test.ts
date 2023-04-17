@@ -53,5 +53,20 @@ describe('createPreprocessSchema', () => {
 
       expect(result).toStrictEqual(expected);
     });
+
+    it('changes the state effectType to output', () => {
+      const schema = z
+        .preprocess(
+          (arg) => (typeof arg === 'string' ? arg.split(',') : arg),
+          z.string(),
+        )
+        .openapi({ type: 'string' });
+
+      const state = createOutputState();
+
+      createPreprocessSchema(schema, state);
+
+      expect(state.effectType).toBe('output');
+    });
   });
 });

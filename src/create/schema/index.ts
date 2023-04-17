@@ -195,7 +195,7 @@ export const createRegisteredSchema = <
     }
     if (!component.types?.includes(state.type)) {
       throw new Error(
-        `schemaRef ${schemaRef} was generated with a ZodEffect meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap the ZodEffect in a ZodPipeline to verify the contents of the transform`,
+        `schemaRef "${schemaRef}" was created with a ZodEffect meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap the ZodEffect in a ZodPipeline to verify the contents of the effect`,
       );
     }
     return {
