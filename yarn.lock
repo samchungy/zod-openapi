@@ -6717,10 +6717,10 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-skuba@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/skuba/-/skuba-6.0.0.tgz#10977db1cd3c489c6924fd02a7747850c3759608"
-  integrity sha512-F14QzbTkIDmoPrlkLLAgsj2ad2PitaipCXlI49XY7tRE/VtCLaSwuWeMhwveI/UDVUVQoZ0S00C0cWpx7QMGcg==
+skuba@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/skuba/-/skuba-6.0.2.tgz#9f52626c0c1463a92fa997ebb411405a94820dbf"
+  integrity sha512-/I/DE+f6WvTvSXZZsq8Gm+WpPL/L8MX3Oom2Sqq05++vsIVXVIZcufCALCknepeUtHWK9BIH6OeYHg0ycsGO0g==
   dependencies:
     "@esbuild-plugins/tsconfig-paths" "^0.1.0"
     "@jest/types" "^29.0.0"
