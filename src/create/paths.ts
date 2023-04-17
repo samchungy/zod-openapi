@@ -21,7 +21,7 @@ const createRequestBody = (
   }
   return {
     ...requestBodyObject,
-    content: createContent(requestBodyObject.content, components),
+    content: createContent(requestBodyObject.content, components, 'input'),
   };
 };
 

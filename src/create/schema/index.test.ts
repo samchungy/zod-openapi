@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createInputState, createOutputState } from '../../test/state';
 
 import { createSchemaOrRef } from '.';
 
@@ -63,11 +63,6 @@ const expectedZodDiscriminatedUnion: oas31.SchemaObject = {
       required: ['type'],
     },
   ],
-};
-
-const zodEffect = z.preprocess((arg) => String(arg), z.string());
-const expectedZodEffect: oas31.SchemaObject = {
-  type: 'string',
 };
 
 const zodEnum = z.enum(['a', 'b']);
@@ -189,32 +184,101 @@ const expectedZodCatch: oas31.SchemaObject = {
   type: 'string',
 };
 
+const zodPipeline = z
+  .string()
+  .transform((arg) => arg.length)
+  .pipe(z.number());
+const expectedZodPipelineOutput: oas31.SchemaObject = {
+  type: 'number',
+};
+const expectedZodPipelineInput: oas31.SchemaObject = {
+  type: 'string',
+};
+
+const zodTransform = z.string().transform((str) => str.length);
+const expectedZodTransform: oas31.SchemaObject = {
+  type: 'string',
+};
+
+const zodPreprocess = z.preprocess(
+  (arg) => (typeof arg === 'string' ? arg.split(',') : arg),
+  z.string(),
+);
+const expectedZodPreprocess: oas31.SchemaObject = {
+  type: 'string',
+};
+
+const zodRefine = z.string().refine((arg) => typeof arg === 'string');
+const expectedZodRefine: oas31.SchemaObject = {
+  type: 'string',
+};
+
+const zodUnknown = z.unknown().openapi({ type: 'string' });
+const expectedZodUnknown: oas31.SchemaObject = {
+  type: 'string',
+};
+
 describe('createSchemaOrRef', () => {
   it.each`
-    zodType                    | schema                   | expected
-    ${'ZodArray'}              | ${zodArray}              | ${expectedZodArray}
-    ${'ZodBoolean'}            | ${zodBoolean}            | ${expectedZodBoolean}
-    ${'ZodDate'}               | ${zodDate}               | ${expectedZodDate}
-    ${'ZodDefault'}            | ${zodDefault}            | ${expectedZodDefault}
-    ${'ZodDiscriminatedUnion'} | ${zodDiscriminatedUnion} | ${expectedZodDiscriminatedUnion}
-    ${'ZodEffect'}             | ${zodEffect}             | ${expectedZodEffect}
-    ${'ZodEnum'}               | ${zodEnum}               | ${expectedZodEnum}
-    ${'ZodIntersection'}       | ${zodIntersection}       | ${expectedZodIntersection}
-    ${'ZodLiteral'}            | ${zodLiteral}            | ${expectedZodLiteral}
-    ${'ZodMetadata'}           | ${zodMetadata}           | ${expectedZodMetadata}
-    ${'ZodNativeEnum'}         | ${zodNativeEnum}         | ${expectedZodNativeEnum}
-    ${'ZodNull'}               | ${zodNull}               | ${expectedZodNull}
-    ${'ZodNullable'}           | ${zodNullable}           | ${expectedZodNullable}
-    ${'ZodNumber'}             | ${zodNumber}             | ${expectedZodNumber}
-    ${'ZodObject'}             | ${zodObject}             | ${expectedZodObject}
-    ${'ZodOptional'}           | ${zodOptional}           | ${expectedZodOptional}
-    ${'ZodRecord'}             | ${zodRecord}             | ${expectedZodReord}
-    ${'ZodString'}             | ${zodString}             | ${expectedZodString}
-    ${'ZodTuple'}              | ${zodTuple}              | ${expectedZodTuple}
-    ${'ZodUnion'}              | ${zodUnion}              | ${expectedZodUnion}
-    ${'ZodCatch'}              | ${zodCatch}              | ${expectedZodCatch}
-  `('creates a schema for $zodType', ({ schema, expected }) => {
-    expect(createSchemaOrRef(schema, getDefaultComponents())).toStrictEqual(
+    zodType                      | schema                   | expected
+    ${'ZodArray'}                | ${zodArray}              | ${expectedZodArray}
+    ${'ZodBoolean'}              | ${zodBoolean}            | ${expectedZodBoolean}
+    ${'ZodDate'}                 | ${zodDate}               | ${expectedZodDate}
+    ${'ZodDefault'}              | ${zodDefault}            | ${expectedZodDefault}
+    ${'ZodDiscriminatedUnion'}   | ${zodDiscriminatedUnion} | ${expectedZodDiscriminatedUnion}
+    ${'ZodEnum'}                 | ${zodEnum}               | ${expectedZodEnum}
+    ${'ZodIntersection'}         | ${zodIntersection}       | ${expectedZodIntersection}
+    ${'ZodLiteral'}              | ${zodLiteral}            | ${expectedZodLiteral}
+    ${'ZodMetadata'}             | ${zodMetadata}           | ${expectedZodMetadata}
+    ${'ZodNativeEnum'}           | ${zodNativeEnum}         | ${expectedZodNativeEnum}
+    ${'ZodNull'}                 | ${zodNull}               | ${expectedZodNull}
+    ${'ZodNullable'}             | ${zodNullable}           | ${expectedZodNullable}
+    ${'ZodNumber'}               | ${zodNumber}             | ${expectedZodNumber}
+    ${'ZodObject'}               | ${zodObject}             | ${expectedZodObject}
+    ${'ZodOptional'}             | ${zodOptional}           | ${expectedZodOptional}
+    ${'ZodRecord'}               | ${zodRecord}             | ${expectedZodReord}
+    ${'ZodString'}               | ${zodString}             | ${expectedZodString}
+    ${'ZodTuple'}                | ${zodTuple}              | ${expectedZodTuple}
+    ${'ZodUnion'}                | ${zodUnion}              | ${expectedZodUnion}
+    ${'ZodCatch'}                | ${zodCatch}              | ${expectedZodCatch}
+    ${'ZodPipeline'}             | ${zodPipeline}           | ${expectedZodPipelineOutput}
+    ${'ZodEffects - Preprocess'} | ${zodPreprocess}         | ${expectedZodPreprocess}
+    ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
+    ${'unknown'}                 | ${zodUnknown}            | ${expectedZodUnknown}
+  `('creates an output schema for $zodType', ({ schema, expected }) => {
+    expect(createSchemaOrRef(schema, createOutputState())).toStrictEqual(
+      expected,
+    );
+  });
+
+  it.each`
+    zodType                     | schema                   | expected
+    ${'ZodArray'}               | ${zodArray}              | ${expectedZodArray}
+    ${'ZodBoolean'}             | ${zodBoolean}            | ${expectedZodBoolean}
+    ${'ZodDate'}                | ${zodDate}               | ${expectedZodDate}
+    ${'ZodDefault'}             | ${zodDefault}            | ${expectedZodDefault}
+    ${'ZodDiscriminatedUnion'}  | ${zodDiscriminatedUnion} | ${expectedZodDiscriminatedUnion}
+    ${'ZodEnum'}                | ${zodEnum}               | ${expectedZodEnum}
+    ${'ZodIntersection'}        | ${zodIntersection}       | ${expectedZodIntersection}
+    ${'ZodLiteral'}             | ${zodLiteral}            | ${expectedZodLiteral}
+    ${'ZodMetadata'}            | ${zodMetadata}           | ${expectedZodMetadata}
+    ${'ZodNativeEnum'}          | ${zodNativeEnum}         | ${expectedZodNativeEnum}
+    ${'ZodNull'}                | ${zodNull}               | ${expectedZodNull}
+    ${'ZodNullable'}            | ${zodNullable}           | ${expectedZodNullable}
+    ${'ZodNumber'}              | ${zodNumber}             | ${expectedZodNumber}
+    ${'ZodObject'}              | ${zodObject}             | ${expectedZodObject}
+    ${'ZodOptional'}            | ${zodOptional}           | ${expectedZodOptional}
+    ${'ZodRecord'}              | ${zodRecord}             | ${expectedZodReord}
+    ${'ZodString'}              | ${zodString}             | ${expectedZodString}
+    ${'ZodTuple'}               | ${zodTuple}              | ${expectedZodTuple}
+    ${'ZodUnion'}               | ${zodUnion}              | ${expectedZodUnion}
+    ${'ZodCatch'}               | ${zodCatch}              | ${expectedZodCatch}
+    ${'ZodPipeline'}            | ${zodPipeline}           | ${expectedZodPipelineInput}
+    ${'ZodEffects - Transform'} | ${zodTransform}          | ${expectedZodTransform}
+    ${'ZodEffects - Refine'}    | ${zodRefine}             | ${expectedZodRefine}
+    ${'unknown'}                | ${zodUnknown}            | ${expectedZodUnknown}
+  `('creates an input schema for $zodType', ({ schema, expected }) => {
+    expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
       expected,
     );
   });

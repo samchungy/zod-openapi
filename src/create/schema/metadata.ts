@@ -1,9 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodType, ZodTypeDef } from 'zod';
 
-import { ComponentsObject } from '../components';
-
-import { createSchema } from '.';
+import { SchemaState, createSchema } from '.';
 
 export const createSchemaWithMetadata = <
   Output = any,
@@ -11,11 +9,11 @@ export const createSchemaWithMetadata = <
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  const { ref, param, header, ...additionalMetadata } =
+  const { ref, refType, param, header, ...additionalMetadata } =
     zodSchema._def.openapi ?? {};
-  const schemaOrRef = createSchema(zodSchema, components);
+  const schemaOrRef = createSchema(zodSchema, state);
   const description = zodSchema.description;
 
   return enhanceWithMetadata(schemaOrRef, {

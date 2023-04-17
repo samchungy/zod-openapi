@@ -13,7 +13,10 @@ export const createBaseParameter = (
   components: ComponentsObject,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
-  const schemaOrRef = createSchemaOrRef(schema, components);
+  const schemaOrRef = createSchemaOrRef(schema, {
+    components,
+    type: 'input',
+  });
   const required = !schema.isOptional();
   return {
     ...rest,

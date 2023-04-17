@@ -1,18 +1,14 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodTypeAny, ZodUnion } from 'zod';
 
-import { ComponentsObject } from '../components';
-
-import { createSchemaOrRef } from '.';
+import { SchemaState, createSchemaOrRef } from '.';
 
 export const createUnionSchema = (
   zodUnion: ZodUnion<any>,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject => {
   const options = zodUnion.options as ZodTypeAny[];
-  const schemas = options.map((option) =>
-    createSchemaOrRef(option, components),
-  );
+  const schemas = options.map((option) => createSchemaOrRef(option, state));
   return {
     anyOf: schemas,
   };

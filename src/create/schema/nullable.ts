@@ -2,30 +2,29 @@ import { oas31 } from 'openapi3-ts';
 import { ZodNullable, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
-import { ComponentsObject } from '../components';
 import { ZodOpenApiVersion } from '../document';
 
-import { createSchemaOrRef } from '.';
+import { SchemaState, createSchemaOrRef } from '.';
 
 export const createNullableSchema = (
   zodNullable: ZodNullable<any>,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject => {
   const schemaOrReference = createSchemaOrRef(
     zodNullable.unwrap() as ZodTypeAny,
-    components,
+    state,
   );
 
   if ('$ref' in schemaOrReference || schemaOrReference.allOf) {
     return {
-      oneOf: mapNullOf([schemaOrReference], components.openapi),
+      oneOf: mapNullOf([schemaOrReference], state.components.openapi),
     };
   }
 
   if (schemaOrReference.oneOf) {
     const { oneOf, ...schema } = schemaOrReference;
     return {
-      oneOf: mapNullOf(oneOf, components.openapi),
+      oneOf: mapNullOf(oneOf, state.components.openapi),
       ...schema,
     };
   }
@@ -33,14 +32,14 @@ export const createNullableSchema = (
   if (schemaOrReference.anyOf) {
     const { anyOf, ...schema } = schemaOrReference;
     return {
-      anyOf: mapNullOf(anyOf, components.openapi),
+      anyOf: mapNullOf(anyOf, state.components.openapi),
       ...schema,
     };
   }
 
   const { type, ...schema } = schemaOrReference;
 
-  if (satisfiesVersion(components.openapi, '3.1.0')) {
+  if (satisfiesVersion(state.components.openapi, '3.1.0')) {
     return {
       type: mapNullType(type),
       ...schema,

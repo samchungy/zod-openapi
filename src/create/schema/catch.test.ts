@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createOutputState } from '../../test/state';
 
 import { createCatchSchema } from './catch';
 
@@ -15,7 +15,7 @@ describe('createCatchSchema', () => {
     };
     const schema = z.string().catch('bob');
 
-    const result = createCatchSchema(schema, getDefaultComponents());
+    const result = createCatchSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

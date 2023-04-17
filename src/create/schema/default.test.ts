@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createOutputState } from '../../test/state';
 
 import { createDefaultSchema } from './default';
 
@@ -16,7 +16,7 @@ describe('createDefaultSchema', () => {
     };
     const schema = z.string().default('a');
 
-    const result = createDefaultSchema(schema, getDefaultComponents());
+    const result = createDefaultSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -34,7 +34,7 @@ describe('createDefaultSchema', () => {
     };
     const schema = z.string().openapi({ ref: 'ref' }).optional().default('a');
 
-    const result = createDefaultSchema(schema, getDefaultComponents());
+    const result = createDefaultSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

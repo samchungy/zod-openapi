@@ -298,7 +298,7 @@ Wherever `title` is used in schemas across the document, it will instead be crea
 
 This can be an extremely powerful way to generate better Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
 
-To display components which are not referenced by simply add the Zod Schema to the schema components directly.
+To display components which are not referenced in the responses or requests simply add the Zod Schema to the schema components directly.
 
 eg.
 
@@ -306,11 +306,13 @@ eg.
 {
   "components": {
     "schemas": {
-      MyJobSchema // note: this will register this Zod Schema as MyJobSchema unless `ref` is specified on the type
+      MyJobSchema // note: this will register this Zod Schema as MyJobSchema unless `ref` in `openapi()` is specified on the type
     }
   }
 }
 ```
+
+Please note: if your schema contains a ZodEffect you may need to declare `refType` as `input` or `output` in `openapi()` to declare how to create the component. This defaults to `output` by default.
 
 #### Parameters
 
@@ -356,7 +358,9 @@ const header = z.string().openapi({
 - ZodDiscriminatedUnion
   - `discriminator` mapping when all schemas in the union contain a `ref`.
 - ZodEffects
-  - `pre-process` and `refine` support
+  - `transform` support for request schemas. Wrap your transform in a ZodPipeline to enable response schema creation or declare a manual `type` in the `.openapi()` section of that schema.
+  - `pre-process` support for response schemas. Wrap your transform in a ZodPipeline to enable request schema creation or declare a manual `type` in the `.openapi()` section of that schema.
+  - `refine` support
 - ZodEnum
 - ZodLiteral
 - ZodNativeEnum
@@ -368,6 +372,7 @@ const header = z.string().openapi({
   - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`
 - ZodObject
 - ZodOptional
+- ZodPipeline
 - ZodRecord
 - ZodString
   - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`

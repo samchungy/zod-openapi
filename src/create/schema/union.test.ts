@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createOutputState } from '../../test/state';
 
 import { createUnionSchema } from './union';
 
@@ -22,7 +22,7 @@ describe('createUnionSchema', () => {
     };
     const schema = z.union([z.string(), z.number()]);
 
-    const result = createUnionSchema(schema, getDefaultComponents());
+    const result = createUnionSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

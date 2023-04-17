@@ -67,6 +67,7 @@ describe('getDefaultComponents', () => {
             type: 'string',
           },
           zodSchema: aSchema,
+          types: ['input', 'output'],
         },
         b: {
           schemaObject: {
@@ -149,6 +150,7 @@ describe('createComponents', () => {
               type: 'string',
             },
             zodSchema: z.string().openapi({ ref: 'a' }),
+            types: ['output'],
           },
         },
         headers: {
@@ -224,6 +226,7 @@ describe('createComponents', () => {
               type: 'string',
             },
             zodSchema: z.string().openapi({ ref: 'a' }),
+            types: ['output'],
           },
         },
         headers: {

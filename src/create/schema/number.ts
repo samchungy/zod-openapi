@@ -2,17 +2,18 @@ import { oas30, oas31 } from 'openapi3-ts';
 import { ZodNumber, ZodNumberCheck } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
-import { ComponentsObject } from '../components';
 import { ZodOpenApiVersion } from '../document';
+
+import { SchemaState } from '.';
 
 export const createNumberSchema = (
   zodNumber: ZodNumber,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject => {
   const zodNumberChecks = getZodNumberChecks(zodNumber);
 
-  const minimum = mapMinimum(zodNumberChecks, components.openapi);
-  const maximum = mapMaximum(zodNumberChecks, components.openapi);
+  const minimum = mapMinimum(zodNumberChecks, state.components.openapi);
+  const maximum = mapMaximum(zodNumberChecks, state.components.openapi);
 
   return {
     type: mapNumberType(zodNumberChecks),
