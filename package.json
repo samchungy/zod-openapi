@@ -41,7 +41,7 @@
     "yaml": "2.2.1"
   },
   "devDependencies": {
-    "@types/node": "^16.18.3",
+    "@types/node": "^18.15.11",
     "commitizen": "^4.2.4",
     "skuba": "6.0.0",
     "zod": "3.21.4"
