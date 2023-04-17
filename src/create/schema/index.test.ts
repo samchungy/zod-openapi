@@ -184,6 +184,11 @@ const expectedZodUnion: oas31.SchemaObject = {
   ],
 };
 
+const zodCatch = z.string().catch('bob');
+const expectedZodCatch: oas31.SchemaObject = {
+  type: 'string',
+};
+
 describe('createSchemaOrRef', () => {
   it.each`
     zodType                    | schema                   | expected
@@ -207,6 +212,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodString'}             | ${zodString}             | ${expectedZodString}
     ${'ZodTuple'}              | ${zodTuple}              | ${expectedZodTuple}
     ${'ZodUnion'}              | ${zodUnion}              | ${expectedZodUnion}
+    ${'ZodCatch'}              | ${zodCatch}              | ${expectedZodCatch}
   `('creates a schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, getDefaultComponents())).toStrictEqual(
       expected,
