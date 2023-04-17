@@ -1463,15 +1463,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
-"@types/node@*", "@types/node@>=16.11":
-  version "18.15.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.3.tgz#f0b991c32cfc6a4e7f3399d6cb4b8cf9a0315014"
-  integrity sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==
-
-"@types/node@^16.18.3":
-  version "16.18.16"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.16.tgz#09ff98b144abae2d7cce3e9fe9040ab2bf73222c"
-  integrity sha512-ZOzvDRWp8dCVBmgnkIqYCArgdFOO9YzocZp8Ra25N/RStKiWvMOXHMz+GjSeVNe5TstaTmTWPucGJkDw0XXJWA==
+"@types/node@*", "@types/node@>=16.11", "@types/node@^18.15.11":
+  version "18.15.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.11.tgz#b3b790f09cb1696cffcec605de025b088fa4225f"
+  integrity sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -6717,10 +6712,10 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-skuba@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/skuba/-/skuba-6.0.0.tgz#10977db1cd3c489c6924fd02a7747850c3759608"
-  integrity sha512-F14QzbTkIDmoPrlkLLAgsj2ad2PitaipCXlI49XY7tRE/VtCLaSwuWeMhwveI/UDVUVQoZ0S00C0cWpx7QMGcg==
+skuba@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/skuba/-/skuba-6.0.2.tgz#9f52626c0c1463a92fa997ebb411405a94820dbf"
+  integrity sha512-/I/DE+f6WvTvSXZZsq8Gm+WpPL/L8MX3Oom2Sqq05++vsIVXVIZcufCALCknepeUtHWK9BIH6OeYHg0ycsGO0g==
   dependencies:
     "@esbuild-plugins/tsconfig-paths" "^0.1.0"
     "@jest/types" "^29.0.0"
