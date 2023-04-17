@@ -15,7 +15,9 @@ export const createUnknownSchema = <
         ? `${zodType} - ${zodSchema._def.effect.type}`
         : zodType;
     throw new Error(
-      `Unknown schema ${schemaName}. Please assign it a manual type`,
+      `Unknown schema ${schemaName}. Please assign it a manual type ${
+        zodSchema instanceof ZodEffects ? 'or wrap it in a ZodPipeline' : ''
+      }`,
     );
   }
 
