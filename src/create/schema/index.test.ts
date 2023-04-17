@@ -140,7 +140,7 @@ const expectedZodOptional: oas31.SchemaObject = {
 };
 
 const zodRecord = z.record(z.string());
-const expectedZodReord: oas31.SchemaObject = {
+const expectedZodRecord: oas31.SchemaObject = {
   type: 'object',
   additionalProperties: {
     type: 'string',
@@ -236,7 +236,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodNumber'}               | ${zodNumber}             | ${expectedZodNumber}
     ${'ZodObject'}               | ${zodObject}             | ${expectedZodObject}
     ${'ZodOptional'}             | ${zodOptional}           | ${expectedZodOptional}
-    ${'ZodRecord'}               | ${zodRecord}             | ${expectedZodReord}
+    ${'ZodRecord'}               | ${zodRecord}             | ${expectedZodRecord}
     ${'ZodString'}               | ${zodString}             | ${expectedZodString}
     ${'ZodTuple'}                | ${zodTuple}              | ${expectedZodTuple}
     ${'ZodUnion'}                | ${zodUnion}              | ${expectedZodUnion}
@@ -268,7 +268,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodNumber'}              | ${zodNumber}             | ${expectedZodNumber}
     ${'ZodObject'}              | ${zodObject}             | ${expectedZodObject}
     ${'ZodOptional'}            | ${zodOptional}           | ${expectedZodOptional}
-    ${'ZodRecord'}              | ${zodRecord}             | ${expectedZodReord}
+    ${'ZodRecord'}              | ${zodRecord}             | ${expectedZodRecord}
     ${'ZodString'}              | ${zodString}             | ${expectedZodString}
     ${'ZodTuple'}               | ${zodTuple}              | ${expectedZodTuple}
     ${'ZodUnion'}               | ${zodUnion}              | ${expectedZodUnion}
