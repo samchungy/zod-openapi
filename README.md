@@ -312,7 +312,11 @@ eg.
 }
 ```
 
-Please note: if your schema contains a ZodEffect you may need to declare `refType` as `input` or `output` in `openapi()` to declare how to create the component. This defaults to `output` by default.
+##### Zod Effects
+
+`.transform()` and `.preprocess()` are complicated because they are technically two types (input & output). This means that we need to understand which type you are after. This means if you are adding the ZodSchema directly to the `components` section, we need to know whether you want the response or request type created. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
+
+If you use a registered schema with a ZodEffect in both a request and response schema you will receive an error because we cannot register two different schemas under the same `ref`.
 
 #### Parameters
 
