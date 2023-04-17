@@ -2,6 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import {
   ZodArray,
   ZodBoolean,
+  ZodCatch,
   ZodDate,
   ZodDefault,
   ZodDiscriminatedUnion,
@@ -27,6 +28,7 @@ import { ComponentsObject, createComponentSchemaRef } from '../components';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
+import { createCatchSchema } from './catch';
 import { createDateSchema } from './date';
 import { createDefaultSchema } from './default';
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
@@ -136,6 +138,10 @@ export const createSchema = <
 
   if (zodSchema instanceof ZodIntersection) {
     return createIntersectionSchema(zodSchema, components);
+  }
+
+  if (zodSchema instanceof ZodCatch) {
+    return createCatchSchema(zodSchema, components);
   }
 
   if (!zodSchema._def.openapi?.type) {

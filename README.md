@@ -349,6 +349,7 @@ const header = z.string().openapi({
 - ZodArray
   - `minItems`/`maxItems` mapping for `.length()`, `.min()`, `.max()`
 - ZodBoolean
+- ZodCatch
 - ZodDate
   - `string` `type` mapping by default
 - ZodDefault
