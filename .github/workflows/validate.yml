@@ -1,8 +1,10 @@
 name: Validate
 
 on:
-  - pull_request
-  - push
+  pull_request:
+  push:
+    branches:
+      - 'master'
 permissions: {}
 
 jobs:
