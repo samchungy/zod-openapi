@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { createInputState, createOutputState } from '../../test/state';
+import { createInputState, createOutputState } from '../../testing/state';
 
 import { createPipelineSchema } from './pipeline';
 

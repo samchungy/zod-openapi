@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { createOutputState } from '../../test/state';
+import { createOutputState } from '../../testing/state';
 
 import { createIntersectionSchema } from './intersection';
 

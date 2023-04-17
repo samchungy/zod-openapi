@@ -2,7 +2,10 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { createOutputOpenapi3State, createOutputState } from '../../test/state';
+import {
+  createOutputOpenapi3State,
+  createOutputState,
+} from '../../testing/state';
 
 import { createTupleSchema } from './tuple';
 
