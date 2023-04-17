@@ -360,7 +360,7 @@ const header = z.string().openapi({
 - ZodEffects
   - `transform` support for request schemas. Wrap your transform in a ZodPipeline to enable response schema creation or declare a manual `type` in the `.openapi()` section of that schema.
   - `pre-process` support for response schemas. Wrap your transform in a ZodPipeline to enable request schema creation or declare a manual `type` in the `.openapi()` section of that schema.
-  - `refine` support
+  - `refine` full support.
 - ZodEnum
 - ZodLiteral
 - ZodNativeEnum
