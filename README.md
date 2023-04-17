@@ -90,6 +90,17 @@ Generates the following object:
   "paths": {
     "/jobs/{jobId}": {
       "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "schema": {
+              "type": "string",
+              "description": "Job ID",
+              "examples": ["12345"]
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -131,18 +142,7 @@ Generates the following object:
               }
             }
           }
-        },
-        "parameters": [
-          {
-            "in": "path",
-            "name": "jobId",
-            "schema": {
-              "type": "string",
-              "description": "Job ID",
-              "examples": ["12345"]
-            }
-          }
-        ]
+        }
       }
     }
   }
