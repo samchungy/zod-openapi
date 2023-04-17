@@ -8,6 +8,8 @@ import {
   z,
 } from 'zod';
 
+import { CreationType } from './create/components';
+
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
 interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
@@ -15,7 +17,14 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
   example?: TInferred;
   examples?: [TInferred, ...TInferred[]];
   default?: T extends ZodDate ? string : TInferred;
+  /**
+   * Use this field to output this Zod Schema in the components schemas section. Any usage of this Zod Schema will then be transformed into a $ref.
+   */
   ref?: string;
+  /**
+   * Use this field when you are manually adding a Zod Schema to the components section. This controls whether this should be rendered as request (`input`) or response (`output`). Defaults to `output`
+   */
+  refType?: CreationType;
   param?: Partial<oas31.ParameterObject> & {
     example?: TInferred;
     examples?: {
@@ -23,9 +32,15 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
         | (oas31.ExampleObject & { value: TInferred })
         | oas31.ReferenceObject;
     };
+    /**
+     * Use this field to output this Zod Schema in the components parameters section. Any usage of this Zod Schema will then be transformed into a $ref.
+     */
     ref?: string;
   };
   header?: Partial<oas31.HeaderObject & oas30.HeaderObject> & {
+    /**
+     * Use this field to output this Zod Schema in the components headers section. Any usage of this Zod Schema will then be transformed into a $ref.
+     */
     ref?: string;
   };
 }

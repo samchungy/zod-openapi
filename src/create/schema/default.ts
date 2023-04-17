@@ -1,19 +1,17 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodDefault, ZodTypeAny } from 'zod';
 
-import { ComponentsObject } from '../components';
-
 import { enhanceWithMetadata } from './metadata';
 
-import { createSchemaOrRef } from '.';
+import { SchemaState, createSchemaOrRef } from '.';
 
 export const createDefaultSchema = (
   zodDefault: ZodDefault<any>,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   const schemaOrRef = createSchemaOrRef(
     zodDefault._def.innerType as ZodTypeAny,
-    components,
+    state,
   );
 
   return enhanceWithMetadata(schemaOrRef, {

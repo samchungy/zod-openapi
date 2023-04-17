@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createOutputState } from '../../testing/state';
 
 import { createIntersectionSchema } from './intersection';
 
@@ -22,7 +22,7 @@ describe('createIntersectionSchema', () => {
     };
     const schema = z.intersection(z.string(), z.number());
 
-    const result = createIntersectionSchema(schema, getDefaultComponents());
+    const result = createIntersectionSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

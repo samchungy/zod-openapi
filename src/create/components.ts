@@ -2,22 +2,26 @@ import { oas30, oas31 } from 'openapi3-ts';
 import { ZodType } from 'zod';
 
 import { ZodOpenApiComponentsObject, ZodOpenApiVersion } from './document';
+import { SchemaState } from './schema';
 import { createSchemaWithMetadata } from './schema/metadata';
 
-export interface Schema {
+export type CreationType = 'input' | 'output';
+
+export interface SchemaComponent {
   zodSchema?: ZodType;
   schemaObject:
     | oas31.SchemaObject
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
+  types?: [CreationType, ...CreationType[]];
 }
 
 interface SchemaComponentObject {
-  [ref: string]: Schema | undefined;
+  [ref: string]: SchemaComponent | undefined;
 }
 
-export interface Parameter {
+export interface ParameterComponent {
   zodSchema?: ZodType;
   paramObject:
     | oas31.ParameterObject
@@ -27,7 +31,7 @@ export interface Parameter {
 }
 
 interface ParametersComponentObject {
-  [ref: string]: Parameter | undefined;
+  [ref: string]: ParameterComponent | undefined;
 }
 
 export interface Header {
@@ -90,9 +94,14 @@ const createSchemas = (
     }
 
     if (schema instanceof ZodType) {
+      const state: SchemaState = {
+        components,
+        type: schema._def.openapi?.refType ?? 'output',
+      };
       components.schemas[ref] = {
-        schemaObject: createSchemaWithMetadata(schema, components),
+        schemaObject: createSchemaWithMetadata(schema, state),
         zodSchema: schema,
+        types: state.effectType ? [state.effectType] : ['input', 'output'],
       };
       return;
     }

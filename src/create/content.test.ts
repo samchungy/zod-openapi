@@ -31,6 +31,7 @@ describe('createContent', () => {
         },
       },
       getDefaultComponents(),
+      'output',
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -66,6 +67,7 @@ describe('createContent', () => {
         },
       },
       getDefaultComponents(),
+      'output',
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -99,6 +101,7 @@ describe('createContent', () => {
         },
       },
       getDefaultComponents(),
+      'output',
     );
 
     expect(result).toStrictEqual(expectedResult);

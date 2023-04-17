@@ -2,20 +2,19 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { createOutputState } from '../../testing/state';
 
-import { createOptionalSchema } from './optional';
+import { createUnknownSchema } from './unknown';
 
 extendZodWithOpenApi(z);
 
-describe('createOptionalSchema', () => {
+describe('createUnknownSchema', () => {
   it('creates a simple string schema for an optional string', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const schema = z.string().optional();
+    const schema = z.unknown().openapi({ type: 'string' });
 
-    const result = createOptionalSchema(schema, createOutputState());
+    const result = createUnknownSchema(schema);
 
     expect(result).toStrictEqual(expected);
   });

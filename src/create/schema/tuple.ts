@@ -2,28 +2,27 @@ import { oas31 } from 'openapi3-ts';
 import { ZodTuple, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
-import { ComponentsObject } from '../components';
 
-import { createSchemaOrRef } from '.';
+import { SchemaState, createSchemaOrRef } from '.';
 
 export const createTupleSchema = (
   zodTuple: ZodTuple<any, any>,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject => {
   const items = zodTuple.items as ZodTypeAny[];
   const rest = zodTuple._def.rest as ZodTypeAny;
   return {
     type: 'array',
-    ...mapItemProperties(items, rest, components),
+    ...mapItemProperties(items, rest, state),
   } as oas31.SchemaObject;
 };
 
 const mapPrefixItems = (
   items: ZodTypeAny[],
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject['prefixItems'] | undefined => {
   if (items.length) {
-    return items.map((item) => createSchemaOrRef(item, components));
+    return items.map((item) => createSchemaOrRef(item, state));
   }
   return undefined;
 };
@@ -31,14 +30,14 @@ const mapPrefixItems = (
 const mapItemProperties = (
   items: ZodTypeAny[],
   rest: ZodTypeAny,
-  components: ComponentsObject,
+  state: SchemaState,
 ): Pick<
   oas31.SchemaObject,
   'items' | 'minItems' | 'maxItems' | 'prefixItems'
 > => {
-  const prefixItems = mapPrefixItems(items, components);
+  const prefixItems = mapPrefixItems(items, state);
 
-  if (satisfiesVersion(components.openapi, '3.1.0')) {
+  if (satisfiesVersion(state.components.openapi, '3.1.0')) {
     if (!rest) {
       return {
         maxItems: items.length,
@@ -48,7 +47,7 @@ const mapItemProperties = (
     }
 
     return {
-      items: createSchemaOrRef(rest, components),
+      items: createSchemaOrRef(rest, state),
       ...(prefixItems && { prefixItems }),
     };
   }
@@ -63,7 +62,9 @@ const mapItemProperties = (
 
   return {
     ...(prefixItems && {
-      items: { oneOf: [...prefixItems, createSchemaOrRef(rest, components)] },
+      items: {
+        oneOf: [...prefixItems, createSchemaOrRef(rest, state)],
+      },
     }),
   };
 };

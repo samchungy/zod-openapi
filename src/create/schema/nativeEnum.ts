@@ -2,17 +2,18 @@ import { oas31 } from 'openapi3-ts';
 import { EnumLike, ZodNativeEnum } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
-import { ComponentsObject } from '../components';
+
+import { SchemaState } from '.';
 
 export const createNativeEnumSchema = <T extends EnumLike>(
   zodEnum: ZodNativeEnum<T>,
-  components: ComponentsObject,
+  state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   const enumValues = getValidEnumValues(zodEnum._def.values);
   const { numbers, strings } = sortStringsAndNumbers(enumValues);
 
   if (strings.length && numbers.length) {
-    if (satisfiesVersion(components.openapi, '3.1.0'))
+    if (satisfiesVersion(state.components.openapi, '3.1.0'))
       return {
         type: ['string', 'number'],
         enum: [...strings, ...numbers],

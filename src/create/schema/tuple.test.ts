@@ -2,7 +2,10 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import {
+  createOutputOpenapi3State,
+  createOutputState,
+} from '../../testing/state';
 
 import { createTupleSchema } from './tuple';
 
@@ -25,7 +28,7 @@ describe('createTupleSchema', () => {
     };
     const schema = z.tuple([z.string(), z.number()]);
 
-    const result = createTupleSchema(schema, getDefaultComponents());
+    const result = createTupleSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -47,7 +50,7 @@ describe('createTupleSchema', () => {
     };
     const schema = z.tuple([z.string(), z.number()]).rest(z.boolean());
 
-    const result = createTupleSchema(schema, getDefaultComponents());
+    const result = createTupleSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -60,7 +63,7 @@ describe('createTupleSchema', () => {
     };
     const schema = z.tuple([]);
 
-    const result = createTupleSchema(schema, getDefaultComponents());
+    const result = createTupleSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -84,7 +87,7 @@ describe('createTupleSchema', () => {
     };
     const schema = z.tuple([z.string(), z.number()]).rest(z.boolean());
 
-    const result = createTupleSchema(schema, getDefaultComponents({}, '3.0.0'));
+    const result = createTupleSchema(schema, createOutputOpenapi3State());
 
     expect(result).toStrictEqual(expected);
   });

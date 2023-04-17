@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createOutputState } from '../../testing/state';
 
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 
@@ -43,10 +43,7 @@ describe('createDiscriminatedUnionSchema', () => {
       }),
     ]);
 
-    const result = createDiscriminatedUnionSchema(
-      schema,
-      getDefaultComponents(),
-    );
+    const result = createDiscriminatedUnionSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -78,10 +75,7 @@ describe('createDiscriminatedUnionSchema', () => {
         .openapi({ ref: 'b' }),
     ]);
 
-    const result = createDiscriminatedUnionSchema(
-      schema,
-      getDefaultComponents(),
-    );
+    const result = createDiscriminatedUnionSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -114,10 +108,7 @@ describe('createDiscriminatedUnionSchema', () => {
         .openapi({ ref: 'd' }),
     ]);
 
-    const result = createDiscriminatedUnionSchema(
-      schema,
-      getDefaultComponents(),
-    );
+    const result = createDiscriminatedUnionSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

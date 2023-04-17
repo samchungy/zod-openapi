@@ -2,7 +2,10 @@ import { oas30, oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import {
+  createOutputOpenapi3State,
+  createOutputState,
+} from '../../testing/state';
 
 import { createNumberSchema } from './number';
 
@@ -15,7 +18,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number();
 
-    const result = createNumberSchema(schema, getDefaultComponents());
+    const result = createNumberSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -26,7 +29,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().int();
 
-    const result = createNumberSchema(schema, getDefaultComponents());
+    const result = createNumberSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -39,7 +42,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().lt(10).gt(0);
 
-    const result = createNumberSchema(schema, getDefaultComponents());
+    const result = createNumberSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -52,7 +55,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().lte(10).gte(0);
 
-    const result = createNumberSchema(schema, getDefaultComponents());
+    const result = createNumberSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -65,10 +68,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().lte(10).gte(0);
 
-    const result = createNumberSchema(
-      schema,
-      getDefaultComponents({}, '3.0.0'),
-    );
+    const result = createNumberSchema(schema, createOutputOpenapi3State());
 
     expect(result).toStrictEqual(expected);
   });
@@ -83,10 +83,7 @@ describe('createNumberSchema', () => {
     };
     const schema = z.number().lt(10).gt(0);
 
-    const result = createNumberSchema(
-      schema,
-      getDefaultComponents({}, '3.0.0'),
-    );
+    const result = createNumberSchema(schema, createOutputOpenapi3State());
 
     expect(result).toStrictEqual(expected);
   });

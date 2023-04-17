@@ -2,7 +2,10 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import {
+  createOutputOpenapi3State,
+  createOutputState,
+} from '../../testing/state';
 
 import { createNativeEnumSchema } from './nativeEnum';
 
@@ -24,7 +27,7 @@ describe('createNativeEnumSchema', () => {
 
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(schema, getDefaultComponents());
+    const result = createNativeEnumSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -43,7 +46,7 @@ describe('createNativeEnumSchema', () => {
     }
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(schema, getDefaultComponents());
+    const result = createNativeEnumSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -63,7 +66,7 @@ describe('createNativeEnumSchema', () => {
 
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(schema, getDefaultComponents());
+    const result = createNativeEnumSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -91,10 +94,7 @@ describe('createNativeEnumSchema', () => {
 
     const schema = z.nativeEnum(Direction);
 
-    const result = createNativeEnumSchema(
-      schema,
-      getDefaultComponents({}, '3.0.0'),
-    );
+    const result = createNativeEnumSchema(schema, createOutputOpenapi3State());
 
     expect(result).toStrictEqual(expected);
   });

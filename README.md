@@ -298,7 +298,7 @@ Wherever `title` is used in schemas across the document, it will instead be crea
 
 This can be an extremely powerful way to generate better Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
 
-To display components which are not referenced by simply add the Zod Schema to the schema components directly.
+To display components which are not referenced in the responses or requests simply add the Zod Schema to the schema components directly.
 
 eg.
 
@@ -306,11 +306,17 @@ eg.
 {
   "components": {
     "schemas": {
-      MyJobSchema // note: this will register this Zod Schema as MyJobSchema unless `ref` is specified on the type
+      MyJobSchema // note: this will register this Zod Schema as MyJobSchema unless `ref` in `openapi()` is specified on the type
     }
   }
 }
 ```
+
+##### Zod Effects
+
+`.transform()` and `.preprocess()` are complicated because they are technically two types (input & output). This means that we need to understand which type you are after. This means if you are adding the ZodSchema directly to the `components` section, we need to know whether you want the response or request type created. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
+
+If you use a registered schema with a ZodEffect in both a request and response schema you will receive an error because we cannot register two different schemas under the same `ref`.
 
 #### Parameters
 
@@ -356,7 +362,9 @@ const header = z.string().openapi({
 - ZodDiscriminatedUnion
   - `discriminator` mapping when all schemas in the union contain a `ref`.
 - ZodEffects
-  - `pre-process` and `refine` support
+  - `transform` support for request schemas. Wrap your transform in a ZodPipeline to enable response schema creation or declare a manual `type` in the `.openapi()` section of that schema.
+  - `pre-process` support for response schemas. Wrap your transform in a ZodPipeline to enable request schema creation or declare a manual `type` in the `.openapi()` section of that schema.
+  - `refine` full support.
 - ZodEnum
 - ZodLiteral
 - ZodNativeEnum
@@ -368,6 +376,7 @@ const header = z.string().openapi({
   - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`
 - ZodObject
 - ZodOptional
+- ZodPipeline
 - ZodRecord
 - ZodString
   - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`

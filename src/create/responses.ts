@@ -45,7 +45,10 @@ export const createBaseHeader = (
   components: ComponentsObject,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.header ?? {};
-  const schemaOrRef = createSchemaOrRef(schema, components);
+  const schemaOrRef = createSchemaOrRef(schema, {
+    components,
+    type: 'input',
+  });
   const required = !schema.isOptional();
   return {
     ...rest,
@@ -123,7 +126,7 @@ const createResponse = (
   return {
     ...rest,
     ...(maybeHeaders && { headers: maybeHeaders }),
-    ...(content && { content: createContent(content, components) }),
+    ...(content && { content: createContent(content, components, 'output') }),
   };
 };
 

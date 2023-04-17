@@ -2,7 +2,7 @@ import { oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { getDefaultComponents } from '../components';
+import { createOutputState } from '../../testing/state';
 
 import { createSchemaWithMetadata } from './metadata';
 
@@ -16,7 +16,7 @@ describe('createSchemaWithMetadata', () => {
     };
     const schema = z.string().openapi({ description: 'bla' });
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -28,7 +28,7 @@ describe('createSchemaWithMetadata', () => {
     };
     const schema = z.string().describe('bla');
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -41,7 +41,7 @@ describe('createSchemaWithMetadata', () => {
 
     const schema = z.string().describe('bla').openapi({ description: 'foo' });
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -52,7 +52,7 @@ describe('createSchemaWithMetadata', () => {
     };
     const schema = z.string().openapi({ type: 'integer' });
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -73,7 +73,7 @@ describe('createSchemaWithMetadata', () => {
 
     const schema = ref.optional().openapi({ description: 'hello' });
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -87,7 +87,7 @@ describe('createSchemaWithMetadata', () => {
 
     const schema = ref.optional();
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -100,7 +100,7 @@ describe('createSchemaWithMetadata', () => {
     const ref = z.string().openapi({ ref: 'ref2' });
     const schema = ref.optional().default('a');
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -129,7 +129,7 @@ describe('createSchemaWithMetadata', () => {
       b: object2.openapi({ description: 'jello' }),
     });
 
-    const result = createSchemaWithMetadata(schema, getDefaultComponents());
+    const result = createSchemaWithMetadata(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

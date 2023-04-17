@@ -4,18 +4,18 @@ import { z } from 'zod';
 import { extendZodWithOpenApi } from '../../extendZod';
 import { createOutputState } from '../../testing/state';
 
-import { createOptionalSchema } from './optional';
+import { createRefineSchema } from './refine';
 
 extendZodWithOpenApi(z);
 
-describe('createOptionalSchema', () => {
-  it('creates a simple string schema for an optional string', () => {
+describe('createRefineSchema', () => {
+  it('returns a schema when creating an output schema with preprocess', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    const schema = z.string().optional();
+    const schema = z.string().refine((check) => typeof check === 'string');
 
-    const result = createOptionalSchema(schema, createOutputState());
+    const result = createRefineSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
