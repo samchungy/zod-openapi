@@ -480,7 +480,7 @@ To release a new beta version
 
 ### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi)
 
-zod-openapi was created while trying to re-write this library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily in a way that I envisioned. As a result zod-openapi was born with the goal of keeping the Zod Schemas independent from the generation of the documentation.
+zod-openapi was created while trying to re-write this library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily in a way that I envisioned. Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation should be as simple and as frictionless as possible.
 
 #### Migration
 
