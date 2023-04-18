@@ -53,5 +53,32 @@ describe('createTransformSchema', () => {
 
       expect(result).toStrictEqual(expected);
     });
+
+    it('returns a schema when creating a schema with transform when openapi effectType is set', () => {
+      const expected: oas31.SchemaObject = {
+        type: 'string',
+      };
+      const schema = z
+        .string()
+        .transform((str) => str.length)
+        .openapi({ effectType: 'input' });
+
+      const result = createTransformSchema(schema, createOutputState());
+
+      expect(result).toStrictEqual(expected);
+    });
+
+    it('does not change the state effectType when openapi effectType is set', () => {
+      const schema = z
+        .string()
+        .transform((str) => str.length)
+        .openapi({ effectType: 'input' });
+
+      const state = createOutputState();
+
+      createTransformSchema(schema, state);
+
+      expect(state.effectType).toBeUndefined();
+    });
   });
 });

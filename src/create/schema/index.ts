@@ -71,6 +71,10 @@ export const createSchema = <
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
+  if (zodSchema._def.openapi?.type) {
+    return createUnknownSchema(zodSchema);
+  }
+
   if (zodSchema instanceof ZodString) {
     return createStringSchema(zodSchema);
   }
