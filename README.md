@@ -417,6 +417,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `items` mapping for `.rest()`
   - `prefixItems` mapping for OpenAPI 3.1.0+
 - ZodUnion
+- ZodUnknown
 
 If this library cannot determine a type for a Zod Schema, it will throw an error. To avoid this, declare a manual `type` in the `.openapi()` section of that schema.
 
