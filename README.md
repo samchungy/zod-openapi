@@ -510,21 +510,22 @@ registry.registerComponent('securitySchemes', 'auth', {
   type: 'http',
   scheme: 'bearer',
   bearerFormat: 'JWT',
-  description: 'An auth token issued by oauth",
+  description: 'An auth token issued by oauth',
 });
 // Replace with regular component declaration
 
 const document = createDocument({
   components: {
-    securitySchemes: { // declare directly in components
+    // declare directly in components
+    securitySchemes: {
       auth: {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'An auth token issued by oauth",
-      }
-    }
-  }
+        description: 'An auth token issued by oauth',
+      },
+    },
+  },
 });
 ```
 
@@ -539,6 +540,8 @@ registry.registerPath({
   request: {
     query: z.object({ a: z.string() }),
     params: z.object({ b: z.string() }),
+    body: z.object({ c: z.string() }),
+    headers: z.object({ d: z.string() })
   },
   responses: {},
 });
@@ -548,8 +551,10 @@ const getFoo: ZodOpenApiPathItemObject = {
   get: {
     requestParams: {
       query: z.object({ a: z.string() }),
-      path: z.object({ b: z.string() }), // renamed params -> path
+      path: z.object({ b: z.string() }), // params -> path
+      header: z.object({ c: z.string() }) // headers -> header
     }, // renamed from request -> requestParams
+    requestBody: z.object({c: z.string() }) // request.body -> requestBody
     responses: {},
   },
 };
