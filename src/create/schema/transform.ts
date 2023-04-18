@@ -1,7 +1,7 @@
 import { oas31 } from 'openapi3-ts';
 import { ZodEffects, ZodType } from 'zod';
 
-import { createUnknownSchema } from './unknown';
+import { createManualTypeSchema } from './manual';
 
 import { SchemaState, createSchemaOrRef } from '.';
 
@@ -17,5 +17,5 @@ export const createTransformSchema = (
     return createSchemaOrRef(zodTransform._def.schema as ZodType, state);
   }
 
-  return createUnknownSchema(zodTransform);
+  return createManualTypeSchema(zodTransform);
 };

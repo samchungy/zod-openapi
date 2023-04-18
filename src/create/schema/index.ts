@@ -23,6 +23,7 @@ import {
   ZodType,
   ZodTypeDef,
   ZodUnion,
+  ZodUnknown,
 } from 'zod';
 
 import {
@@ -40,6 +41,7 @@ import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 import { createEnumSchema } from './enum';
 import { createIntersectionSchema } from './intersection';
 import { createLiteralSchema } from './literal';
+import { createManualTypeSchema } from './manual';
 import { createSchemaWithMetadata } from './metadata';
 import { createNativeEnumSchema } from './nativeEnum';
 import { createNullSchema } from './null';
@@ -72,7 +74,7 @@ export const createSchema = <
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodSchema._def.openapi?.type) {
-    return createUnknownSchema(zodSchema);
+    return createManualTypeSchema(zodSchema);
   }
 
   if (zodSchema instanceof ZodString) {
@@ -180,7 +182,11 @@ export const createSchema = <
     return createCatchSchema(zodSchema, state);
   }
 
-  return createUnknownSchema(zodSchema);
+  if (zodSchema instanceof ZodUnknown) {
+    return createUnknownSchema(zodSchema);
+  }
+
+  return createManualTypeSchema(zodSchema);
 };
 
 export const createRegisteredSchema = <

@@ -214,10 +214,8 @@ const expectedZodRefine: oas31.SchemaObject = {
   type: 'string',
 };
 
-const zodUnknown = z.unknown().openapi({ type: 'string' });
-const expectedZodUnknown: oas31.SchemaObject = {
-  type: 'string',
-};
+const zodUnknwn = z.unknown();
+const expectedManualType: oas31.SchemaObject = {};
 
 const zodOverride = z.string().openapi({ type: 'number' });
 const expectedZodOverride: oas31.SchemaObject = {
@@ -250,7 +248,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodPipeline'}             | ${zodPipeline}           | ${expectedZodPipelineOutput}
     ${'ZodEffects - Preprocess'} | ${zodPreprocess}         | ${expectedZodPreprocess}
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
-    ${'unknown'}                 | ${zodUnknown}            | ${expectedZodUnknown}
+    ${'manual type'}             | ${zodUnknwn}             | ${expectedManualType}
     ${'override'}                | ${zodOverride}           | ${expectedZodOverride}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createOutputState())).toStrictEqual(
@@ -284,7 +282,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodEffects - Preprocess'} | ${zodPreprocess}         | ${expectedZodPreprocess}
     ${'ZodEffects - Transform'}  | ${zodTransform}          | ${expectedZodTransform}
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
-    ${'unknown'}                 | ${zodUnknown}            | ${expectedZodUnknown}
+    ${'unknown'}                 | ${zodUnknwn}             | ${expectedManualType}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
       expected,
