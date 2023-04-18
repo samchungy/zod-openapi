@@ -25,6 +25,10 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
    * Use this field when you are manually adding a Zod Schema to the components section. This controls whether this should be rendered as request (`input`) or response (`output`). Defaults to `output`
    */
   refType?: CreationType;
+  /**
+   * Use this field to set the created type of an effect.
+   */
+  effectType?: CreationType;
   param?: Partial<oas31.ParameterObject> & {
     example?: TInferred;
     examples?: {
