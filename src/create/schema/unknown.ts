@@ -10,14 +10,14 @@ export const createUnknownSchema = <
 ): oas31.SchemaObject => {
   if (!zodSchema._def.openapi?.type) {
     const zodType = zodSchema.constructor.name;
-    const schemaName =
-      zodSchema instanceof ZodEffects
-        ? `${zodType} - ${zodSchema._def.effect.type}`
-        : zodType;
+    if (zodSchema instanceof ZodEffects) {
+      const schemaName = `${zodType} - ${zodSchema._def.effect.type}`;
+      throw new Error(
+        `Unknown schema ${schemaName}. Please assign it a manual 'type', wrap it in a ZodPipeline or change the 'effectType'.`,
+      );
+    }
     throw new Error(
-      `Unknown schema ${schemaName}. Please assign it a manual type ${
-        zodSchema instanceof ZodEffects ? 'or wrap it in a ZodPipeline' : ''
-      }`,
+      `Unknown schema ${zodType}. Please assign it a manual 'type'.`,
     );
   }
 
