@@ -346,11 +346,40 @@ const header = z.string().openapi({
 
 ## Supported OpenAPI Versions
 
-- '3.0.0'
-- '3.0.1'
-- '3.0.2'
-- '3.0.3'
-- '3.1.0'
+Currently the following versions of OpenAPI are supported
+
+- `3.0.0`
+- `3.0.1`
+- `3.0.2`
+- `3.0.3`
+- `3.1.0`
+
+Setting the `openapi` field will change how the some of the components are rendered.
+
+```ts
+createDocument({
+  openapi: '3.1.0',
+});
+```
+
+For example in `z.string().nullable()` will be rendered differently
+
+`3.0.0`
+
+```json
+{
+  "type": "string",
+  "nullable": true
+}
+```
+
+`3.1.0`
+
+```json
+{
+  "type": ["string", "null"]
+}
+```
 
 ## Supported Zod Schema
 
@@ -386,6 +415,7 @@ const header = z.string().openapi({
   - `pattern` mapping for `.regex()`
 - ZodTuple
   - `items` mapping for `.rest()`
+  - `prefixItems` mapping for OpenAPI 3.1.0+
 - ZodUnion
 
 If this library cannot determine a type for a Zod Schema, it will throw an error. To avoid this, declare a manual `type` in the `.openapi()` section of that schema.
