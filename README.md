@@ -179,7 +179,7 @@ const document = createDocumentYaml(
       version: '1.0.0',
     },
   },
-  { options: { uniqueKeys: false } },
+  { options: { aliasDuplicateObjects: false } },
 );
 ```
 
