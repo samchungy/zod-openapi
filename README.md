@@ -1,6 +1,6 @@
 # zod-openapi
 
-A Typescript library to create full OpenAPI 3 documentation from [Zod](https://github.com/colinhacks/zod) Types.
+A Typescript library to create full OpenAPI 3.x documentation from [Zod](https://github.com/colinhacks/zod) Types.
 
 [![npm version](https://img.shields.io/npm/v/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
 [![npm downloads](https://img.shields.io/npm/dm/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
