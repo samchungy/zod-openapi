@@ -9,7 +9,7 @@ import { createPaths } from './paths';
 
 export interface ZodOpenApiMediaTypeObject
   extends Omit<oas31.MediaTypeObject & oas30.MediaTypeObject, 'schema'> {
-  schema?: AnyZodObject | oas31.SchemaObject | oas31.ReferenceObject;
+  schema?: ZodType | oas31.SchemaObject | oas31.ReferenceObject;
 }
 
 export interface ZodOpenApiContentObject {
