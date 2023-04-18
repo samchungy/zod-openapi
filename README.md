@@ -447,4 +447,85 @@ To release a new beta version
 
 ## Credits
 
-- [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi) - zod-openapi was created while trying to re-write the wonderful library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily. As a result zod-openapi was born with the goal of keeping the Zod Schemas independent from the generation of the documentation.
+### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi)
+
+zod-openapi was created while trying to re-write the wonderful library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily. As a result zod-openapi was born with the goal of keeping the Zod Schemas independent from the generation of the documentation.
+
+#### Migration
+
+1. Delete the OpenAPIRegistry and OpenAPIGenerator classes
+2. Replace any `.register()` call made and replace them with `ref` in `.openapi()`.
+
+```ts
+const registry = new OpenAPIRegistry();
+
+const foo = registry.register(
+  'foo',
+  z.string().openapi({ description: 'foo' }),
+);
+const bar = z.object({ foo });
+
+// Replace with:
+const foo = z.string().openapi({ ref: 'foo', description: 'foo' });
+const bar = z.object({ foo });
+```
+
+3. Replace `registry.registerComponent()` with a regular OpenAPI component in the document.
+
+```ts
+const registry = new OpenAPIRegistry();
+
+registry.registerComponent('securitySchemes', 'auth', {
+  type: 'http',
+  scheme: 'bearer',
+  bearerFormat: 'JWT',
+  description: 'An auth token issued by oauth",
+});
+// Replace with regular component declaration
+
+const document = createDocument({
+  components: {
+    securitySchemes: { // declare directly in components
+      auth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'An auth token issued by oauth",
+      }
+    }
+  }
+});
+```
+
+4. Replace `registry.registerPath()` with a regular OpenAPI paths in the document.
+
+```ts
+const registry = new OpenAPIRegistry();
+
+registry.registerPath({
+  method: 'get',
+  path: '/foo',
+  request: {
+    query: z.object({ a: z.string() }),
+    params: z.object({ b: z.string() }),
+  },
+  responses: {},
+});
+// Replace with regular path declaration
+
+const getFoo: ZodOpenApiPathItemObject = {
+  get: {
+    requestParams: {
+      query: z.object({ a: z.string() }),
+      path: z.object({ b: z.string() }), // renamed params -> path
+    }, // renamed from request -> requestParams
+    responses: {},
+  },
+};
+
+const document = createDocument({
+  paths: {
+    '/foo': getFoo,
+  },
+});
+```
