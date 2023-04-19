@@ -8,18 +8,16 @@ import { createSchemaWithMetadata } from './schema/metadata';
 export type CreationType = 'input' | 'output';
 
 export interface SchemaComponent {
-  zodSchema?: ZodType;
+  ref: string;
   schemaObject:
     | oas31.SchemaObject
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
-  types?: [CreationType, ...CreationType[]];
+  types: [CreationType, ...CreationType[]];
 }
 
-interface SchemaComponentObject {
-  [ref: string]: SchemaComponent | undefined;
-}
+export type SchemaComponentMap = Map<ZodType, SchemaComponent>;
 
 export interface ParameterComponent {
   zodSchema?: ZodType;
@@ -48,7 +46,7 @@ interface HeadersComponentObject {
 }
 
 export interface ComponentsObject {
-  schemas: SchemaComponentObject;
+  schemas: SchemaComponentMap;
   parameters: ParametersComponentObject;
   headers: HeadersComponentObject;
   openapi: ZodOpenApiVersion;
@@ -61,8 +59,8 @@ export const getDefaultComponents = (
   >,
   openapi: ZodOpenApiVersion = '3.1.0',
 ): ComponentsObject => {
-  const defaultComponents = {
-    schemas: {},
+  const defaultComponents: ComponentsObject = {
+    schemas: new Map(),
     parameters: {},
     headers: {},
     openapi,
@@ -86,29 +84,23 @@ const createSchemas = (
     return;
   }
   return Object.entries(schemas).forEach(([key, schema]) => {
-    const ref =
-      schema instanceof ZodType ? schema._def.openapi?.ref ?? key : key;
-    const component = components.schemas[key];
-    if (component) {
-      throw new Error(`schemaRef "${ref}" is already registered`);
-    }
-
     if (schema instanceof ZodType) {
+      const ref = schema._def.openapi?.ref ?? key;
+      const component = components.schemas.get(schema);
+      if (component) {
+        throw new Error(`schemaRef "${ref}" is already registered`);
+      }
       const state: SchemaState = {
         components,
         type: schema._def.openapi?.refType ?? 'output',
       };
-      components.schemas[ref] = {
+      components.schemas.set(schema, {
+        ref,
         schemaObject: createSchemaWithMetadata(schema, state),
-        zodSchema: schema,
         types: state.effectType ? [state.effectType] : ['input', 'output'],
-      };
+      });
       return;
     }
-
-    components.schemas[ref] = {
-      schemaObject: schema,
-    };
   });
 };
 
@@ -153,35 +145,58 @@ const createHeaders = (
 export const createComponentSchemaRef = (schemaRef: string) =>
   `#/components/schemas/${schemaRef}`;
 export const createComponents = (
-  componentsObject:
-    | Omit<ZodOpenApiComponentsObject, 'schemas' | 'parameters' | 'headers'>
-    | undefined,
+  componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
 ): oas31.ComponentsObject | undefined => {
-  const schemas = createSchemaComponents(components.schemas);
-  const parameters = createParamComponents(components.parameters);
-  const headers = createHeaderComponents(components.headers);
+  const combinedSchemas = createSchemaComponents(
+    componentsObject,
+    components.schemas,
+  );
+  const combinedParameters = createParamComponents(components.parameters);
+  const combinedHeaders = createHeaderComponents(components.headers);
+
+  const { schemas, parameters, headers, ...rest } = componentsObject;
 
   const finalComponents: oas31.ComponentsObject = {
-    ...componentsObject,
-    ...(schemas && { schemas }),
-    ...(parameters && { parameters }),
-    ...(headers && { headers }),
+    ...rest,
+    ...(combinedSchemas && { schemas: combinedSchemas }),
+    ...(combinedParameters && { parameters: combinedParameters }),
+    ...(combinedHeaders && { headers: combinedHeaders }),
   };
   return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
 const createSchemaComponents = (
-  component: SchemaComponentObject,
+  componentsObject: ZodOpenApiComponentsObject,
+  componentMap: SchemaComponentMap,
 ): oas31.ComponentsObject['schemas'] => {
-  const components = Object.entries(component).reduce<
+  const customComponents = Object.entries(
+    componentsObject.schemas ?? {},
+  ).reduce<NonNullable<oas31.ComponentsObject['schemas']>>(
+    (acc, [key, value]) => {
+      if (value instanceof ZodType) {
+        return acc;
+      }
+
+      if (acc[key]) {
+        throw new Error(`Schema "${key}" is already registered`);
+      }
+
+      acc[key] = value as oas31.SchemaObject | oas31.ReferenceObject;
+      return acc;
+    },
+    {},
+  );
+
+  const components = Array.from(componentMap).reduce<
     NonNullable<oas31.ComponentsObject['schemas']>
-  >((acc, [key, value]) => {
-    if (value) {
-      acc[key] = value.schemaObject as oas31.SchemaObject;
+  >((acc, [_zodType, value]) => {
+    if (acc[value.ref]) {
+      throw new Error(`Schema "${value.ref}" is already registered`);
     }
+    acc[value.ref] = value.schemaObject as oas31.SchemaObject;
     return acc;
-  }, {});
+  }, customComponents);
 
   return Object.keys(components).length ? components : undefined;
 };

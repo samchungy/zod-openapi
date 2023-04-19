@@ -198,14 +198,11 @@ export const createRegisteredSchema = <
   schemaRef: string,
   state: SchemaState,
 ): oas31.ReferenceObject => {
-  const component = state.components.schemas[schemaRef];
+  const component = state.components.schemas.get(zodSchema);
   if (component) {
-    if (component.zodSchema !== zodSchema) {
-      throw new Error(`schemaRef "${schemaRef}" is already registered`);
-    }
     if (!component.types?.includes(state.type)) {
       throw new Error(
-        `schemaRef "${schemaRef}" was created with a ZodEffect meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap the ZodEffect in a ZodPipeline to verify the contents of the effect`,
+        `schemaRef "${schemaRef}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
       );
     }
     return {
@@ -224,11 +221,11 @@ export const createRegisteredSchema = <
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  state.components.schemas[schemaRef] = {
+  state.components.schemas.set(zodSchema, {
+    ref: schemaRef,
     schemaObject: schemaOrRef,
-    zodSchema,
     types: newState?.effectType ? [newState.effectType] : ['input', 'output'],
-  };
+  });
 
   if (newState.effectType) {
     state.effectType = newState.effectType;
