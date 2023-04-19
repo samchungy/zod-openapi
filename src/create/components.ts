@@ -53,10 +53,7 @@ export interface ComponentsObject {
 }
 
 export const getDefaultComponents = (
-  componentsObject?: Pick<
-    ZodOpenApiComponentsObject,
-    'schemas' | 'parameters' | 'headers'
-  >,
+  componentsObject?: ZodOpenApiComponentsObject,
   openapi: ZodOpenApiVersion = '3.1.0',
 ): ComponentsObject => {
   const defaultComponents: ComponentsObject = {
