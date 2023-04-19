@@ -305,7 +305,7 @@ This can be an extremely powerful way to generate better Open API documentation.
 
 ##### Manually Registering Schema
 
-To display components which are not referenced in the responses or requests simply add the Zod Schema to the schema components directly.
+Another way to register schema instead of adding a `ref` is to add it to the components directly. This will still work in the same way as `ref`. So whenever we run into that Zod type we will replace it with a reference.
 
 eg.
 
