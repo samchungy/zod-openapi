@@ -316,9 +316,9 @@ eg.
 
 `.transform()` is complicated because it technically comprises of two types (input & output). This means that we need to understand which type you are creating. If you are adding the ZodSchema directly to the `components` section, context is required with knowing to create an input schema or an output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
 
-`.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
+If a registered schema with a transform is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field and set the `effectType` field to `input`. This will force this library to always generate the input type even if we are creating a response type.
 
-If a registered schema with a ZodEffect is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field to the ZodEffect and set the `effectType` field to `input` or `output`.
+`.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
 
 #### Parameters
 
@@ -393,7 +393,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodDiscriminatedUnion
   - `discriminator` mapping when all schemas in the union contain a `ref`.
 - ZodEffects
-  - `transform` support for request schemas. Wrap your transform in a ZodPipeline to enable response schema creation or declare a manual `type` in the `.openapi()` section of that schema.
+  - `transform` support for request schemas. See [Zod Effects](#zod-effects) for how to enable response schema support
   - `pre-process` full support.
   - `refine` full support.
 - ZodEnum
