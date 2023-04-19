@@ -305,7 +305,7 @@ This can be an extremely powerful way to generate better Open API documentation.
 
 ##### Manually Registering Schema
 
-Another way to register schema instead of adding a `ref` is to add it to the components directly. This will still work in the same way as `ref`. So whenever we run into that Zod type we will replace it with a reference.
+Another way to register schema instead of adding a `ref` is to add it to the components directly. This will still work in the same way as `ref`. So whenever we run into that Zod type we will replace it with a reference. Note: there is a small caveat to using just this approach. Schema must be registered in the correct order or the reference may not be created.
 
 eg.
 
