@@ -96,6 +96,7 @@ const baseObject = z
     a: z.string(),
   })
   .openapi({ ref: 'b' });
+const manual = z.boolean();
 const complex = z.object({
   a: z.string().openapi({ ref: 'a' }),
   b: baseObject,
@@ -105,7 +106,7 @@ const complex = z.object({
     z.object({ type: z.literal('a') }).openapi({ ref: 'union-a' }),
     z.object({ type: z.literal('b') }).openapi({ ref: 'union-b' }),
   ]),
-  f: z.tuple([z.string(), z.number()]),
+  f: z.tuple([z.string(), z.number(), manual]),
 });
 const complexZodOpenApiObject: ZodOpenApiObject = {
   info: {
@@ -140,6 +141,11 @@ const complexZodOpenApiObject: ZodOpenApiObject = {
           },
         },
       },
+    },
+  },
+  components: {
+    schemas: {
+      manual,
     },
   },
 };
@@ -359,14 +365,17 @@ describe('createDocumentJson', () => {
                         },
                         "f": {
                           "type": "array",
-                          "maxItems": 2,
-                          "minItems": 2,
+                          "maxItems": 3,
+                          "minItems": 3,
                           "prefixItems": [
                             {
                               "type": "string"
                             },
                             {
                               "type": "number"
+                            },
+                            {
+                              "$ref": "#/components/schemas/manual"
                             }
                           ]
                         }
@@ -426,14 +435,17 @@ describe('createDocumentJson', () => {
                           },
                           "f": {
                             "type": "array",
-                            "maxItems": 2,
-                            "minItems": 2,
+                            "maxItems": 3,
+                            "minItems": 3,
                             "prefixItems": [
                               {
                                 "type": "string"
                               },
                               {
                                 "type": "number"
+                              },
+                              {
+                                "$ref": "#/components/schemas/manual"
                               }
                             ]
                           }
@@ -455,6 +467,9 @@ describe('createDocumentJson', () => {
         },
         "components": {
           "schemas": {
+            "manual": {
+              "type": "boolean"
+            },
             "a": {
               "type": "string"
             },
@@ -600,8 +615,8 @@ describe('createDocumentJson', () => {
                         },
                         "f": {
                           "type": "array",
-                          "maxItems": 2,
-                          "minItems": 2,
+                          "maxItems": 3,
+                          "minItems": 3,
                           "items": {
                             "oneOf": [
                               {
@@ -609,6 +624,9 @@ describe('createDocumentJson', () => {
                               },
                               {
                                 "type": "number"
+                              },
+                              {
+                                "$ref": "#/components/schemas/manual"
                               }
                             ]
                           }
@@ -669,8 +687,8 @@ describe('createDocumentJson', () => {
                           },
                           "f": {
                             "type": "array",
-                            "maxItems": 2,
-                            "minItems": 2,
+                            "maxItems": 3,
+                            "minItems": 3,
                             "items": {
                               "oneOf": [
                                 {
@@ -678,6 +696,9 @@ describe('createDocumentJson', () => {
                                 },
                                 {
                                   "type": "number"
+                                },
+                                {
+                                  "$ref": "#/components/schemas/manual"
                                 }
                               ]
                             }
@@ -700,6 +721,9 @@ describe('createDocumentJson', () => {
         },
         "components": {
           "schemas": {
+            "manual": {
+              "type": "boolean"
+            },
             "a": {
               "type": "string"
             },

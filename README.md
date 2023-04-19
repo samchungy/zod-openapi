@@ -258,11 +258,16 @@ createDocument({
 
 ### Creating Components
 
-OpenAPI allows you to define reusable [components](https://swagger.io/docs/specification/components/) and this library allows you to replicate that in a simple way.
+OpenAPI allows you to define reusable [components](https://swagger.io/docs/specification/components/) and this library allows you to replicate that in two separate ways.
+
+1. Auto registering schema
+2. Manually registering schema
 
 #### Schema
 
 If we take the example in `createDocument` and instead create `title` as follows
+
+##### Auto Registering Schema
 
 ```typescript
 const title = z.string().openapi({
@@ -298,7 +303,9 @@ Wherever `title` is used in schemas across the document, it will instead be crea
 
 This can be an extremely powerful way to generate better Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
 
-To display components which are not referenced in the responses or requests simply add the Zod Schema to the schema components directly.
+##### Manually Registering Schema
+
+Another way to register schema instead of adding a `ref` is to add it to the components directly. This will still work in the same way as `ref`. So whenever we run into that Zod type we will replace it with a reference.
 
 eg.
 
@@ -306,7 +313,7 @@ eg.
 {
   "components": {
     "schemas": {
-      MyJobSchema // note: this will register this Zod Schema as MyJobSchema unless `ref` in `openapi()` is specified on the type
+      MyJobSchema // this will register this Zod Schema as MyJobSchema unless `ref` in `.openapi()` is specified on the type
     }
   }
 }

@@ -195,22 +195,23 @@ export const createRegisteredSchema = <
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
-  schemaRef: string,
   state: SchemaState,
-): oas31.ReferenceObject => {
-  const component = state.components.schemas[schemaRef];
+): oas31.ReferenceObject | undefined => {
+  const component = state.components.schemas.get(zodSchema);
   if (component) {
-    if (component.zodSchema !== zodSchema) {
-      throw new Error(`schemaRef "${schemaRef}" is already registered`);
-    }
     if (!component.types?.includes(state.type)) {
       throw new Error(
-        `schemaRef "${schemaRef}" was created with a ZodEffect meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap the ZodEffect in a ZodPipeline to verify the contents of the effect`,
+        `schemaRef "${component.ref}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
       );
     }
     return {
-      $ref: createComponentSchemaRef(schemaRef),
+      $ref: createComponentSchemaRef(component.ref),
     };
+  }
+
+  const schemaRef = zodSchema._def.openapi?.ref;
+  if (!schemaRef) {
+    return undefined;
   }
 
   const newState: SchemaState = {
@@ -224,11 +225,11 @@ export const createRegisteredSchema = <
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  state.components.schemas[schemaRef] = {
+  state.components.schemas.set(zodSchema, {
+    ref: schemaRef,
     schemaObject: schemaOrRef,
-    zodSchema,
     types: newState?.effectType ? [newState.effectType] : ['input', 'output'],
-  };
+  });
 
   if (newState.effectType) {
     state.effectType = newState.effectType;
@@ -247,9 +248,9 @@ export const createSchemaOrRef = <
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  const schemaRef = zodSchema._def.openapi?.ref;
-  if (schemaRef) {
-    return createRegisteredSchema(zodSchema, schemaRef, state);
+  const schema = createRegisteredSchema(zodSchema, state);
+  if (schema) {
+    return schema;
   }
 
   return createSchemaWithMetadata(zodSchema, state);
