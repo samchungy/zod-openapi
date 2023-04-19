@@ -100,18 +100,17 @@ export interface ZodOpenApiObject
 export const createDocument = (
   zodOpenApiObject: ZodOpenApiObject,
 ): oas31.OpenAPIObject => {
-  const { schemas, parameters, headers, ...rest } =
-    zodOpenApiObject.components ?? {};
-  const components = getDefaultComponents(
-    { headers, schemas, parameters },
+  const components = zodOpenApiObject.components ?? {};
+  const defaultComponents = getDefaultComponents(
+    components,
     zodOpenApiObject.openapi,
   );
 
   return {
     ...zodOpenApiObject,
-    paths: createPaths(zodOpenApiObject.paths, components),
-    webhooks: createPaths(zodOpenApiObject.webhooks, components),
-    components: createComponents(rest, components),
+    paths: createPaths(zodOpenApiObject.paths, defaultComponents),
+    webhooks: createPaths(zodOpenApiObject.webhooks, defaultComponents),
+    components: createComponents(components, defaultComponents),
   };
 };
 
