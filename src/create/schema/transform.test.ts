@@ -29,6 +29,29 @@ describe('createTransformSchema', () => {
 
       expect(state.effectType).toBe('input');
     });
+
+    it('throws an error if the effectType is output', () => {
+      const schema = z.string().transform((str) => str.length);
+
+      const state = createInputState();
+      state.effectType = 'output';
+
+      expect(() => createTransformSchema(schema, state)).toThrow(
+        '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} contains a transform but is used in both an input and an output. This is normally a mistake.',
+      );
+    });
+
+    it('does not throw an error if the effectType is output and effectType is set in openapi', () => {
+      const schema = z
+        .string()
+        .transform((str) => str.length)
+        .openapi({ effectType: 'input' });
+
+      const state = createInputState();
+      state.effectType = 'output';
+
+      createTransformSchema(schema, state);
+    });
   });
 
   describe('output', () => {
@@ -40,7 +63,7 @@ describe('createTransformSchema', () => {
       ).toThrow();
     });
 
-    it('creates an empty schema when a type is manually specified', () => {
+    it('creates a schema with the manual type when a type is manually specified', () => {
       const expected: oas31.SchemaObject = {
         type: 'number',
       };
