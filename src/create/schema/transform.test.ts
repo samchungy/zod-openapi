@@ -37,7 +37,7 @@ describe('createTransformSchema', () => {
       state.effectType = 'output';
 
       expect(() => createTransformSchema(schema, state)).toThrow(
-        '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} contains a transform but is used in both an input and an output. This is normally a mistake.',
+        '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
       );
     });
 
