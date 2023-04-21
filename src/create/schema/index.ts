@@ -199,7 +199,8 @@ export const createRegisteredSchema = <
 ): oas31.ReferenceObject | undefined => {
   const component = state.components.schemas.get(zodSchema);
   if (component) {
-    if (!component.types?.includes(state.type)) {
+    if (!component.creationTypes?.includes(state.type)) {
+      // TODO: Create the new schema type here.
       throw new Error(
         `schemaRef "${component.ref}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
       );
@@ -226,9 +227,12 @@ export const createRegisteredSchema = <
   }
 
   state.components.schemas.set(zodSchema, {
+    type: 'complete',
     ref: schemaRef,
     schemaObject: schemaOrRef,
-    types: newState?.effectType ? [newState.effectType] : ['input', 'output'],
+    creationTypes: newState?.effectType
+      ? [newState.effectType]
+      : ['input', 'output'],
   });
 
   if (newState.effectType) {

@@ -7,15 +7,25 @@ import { createSchemaWithMetadata } from './schema/metadata';
 
 export type CreationType = 'input' | 'output';
 
-export interface SchemaComponent {
-  ref: string;
+export interface CompleteSchemaComponent extends BaseSchemaComponent {
+  type: 'complete';
   schemaObject:
     | oas31.SchemaObject
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
-  types: [CreationType, ...CreationType[]];
+  creationTypes: [CreationType, ...CreationType[]];
 }
+
+export interface PartialSchemaComponent extends BaseSchemaComponent {
+  type: 'partial';
+}
+
+interface BaseSchemaComponent {
+  ref: string;
+}
+
+export type SchemaComponent = CompleteSchemaComponent | PartialSchemaComponent;
 
 export type SchemaComponentMap = Map<ZodType, SchemaComponent>;
 
@@ -80,24 +90,38 @@ const createSchemas = (
   if (!schemas) {
     return;
   }
-  return Object.entries(schemas).forEach(([key, schema]) => {
+
+  Object.entries(schemas).forEach(([key, schema]) => {
     if (schema instanceof ZodType) {
-      const ref = schema._def.openapi?.ref ?? key;
-      const component = components.schemas.get(schema);
-      if (component) {
-        throw new Error(`schemaRef "${ref}" is already registered`);
+      if (components.schemas.has(schema)) {
+        throw new Error(
+          `schema ${JSON.stringify(schema._def)} is already registered`,
+        );
       }
-      const state: SchemaState = {
-        components,
-        type: schema._def.openapi?.refType ?? 'output',
-      };
+      const ref = schema._def.openapi?.ref ?? key;
       components.schemas.set(schema, {
+        type: 'partial',
         ref,
-        schemaObject: createSchemaWithMetadata(schema, state),
-        types: state.effectType ? [state.effectType] : ['input', 'output'],
       });
-      return;
     }
+  });
+
+  return Array.from(components.schemas).forEach(([schema, { ref }]) => {
+    const state: SchemaState = {
+      components,
+      type: schema._def.openapi?.refType ?? 'output',
+    };
+
+    const schemaObject = createSchemaWithMetadata(schema, state);
+
+    components.schemas.set(schema, {
+      type: 'complete',
+      ref,
+      schemaObject,
+      creationTypes: state.effectType
+        ? [state.effectType]
+        : ['input', 'output'],
+    });
   });
 };
 
@@ -188,10 +212,13 @@ const createSchemaComponents = (
   const components = Array.from(componentMap).reduce<
     NonNullable<oas31.ComponentsObject['schemas']>
   >((acc, [_zodType, value]) => {
-    if (acc[value.ref]) {
-      throw new Error(`Schema "${value.ref}" is already registered`);
+    if (value.type === 'complete') {
+      if (acc[value.ref]) {
+        throw new Error(`Schema "${value.ref}" is already registered`);
+      }
+      acc[value.ref] = value.schemaObject as oas31.SchemaObject;
     }
-    acc[value.ref] = value.schemaObject as oas31.SchemaObject;
+
     return acc;
   }, customComponents);
 
