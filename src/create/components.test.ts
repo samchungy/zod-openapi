@@ -120,11 +120,12 @@ describe('createComponents', () => {
     };
     const map: SchemaComponentMap = new Map();
     map.set(z.string().openapi({ ref: 'a' }), {
+      type: 'complete',
       ref: 'a',
       schemaObject: {
         type: 'string',
       },
-      creationTypes: ['output'],
+      creationType: 'output',
     });
     const componentsObject = createComponents(
       {},
@@ -190,11 +191,12 @@ describe('createComponents', () => {
     };
     const map: SchemaComponentMap = new Map();
     map.set(z.string().openapi({ ref: 'a' }), {
+      type: 'complete',
       ref: 'a',
       schemaObject: {
         type: 'string',
       },
-      creationTypes: ['output'],
+      creationType: 'output',
     });
     const componentsObject = createComponents(
       {

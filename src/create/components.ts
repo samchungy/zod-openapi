@@ -14,7 +14,8 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
-  creationTypes: [CreationType, ...CreationType[]];
+  /** Set when the created schemaObject is specific to a particular CreationType */
+  creationType?: CreationType;
 }
 
 export interface PartialSchemaComponent extends BaseSchemaComponent {
@@ -102,6 +103,8 @@ const createSchemas = (
       components.schemas.set(schema, {
         type: 'partial',
         ref,
+        schemaObject: createSchemaWithMetadata(schema, state),
+        creationType: state.effectType,
       });
     }
   });
@@ -118,9 +121,7 @@ const createSchemas = (
       type: 'complete',
       ref,
       schemaObject,
-      creationTypes: state.effectType
-        ? [state.effectType]
-        : ['input', 'output'],
+      creationType: state.effectType,
     });
   });
 };

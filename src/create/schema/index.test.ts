@@ -310,4 +310,23 @@ describe('createSchemaOrRef', () => {
       'schemaRef "a" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType',
     );
   });
+
+  it('throws an error when a schema is generated with a different effectTypes', () => {
+    const inputSchema = z.string().transform((arg) => arg.length);
+
+    const outputSchema = z.object({
+      a: inputSchema,
+      b: z.string(),
+    });
+    const components = getDefaultComponents();
+    const state: SchemaState = {
+      components,
+      type: 'input',
+      effectType: 'output',
+    };
+
+    expect(() => createSchemaOrRef(outputSchema, state)).toThrow(
+      '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+    );
+  });
 });
