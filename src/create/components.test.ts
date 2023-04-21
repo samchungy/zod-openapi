@@ -124,7 +124,7 @@ describe('createComponents', () => {
       schemaObject: {
         type: 'string',
       },
-      types: ['output'],
+      type: 'output',
     });
     const componentsObject = createComponents(
       {},
@@ -194,7 +194,7 @@ describe('createComponents', () => {
       schemaObject: {
         type: 'string',
       },
-      types: ['output'],
+      type: 'output',
     });
     const componentsObject = createComponents(
       {

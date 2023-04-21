@@ -14,7 +14,8 @@ export interface SchemaComponent {
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
-  types: [CreationType, ...CreationType[]];
+  /** Set when the created schemaObject is specific to a particular CreationType */
+  type?: CreationType;
 }
 
 export type SchemaComponentMap = Map<ZodType, SchemaComponent>;
@@ -94,7 +95,7 @@ const createSchemas = (
       components.schemas.set(schema, {
         ref,
         schemaObject: createSchemaWithMetadata(schema, state),
-        types: state.effectType ? [state.effectType] : ['input', 'output'],
+        type: state.effectType,
       });
       return;
     }

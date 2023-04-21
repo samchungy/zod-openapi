@@ -31,6 +31,7 @@ import {
   CreationType,
   createComponentSchemaRef,
 } from '../components';
+import { throwTransformError } from '../errors';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -199,7 +200,7 @@ export const createRegisteredSchema = <
 ): oas31.ReferenceObject | undefined => {
   const component = state.components.schemas.get(zodSchema);
   if (component) {
-    if (!component.types?.includes(state.type)) {
+    if (component.type && component.type !== state.type) {
       throw new Error(
         `schemaRef "${component.ref}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
       );
@@ -225,15 +226,18 @@ export const createRegisteredSchema = <
     throw new Error('Unexpected Error: received a reference object');
   }
 
+  if (newState.effectType) {
+    if (state.effectType && newState.effectType !== state.effectType) {
+      throwTransformError(zodSchema);
+    }
+    state.effectType = newState.effectType;
+  }
+
   state.components.schemas.set(zodSchema, {
     ref: schemaRef,
     schemaObject: schemaOrRef,
-    types: newState?.effectType ? [newState.effectType] : ['input', 'output'],
+    type: newState.effectType,
   });
-
-  if (newState.effectType) {
-    state.effectType = newState.effectType;
-  }
 
   return {
     $ref: createComponentSchemaRef(schemaRef),
