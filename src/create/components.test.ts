@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { extendZodWithOpenApi } from '../extendZod';
 
 import {
+  CompleteSchemaComponent,
   ComponentsObject,
   SchemaComponentMap,
   createComponents,
@@ -76,6 +77,50 @@ describe('getDefaultComponents', () => {
     };
     expect(result).toStrictEqual(expected);
     expect(result.schemas.get(aSchema)?.ref).toBe('a');
+  });
+
+  it('allows registering schemas in any order', () => {
+    const expected: ComponentsObject = {
+      headers: {},
+      parameters: {},
+      schemas: expect.any(Map),
+      openapi: '3.1.0',
+    };
+
+    const a = z.string();
+    const b = z.object({ a }).openapi({ ref: 'b' });
+    const componentsObject = getDefaultComponents({
+      schemas: {
+        b,
+        a,
+      },
+    });
+    const expectedA: CompleteSchemaComponent = {
+      creationType: undefined,
+      ref: 'a',
+      schemaObject: {
+        type: 'string',
+      },
+      type: 'complete',
+    };
+    const expectedB: CompleteSchemaComponent = {
+      creationType: undefined,
+      ref: 'b',
+      schemaObject: {
+        type: 'object',
+        properties: {
+          a: {
+            $ref: '#/components/schemas/a',
+          },
+        },
+        required: ['a'],
+      },
+      type: 'complete',
+    };
+
+    expect(componentsObject).toStrictEqual(expected);
+    expect(componentsObject.schemas.get(a)).toStrictEqual(expectedA);
+    expect(componentsObject.schemas.get(b)).toStrictEqual(expectedB);
   });
 });
 

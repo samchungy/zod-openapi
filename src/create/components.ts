@@ -103,8 +103,6 @@ const createSchemas = (
       components.schemas.set(schema, {
         type: 'partial',
         ref,
-        schemaObject: createSchemaWithMetadata(schema, state),
-        creationType: state.effectType,
       });
     }
   });

@@ -199,8 +199,8 @@ export const createRegisteredSchema = <
   state: SchemaState,
 ): oas31.ReferenceObject | undefined => {
   const component = state.components.schemas.get(zodSchema);
-  if (component) {
-    if (component.type && component.type !== state.type) {
+  if (component && component.type === 'complete') {
+    if (component.creationType && component.creationType !== state.type) {
       throw new Error(
         `schemaRef "${component.ref}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
       );
@@ -210,7 +210,7 @@ export const createRegisteredSchema = <
     };
   }
 
-  const schemaRef = zodSchema._def.openapi?.ref;
+  const schemaRef = zodSchema._def.openapi?.ref ?? component?.ref;
   if (!schemaRef) {
     return undefined;
   }
@@ -237,7 +237,7 @@ export const createRegisteredSchema = <
     type: 'complete',
     ref: schemaRef,
     schemaObject: schemaOrRef,
-    type: newState.effectType,
+    creationType: newState.effectType,
   });
 
   return {
