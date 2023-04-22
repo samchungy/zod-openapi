@@ -137,6 +137,22 @@ const createSchemas = (
       });
     }
   });
+
+  return Array.from(components.schemas).forEach(([schema, { ref }]) => {
+    const state: SchemaState = {
+      components,
+      type: schema._def.openapi?.refType ?? 'output',
+    };
+
+    const schemaObject = createSchemaWithMetadata(schema, state);
+
+    components.schemas.set(schema, {
+      type: 'complete',
+      ref,
+      schemaObject,
+      creationType: state.effectType,
+    });
+  });
 };
 
 const createParameters = (
