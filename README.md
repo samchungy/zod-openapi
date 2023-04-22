@@ -4,6 +4,7 @@ A Typescript library to create full OpenAPI 3.x documentation from [Zod](https:/
 
 [![npm version](https://img.shields.io/npm/v/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
 [![npm downloads](https://img.shields.io/npm/dm/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
+[![Node.js version](https://img.shields.io/badge/node-%3E%3D%2016.11-brightgreen)](https://nodejs.org/en/)
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
 ## Install
