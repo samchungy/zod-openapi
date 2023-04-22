@@ -83,6 +83,7 @@ export interface ZodOpenApiComponentsObject
       | oas30.ReferenceObject;
   };
   requestParams?: ZodOpenApiParameters;
+  responseHeaders?: AnyZodObject;
 }
 
 export type ZodOpenApiVersion = OpenApiVersion;

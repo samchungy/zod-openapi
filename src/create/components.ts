@@ -56,8 +56,8 @@ export type ParameterComponent =
 
 export type ParameterComponentMap = Map<ZodType, ParameterComponent>;
 
-export interface Header {
-  zodSchema?: ZodType;
+export interface CompleteHeaderComponent extends BaseHeaderComponent {
+  type: 'complete';
   headerObject:
     | oas31.HeaderObject
     | oas31.ReferenceObject
@@ -65,14 +65,22 @@ export interface Header {
     | oas30.ReferenceObject;
 }
 
-interface HeadersComponentObject {
-  [ref: string]: Header | undefined;
+export interface PartialHeaderComponent extends BaseHeaderComponent {
+  type: 'partial';
 }
+
+interface BaseHeaderComponent {
+  ref: string;
+}
+
+export type HeaderComponent = CompleteHeaderComponent | PartialHeaderComponent;
+
+export type HeaderComponentMap = Map<ZodType, HeaderComponent>;
 
 export interface ComponentsObject {
   schemas: SchemaComponentMap;
   parameters: ParameterComponentMap;
-  headers: HeadersComponentObject;
+  headers: HeaderComponentMap;
   openapi: ZodOpenApiVersion;
 }
 
@@ -83,7 +91,7 @@ export const getDefaultComponents = (
   const defaultComponents: ComponentsObject = {
     schemas: new Map(),
     parameters: new Map(),
-    headers: {},
+    headers: new Map(),
     openapi,
   };
   if (!componentsObject) {
@@ -92,7 +100,7 @@ export const getDefaultComponents = (
 
   createSchemas(componentsObject.schemas, defaultComponents);
   createParameters(componentsObject.requestParams, defaultComponents);
-  createHeaders(componentsObject.headers, defaultComponents);
+  createHeaders(componentsObject.responseHeaders, defaultComponents);
 
   return defaultComponents;
 };
@@ -109,7 +117,7 @@ const createSchemas = (
     if (schema instanceof ZodType) {
       if (components.schemas.has(schema)) {
         throw new Error(
-          `schema ${JSON.stringify(schema._def)} is already registered`,
+          `Schema ${JSON.stringify(schema._def)} is already registered`,
         );
       }
       const ref = schema._def.openapi?.ref ?? key;
@@ -153,7 +161,7 @@ const createParameters = (
         if (schema instanceof ZodType) {
           if (components.parameters.has(schema)) {
             throw new Error(
-              `parameter ${JSON.stringify(schema._def)} is already registered`,
+              `Parameter ${JSON.stringify(schema._def)} is already registered`,
             );
           }
           const ref = schema._def.openapi?.param?.ref ?? key;
@@ -185,21 +193,38 @@ const createParameters = (
 };
 
 const createHeaders = (
-  headers: ZodOpenApiComponentsObject['headers'],
+  responseHeaders: ZodOpenApiComponentsObject['responseHeaders'],
   components: ComponentsObject,
 ): void => {
-  if (!headers) {
+  if (!responseHeaders) {
     return;
   }
-  return Object.entries(headers).forEach(([key, schema]) => {
-    const component = components.headers[key];
-    if (component) {
-      throw new Error(`header "${key}" is already registered`);
-    }
 
-    components.headers[key] = {
-      headerObject: schema,
-    };
+  Object.entries(responseHeaders._def.shape() as ZodRawShape).forEach(
+    ([key, schema]: [string, ZodType]) => {
+      if (components.parameters.has(schema)) {
+        throw new Error(
+          `Header ${JSON.stringify(schema._def)} is already registered`,
+        );
+      }
+      const ref = schema._def.openapi?.param?.ref ?? key;
+      components.headers.set(schema, {
+        type: 'partial',
+        ref,
+      });
+    },
+  );
+
+  return Array.from(components.headers).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      const header = createBaseParameter(schema, components);
+
+      components.headers.set(schema, {
+        type: 'complete',
+        ref: component.ref,
+        headerObject: header,
+      });
+    }
   });
 };
 
@@ -217,7 +242,10 @@ export const createComponents = (
     componentsObject,
     components.parameters,
   );
-  const combinedHeaders = createHeaderComponents(components.headers);
+  const combinedHeaders = createHeaderComponents(
+    componentsObject,
+    components.headers,
+  );
 
   const { schemas, parameters, headers, ...rest } = componentsObject;
 
@@ -303,16 +331,35 @@ const createParamComponents = (
 };
 
 const createHeaderComponents = (
-  component: HeadersComponentObject,
+  componentsObject: ZodOpenApiComponentsObject,
+  componentMap: HeaderComponentMap,
 ): oas31.ComponentsObject['headers'] => {
-  const components = Object.entries(component).reduce<
+  const customComponents = Object.entries(
+    componentsObject.headers ?? {},
+  ).reduce<NonNullable<oas31.ComponentsObject['headers']>>(
+    (acc, [key, value]) => {
+      if (acc[key]) {
+        throw new Error(`Header "${key}" is already registered`);
+      }
+
+      acc[key] = value as oas31.HeaderObject;
+      return acc;
+    },
+    {},
+  );
+
+  const components = Array.from(componentMap).reduce<
     NonNullable<oas31.ComponentsObject['headers']>
-  >((acc, [key, value]) => {
-    if (value) {
-      acc[key] = value.headerObject as oas31.HeaderObject;
+  >((acc, [_zodType, component]) => {
+    if (component.type === 'complete') {
+      if (acc[component.ref]) {
+        throw new Error(`Header "${component.ref}" is already registered`);
+      }
+      acc[component.ref] = component.headerObject as oas31.HeaderObject;
     }
+
     return acc;
-  }, {});
+  }, customComponents);
 
   return Object.keys(components).length ? components : undefined;
 };

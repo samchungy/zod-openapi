@@ -62,12 +62,9 @@ const createRegisteredHeader = (
   ref: string,
   components: ComponentsObject,
 ): oas31.ReferenceObject => {
-  const component = components.headers[ref];
-  if (component) {
-    if (
-      !('$ref' in component.headerObject) &&
-      component.zodSchema !== zodSchema
-    ) {
+  const component = components.headers.get(zodSchema);
+  if (component && component.type === 'complete') {
+    if (!('$ref' in component.headerObject)) {
       throw new Error(`header "${ref}" is already registered`);
     }
     return {
@@ -81,10 +78,11 @@ const createRegisteredHeader = (
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  components.headers[ref] = {
+  components.headers.set(zodSchema, {
+    type: 'complete',
     headerObject: baseParamOrRef,
-    zodSchema,
-  };
+    ref,
+  });
 
   return {
     $ref: createComponentHeaderRef(ref),

@@ -6,6 +6,8 @@ import { extendZodWithOpenApi } from '../extendZod';
 import {
   CompleteSchemaComponent,
   ComponentsObject,
+  HeaderComponent,
+  HeaderComponentMap,
   ParameterComponent,
   ParameterComponentMap,
   SchemaComponent,
@@ -22,7 +24,7 @@ describe('getDefaultComponents', () => {
     const expected: ComponentsObject = {
       parameters: expect.any(Map),
       schemas: expect.any(Map),
-      headers: {},
+      headers: expect.any(Map),
       openapi: '3.1.0',
     };
     expect(result).toStrictEqual(expected);
@@ -31,6 +33,7 @@ describe('getDefaultComponents', () => {
   it('returns components combined with manually declared components', () => {
     const aSchema = z.string();
     const bSchema = z.string();
+    const cSchema = z.string();
     const result = getDefaultComponents({
       parameters: {
         a: {
@@ -59,19 +62,14 @@ describe('getDefaultComponents', () => {
           },
         },
       },
+      responseHeaders: z.object({
+        c: cSchema,
+      }),
     });
     const expected: ComponentsObject = {
       parameters: expect.any(Map),
       schemas: expect.any(Map),
-      headers: {
-        a: {
-          headerObject: {
-            schema: {
-              type: 'string',
-            },
-          },
-        },
-      },
+      headers: expect.any(Map),
       openapi: '3.1.0',
     };
     const expectedParameter: ParameterComponent = {
@@ -91,15 +89,26 @@ describe('getDefaultComponents', () => {
       ref: 'a',
       type: 'complete',
     };
+    const expectedHeader: HeaderComponent = {
+      headerObject: {
+        schema: {
+          type: 'string',
+        },
+        required: true,
+      },
+      ref: 'c',
+      type: 'complete',
+    };
 
     expect(result).toStrictEqual(expected);
     expect(result.schemas.get(aSchema)).toStrictEqual(expectedSchema);
     expect(result.parameters.get(bSchema)).toStrictEqual(expectedParameter);
+    expect(result.headers.get(cSchema)).toStrictEqual(expectedHeader);
   });
 
   it('allows registering schemas in any order', () => {
     const expected: ComponentsObject = {
-      headers: {},
+      headers: expect.any(Map),
       parameters: expect.any(Map),
       schemas: expect.any(Map),
       openapi: '3.1.0',
@@ -147,7 +156,7 @@ describe('createComponents', () => {
       {
         parameters: new Map(),
         schemas: new Map(),
-        headers: {},
+        headers: new Map(),
         openapi: '3.1.0',
       },
     );
@@ -200,21 +209,22 @@ describe('createComponents', () => {
         },
       },
     });
+    const headerMap: HeaderComponentMap = new Map();
+    headerMap.set(z.string(), {
+      type: 'complete',
+      ref: 'a',
+      headerObject: {
+        schema: {
+          type: 'string',
+        },
+      },
+    });
     const componentsObject = createComponents(
       {},
       {
         parameters: paramMap,
         schemas: schemaMap,
-        headers: {
-          a: {
-            headerObject: {
-              schema: {
-                type: 'string',
-              },
-            },
-            zodSchema: z.string().openapi({ ref: 'a' }),
-          },
-        },
+        headers: headerMap,
         openapi: '3.1.0',
       },
     );
@@ -272,6 +282,16 @@ describe('createComponents', () => {
       },
       ref: 'a',
     });
+    const headerMap: HeaderComponentMap = new Map();
+    headerMap.set(z.string(), {
+      type: 'complete',
+      ref: 'a',
+      headerObject: {
+        schema: {
+          type: 'string',
+        },
+      },
+    });
     const componentsObject = createComponents(
       {
         examples: {
@@ -283,15 +303,7 @@ describe('createComponents', () => {
       {
         parameters: paramMap,
         schemas: schemaMap,
-        headers: {
-          a: {
-            headerObject: {
-              schema: {
-                type: 'string',
-              },
-            },
-          },
-        },
+        headers: headerMap,
         openapi: '3.1.0',
       },
     );
