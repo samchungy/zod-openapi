@@ -1,6 +1,6 @@
 import { oas30, oas31 } from 'openapi3-ts';
 import { ParameterLocation } from 'openapi3-ts/dist/mjs/oas31';
-import { ZodType } from 'zod';
+import { ZodRawShape, ZodType } from 'zod';
 
 import { ZodOpenApiComponentsObject, ZodOpenApiVersion } from './document';
 import { createBaseParameter } from './parameters';
@@ -133,25 +133,9 @@ const createSchemas = (
         type: 'complete',
         ref,
         schemaObject,
-        creationType: state.effectType,
+        ...(state.effectType && { creationType: state.effectType }),
       });
     }
-  });
-
-  return Array.from(components.schemas).forEach(([schema, { ref }]) => {
-    const state: SchemaState = {
-      components,
-      type: schema._def.openapi?.refType ?? 'output',
-    };
-
-    const schemaObject = createSchemaWithMetadata(schema, state);
-
-    components.schemas.set(schema, {
-      type: 'complete',
-      ref,
-      schemaObject,
-      creationType: state.effectType,
-    });
   });
 };
 
@@ -164,7 +148,7 @@ const createParameters = (
   }
 
   Object.entries(requestParams).forEach(([paramType, zodObject]) => {
-    Object.entries(zodObject._def.shape).forEach(
+    Object.entries(zodObject._def.shape() as ZodRawShape).forEach(
       ([key, schema]: [string, ZodType]) => {
         if (schema instanceof ZodType) {
           if (components.parameters.has(schema)) {

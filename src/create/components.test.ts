@@ -6,7 +6,9 @@ import { extendZodWithOpenApi } from '../extendZod';
 import {
   CompleteSchemaComponent,
   ComponentsObject,
+  ParameterComponent,
   ParameterComponentMap,
+  SchemaComponent,
   SchemaComponentMap,
   createComponents,
   getDefaultComponents,
@@ -28,6 +30,7 @@ describe('getDefaultComponents', () => {
 
   it('returns components combined with manually declared components', () => {
     const aSchema = z.string();
+    const bSchema = z.string();
     const result = getDefaultComponents({
       parameters: {
         a: {
@@ -37,6 +40,11 @@ describe('getDefaultComponents', () => {
             type: 'string',
           },
         },
+      },
+      requestParams: {
+        header: z.object({
+          b: bSchema,
+        }),
       },
       schemas: {
         a: aSchema,
@@ -66,8 +74,27 @@ describe('getDefaultComponents', () => {
       },
       openapi: '3.1.0',
     };
+    const expectedParameter: ParameterComponent = {
+      paramObject: {
+        in: 'header',
+        name: 'b',
+        required: true,
+        schema: { type: 'string' },
+      },
+      ref: 'b',
+      type: 'complete',
+    };
+    const expectedSchema: SchemaComponent = {
+      schemaObject: {
+        type: 'string',
+      },
+      ref: 'a',
+      type: 'complete',
+    };
+
     expect(result).toStrictEqual(expected);
-    expect(result.schemas.get(aSchema)?.ref).toBe('a');
+    expect(result.schemas.get(aSchema)).toStrictEqual(expectedSchema);
+    expect(result.parameters.get(bSchema)).toStrictEqual(expectedParameter);
   });
 
   it('allows registering schemas in any order', () => {
@@ -87,7 +114,6 @@ describe('getDefaultComponents', () => {
       },
     });
     const expectedA: CompleteSchemaComponent = {
-      creationType: undefined,
       ref: 'a',
       schemaObject: {
         type: 'string',
@@ -95,7 +121,6 @@ describe('getDefaultComponents', () => {
       type: 'complete',
     };
     const expectedB: CompleteSchemaComponent = {
-      creationType: undefined,
       ref: 'b',
       schemaObject: {
         type: 'object',
