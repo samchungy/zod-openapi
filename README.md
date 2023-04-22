@@ -368,6 +368,19 @@ const header = z.string().openapi({
   examples: ['1234'],
   header: { ref: 'some-header' },
 });
+
+const jobIdHeader = z.string().openapi({
+  description: 'Job ID',
+  examples: ['1234']
+});
+
+createDocument({
+  components: {
+    responseHeaders: z.object(
+      'some-header': jobIdHeader
+    )
+  },
+});
 ```
 
 ## Supported OpenAPI Versions
