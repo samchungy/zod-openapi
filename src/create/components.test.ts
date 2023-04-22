@@ -6,6 +6,7 @@ import { extendZodWithOpenApi } from '../extendZod';
 import {
   CompleteSchemaComponent,
   ComponentsObject,
+  ParameterComponentMap,
   SchemaComponentMap,
   createComponents,
   getDefaultComponents,
@@ -17,7 +18,7 @@ describe('getDefaultComponents', () => {
   it('returns default components', () => {
     const result = getDefaultComponents();
     const expected: ComponentsObject = {
-      parameters: {},
+      parameters: expect.any(Map),
       schemas: expect.any(Map),
       headers: {},
       openapi: '3.1.0',
@@ -25,7 +26,7 @@ describe('getDefaultComponents', () => {
     expect(result).toStrictEqual(expected);
   });
 
-  it('returns components combined ith manually declared components', () => {
+  it('returns components combined with manually declared components', () => {
     const aSchema = z.string();
     const result = getDefaultComponents({
       parameters: {
@@ -52,17 +53,7 @@ describe('getDefaultComponents', () => {
       },
     });
     const expected: ComponentsObject = {
-      parameters: {
-        a: {
-          paramObject: {
-            in: 'path',
-            name: 'a',
-            schema: {
-              type: 'string',
-            },
-          },
-        },
-      },
+      parameters: expect.any(Map),
       schemas: expect.any(Map),
       headers: {
         a: {
@@ -82,7 +73,7 @@ describe('getDefaultComponents', () => {
   it('allows registering schemas in any order', () => {
     const expected: ComponentsObject = {
       headers: {},
-      parameters: {},
+      parameters: expect.any(Map),
       schemas: expect.any(Map),
       openapi: '3.1.0',
     };
@@ -129,7 +120,7 @@ describe('createComponents', () => {
     const componentsObject = createComponents(
       {},
       {
-        parameters: {},
+        parameters: new Map(),
         schemas: new Map(),
         headers: {},
         openapi: '3.1.0',
@@ -163,8 +154,8 @@ describe('createComponents', () => {
         },
       },
     };
-    const map: SchemaComponentMap = new Map();
-    map.set(z.string().openapi({ ref: 'a' }), {
+    const schemaMap: SchemaComponentMap = new Map();
+    schemaMap.set(z.string().openapi({ ref: 'a' }), {
       type: 'complete',
       ref: 'a',
       schemaObject: {
@@ -172,22 +163,23 @@ describe('createComponents', () => {
       },
       creationType: 'output',
     });
+    const paramMap: ParameterComponentMap = new Map();
+    paramMap.set(z.string(), {
+      type: 'complete',
+      ref: 'a',
+      paramObject: {
+        in: 'header',
+        name: 'some-header',
+        schema: {
+          type: 'string',
+        },
+      },
+    });
     const componentsObject = createComponents(
       {},
       {
-        parameters: {
-          a: {
-            paramObject: {
-              in: 'header',
-              name: 'some-header',
-              schema: {
-                type: 'string',
-              },
-            },
-            zodSchema: z.string().openapi({ param: { ref: 'a' } }),
-          },
-        },
-        schemas: map,
+        parameters: paramMap,
+        schemas: schemaMap,
         headers: {
           a: {
             headerObject: {
@@ -234,14 +226,26 @@ describe('createComponents', () => {
         },
       },
     };
-    const map: SchemaComponentMap = new Map();
-    map.set(z.string().openapi({ ref: 'a' }), {
+    const schemaMap: SchemaComponentMap = new Map();
+    schemaMap.set(z.string(), {
       type: 'complete',
       ref: 'a',
       schemaObject: {
         type: 'string',
       },
       creationType: 'output',
+    });
+    const paramMap: ParameterComponentMap = new Map();
+    paramMap.set(z.string(), {
+      type: 'complete',
+      paramObject: {
+        in: 'header',
+        name: 'some-header',
+        schema: {
+          type: 'string',
+        },
+      },
+      ref: 'a',
     });
     const componentsObject = createComponents(
       {
@@ -252,19 +256,8 @@ describe('createComponents', () => {
         },
       },
       {
-        parameters: {
-          a: {
-            paramObject: {
-              in: 'header',
-              name: 'some-header',
-              schema: {
-                type: 'string',
-              },
-            },
-            zodSchema: z.string().openapi({ param: { ref: 'a' } }),
-          },
-        },
-        schemas: map,
+        parameters: paramMap,
+        schemas: schemaMap,
         headers: {
           a: {
             headerObject: {

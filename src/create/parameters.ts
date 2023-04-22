@@ -32,13 +32,11 @@ const createRegisteredParam = (
   name: string,
   components: ComponentsObject,
 ): oas31.ReferenceObject => {
-  const component = components.parameters[ref];
-  if (component) {
+  const component = components.parameters.get(zodSchema);
+  if (component && component.type === 'complete') {
     if (
       !('$ref' in component.paramObject) &&
-      (component.zodSchema !== zodSchema ||
-        component.paramObject.in !== type ||
-        component.paramObject.name !== name)
+      (component.paramObject.in !== type || component.paramObject.name !== name)
     ) {
       throw new Error(`parameterRef "${ref}" is already registered`);
     }
@@ -53,14 +51,15 @@ const createRegisteredParam = (
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  components.parameters[ref] = {
+  components.parameters.set(zodSchema, {
+    type: 'complete',
     paramObject: {
       in: type,
       name,
       ...baseParamOrRef,
     },
-    zodSchema,
-  };
+    ref,
+  });
 
   return {
     $ref: createComponentParamRef(ref),
