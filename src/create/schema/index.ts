@@ -237,7 +237,7 @@ export const createRegisteredSchema = <
     type: 'complete',
     ref: schemaRef,
     schemaObject: schemaOrRef,
-    creationType: newState.effectType,
+    ...(newState.effectType && { creationType: newState.effectType }),
   });
 
   return {

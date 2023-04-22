@@ -310,13 +310,13 @@ Another way to register schema instead of adding a `ref` is to add it to the com
 eg.
 
 ```typescript
-{
-  "components": {
-    "schemas": {
-      MyJobSchema // this will register this Zod Schema as MyJobSchema unless `ref` in `.openapi()` is specified on the type
-    }
-  }
-}
+createDocument({
+  components: {
+    schemas: {
+      jobTitle, // this will register this Zod Schema as jobTitle unless `ref` in `.openapi()` is specified on the type
+    },
+  },
+});
 ```
 
 ##### Zod Effects
@@ -336,6 +336,25 @@ const jobId = z.string().openapi({
   description: 'Job ID',
   examples: ['1234'],
   param: { ref: 'jobId' },
+});
+
+// or
+
+const commonHeaders = z.object({
+  jobId: z.string(),
+});
+
+const path = z.string();
+
+createDocument({
+  components: {
+    requestParams: {
+      header: commonHeaders,
+      path: z.object({ path }),
+      query: z.object({ query: z.string() }),
+      cookie: z.object({ cookie: z.string() }),
+    },
+  },
 });
 ```
 
