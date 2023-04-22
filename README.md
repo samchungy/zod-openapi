@@ -515,13 +515,21 @@ To release a new beta version
 3. Click the `Generate release notes` button and adjust the description.
 4. Tick the `Set as a pre-release` box and click `Publish release`. This will trigger the `Prerelease` workflow.
 
-## Credits
+## Comparisons
 
 ### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi)
 
-zod-openapi was created while trying to re-write that library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily in a way that I envisioned. Additionally, it does not safely handle different input/output types (eg. transforms).
+zod-openapi was created while trying to add a feature to support auto registering schemas. This proved to be extra challenging given the overall structure of the library so I decided to create my own. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
 
-Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation should be as simple and as frictionless as possible.
+1. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
+
+2. No auto registering schema. Most users do not want to think about this so having to import and call `.register()` is a nuisance.
+
+3. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
+
+4. No native `yaml` support. The majority of my projects prefer to render the schema in `yaml` so I would have to install an extra dependency. This library ships it natively.
+
+Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
 
 #### Migration
 
