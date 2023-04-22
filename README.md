@@ -519,12 +519,14 @@ To release a new beta version
 
 ### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi)
 
-zod-openapi was created while trying to re-write this library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily in a way that I envisioned. Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation should be as simple and as frictionless as possible.
+zod-openapi was created while trying to re-write that library to support auto registering schemas. However, the underlying structure of the library which consists of tightly coupled classes would not allow for this be done easily in a way that I envisioned. Additionally, it does not safely handle different input/output types (eg. transforms).
+
+Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation should be as simple and as frictionless as possible.
 
 #### Migration
 
 1. Delete the OpenAPIRegistry and OpenAPIGenerator classes
-2. Replace any `.register()` call made and replace them with `ref` in `.openapi()`.
+2. Replace any `.register()` call made and replace them with `ref` in `.openapi()` or alternatively, add them directly to the components section of the schema.
 
 ```ts
 const registry = new OpenAPIRegistry();
@@ -538,6 +540,18 @@ const bar = z.object({ foo });
 // Replace with:
 const foo = z.string().openapi({ ref: 'foo', description: 'foo' });
 const bar = z.object({ foo });
+
+// or
+const foo = z.string().openapi({ description: 'foo' });
+const bar = z.object({ foo });
+
+const document = createDocument({
+  components: {
+    schemas: {
+      foo,
+    },
+  },
+});
 ```
 
 3. Replace `registry.registerComponent()` with a regular OpenAPI component in the document.
