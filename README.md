@@ -519,7 +519,7 @@ To release a new beta version
 
 ### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi)
 
-zod-openapi was created while trying to add a feature to support auto registering schemas. This proved to be extra challenging given the overall structure of the library so I decided to create my own. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
+zod-openapi was created while trying to add a feature to support auto registering schemas. This proved to be extra challenging given the overall structure of the library so I decided re-write the whole thing. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
 
 1. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
 
