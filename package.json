@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "skuba build-package",
-    "create:docs": " skuba node examples/simple/generateSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
+    "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
     "lint": "skuba lint",
     "release": "yarn build && npm publish",

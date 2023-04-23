@@ -42,12 +42,12 @@ extendZodWithOpenApi(z);
 
 const jobId = z.string().openapi({
   description: 'Job ID',
-  examples: ['12345'],
+  example: '12345',
 });
 
 const title = z.string().openapi({
   description: 'Job title',
-  examples: ['My job'],
+  example: 'My job',
 });
 
 const document = createDocument({
@@ -98,7 +98,7 @@ Generates the following object:
             "schema": {
               "type": "string",
               "description": "Job ID",
-              "examples": ["12345"]
+              "example": "12345"
             }
           }
         ],
@@ -111,7 +111,7 @@ Generates the following object:
                   "title": {
                     "type": "string",
                     "description": "Job title",
-                    "examples": ["My job"]
+                    "example": "My job"
                   }
                 },
                 "required": ["title"]
@@ -130,12 +130,12 @@ Generates the following object:
                     "jobId": {
                       "type": "string",
                       "description": "Job ID",
-                      "examples": ["12345"]
+                      "example": "12345"
                     },
                     "title": {
                       "type": "string",
                       "description": "Job title",
-                      "examples": ["My job"]
+                      "example": "My job"
                     }
                   },
                   "required": ["jobId", "title"]
@@ -273,7 +273,7 @@ If we take the example in `createDocument` and instead create `title` as follows
 ```typescript
 const title = z.string().openapi({
   description: 'Job title',
-  examples: ['My job'],
+  example: 'My job',
   ref: 'jobTitle', // <- new field
 });
 ```
@@ -295,7 +295,7 @@ Wherever `title` is used in schemas across the document, it will instead be crea
       "jobTitle": {
         "type": "string",
         "description": "Job title",
-        "examples": ["My job"]
+        "example": "My job"
       }
     }
   }
@@ -335,7 +335,7 @@ Query, Path, Header & Cookie parameters can be similarly registered:
 ```typescript
 const jobId = z.string().openapi({
   description: 'Job ID',
-  examples: ['1234'],
+  example: '1234',
   param: { ref: 'jobId' },
 });
 
@@ -366,13 +366,13 @@ Response headers can be similarly registered:
 ```typescript
 const header = z.string().openapi({
   description: 'Job ID',
-  examples: ['1234'],
+  example: '1234',
   header: { ref: 'some-header' },
 });
 
 const jobIdHeader = z.string().openapi({
   description: 'Job ID',
-  examples: ['1234']
+  example: '1234'
 });
 
 createDocument({
@@ -466,6 +466,12 @@ eg.
 ```typescript
 z.custom().openapi({ type: 'string' });
 ```
+
+## Examples
+
+See the library in use in the [examples](./examples/) folder.
+
+- Simple - [setup](./examples/simple/createSchema.ts) | [openapi.yml](./examples/simple/openapi.yml) | [redoc documentation](https://samchungy.github.io/zod-openapi/examples/simple/redoc-static.html)
 
 ## Ecosystem
 
