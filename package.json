@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "skuba build-package",
-    "commit": "cz",
+    "create:docs": " skuba node examples/simple/generateSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
     "lint": "skuba lint",
     "release": "yarn build && npm publish",
@@ -31,18 +31,14 @@
     "test:ci": "skuba test --coverage",
     "test:watch": "skuba test --watch"
   },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
   "dependencies": {
     "openapi3-ts": "4.0.4",
     "yaml": "2.2.1"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
-    "commitizen": "^4.2.4",
+    "@redocly/cli": "1.0.0-beta.125",
+    "@types/node": "^18.15.13",
+    "eslint-plugin-zod-openapi": "^0.0.3",
     "skuba": "6.0.2",
     "zod": "3.21.4"
   },
