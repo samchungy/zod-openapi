@@ -32,7 +32,7 @@
     "test:watch": "skuba test --watch"
   },
   "dependencies": {
-    "openapi3-ts": "4.0.4",
+    "openapi3-ts": "4.1.1",
     "yaml": "2.2.1"
   },
   "devDependencies": {
