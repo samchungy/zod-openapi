@@ -1,5 +1,4 @@
 import { oas30, oas31 } from 'openapi3-ts';
-import { ParameterLocation } from 'openapi3-ts/dist/mjs/oas31';
 import { ZodRawShape, ZodType } from 'zod';
 
 import {
@@ -49,7 +48,7 @@ export interface CompleteParameterComponent extends BaseParameterComponent {
 
 export interface PartialParameterComponent extends BaseParameterComponent {
   type: 'partial';
-  in: ParameterLocation;
+  in: oas31.ParameterLocation;
 }
 
 interface BaseParameterComponent {
@@ -225,7 +224,7 @@ const createParameters = (
           components.parameters.set(schema, {
             type: 'partial',
             ref,
-            in: paramType as ParameterLocation,
+            in: paramType as oas31.ParameterLocation,
           });
         }
       },

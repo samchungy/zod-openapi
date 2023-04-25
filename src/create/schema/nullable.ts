@@ -50,7 +50,7 @@ export const createNullableSchema = (
     type,
     nullable: true,
     ...schema,
-  };
+  } as oas31.SchemaObject;
 };
 
 const mapNullType = (
@@ -74,5 +74,5 @@ const mapNullOf = (
   if (satisfiesVersion(openapi, '3.1.0')) {
     return [...ofSchema, { type: 'null' }];
   }
-  return [...ofSchema, { nullable: true }];
+  return [...ofSchema, { nullable: true } as oas31.SchemaObject];
 };
