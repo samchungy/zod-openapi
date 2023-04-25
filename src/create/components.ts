@@ -4,11 +4,13 @@ import { ZodRawShape, ZodType } from 'zod';
 
 import {
   ZodOpenApiComponentsObject,
+  ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
   ZodOpenApiVersion,
 } from './document';
-import { createBaseParameter } from './parameters';
-import { createResponse } from './responses';
+import { createParamOrRef } from './parameters';
+import { createRequestBody } from './paths';
+import { createHeaderOrRef, createResponse } from './responses';
 import { SchemaState, createSchemaOrRef } from './schema';
 
 export type CreationType = 'input' | 'output';
@@ -107,10 +109,37 @@ export type ResponseComponentMap = Map<
   ResponseComponent
 >;
 
+interface BaseRequestBodyComponent {
+  ref: string;
+}
+
+export interface CompleteRequestBodyComponent extends BaseRequestBodyComponent {
+  type: 'complete';
+  requestBodyObject:
+    | oas31.RequestBodyObject
+    | oas31.ReferenceObject
+    | oas30.RequestBodyObject
+    | oas30.ReferenceObject;
+}
+
+export interface PartialRequestBodyComponent extends BaseRequestBodyComponent {
+  type: 'partial';
+}
+
+export type RequestBodyComponent =
+  | CompleteRequestBodyComponent
+  | PartialRequestBodyComponent;
+
+export type RequestBodyComponentMap = Map<
+  ZodOpenApiRequestBodyObject,
+  RequestBodyComponent
+>;
+
 export interface ComponentsObject {
   schemas: SchemaComponentMap;
   parameters: ParameterComponentMap;
   headers: HeaderComponentMap;
+  requestBodies: RequestBodyComponentMap;
   responses: ResponseComponentMap;
   openapi: ZodOpenApiVersion;
 }
@@ -123,6 +152,7 @@ export const getDefaultComponents = (
     schemas: new Map(),
     parameters: new Map(),
     headers: new Map(),
+    requestBodies: new Map(),
     responses: new Map(),
     openapi,
   };
@@ -132,6 +162,7 @@ export const getDefaultComponents = (
 
   createSchemas(componentsObject.schemas, defaultComponents);
   createParameters(componentsObject.requestParams, defaultComponents);
+  createRequestBodies(componentsObject.requestBodies, defaultComponents);
   createHeaders(componentsObject.responseHeaders, defaultComponents);
   createResponses(componentsObject.responses, defaultComponents);
 
@@ -203,17 +234,7 @@ const createParameters = (
 
   return Array.from(components.parameters).forEach(([schema, component]) => {
     if (component.type === 'partial') {
-      const parameter = createBaseParameter(schema, components);
-
-      components.parameters.set(schema, {
-        type: 'complete',
-        ref: component.ref,
-        paramObject: {
-          in: component.in,
-          name: component.ref,
-          ...parameter,
-        },
-      });
+      createParamOrRef(schema, component.in, component.ref, components);
     }
   });
 };
@@ -243,13 +264,7 @@ const createHeaders = (
 
   return Array.from(components.headers).forEach(([schema, component]) => {
     if (component.type === 'partial') {
-      const header = createBaseParameter(schema, components);
-
-      components.headers.set(schema, {
-        type: 'complete',
-        ref: component.ref,
-        headerObject: header,
-      });
+      createHeaderOrRef(schema, components);
     }
   });
 };
@@ -282,11 +297,42 @@ const createResponses = (
   });
 };
 
+const createRequestBodies = (
+  requestBodies: ZodOpenApiComponentsObject['requestBodies'],
+  components: ComponentsObject,
+): void => {
+  if (!requestBodies) {
+    return;
+  }
+
+  Object.entries(requestBodies).forEach(([key, requestBody]) => {
+    if (components.requestBodies.has(requestBody)) {
+      throw new Error(
+        `Header ${JSON.stringify(requestBody)} is already registered`,
+      );
+    }
+    const ref = requestBody?.ref ?? key;
+    components.requestBodies.set(requestBody, {
+      type: 'partial',
+      ref,
+    });
+  });
+
+  return Array.from(components.requestBodies).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      createRequestBody(schema, components);
+    }
+  });
+};
+
 export const createComponentSchemaRef = (schemaRef: string) =>
   `#/components/schemas/${schemaRef}`;
 
 export const createComponentResponseRef = (responseRef: string) =>
   `#/components/responses/${responseRef}`;
+
+export const createComponentRequestBodyRef = (requestBodyRef: string) =>
+  `#/components/requestBodies/${requestBodyRef}`;
 
 export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject,
@@ -305,13 +351,18 @@ export const createComponents = (
     components.headers,
   );
   const combinedResponses = createResponseComponents(components.responses);
+  const combinedRequestBodies = createRequestBodiesComponents(
+    components.requestBodies,
+  );
 
-  const { schemas, parameters, headers, responses, ...rest } = componentsObject;
+  const { schemas, parameters, headers, responses, requestBodies, ...rest } =
+    componentsObject;
 
   const finalComponents: oas31.ComponentsObject = {
     ...rest,
     ...(combinedSchemas && { schemas: combinedSchemas }),
     ...(combinedParameters && { parameters: combinedParameters }),
+    ...(combinedRequestBodies && { requestBodies: combinedRequestBodies }),
     ...(combinedHeaders && { headers: combinedHeaders }),
     ...(combinedResponses && { responses: combinedResponses }),
   };
@@ -435,6 +486,26 @@ const createResponseComponents = (
         throw new Error(`Response "${component.ref}" is already registered`);
       }
       acc[component.ref] = component.responseObject as oas31.ResponseObject;
+    }
+
+    return acc;
+  }, {});
+
+  return Object.keys(components).length ? components : undefined;
+};
+
+const createRequestBodiesComponents = (
+  componentMap: RequestBodyComponentMap,
+): oas31.ComponentsObject['requestBodies'] => {
+  const components = Array.from(componentMap).reduce<
+    NonNullable<oas31.ComponentsObject['requestBodies']>
+  >((acc, [_zodType, component]) => {
+    if (component.type === 'complete') {
+      if (acc[component.ref]) {
+        throw new Error(`RequestBody "${component.ref}" is already registered`);
+      }
+      acc[component.ref] =
+        component.requestBodyObject as oas31.RequestBodyObject;
     }
 
     return acc;

@@ -25,7 +25,7 @@ export const createBaseParameter = (
   };
 };
 
-const createParamOrRef = (
+export const createParamOrRef = (
   zodSchema: ZodType,
   type: keyof ZodOpenApiParameters,
   name: string,

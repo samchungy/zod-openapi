@@ -10,6 +10,8 @@ import {
   HeaderComponentMap,
   ParameterComponent,
   ParameterComponentMap,
+  RequestBodyComponent,
+  RequestBodyComponentMap,
   ResponseComponent,
   ResponseComponentMap,
   SchemaComponent,
@@ -17,7 +19,10 @@ import {
   createComponents,
   getDefaultComponents,
 } from './components';
-import { ZodOpenApiResponseObject } from './document';
+import {
+  ZodOpenApiRequestBodyObject,
+  ZodOpenApiResponseObject,
+} from './document';
 
 extendZodWithOpenApi(z);
 
@@ -29,6 +34,7 @@ describe('getDefaultComponents', () => {
       parameters: expect.any(Map),
       schemas: expect.any(Map),
       headers: expect.any(Map),
+      requestBodies: expect.any(Map),
       openapi: '3.1.0',
     };
     expect(result).toStrictEqual(expected);
@@ -40,6 +46,13 @@ describe('getDefaultComponents', () => {
     const cSchema = z.string();
     const dResponse: ZodOpenApiResponseObject = {
       description: '200 OK',
+      content: {
+        'application/json': {
+          schema: z.object({ a: z.string() }),
+        },
+      },
+    };
+    const eRequestBody: ZodOpenApiRequestBodyObject = {
       content: {
         'application/json': {
           schema: z.object({ a: z.string() }),
@@ -80,8 +93,12 @@ describe('getDefaultComponents', () => {
       responses: {
         d: dResponse,
       },
+      requestBodies: {
+        e: eRequestBody,
+      },
     });
     const expected: ComponentsObject = {
+      requestBodies: expect.any(Map),
       responses: expect.any(Map),
       parameters: expect.any(Map),
       schemas: expect.any(Map),
@@ -135,16 +152,39 @@ describe('getDefaultComponents', () => {
       ref: 'd',
       type: 'complete',
     };
+    const expectedRequestBodies: RequestBodyComponent = {
+      requestBodyObject: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                a: {
+                  type: 'string',
+                },
+              },
+              required: ['a'],
+            },
+          },
+        },
+      },
+      ref: 'e',
+      type: 'complete',
+    };
 
     expect(result).toStrictEqual(expected);
     expect(result.schemas.get(aSchema)).toStrictEqual(expectedSchema);
     expect(result.parameters.get(bSchema)).toStrictEqual(expectedParameter);
     expect(result.headers.get(cSchema)).toStrictEqual(expectedHeader);
     expect(result.responses.get(dResponse)).toStrictEqual(expectedResponse);
+    expect(result.requestBodies.get(eRequestBody)).toStrictEqual(
+      expectedRequestBodies,
+    );
   });
 
   it('allows registering schemas in any order', () => {
     const expected: ComponentsObject = {
+      requestBodies: expect.any(Map),
       responses: expect.any(Map),
       headers: expect.any(Map),
       parameters: expect.any(Map),
@@ -192,6 +232,7 @@ describe('createComponents', () => {
     const componentsObject = createComponents(
       {},
       {
+        requestBodies: new Map(),
         parameters: new Map(),
         schemas: new Map(),
         headers: new Map(),
@@ -229,6 +270,23 @@ describe('createComponents', () => {
       responses: {
         a: {
           description: '200 OK',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  a: {
+                    type: 'string',
+                  },
+                },
+                required: ['a'],
+              },
+            },
+          },
+        },
+      },
+      requestBodies: {
+        a: {
           content: {
             'application/json': {
               schema: {
@@ -307,6 +365,35 @@ describe('createComponents', () => {
         type: 'complete',
       },
     );
+    const requestBodyMap: RequestBodyComponentMap = new Map();
+    requestBodyMap.set(
+      {
+        content: {
+          'application/json': {
+            schema: z.object({ a: z.string() }),
+          },
+        },
+      },
+      {
+        type: 'complete',
+        ref: 'a',
+        requestBodyObject: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  a: {
+                    type: 'string',
+                  },
+                },
+                required: ['a'],
+              },
+            },
+          },
+        },
+      },
+    );
     const componentsObject = createComponents(
       {},
       {
@@ -314,6 +401,7 @@ describe('createComponents', () => {
         schemas: schemaMap,
         headers: headerMap,
         responses: responseMap,
+        requestBodies: requestBodyMap,
         openapi: '3.1.0',
       },
     );
@@ -394,6 +482,7 @@ describe('createComponents', () => {
         schemas: schemaMap,
         headers: headerMap,
         responses: new Map(),
+        requestBodies: new Map(),
         openapi: '3.1.0',
       },
     );
