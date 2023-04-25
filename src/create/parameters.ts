@@ -25,23 +25,22 @@ export const createBaseParameter = (
   };
 };
 
-const createRegisteredParam = (
+const createParamOrRef = (
   zodSchema: ZodType,
-  ref: string,
   type: keyof ZodOpenApiParameters,
   name: string,
   components: ComponentsObject,
-): oas31.ReferenceObject => {
+): oas31.ParameterObject | oas31.ReferenceObject => {
   const component = components.parameters.get(zodSchema);
   if (component && component.type === 'complete') {
     if (
       !('$ref' in component.paramObject) &&
       (component.paramObject.in !== type || component.paramObject.name !== name)
     ) {
-      throw new Error(`parameterRef "${ref}" is already registered`);
+      throw new Error(`parameterRef "${component.ref}" is already registered`);
     }
     return {
-      $ref: createComponentParamRef(ref),
+      $ref: createComponentParamRef(component.ref),
     };
   }
 
@@ -51,38 +50,27 @@ const createRegisteredParam = (
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  components.parameters.set(zodSchema, {
-    type: 'complete',
-    paramObject: {
-      in: type,
-      name,
-      ...baseParamOrRef,
-    },
-    ref,
-  });
+  const ref = zodSchema?._def?.openapi?.param?.ref ?? component?.ref;
 
-  return {
-    $ref: createComponentParamRef(ref),
-  };
-};
-
-const createParamOrRef = (
-  schema: ZodType,
-  type: keyof ZodOpenApiParameters,
-  name: string,
-  components: ComponentsObject,
-): oas31.ParameterObject | oas31.ReferenceObject => {
-  const ref = schema?._def?.openapi?.param?.ref;
-
-  if (ref) {
-    return createRegisteredParam(schema, ref, type, name, components);
-  }
-
-  return {
+  const paramObject: oas31.ParameterObject = {
     in: type,
     name,
-    ...createBaseParameter(schema, components),
+    ...baseParamOrRef,
   };
+
+  if (ref) {
+    components.parameters.set(zodSchema, {
+      type: 'complete',
+      paramObject,
+      ref,
+    });
+
+    return {
+      $ref: createComponentParamRef(ref),
+    };
+  }
+
+  return paramObject;
 };
 
 const createParameters = (

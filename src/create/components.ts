@@ -2,10 +2,14 @@ import { oas30, oas31 } from 'openapi3-ts';
 import { ParameterLocation } from 'openapi3-ts/dist/mjs/oas31';
 import { ZodRawShape, ZodType } from 'zod';
 
-import { ZodOpenApiComponentsObject, ZodOpenApiVersion } from './document';
+import {
+  ZodOpenApiComponentsObject,
+  ZodOpenApiResponseObject,
+  ZodOpenApiVersion,
+} from './document';
 import { createBaseParameter } from './parameters';
-import { SchemaState } from './schema';
-import { createSchemaWithMetadata } from './schema/metadata';
+import { createResponse } from './responses';
+import { SchemaState, createSchemaOrRef } from './schema';
 
 export type CreationType = 'input' | 'output';
 
@@ -77,10 +81,37 @@ export type HeaderComponent = CompleteHeaderComponent | PartialHeaderComponent;
 
 export type HeaderComponentMap = Map<ZodType, HeaderComponent>;
 
+interface BaseResponseComponent {
+  ref: string;
+}
+
+export interface CompleteResponseComponent extends BaseResponseComponent {
+  type: 'complete';
+  responseObject:
+    | oas31.ResponseObject
+    | oas31.ReferenceObject
+    | oas30.ResponseObject
+    | oas30.ReferenceObject;
+}
+
+export interface PartialResponseComponent extends BaseResponseComponent {
+  type: 'partial';
+}
+
+export type ResponseComponent =
+  | CompleteResponseComponent
+  | PartialResponseComponent;
+
+export type ResponseComponentMap = Map<
+  ZodOpenApiResponseObject,
+  ResponseComponent
+>;
+
 export interface ComponentsObject {
   schemas: SchemaComponentMap;
   parameters: ParameterComponentMap;
   headers: HeaderComponentMap;
+  responses: ResponseComponentMap;
   openapi: ZodOpenApiVersion;
 }
 
@@ -92,6 +123,7 @@ export const getDefaultComponents = (
     schemas: new Map(),
     parameters: new Map(),
     headers: new Map(),
+    responses: new Map(),
     openapi,
   };
   if (!componentsObject) {
@@ -101,6 +133,7 @@ export const getDefaultComponents = (
   createSchemas(componentsObject.schemas, defaultComponents);
   createParameters(componentsObject.requestParams, defaultComponents);
   createHeaders(componentsObject.responseHeaders, defaultComponents);
+  createResponses(componentsObject.responses, defaultComponents);
 
   return defaultComponents;
 };
@@ -128,21 +161,14 @@ const createSchemas = (
     }
   });
 
-  return Array.from(components.schemas).forEach(([schema, { ref, type }]) => {
+  return Array.from(components.schemas).forEach(([schema, { type }]) => {
     if (type === 'partial') {
       const state: SchemaState = {
         components,
         type: schema._def.openapi?.refType ?? 'output',
       };
 
-      const schemaObject = createSchemaWithMetadata(schema, state);
-
-      components.schemas.set(schema, {
-        type: 'complete',
-        ref,
-        schemaObject,
-        ...(state.effectType && { creationType: state.effectType }),
-      });
+      createSchemaOrRef(schema, state);
     }
   });
 };
@@ -228,8 +254,40 @@ const createHeaders = (
   });
 };
 
+const createResponses = (
+  responses: ZodOpenApiComponentsObject['responses'],
+  components: ComponentsObject,
+): void => {
+  if (!responses) {
+    return;
+  }
+
+  Object.entries(responses).forEach(([key, responseObject]) => {
+    if (components.responses.has(responseObject)) {
+      throw new Error(
+        `Header ${JSON.stringify(responseObject)} is already registered`,
+      );
+    }
+    const ref = responseObject?.ref ?? key;
+    components.responses.set(responseObject, {
+      type: 'partial',
+      ref,
+    });
+  });
+
+  return Array.from(components.responses).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      createResponse(schema, components);
+    }
+  });
+};
+
 export const createComponentSchemaRef = (schemaRef: string) =>
   `#/components/schemas/${schemaRef}`;
+
+export const createComponentResponseRef = (responseRef: string) =>
+  `#/components/responses/${responseRef}`;
+
 export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
@@ -246,14 +304,16 @@ export const createComponents = (
     componentsObject,
     components.headers,
   );
+  const combinedResponses = createResponseComponents(components.responses);
 
-  const { schemas, parameters, headers, ...rest } = componentsObject;
+  const { schemas, parameters, headers, responses, ...rest } = componentsObject;
 
   const finalComponents: oas31.ComponentsObject = {
     ...rest,
     ...(combinedSchemas && { schemas: combinedSchemas }),
     ...(combinedParameters && { parameters: combinedParameters }),
     ...(combinedHeaders && { headers: combinedHeaders }),
+    ...(combinedResponses && { responses: combinedResponses }),
   };
   return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
@@ -360,6 +420,25 @@ const createHeaderComponents = (
 
     return acc;
   }, customComponents);
+
+  return Object.keys(components).length ? components : undefined;
+};
+
+const createResponseComponents = (
+  componentMap: ResponseComponentMap,
+): oas31.ComponentsObject['responses'] => {
+  const components = Array.from(componentMap).reduce<
+    NonNullable<oas31.ComponentsObject['responses']>
+  >((acc, [_zodType, component]) => {
+    if (component.type === 'complete') {
+      if (acc[component.ref]) {
+        throw new Error(`Response "${component.ref}" is already registered`);
+      }
+      acc[component.ref] = component.responseObject as oas31.ResponseObject;
+    }
+
+    return acc;
+  }, {});
 
   return Object.keys(components).length ? components : undefined;
 };
