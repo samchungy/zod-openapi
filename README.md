@@ -370,6 +370,8 @@ const header = z.string().openapi({
   header: { ref: 'some-header' },
 });
 
+// or
+
 const jobIdHeader = z.string().openapi({
   description: 'Job ID',
   example: '1234'
@@ -380,6 +382,41 @@ createDocument({
     responseHeaders: z.object(
       'some-header': jobIdHeader
     )
+  },
+});
+```
+
+#### Responses
+
+Entire Responses can also be registered
+
+```typescript
+const response: ZodOpenApiResponseObject = {
+  description: '200 OK',
+  content: {
+    'application/json': {
+      schema: z.object({ a: z.string() }),
+    },
+  },
+  ref: 'some-response',
+};
+
+//or
+
+const response: ZodOpenApiResponseObject = {
+  description: '200 OK',
+  content: {
+    'application/json': {
+      schema: z.object({ a: z.string() }),
+    },
+  },
+};
+
+createDocument({
+  components: {
+    responses: {
+      'some-response': response,
+    },
   },
 });
 ```
