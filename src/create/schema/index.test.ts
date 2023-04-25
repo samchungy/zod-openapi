@@ -326,7 +326,7 @@ describe('createSchemaOrRef', () => {
     };
 
     expect(() => createSchemaOrRef(outputSchema, state)).toThrow(
-      '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
     );
   });
 });

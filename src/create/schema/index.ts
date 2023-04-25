@@ -190,14 +190,14 @@ export const createSchema = <
   return createManualTypeSchema(zodSchema);
 };
 
-export const createRegisteredSchema = <
+export const createSchemaOrRef = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-): oas31.ReferenceObject | undefined => {
+): oas31.ReferenceObject | oas31.SchemaObject => {
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {
     if (component.creationType && component.creationType !== state.type) {
@@ -211,9 +211,6 @@ export const createRegisteredSchema = <
   }
 
   const schemaRef = zodSchema._def.openapi?.ref ?? component?.ref;
-  if (!schemaRef) {
-    return undefined;
-  }
 
   const newState: SchemaState = {
     components: state.components,
@@ -221,10 +218,6 @@ export const createRegisteredSchema = <
   };
 
   const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);
-  // Optional Objects can return a reference object
-  if ('$ref' in schemaOrRef) {
-    throw new Error('Unexpected Error: received a reference object');
-  }
 
   if (newState.effectType) {
     if (state.effectType && newState.effectType !== state.effectType) {
@@ -233,30 +226,18 @@ export const createRegisteredSchema = <
     state.effectType = newState.effectType;
   }
 
-  state.components.schemas.set(zodSchema, {
-    type: 'complete',
-    ref: schemaRef,
-    schemaObject: schemaOrRef,
-    ...(newState.effectType && { creationType: newState.effectType }),
-  });
+  if (schemaRef) {
+    state.components.schemas.set(zodSchema, {
+      type: 'complete',
+      ref: schemaRef,
+      schemaObject: schemaOrRef,
+      ...(newState.effectType && { creationType: newState.effectType }),
+    });
 
-  return {
-    $ref: createComponentSchemaRef(schemaRef),
-  };
-};
-
-export const createSchemaOrRef = <
-  Output = any,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(
-  zodSchema: ZodType<Output, Def, Input>,
-  state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
-  const schema = createRegisteredSchema(zodSchema, state);
-  if (schema) {
-    return schema;
+    return {
+      $ref: createComponentSchemaRef(schemaRef),
+    };
   }
 
-  return createSchemaWithMetadata(zodSchema, state);
+  return schemaOrRef;
 };
