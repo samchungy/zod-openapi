@@ -1,4 +1,4 @@
-import { oas31 } from 'openapi3-ts';
+import { oas30, oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
@@ -14,7 +14,7 @@ extendZodWithOpenApi(z);
 describe('createNullableSchema', () => {
   describe('openapi 3.0.0', () => {
     it('creates a simple nullable string schema', () => {
-      const expected: oas31.SchemaObject = {
+      const expected: oas30.SchemaObject = {
         type: 'string',
         nullable: true,
       };
@@ -26,7 +26,7 @@ describe('createNullableSchema', () => {
     });
 
     it('creates an oneOf nullable schema for registered schemas', () => {
-      const expected: oas31.SchemaObject = {
+      const expected: oas30.SchemaObject = {
         oneOf: [
           {
             $ref: '#/components/schemas/a',
@@ -45,7 +45,7 @@ describe('createNullableSchema', () => {
     });
 
     it('creates an anyOf nullable schema', () => {
-      const expected: oas31.SchemaObject = {
+      const expected: oas30.SchemaObject = {
         anyOf: [
           {
             type: 'object',
@@ -80,7 +80,7 @@ describe('createNullableSchema', () => {
     });
 
     it('creates a nullable allOf nullable schema', () => {
-      const expected: oas31.SchemaObject = {
+      const expected: oas30.SchemaObject = {
         type: 'object',
         properties: {
           b: {
