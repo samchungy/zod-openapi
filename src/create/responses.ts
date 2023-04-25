@@ -26,7 +26,7 @@ export const createResponseHeaders = (
   }, {});
 };
 
-const createHeaderOrRef = (
+export const createHeaderOrRef = (
   schema: ZodType,
   components: ComponentsObject,
 ): oas31.BaseParameterObject | oas31.ReferenceObject => {

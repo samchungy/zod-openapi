@@ -1,6 +1,6 @@
 import { oas31 } from 'openapi3-ts';
 
-import { ComponentsObject } from './components';
+import { ComponentsObject, createComponentRequestBodyRef } from './components';
 import { createContent } from './content';
 import {
   ZodOpenApiOperationObject,
@@ -12,17 +12,40 @@ import { createParametersObject } from './parameters';
 import { createResponses } from './responses';
 import { isISpecificationExtension } from './specificationExtension';
 
-const createRequestBody = (
+export const createRequestBody = (
   requestBodyObject: ZodOpenApiRequestBodyObject | undefined,
   components: ComponentsObject,
-): oas31.RequestBodyObject | undefined => {
+): oas31.ReferenceObject | oas31.RequestBodyObject | undefined => {
   if (!requestBodyObject) {
     return undefined;
   }
-  return {
+
+  const component = components.requestBodies.get(requestBodyObject);
+  if (component && component.type === 'complete') {
+    return {
+      $ref: createComponentRequestBodyRef(component.ref),
+    };
+  }
+
+  const ref = requestBodyObject.ref ?? component?.ref;
+
+  const requestBody: oas31.RequestBodyObject = {
     ...requestBodyObject,
     content: createContent(requestBodyObject.content, components, 'input'),
   };
+
+  if (ref) {
+    components.requestBodies.set(requestBodyObject, {
+      type: 'complete',
+      ref,
+      requestBodyObject: requestBody,
+    });
+    return {
+      $ref: createComponentRequestBodyRef(ref),
+    };
+  }
+
+  return requestBody;
 };
 
 const createOperation = (
