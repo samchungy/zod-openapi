@@ -7,8 +7,6 @@ import {
   ZodRawShape,
 } from 'zod';
 
-import { createComponentSchemaRef } from '../components';
-
 import { SchemaState, createSchemaOrRef } from '.';
 
 export const createDiscriminatedUnionSchema = (
@@ -18,8 +16,9 @@ export const createDiscriminatedUnionSchema = (
   const options = zodDiscriminatedUnion.options as AnyZodObject[];
   const schemas = options.map((option) => createSchemaOrRef(option, state));
   const discriminator = mapDiscriminator(
+    schemas,
     options,
-    zodDiscriminatedUnion.discriminator as string,
+    zodDiscriminatedUnion.discriminator,
   );
   return {
     oneOf: schemas,
@@ -28,24 +27,29 @@ export const createDiscriminatedUnionSchema = (
 };
 
 export const mapDiscriminator = (
+  schemas: (oas31.SchemaObject | oas31.ReferenceObject)[],
   zodObjects: AnyZodObject[],
-  discriminator: string,
-) => {
-  if (zodObjects.some((obj) => !obj._def.openapi?.ref)) {
+  discriminator: unknown,
+): oas31.SchemaObject['discriminator'] => {
+  if (typeof discriminator !== 'string') {
     return undefined;
   }
 
-  const mapping = zodObjects.reduce<
-    NonNullable<oas31.DiscriminatorObject['mapping']>
-  >((acc, zodObject) => {
-    const schemaRef = zodObject._def.openapi?.ref as string;
+  const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
+  for (const [index, zodObject] of zodObjects.entries()) {
+    const schema = schemas[index];
+    const componentSchemaRef = '$ref' in schema ? schema?.$ref : undefined;
+    if (!componentSchemaRef) {
+      return undefined;
+    }
+
     const value = (zodObject.shape as ZodRawShape)[discriminator];
 
     if (value instanceof ZodEnum) {
       for (const enumValue of value._def.values as string[]) {
-        acc[enumValue] = createComponentSchemaRef(schemaRef);
+        mapping[enumValue] = componentSchemaRef;
       }
-      return acc;
+      continue;
     }
 
     const literalValue = (value?._def as ZodLiteralDef<unknown>).value;
@@ -56,9 +60,8 @@ export const mapDiscriminator = (
       );
     }
 
-    acc[literalValue] = createComponentSchemaRef(schemaRef);
-    return acc;
-  }, {});
+    mapping[literalValue] = componentSchemaRef;
+  }
 
   return {
     propertyName: discriminator,

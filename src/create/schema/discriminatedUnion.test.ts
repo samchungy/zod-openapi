@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
 import { createOutputState } from '../../testing/state';
+import { ZodOpenApiComponentsObject } from '../document';
 
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 
@@ -109,6 +110,45 @@ describe('createDiscriminatedUnionSchema', () => {
     ]);
 
     const result = createDiscriminatedUnionSchema(schema, createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('creates a oneOf schema with discriminator mapping when schemas with enums are registered manually', () => {
+    const c = z.object({
+      type: z.literal('c'),
+    });
+
+    const d = z.object({
+      type: z.enum(['d', 'e']),
+    });
+
+    const components: ZodOpenApiComponentsObject = {
+      schemas: {
+        c,
+        d,
+      },
+    };
+    const expected: oas31.SchemaObject = {
+      oneOf: [
+        { $ref: '#/components/schemas/c' },
+        { $ref: '#/components/schemas/d' },
+      ],
+      discriminator: {
+        propertyName: 'type',
+        mapping: {
+          c: '#/components/schemas/c',
+          d: '#/components/schemas/d',
+          e: '#/components/schemas/d',
+        },
+      },
+    };
+    const schema = z.discriminatedUnion('type', [c, d]);
+
+    const result = createDiscriminatedUnionSchema(
+      schema,
+      createOutputState(components),
+    );
 
     expect(result).toStrictEqual(expected);
   });
