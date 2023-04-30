@@ -12,3 +12,5 @@ node_modules*/
 /lib*/
 /tmp*/
 # end managed by skuba
+
+src/openapi3-ts/*
