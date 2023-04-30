@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { join, relative } from 'path';
-const cwd = process.cwd();
+
+import { Git } from 'skuba';
 
 async function copyDTs(src: string, dest: string): Promise<void> {
   const files = await fs.readdir(src);
@@ -42,11 +43,23 @@ async function deleteFolderRecursive(folderPath: string) {
 }
 
 async function main() {
-  const src = join(cwd, './node_modules/openapi3-ts');
-  const dest = join(cwd, 'src/openapi3-ts');
+  const dir = process.cwd();
+
+  const src = join(dir, './node_modules/openapi3-ts');
+  const dest = join(dir, 'src/openapi3-ts');
   await deleteFolderRecursive(dest);
   await copyDTs(src, dest);
+
+  if (process.env.GITHUB_ACTIONS) {
+    const files = await Git.getChangedFiles({ dir });
+    if (files.length) {
+      throw new Error('openapi3-ts types need updating');
+    }
+  }
 }
 
-// eslint-disable-next-line no-console
-main().catch(console.error);
+main().catch((error) => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+  throw error;
+});
