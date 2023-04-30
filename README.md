@@ -12,7 +12,6 @@ A Typescript library to create full OpenAPI 3.x documentation from <a href="http
 <a href="https://github.com/seek-oss/skuba"><img src="https://img.shields.io/badge/🤿%20skuba-powered-009DC4"/><a>
 </div>
 <br>
-<br>
 
 ## Install
 
