@@ -1,5 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { ZodDefault, ZodTypeAny } from 'zod';
+
+import { oas31 } from '../../openapi3-ts/dist';
 
 import { enhanceWithMetadata } from './metadata';
 

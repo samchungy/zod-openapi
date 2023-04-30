@@ -1,8 +1,7 @@
-import { oas30, oas31 } from 'openapi3-ts';
-import { stringify } from 'yaml';
 import { AnyZodObject, ZodType } from 'zod';
 
 import { OpenApiVersion } from '../openapi';
+import { oas30, oas31 } from '../openapi3-ts/dist';
 
 import { createComponents, getDefaultComponents } from './components';
 import { createPaths } from './paths';
@@ -127,30 +126,4 @@ export const createDocument = (
     webhooks: createPaths(zodOpenApiObject.webhooks, defaultComponents),
     components: createComponents(components, defaultComponents),
   };
-};
-
-export const createDocumentJson = (
-  params: ZodOpenApiObject,
-  jsonOptions?: {
-    replacer?: Parameters<typeof JSON.stringify>[1];
-    options?: Parameters<typeof JSON.stringify>[2];
-  },
-): string => {
-  const document = createDocument(params);
-  return JSON.stringify(
-    document,
-    jsonOptions?.replacer,
-    jsonOptions?.options ?? 2,
-  );
-};
-
-export const createDocumentYaml = (
-  params: ZodOpenApiObject,
-  yamlOptions: {
-    replacer?: Parameters<typeof stringify>[1];
-    options?: Parameters<typeof stringify>[2];
-  } = {},
-): string => {
-  const document = createDocument(params);
-  return stringify(document, yamlOptions.replacer, yamlOptions.options);
 };

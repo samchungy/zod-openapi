@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { ZodOpenApiOperationObject, createDocumentYaml } from '../../src';
+import { stringify } from 'yaml';
+
+import { ZodOpenApiOperationObject, createDocument } from '../../src';
 
 import {
   CreateJobRequestSchema,
@@ -52,7 +54,7 @@ const createJobOperation: ZodOpenApiOperationObject = {
   },
 };
 
-const yaml = createDocumentYaml({
+const document = createDocument({
   openapi: '3.1.0',
   info: {
     title: 'Simple API',
@@ -98,6 +100,8 @@ const yaml = createDocumentYaml({
     },
   },
 });
+
+const yaml = stringify(document, { aliasDuplicateObjects: false });
 
 // eslint-disable-next-line no-sync
 fs.writeFileSync(path.join(__dirname, 'openapi.yml'), yaml);

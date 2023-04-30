@@ -2,11 +2,7 @@ import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../extendZod';
 
-import {
-  ZodOpenApiObject,
-  createDocumentJson,
-  createDocumentYaml,
-} from './document';
+import { ZodOpenApiObject, createDocument } from './document';
 
 extendZodWithOpenApi(z);
 
@@ -150,9 +146,9 @@ const complexZodOpenApiObject: ZodOpenApiObject = {
   },
 };
 
-describe('createDocumentJson', () => {
+describe('createDocument', () => {
   it('should generate a JSON document string', () => {
-    const document = createDocumentJson(simpleZodOpenApiObject);
+    const document = createDocument(simpleZodOpenApiObject);
 
     expect(document).toMatchInlineSnapshot(`
       "{
@@ -219,7 +215,7 @@ describe('createDocumentJson', () => {
   });
 
   it('should generate a JSON document string with components', () => {
-    const document = createDocumentJson(registeredZodOpenApiObject);
+    const document = createDocument(registeredZodOpenApiObject);
 
     expect(document).toMatchInlineSnapshot(`
       "{
@@ -311,7 +307,7 @@ describe('createDocumentJson', () => {
   });
 
   it('should generate a complex JSON document string with components', () => {
-    const document = createDocumentJson(complexZodOpenApiObject);
+    const document = createDocument(complexZodOpenApiObject);
 
     expect(document).toMatchInlineSnapshot(`
       "{
@@ -558,7 +554,7 @@ describe('createDocumentJson', () => {
   });
 
   it('should generate a complex JSON document string with components in 3.0.0', () => {
-    const document = createDocumentJson({
+    const document = createDocument({
       ...complexZodOpenApiObject,
       openapi: '3.0.0',
     });
@@ -806,109 +802,6 @@ describe('createDocumentJson', () => {
           }
         }
       }"
-    `);
-  });
-});
-
-describe('createDocumentYaml', () => {
-  it('should generate a YAML document string', () => {
-    const document = createDocumentYaml(simpleZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-      "info:
-        title: My API
-        version: 1.0.0
-      openapi: 3.1.0
-      paths:
-        /jobs:
-          get:
-            parameters:
-              - in: path
-                name: b
-                schema:
-                  type: string
-                required: true
-            requestBody:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      a:
-                        type: string
-                    required:
-                      - a
-            responses:
-              "200":
-                description: 200 OK
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        a:
-                          type: string
-                      required:
-                        - a
-      "
-    `);
-  });
-
-  it('should generate a JSON document string with components', () => {
-    const document = createDocumentYaml(registeredZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-      "info:
-        title: My API
-        version: 1.0.0
-      openapi: 3.1.0
-      paths:
-        /jobs:
-          get:
-            parameters:
-              - $ref: "#/components/parameters/b"
-            requestBody:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      a:
-                        $ref: "#/components/schemas/a"
-                    required:
-                      - a
-            responses:
-              "200":
-                description: 200 OK
-                headers:
-                  my-header:
-                    $ref: "#/components/headers/my-header"
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        a:
-                          $ref: "#/components/schemas/a"
-                      required:
-                        - a
-      components:
-        schemas:
-          a:
-            type: string
-        parameters:
-          b:
-            in: path
-            name: b
-            schema:
-              type: string
-            required: true
-        headers:
-          my-header:
-            schema:
-              type: string
-            required: true
-      "
     `);
   });
 });

@@ -1,5 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { ZodEffects, ZodType, ZodTypeDef } from 'zod';
+
+import { oas31 } from '../../openapi3-ts/dist';
 
 export const createManualTypeSchema = <
   Output = any,

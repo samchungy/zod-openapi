@@ -1,5 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { AnyZodObject, ZodRawShape, ZodType } from 'zod';
+
+import { oas31 } from '../openapi3-ts/dist';
 
 import { ComponentsObject, createComponentResponseRef } from './components';
 import { createContent } from './content';

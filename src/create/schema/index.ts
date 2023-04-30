@@ -1,4 +1,3 @@
-import { oas31 } from 'openapi3-ts';
 import {
   ZodArray,
   ZodBoolean,
@@ -26,6 +25,7 @@ import {
   ZodUnknown,
 } from 'zod';
 
+import { oas31 } from '../../openapi3-ts/dist';
 import {
   ComponentsObject,
   CreationType,

@@ -1,7 +1,7 @@
-import { oas30, oas31 } from 'openapi3-ts';
 import { ZodNumber, ZodNumberCheck } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
+import { oas30, oas31 } from '../../openapi3-ts/dist';
 import { ZodOpenApiVersion } from '../document';
 
 import { SchemaState } from '.';
