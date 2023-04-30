@@ -1,7 +1,7 @@
-import { oas30, oas31 } from 'openapi3-ts';
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
+import { oas30, oas31 } from '../../openapi3-ts/dist';
 import {
   createOutputOpenapi3State,
   createOutputState,

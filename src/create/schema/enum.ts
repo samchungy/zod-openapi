@@ -1,5 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { ZodEnum } from 'zod';
+
+import { oas31 } from '../../openapi3-ts/dist';
 
 export const createEnumSchema = (
   zodEnum: ZodEnum<any>,

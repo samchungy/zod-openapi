@@ -1,7 +1,7 @@
-import { oas31 } from 'openapi3-ts';
 import { ZodTuple, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
+import { oas31 } from '../../openapi3-ts/dist';
 
 import { SchemaState, createSchemaOrRef } from '.';
 

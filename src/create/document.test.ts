@@ -2,11 +2,7 @@ import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../extendZod';
 
-import {
-  ZodOpenApiObject,
-  createDocumentJson,
-  createDocumentYaml,
-} from './document';
+import { ZodOpenApiObject, createDocument } from './document';
 
 extendZodWithOpenApi(z);
 
@@ -150,15 +146,15 @@ const complexZodOpenApiObject: ZodOpenApiObject = {
   },
 };
 
-describe('createDocumentJson', () => {
+describe('createDocument', () => {
   it('should generate a JSON document string', () => {
-    const document = createDocumentJson(simpleZodOpenApiObject);
+    const document = createDocument(simpleZodOpenApiObject);
 
     expect(document).toMatchInlineSnapshot(`
-      "{
+      {
         "info": {
           "title": "My API",
-          "version": "1.0.0"
+          "version": "1.0.0",
         },
         "openapi": "3.1.0",
         "paths": {
@@ -168,156 +164,89 @@ describe('createDocumentJson', () => {
                 {
                   "in": "path",
                   "name": "b",
+                  "required": true,
                   "schema": {
-                    "type": "string"
+                    "type": "string",
                   },
-                  "required": true
-                }
+                },
               ],
               "requestBody": {
                 "content": {
                   "application/json": {
                     "schema": {
-                      "type": "object",
                       "properties": {
                         "a": {
-                          "type": "string"
-                        }
+                          "type": "string",
+                        },
                       },
                       "required": [
-                        "a"
-                      ]
-                    }
-                  }
-                }
+                        "a",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                },
               },
               "responses": {
                 "200": {
-                  "description": "200 OK",
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
                         "properties": {
                           "a": {
-                            "type": "string"
-                          }
+                            "type": "string",
+                          },
                         },
                         "required": [
-                          "a"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }"
+                          "a",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "200 OK",
+                },
+              },
+            },
+          },
+        },
+      }
     `);
   });
 
   it('should generate a JSON document string with components', () => {
-    const document = createDocumentJson(registeredZodOpenApiObject);
+    const document = createDocument(registeredZodOpenApiObject);
 
     expect(document).toMatchInlineSnapshot(`
-      "{
-        "info": {
-          "title": "My API",
-          "version": "1.0.0"
-        },
-        "openapi": "3.1.0",
-        "paths": {
-          "/jobs": {
-            "get": {
-              "parameters": [
-                {
-                  "$ref": "#/components/parameters/b"
-                }
-              ],
-              "requestBody": {
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "type": "object",
-                      "properties": {
-                        "a": {
-                          "$ref": "#/components/schemas/a"
-                        }
-                      },
-                      "required": [
-                        "a"
-                      ]
-                    }
-                  }
-                }
-              },
-              "responses": {
-                "200": {
-                  "description": "200 OK",
-                  "headers": {
-                    "my-header": {
-                      "$ref": "#/components/headers/my-header"
-                    }
-                  },
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "type": "object",
-                        "properties": {
-                          "a": {
-                            "$ref": "#/components/schemas/a"
-                          }
-                        },
-                        "required": [
-                          "a"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
+      {
         "components": {
-          "schemas": {
-            "a": {
-              "type": "string"
-            }
+          "headers": {
+            "my-header": {
+              "required": true,
+              "schema": {
+                "type": "string",
+              },
+            },
           },
           "parameters": {
             "b": {
               "in": "path",
               "name": "b",
+              "required": true,
               "schema": {
-                "type": "string"
+                "type": "string",
               },
-              "required": true
-            }
+            },
           },
-          "headers": {
-            "my-header": {
-              "schema": {
-                "type": "string"
-              },
-              "required": true
-            }
-          }
-        }
-      }"
-    `);
-  });
-
-  it('should generate a complex JSON document string with components', () => {
-    const document = createDocumentJson(complexZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-      "{
+          "schemas": {
+            "a": {
+              "type": "string",
+            },
+          },
+        },
         "info": {
           "title": "My API",
-          "version": "1.0.0"
+          "version": "1.0.0",
         },
         "openapi": "3.1.0",
         "paths": {
@@ -325,249 +254,402 @@ describe('createDocumentJson', () => {
             "get": {
               "parameters": [
                 {
-                  "$ref": "#/components/parameters/b"
-                }
+                  "$ref": "#/components/parameters/b",
+                },
               ],
               "requestBody": {
                 "content": {
                   "application/json": {
                     "schema": {
-                      "type": "object",
                       "properties": {
                         "a": {
-                          "$ref": "#/components/schemas/a"
+                          "$ref": "#/components/schemas/a",
+                        },
+                      },
+                      "required": [
+                        "a",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                },
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "a": {
+                            "$ref": "#/components/schemas/a",
+                          },
+                        },
+                        "required": [
+                          "a",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "200 OK",
+                  "headers": {
+                    "my-header": {
+                      "$ref": "#/components/headers/my-header",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }
+    `);
+  });
+
+  it('should generate a complex JSON document string with components', () => {
+    const document = createDocument(complexZodOpenApiObject);
+
+    expect(document).toMatchInlineSnapshot(`
+      {
+        "components": {
+          "headers": {
+            "my-header": {
+              "required": true,
+              "schema": {
+                "type": "string",
+              },
+            },
+          },
+          "parameters": {
+            "b": {
+              "in": "path",
+              "name": "b",
+              "required": true,
+              "schema": {
+                "type": "string",
+              },
+            },
+          },
+          "schemas": {
+            "a": {
+              "type": "string",
+            },
+            "b": {
+              "properties": {
+                "a": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "a",
+              ],
+              "type": "object",
+            },
+            "c": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/b",
+                },
+                {
+                  "properties": {
+                    "d": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "d",
+                  ],
+                  "type": "object",
+                },
+              ],
+            },
+            "manual": {
+              "type": "boolean",
+            },
+            "union-a": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "a",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+              ],
+              "type": "object",
+            },
+            "union-b": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "b",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "info": {
+          "title": "My API",
+          "version": "1.0.0",
+        },
+        "openapi": "3.1.0",
+        "paths": {
+          "/jobs": {
+            "get": {
+              "parameters": [
+                {
+                  "$ref": "#/components/parameters/b",
+                },
+              ],
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "properties": {
+                        "a": {
+                          "$ref": "#/components/schemas/a",
                         },
                         "b": {
-                          "$ref": "#/components/schemas/b"
+                          "$ref": "#/components/schemas/b",
                         },
                         "c": {
-                          "$ref": "#/components/schemas/b"
+                          "$ref": "#/components/schemas/b",
                         },
                         "d": {
-                          "$ref": "#/components/schemas/c"
+                          "$ref": "#/components/schemas/c",
                         },
                         "e": {
-                          "oneOf": [
-                            {
-                              "$ref": "#/components/schemas/union-a"
-                            },
-                            {
-                              "$ref": "#/components/schemas/union-b"
-                            }
-                          ],
                           "discriminator": {
-                            "propertyName": "type",
                             "mapping": {
                               "a": "#/components/schemas/union-a",
-                              "b": "#/components/schemas/union-b"
-                            }
-                          }
+                              "b": "#/components/schemas/union-b",
+                            },
+                            "propertyName": "type",
+                          },
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/union-a",
+                            },
+                            {
+                              "$ref": "#/components/schemas/union-b",
+                            },
+                          ],
                         },
                         "f": {
-                          "type": "array",
                           "maxItems": 3,
                           "minItems": 3,
                           "prefixItems": [
                             {
-                              "type": "string"
+                              "type": "string",
                             },
                             {
-                              "type": "number"
+                              "type": "number",
                             },
                             {
-                              "$ref": "#/components/schemas/manual"
-                            }
-                          ]
-                        }
+                              "$ref": "#/components/schemas/manual",
+                            },
+                          ],
+                          "type": "array",
+                        },
                       },
                       "required": [
                         "a",
                         "b",
                         "d",
                         "e",
-                        "f"
-                      ]
-                    }
-                  }
-                }
+                        "f",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                },
               },
               "responses": {
                 "200": {
-                  "description": "200 OK",
-                  "headers": {
-                    "my-header": {
-                      "$ref": "#/components/headers/my-header"
-                    }
-                  },
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
                         "properties": {
                           "a": {
-                            "$ref": "#/components/schemas/a"
+                            "$ref": "#/components/schemas/a",
                           },
                           "b": {
-                            "$ref": "#/components/schemas/b"
+                            "$ref": "#/components/schemas/b",
                           },
                           "c": {
-                            "$ref": "#/components/schemas/b"
+                            "$ref": "#/components/schemas/b",
                           },
                           "d": {
-                            "$ref": "#/components/schemas/c"
+                            "$ref": "#/components/schemas/c",
                           },
                           "e": {
-                            "oneOf": [
-                              {
-                                "$ref": "#/components/schemas/union-a"
-                              },
-                              {
-                                "$ref": "#/components/schemas/union-b"
-                              }
-                            ],
                             "discriminator": {
-                              "propertyName": "type",
                               "mapping": {
                                 "a": "#/components/schemas/union-a",
-                                "b": "#/components/schemas/union-b"
-                              }
-                            }
+                                "b": "#/components/schemas/union-b",
+                              },
+                              "propertyName": "type",
+                            },
+                            "oneOf": [
+                              {
+                                "$ref": "#/components/schemas/union-a",
+                              },
+                              {
+                                "$ref": "#/components/schemas/union-b",
+                              },
+                            ],
                           },
                           "f": {
-                            "type": "array",
                             "maxItems": 3,
                             "minItems": 3,
                             "prefixItems": [
                               {
-                                "type": "string"
+                                "type": "string",
                               },
                               {
-                                "type": "number"
+                                "type": "number",
                               },
                               {
-                                "$ref": "#/components/schemas/manual"
-                              }
-                            ]
-                          }
+                                "$ref": "#/components/schemas/manual",
+                              },
+                            ],
+                            "type": "array",
+                          },
                         },
                         "required": [
                           "a",
                           "b",
                           "d",
                           "e",
-                          "f"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "components": {
-          "schemas": {
-            "manual": {
-              "type": "boolean"
-            },
-            "a": {
-              "type": "string"
-            },
-            "b": {
-              "type": "object",
-              "properties": {
-                "a": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "a"
-              ]
-            },
-            "c": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/b"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "d": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
+                          "f",
+                        ],
+                        "type": "object",
+                      },
+                    },
                   },
-                  "required": [
-                    "d"
-                  ]
-                }
-              ]
+                  "description": "200 OK",
+                  "headers": {
+                    "my-header": {
+                      "$ref": "#/components/headers/my-header",
+                    },
+                  },
+                },
+              },
             },
-            "union-a": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "a"
-                  ]
-                }
-              },
-              "required": [
-                "type"
-              ]
-            },
-            "union-b": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "b"
-                  ]
-                }
-              },
-              "required": [
-                "type"
-              ]
-            }
           },
-          "parameters": {
-            "b": {
-              "in": "path",
-              "name": "b",
-              "schema": {
-                "type": "string"
-              },
-              "required": true
-            }
-          },
-          "headers": {
-            "my-header": {
-              "schema": {
-                "type": "string"
-              },
-              "required": true
-            }
-          }
-        }
-      }"
+        },
+      }
     `);
   });
 
   it('should generate a complex JSON document string with components in 3.0.0', () => {
-    const document = createDocumentJson({
+    const document = createDocument({
       ...complexZodOpenApiObject,
       openapi: '3.0.0',
     });
 
     expect(document).toMatchInlineSnapshot(`
-      "{
+      {
+        "components": {
+          "headers": {
+            "my-header": {
+              "required": true,
+              "schema": {
+                "type": "string",
+              },
+            },
+          },
+          "parameters": {
+            "b": {
+              "in": "path",
+              "name": "b",
+              "required": true,
+              "schema": {
+                "type": "string",
+              },
+            },
+          },
+          "schemas": {
+            "a": {
+              "type": "string",
+            },
+            "b": {
+              "properties": {
+                "a": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "a",
+              ],
+              "type": "object",
+            },
+            "c": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/b",
+                },
+                {
+                  "properties": {
+                    "d": {
+                      "nullable": true,
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "d",
+                  ],
+                  "type": "object",
+                },
+              ],
+            },
+            "manual": {
+              "type": "boolean",
+            },
+            "union-a": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "a",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+              ],
+              "type": "object",
+            },
+            "union-b": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "b",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+              ],
+              "type": "object",
+            },
+          },
+        },
         "info": {
           "title": "My API",
-          "version": "1.0.0"
+          "version": "1.0.0",
         },
         "openapi": "3.0.0",
         "paths": {
@@ -575,340 +657,151 @@ describe('createDocumentJson', () => {
             "get": {
               "parameters": [
                 {
-                  "$ref": "#/components/parameters/b"
-                }
+                  "$ref": "#/components/parameters/b",
+                },
               ],
               "requestBody": {
                 "content": {
                   "application/json": {
                     "schema": {
-                      "type": "object",
                       "properties": {
                         "a": {
-                          "$ref": "#/components/schemas/a"
+                          "$ref": "#/components/schemas/a",
                         },
                         "b": {
-                          "$ref": "#/components/schemas/b"
+                          "$ref": "#/components/schemas/b",
                         },
                         "c": {
-                          "$ref": "#/components/schemas/b"
+                          "$ref": "#/components/schemas/b",
                         },
                         "d": {
-                          "$ref": "#/components/schemas/c"
+                          "$ref": "#/components/schemas/c",
                         },
                         "e": {
-                          "oneOf": [
-                            {
-                              "$ref": "#/components/schemas/union-a"
-                            },
-                            {
-                              "$ref": "#/components/schemas/union-b"
-                            }
-                          ],
                           "discriminator": {
-                            "propertyName": "type",
                             "mapping": {
                               "a": "#/components/schemas/union-a",
-                              "b": "#/components/schemas/union-b"
-                            }
-                          }
+                              "b": "#/components/schemas/union-b",
+                            },
+                            "propertyName": "type",
+                          },
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/union-a",
+                            },
+                            {
+                              "$ref": "#/components/schemas/union-b",
+                            },
+                          ],
                         },
                         "f": {
-                          "type": "array",
-                          "maxItems": 3,
-                          "minItems": 3,
                           "items": {
                             "oneOf": [
                               {
-                                "type": "string"
+                                "type": "string",
                               },
                               {
-                                "type": "number"
+                                "type": "number",
                               },
                               {
-                                "$ref": "#/components/schemas/manual"
-                              }
-                            ]
-                          }
-                        }
+                                "$ref": "#/components/schemas/manual",
+                              },
+                            ],
+                          },
+                          "maxItems": 3,
+                          "minItems": 3,
+                          "type": "array",
+                        },
                       },
                       "required": [
                         "a",
                         "b",
                         "d",
                         "e",
-                        "f"
-                      ]
-                    }
-                  }
-                }
+                        "f",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                },
               },
               "responses": {
                 "200": {
-                  "description": "200 OK",
-                  "headers": {
-                    "my-header": {
-                      "$ref": "#/components/headers/my-header"
-                    }
-                  },
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
                         "properties": {
                           "a": {
-                            "$ref": "#/components/schemas/a"
+                            "$ref": "#/components/schemas/a",
                           },
                           "b": {
-                            "$ref": "#/components/schemas/b"
+                            "$ref": "#/components/schemas/b",
                           },
                           "c": {
-                            "$ref": "#/components/schemas/b"
+                            "$ref": "#/components/schemas/b",
                           },
                           "d": {
-                            "$ref": "#/components/schemas/c"
+                            "$ref": "#/components/schemas/c",
                           },
                           "e": {
-                            "oneOf": [
-                              {
-                                "$ref": "#/components/schemas/union-a"
-                              },
-                              {
-                                "$ref": "#/components/schemas/union-b"
-                              }
-                            ],
                             "discriminator": {
-                              "propertyName": "type",
                               "mapping": {
                                 "a": "#/components/schemas/union-a",
-                                "b": "#/components/schemas/union-b"
-                              }
-                            }
+                                "b": "#/components/schemas/union-b",
+                              },
+                              "propertyName": "type",
+                            },
+                            "oneOf": [
+                              {
+                                "$ref": "#/components/schemas/union-a",
+                              },
+                              {
+                                "$ref": "#/components/schemas/union-b",
+                              },
+                            ],
                           },
                           "f": {
-                            "type": "array",
-                            "maxItems": 3,
-                            "minItems": 3,
                             "items": {
                               "oneOf": [
                                 {
-                                  "type": "string"
+                                  "type": "string",
                                 },
                                 {
-                                  "type": "number"
+                                  "type": "number",
                                 },
                                 {
-                                  "$ref": "#/components/schemas/manual"
-                                }
-                              ]
-                            }
-                          }
+                                  "$ref": "#/components/schemas/manual",
+                                },
+                              ],
+                            },
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "type": "array",
+                          },
                         },
                         "required": [
                           "a",
                           "b",
                           "d",
                           "e",
-                          "f"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "components": {
-          "schemas": {
-            "manual": {
-              "type": "boolean"
-            },
-            "a": {
-              "type": "string"
-            },
-            "b": {
-              "type": "object",
-              "properties": {
-                "a": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "a"
-              ]
-            },
-            "c": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/b"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "d": {
-                      "type": "string",
-                      "nullable": true
-                    }
+                          "f",
+                        ],
+                        "type": "object",
+                      },
+                    },
                   },
-                  "required": [
-                    "d"
-                  ]
-                }
-              ]
+                  "description": "200 OK",
+                  "headers": {
+                    "my-header": {
+                      "$ref": "#/components/headers/my-header",
+                    },
+                  },
+                },
+              },
             },
-            "union-a": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "a"
-                  ]
-                }
-              },
-              "required": [
-                "type"
-              ]
-            },
-            "union-b": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "b"
-                  ]
-                }
-              },
-              "required": [
-                "type"
-              ]
-            }
           },
-          "parameters": {
-            "b": {
-              "in": "path",
-              "name": "b",
-              "schema": {
-                "type": "string"
-              },
-              "required": true
-            }
-          },
-          "headers": {
-            "my-header": {
-              "schema": {
-                "type": "string"
-              },
-              "required": true
-            }
-          }
-        }
-      }"
-    `);
-  });
-});
-
-describe('createDocumentYaml', () => {
-  it('should generate a YAML document string', () => {
-    const document = createDocumentYaml(simpleZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-      "info:
-        title: My API
-        version: 1.0.0
-      openapi: 3.1.0
-      paths:
-        /jobs:
-          get:
-            parameters:
-              - in: path
-                name: b
-                schema:
-                  type: string
-                required: true
-            requestBody:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      a:
-                        type: string
-                    required:
-                      - a
-            responses:
-              "200":
-                description: 200 OK
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        a:
-                          type: string
-                      required:
-                        - a
-      "
-    `);
-  });
-
-  it('should generate a JSON document string with components', () => {
-    const document = createDocumentYaml(registeredZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-      "info:
-        title: My API
-        version: 1.0.0
-      openapi: 3.1.0
-      paths:
-        /jobs:
-          get:
-            parameters:
-              - $ref: "#/components/parameters/b"
-            requestBody:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      a:
-                        $ref: "#/components/schemas/a"
-                    required:
-                      - a
-            responses:
-              "200":
-                description: 200 OK
-                headers:
-                  my-header:
-                    $ref: "#/components/headers/my-header"
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        a:
-                          $ref: "#/components/schemas/a"
-                      required:
-                        - a
-      components:
-        schemas:
-          a:
-            type: string
-        parameters:
-          b:
-            in: path
-            name: b
-            schema:
-              type: string
-            required: true
-        headers:
-          my-header:
-            schema:
-              type: string
-            required: true
-      "
+        },
+      }
     `);
   });
 });

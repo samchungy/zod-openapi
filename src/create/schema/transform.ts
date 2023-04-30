@@ -1,6 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { ZodEffects, ZodType } from 'zod';
 
+import { oas31 } from '../../openapi3-ts/dist';
 import { throwTransformError } from '../errors';
 
 import { createManualTypeSchema } from './manual';

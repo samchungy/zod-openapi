@@ -150,40 +150,6 @@ Generates the following object:
 }
 ```
 
-### `createDocumentJson`
-
-In the background it calls `createDocument` but instead outputs it as a JSON string using `JSON.stringify`. It takes an optional options object as the second parameter which can customize how the JSON string is outputted.
-
-```typescript
-const document = createDocumentJson(
-  {
-    openapi: '3.1.0',
-    info: {
-      title: 'My API',
-      version: '1.0.0',
-    },
-  },
-  { options: 2 },
-);
-```
-
-### `createDocumentYaml`
-
-In the background it calls `createDocument` but instead outputs it as a YAML string using the [yaml](https://github.com/eemeli/yaml) library. It takes an optional options object as the second parameter which can customize how the YAML string is outputted.
-
-```typescript
-const document = createDocumentYaml(
-  {
-    openapi: '3.1.0',
-    info: {
-      title: 'My API',
-      version: '1.0.0',
-    },
-  },
-  { options: { aliasDuplicateObjects: false } },
-);
-```
-
 ## Usage
 
 ### Request Parameters

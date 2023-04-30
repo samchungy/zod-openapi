@@ -1,6 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { UnknownKeysParam, ZodObject, ZodRawShape } from 'zod';
 
+import { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
 
 import { SchemaState, createSchemaOrRef } from '.';

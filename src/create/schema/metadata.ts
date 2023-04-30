@@ -1,5 +1,6 @@
-import { oas31 } from 'openapi3-ts';
 import { ZodType, ZodTypeDef } from 'zod';
+
+import { oas31 } from '../../openapi3-ts/dist';
 
 import { SchemaState, createSchema } from '.';
 
