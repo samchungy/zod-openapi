@@ -1,18 +1,27 @@
-# zod-openapi
-
-A Typescript library to create full OpenAPI 3.x documentation from [Zod](https://github.com/colinhacks/zod) Types.
-
-[![npm version](https://img.shields.io/npm/v/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
-[![npm downloads](https://img.shields.io/npm/dm/zod-openapi)](https://www.npmjs.com/package/zod-openapi)
-[![Node.js version](https://img.shields.io/badge/node-%3E%3D%2016.11-brightgreen)](https://nodejs.org/en/)
-[![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
+<p align="center">
+  <img src="zod-openapi.svg" width="200px" align="center" alt="zod-openapi logo" />
+  <h1 align="center">zod-openapi</h1>
+</p>
+<p align="center">
+A Typescript library to create full OpenAPI 3.x documentation from <a href="https://github.com/colinhacks/zod">Zod</a> Types
+</p>
+<div align="center">
+<a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/><a>
+<a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/dm/zod-openapi"/><a>
+<a href="https://nodejs.org/en/"><img src="https://img.shields.io/badge/node-%3E%3D%2016.11-brightgreen"/><a>
+<a href="https://github.com/seek-oss/skuba"><img src="https://img.shields.io/badge/🤿%20skuba-powered-009DC4"/><a>
+</div>
+<br>
+<br>
 
 ## Install
 
-Install via npm:
+Install via `npm` or `yarn`:
 
 ```bash
 npm install zod zod-openapi
+## or
+yarn add zod zod-openapi
 ```
 
 ## API
