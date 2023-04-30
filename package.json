@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "yarn copy:types && skuba build-package",
-    "copy:types": "skuba node scripts/copyTypes.ts",
+    "copy:types": "skuba node scripts/copyTypes.ts && yarn format",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
     "lint": "skuba lint",
