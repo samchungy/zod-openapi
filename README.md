@@ -545,9 +545,7 @@ zod-openapi was created while trying to add a feature to support auto registerin
 
 3. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
 
-4. No native `yaml` support. The majority of my projects prefer to render the schema in `yaml` so I would have to install an extra dependency. This library ships it natively.
-
-5. Eslint rules. I initially created some rules for that library, however, I had to add some awkward logic to account for the registry class. With more creative control, I can create better rules going forward. See [eslint-plugin-zod-openapi](https://github.com/samchungy/eslint-plugin-zod-openapi) for some magic.
+4. Eslint rules. I initially created some rules for that library, however, I had to add some awkward logic to account for the registry class. With more creative control, I can create better rules going forward. See [eslint-plugin-zod-openapi](https://github.com/samchungy/eslint-plugin-zod-openapi) for some magic.
 
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
 
