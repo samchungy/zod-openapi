@@ -52,7 +52,7 @@ async function main() {
 
   if (process.env.GITHUB_ACTIONS) {
     const files = await Git.getChangedFiles({ dir });
-    if (files.length) {
+    if (files.some(({ path }) => path.startsWith('src/openapi3-ts'))) {
       throw new Error('openapi3-ts types need updating');
     }
   }
