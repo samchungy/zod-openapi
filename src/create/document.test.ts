@@ -77,7 +77,7 @@ const registeredZodOpenApiObject: ZodOpenApiObject = {
                 schema: registered,
               },
             },
-            responseHeaders: z.object({
+            headers: z.object({
               'my-header': z.string().openapi({ header: { ref: 'my-header' } }),
             }),
           },
@@ -131,7 +131,7 @@ const complexZodOpenApiObject: ZodOpenApiObject = {
                 schema: complex,
               },
             },
-            responseHeaders: z.object({
+            headers: z.object({
               'my-header': z.string().openapi({ header: { ref: 'my-header' } }),
             }),
           },

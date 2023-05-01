@@ -1,6 +1,6 @@
 import { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
-import { oas31 } from '../openapi3-ts/dist';
+import { oas30, oas31 } from '../openapi3-ts/dist';
 
 import { ComponentsObject, createComponentResponseRef } from './components';
 import { createContent } from './content';
@@ -12,19 +12,27 @@ import { createSchemaOrRef } from './schema';
 import { isISpecificationExtension } from './specificationExtension';
 
 export const createResponseHeaders = (
-  responseHeaders: AnyZodObject | undefined,
+  responseHeaders:
+    | oas31.HeadersObject
+    | oas30.HeadersObject
+    | AnyZodObject
+    | undefined,
   components: ComponentsObject,
 ): oas31.ResponseObject['headers'] => {
   if (!responseHeaders) {
     return undefined;
   }
 
-  return Object.entries(responseHeaders.shape as ZodRawShape).reduce<
-    NonNullable<oas31.ResponseObject['headers']>
-  >((acc, [key, zodSchema]: [string, ZodType]) => {
-    acc[key] = createHeaderOrRef(zodSchema, components);
-    return acc;
-  }, {});
+  if (responseHeaders instanceof ZodType) {
+    return Object.entries(responseHeaders.shape as ZodRawShape).reduce<
+      NonNullable<oas31.ResponseObject['headers']>
+    >((acc, [key, zodSchema]: [string, ZodType]) => {
+      acc[key] = createHeaderOrRef(zodSchema, components);
+      return acc;
+    }, {});
+  }
+
+  return responseHeaders as oas31.ResponseObject['headers'];
 };
 
 export const createHeaderOrRef = (
@@ -80,23 +88,6 @@ export const createBaseHeader = (
 export const createComponentHeaderRef = (ref: string) =>
   `#/components/headers/${ref}`;
 
-const createHeaders = (
-  headers: oas31.ResponseObject['headers'],
-  responseHeaders: AnyZodObject | undefined,
-  components: ComponentsObject,
-): oas31.ResponseObject['headers'] => {
-  if (!responseHeaders && !headers) {
-    return undefined;
-  }
-
-  const createdHeaders = createResponseHeaders(responseHeaders, components);
-
-  return {
-    ...headers,
-    ...createdHeaders,
-  };
-};
-
 export const createResponse = (
   responseObject: ZodOpenApiResponseObject | oas31.ReferenceObject,
   components: ComponentsObject,
@@ -110,9 +101,9 @@ export const createResponse = (
     return { $ref: createComponentResponseRef(component.ref) };
   }
 
-  const { content, headers, responseHeaders, ref, ...rest } = responseObject;
+  const { content, headers, ref, ...rest } = responseObject;
 
-  const maybeHeaders = createHeaders(headers, responseHeaders, components);
+  const maybeHeaders = createResponseHeaders(headers, components);
 
   const response: oas31.ResponseObject = {
     ...rest,

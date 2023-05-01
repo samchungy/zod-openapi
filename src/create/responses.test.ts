@@ -42,14 +42,7 @@ describe('createResponses', () => {
               schema: z.object({ a: z.string() }),
             },
           },
-          headers: {
-            a: {
-              schema: {
-                type: 'string',
-              },
-            },
-          },
-          responseHeaders: z.object({
+          headers: z.object({
             a: z.string().openapi({ header: { ref: 'a' } }),
           }),
         },

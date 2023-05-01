@@ -24,9 +24,12 @@ export interface ZodOpenApiRequestBodyObject
 }
 
 export interface ZodOpenApiResponseObject
-  extends Omit<oas31.ResponseObject & oas30.ResponseObject, 'content'> {
+  extends Omit<
+    oas31.ResponseObject & oas30.ResponseObject,
+    'content' | 'headers'
+  > {
   content?: ZodOpenApiContentObject;
-  responseHeaders?: AnyZodObject;
+  headers?: AnyZodObject | oas30.HeadersObject | oas31.HeadersObject;
   /** Use this field to auto register this response object as a component */
   ref?: string;
 }
@@ -78,7 +81,7 @@ export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
 export interface ZodOpenApiComponentsObject
   extends Omit<
     oas31.ComponentsObject & oas30.ComponentsObject,
-    'schemas' | 'responses' | 'requestBodies'
+    'schemas' | 'responses' | 'requestBodies' | 'headers'
   > {
   schemas?: {
     [ref: string]:
@@ -92,7 +95,7 @@ export interface ZodOpenApiComponentsObject
     [ref: string]: ZodOpenApiRequestBodyObject;
   };
   requestParams?: ZodOpenApiParameters;
-  responseHeaders?: AnyZodObject;
+  headers?: AnyZodObject | oas31.HeadersObject | oas30.HeadersObject;
   responses?: {
     [ref: string]: ZodOpenApiResponseObject;
   };
