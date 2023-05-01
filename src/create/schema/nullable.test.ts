@@ -110,6 +110,19 @@ describe('createNullableSchema', () => {
 
       expect(result).toStrictEqual(expected);
     });
+
+    it('creates a nullable enum', () => {
+      const expected: oas30.SchemaObject = {
+        type: 'string',
+        nullable: true,
+        enum: ['a', null],
+      };
+      const schema = z.enum(['a']).nullable();
+
+      const result = createNullableSchema(schema, createOutputOpenapi3State());
+
+      expect(result).toStrictEqual(expected);
+    });
   });
 
   describe('openapi 3.1.0', () => {
@@ -205,6 +218,18 @@ describe('createNullableSchema', () => {
       const schema = z.object({ b: object2.nullable() }).nullable();
 
       const result = createNullableSchema(schema, createOutputState());
+
+      expect(result).toStrictEqual(expected);
+    });
+
+    it('creates a nullable enum', () => {
+      const expected: oas30.SchemaObject = {
+        type: ['string', 'null'],
+        enum: ['a'],
+      };
+      const schema = z.enum(['a']).nullable();
+
+      const result = createNullableSchema(schema, createOutputOpenapi3State());
 
       expect(result).toStrictEqual(expected);
     });
