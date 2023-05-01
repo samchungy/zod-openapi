@@ -207,7 +207,7 @@ If you wish to use OpenAPI syntax for your schemas, simply add an OpenAPI schema
 
 ### Responses
 
-Similarly to the [Request Body](#request-body), simply set the `schema` as your Zod Schema as follows. You can set the response headers using the `responseHeaders` key.
+Similarly to the [Request Body](#request-body), simply set the `schema` as your Zod Schema as follows. You can set the response headers using the `headers` key.
 
 ```typescript
 createDocument({
@@ -220,7 +220,7 @@ createDocument({
             content: {
               'application/json': { schema: z.object({ a: z.string() }) },
             },
-            responseHeaders: z.object({
+            headers: z.object({
               'header-key': z.string(),
             }),
           },
@@ -353,7 +353,7 @@ const jobIdHeader = z.string().openapi({
 
 createDocument({
   components: {
-    responseHeaders: z.object(
+    headers: z.object(
       'some-header': jobIdHeader
     )
   },

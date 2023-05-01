@@ -80,14 +80,7 @@ describe('getDefaultComponents', () => {
           type: 'string',
         },
       },
-      headers: {
-        a: {
-          schema: {
-            type: 'string',
-          },
-        },
-      },
-      responseHeaders: z.object({
+      headers: z.object({
         c: cSchema,
       }),
       responses: {

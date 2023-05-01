@@ -163,7 +163,7 @@ export const getDefaultComponents = (
   createSchemas(componentsObject.schemas, defaultComponents);
   createParameters(componentsObject.requestParams, defaultComponents);
   createRequestBodies(componentsObject.requestBodies, defaultComponents);
-  createHeaders(componentsObject.responseHeaders, defaultComponents);
+  createHeaders(componentsObject.headers, defaultComponents);
   createResponses(componentsObject.responses, defaultComponents);
 
   return defaultComponents;
@@ -240,10 +240,14 @@ const createParameters = (
 };
 
 const createHeaders = (
-  responseHeaders: ZodOpenApiComponentsObject['responseHeaders'],
+  responseHeaders: ZodOpenApiComponentsObject['headers'],
   components: ComponentsObject,
 ): void => {
   if (!responseHeaders) {
+    return;
+  }
+
+  if (!(responseHeaders instanceof ZodType)) {
     return;
   }
 
@@ -445,19 +449,20 @@ const createHeaderComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   componentMap: HeaderComponentMap,
 ): oas31.ComponentsObject['headers'] => {
-  const customComponents = Object.entries(
-    componentsObject.headers ?? {},
-  ).reduce<NonNullable<oas31.ComponentsObject['headers']>>(
-    (acc, [key, value]) => {
-      if (acc[key]) {
-        throw new Error(`Header "${key}" is already registered`);
-      }
+  const headers = componentsObject.headers ?? {};
+  const customComponents =
+    headers instanceof ZodType
+      ? {}
+      : Object.entries(headers).reduce<
+          NonNullable<oas31.ComponentsObject['headers']>
+        >((acc, [key, value]) => {
+          if (acc[key]) {
+            throw new Error(`Header "${key}" is already registered`);
+          }
 
-      acc[key] = value as oas31.HeaderObject;
-      return acc;
-    },
-    {},
-  );
+          acc[key] = value as oas31.HeaderObject;
+          return acc;
+        }, {});
 
   const components = Array.from(componentMap).reduce<
     NonNullable<oas31.ComponentsObject['headers']>
