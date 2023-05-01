@@ -223,13 +223,13 @@ describe('createNullableSchema', () => {
     });
 
     it('creates a nullable enum', () => {
-      const expected: oas30.SchemaObject = {
+      const expected: oas31.SchemaObject = {
         type: ['string', 'null'],
         enum: ['a'],
       };
       const schema = z.enum(['a']).nullable();
 
-      const result = createNullableSchema(schema, createOutputOpenapi3State());
+      const result = createNullableSchema(schema, createOutputState());
 
       expect(result).toStrictEqual(expected);
     });
