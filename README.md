@@ -457,6 +457,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `integer` `type` mapping for `.int()`
   - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`
 - ZodObject
+  - `additionalProperties` mapping for `.catchall()`, `.strict()`
 - ZodOptional
 - ZodPipeline
 - ZodRecord

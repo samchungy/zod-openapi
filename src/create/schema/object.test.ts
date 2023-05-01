@@ -77,4 +77,28 @@ describe('createObjectSchema', () => {
 
     expect(result).toStrictEqual(expected);
   });
+
+  it('supports catchall', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'string',
+        },
+      },
+      required: ['a'],
+      additionalProperties: {
+        type: 'boolean',
+      },
+    };
+    const schema = z
+      .object({
+        a: z.string(),
+      })
+      .catchall(z.boolean());
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
 });

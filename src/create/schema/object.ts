@@ -1,4 +1,4 @@
-import { UnknownKeysParam, ZodObject, ZodRawShape } from 'zod';
+import { UnknownKeysParam, ZodObject, ZodRawShape, ZodType } from 'zod';
 
 import { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
@@ -23,7 +23,12 @@ export const createObjectSchema = <
 
   return createObjectSchemaFromShape(
     zodObject.shape,
-    zodObject._def.unknownKeys === 'strict',
+    {
+      strict: zodObject._def.unknownKeys === 'strict',
+      ...((zodObject._def.catchall as ZodType) && {
+        catchAll: createSchemaOrRef(zodObject._def.catchall as ZodType, state),
+      }),
+    },
     state,
   );
 };
@@ -42,7 +47,19 @@ export const createExtendedSchema = (
   return {
     allOf: [
       { $ref: createComponentSchemaRef(schemaRef) },
-      createObjectSchemaFromShape(diffShape, false, state),
+      createObjectSchemaFromShape(
+        diffShape,
+        {
+          strict: zodObject._def.unknownKeys === 'strict',
+          ...((zodObject._def.catchall as ZodType) && {
+            catchAll: createSchemaOrRef(
+              zodObject._def.catchall as ZodType,
+              state,
+            ),
+          }),
+        },
+        state,
+      ),
     ],
   };
 };
@@ -59,15 +76,21 @@ const createShapeDiff = (
     return acc;
   }, {});
 
+interface AdditionalPropertyOptions {
+  strict?: boolean;
+  catchAll?: oas31.SchemaObject | oas31.ReferenceObject;
+}
+
 export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
-  strict: boolean,
+  opts: AdditionalPropertyOptions,
   state: SchemaState,
 ): oas31.SchemaObject => ({
   type: 'object',
   properties: mapProperties(shape, state),
   required: mapRequired(shape),
-  ...(strict && { additionalProperties: false }),
+  ...(opts.strict && { additionalProperties: false }),
+  ...(opts.catchAll && { additionalProperties: opts.catchAll }),
 });
 
 export const mapRequired = (
