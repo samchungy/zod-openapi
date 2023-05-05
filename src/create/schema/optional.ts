@@ -1,8 +1,8 @@
-import { ZodOptional, ZodTypeAny } from 'zod';
+import type { ZodOptional, ZodTypeAny } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createOptionalSchema = (
   zodOptional: ZodOptional<any>,

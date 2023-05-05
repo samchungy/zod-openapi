@@ -1,7 +1,7 @@
-import { ZodString, z } from 'zod';
+import { type ZodString, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
 import { createStringSchema } from './string';
 

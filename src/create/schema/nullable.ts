@@ -1,10 +1,10 @@
-import { ZodNullable, ZodTypeAny } from 'zod';
+import type { ZodNullable, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
-import { oas31 } from '../../openapi3-ts/dist';
-import { ZodOpenApiVersion } from '../document';
+import type { oas31 } from '../../openapi3-ts/dist';
+import type { ZodOpenApiVersion } from '../document';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createNullableSchema = (
   zodNullable: ZodNullable<any>,

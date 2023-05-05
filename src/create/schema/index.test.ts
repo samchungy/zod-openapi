@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import { createInputState, createOutputState } from '../../testing/state';
 import { getDefaultComponents } from '../components';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 extendZodWithOpenApi(z);
 

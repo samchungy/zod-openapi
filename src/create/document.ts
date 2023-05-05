@@ -1,7 +1,7 @@
-import { AnyZodObject, ZodType } from 'zod';
+import type { AnyZodObject, ZodType } from 'zod';
 
-import { OpenApiVersion } from '../openapi';
-import { oas30, oas31 } from '../openapi3-ts/dist';
+import type { OpenApiVersion } from '../openapi';
+import type { oas30, oas31 } from '../openapi3-ts/dist';
 
 import { createComponents, getDefaultComponents } from './components';
 import { createPaths } from './paths';

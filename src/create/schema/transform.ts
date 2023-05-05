@@ -1,11 +1,11 @@
-import { ZodEffects, ZodType } from 'zod';
+import type { ZodEffects, ZodType } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import { throwTransformError } from '../errors';
 
 import { createManualTypeSchema } from './manual';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createTransformSchema = (
   zodTransform: ZodEffects<any, any, any>,

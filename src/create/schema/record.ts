@@ -1,8 +1,8 @@
-import { ZodRecord, ZodTypeAny } from 'zod';
+import type { ZodRecord, ZodTypeAny } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createRecordSchema = (
   zodRecord: ZodRecord<any, any>,

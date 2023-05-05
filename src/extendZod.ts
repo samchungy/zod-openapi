@@ -1,4 +1,4 @@
-import {
+import type {
   UnknownKeysParam,
   ZodDate,
   ZodObject,
@@ -7,8 +7,8 @@ import {
   z,
 } from 'zod';
 
-import { CreationType } from './create/components';
-import { oas30, oas31 } from './openapi3-ts/dist';
+import type { CreationType } from './create/components';
+import type { oas30, oas31 } from './openapi3-ts/dist';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 

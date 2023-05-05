@@ -3,7 +3,7 @@ import path from 'path';
 
 import { stringify } from 'yaml';
 
-import { ZodOpenApiOperationObject, createDocument } from '../../src';
+import { type ZodOpenApiOperationObject, createDocument } from '../../src';
 
 import {
   CreateJobRequestSchema,

@@ -1,8 +1,11 @@
-import { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist';
 
-import { ComponentsObject, createComponentRequestBodyRef } from './components';
-import { createContent } from './content';
 import {
+  type ComponentsObject,
+  createComponentRequestBodyRef,
+} from './components';
+import { createContent } from './content';
+import type {
   ZodOpenApiOperationObject,
   ZodOpenApiPathItemObject,
   ZodOpenApiPathsObject,

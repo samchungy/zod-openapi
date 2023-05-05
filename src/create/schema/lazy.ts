@@ -1,9 +1,9 @@
-import { ZodLazy, ZodType } from 'zod';
+import type { ZodLazy, ZodType } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createLazySchema = (
   zodLazy: ZodLazy<any>,

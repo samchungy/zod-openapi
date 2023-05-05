@@ -1,8 +1,8 @@
-import { ZodIntersection, ZodType } from 'zod';
+import type { ZodIntersection, ZodType } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createIntersectionSchema = (
   zodIntersection: ZodIntersection<any, any>,
