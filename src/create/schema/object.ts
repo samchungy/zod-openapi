@@ -130,7 +130,7 @@ const createShapeDiff = (
 
 interface AdditionalPropertyOptions {
   unknownKeys?: UnknownKeysParam;
-  catchAll?: ZodType;
+  catchAll: ZodType;
 }
 
 export const createObjectSchemaFromShape = (
@@ -142,10 +142,9 @@ export const createObjectSchemaFromShape = (
   properties: mapProperties(shape, state),
   required: mapRequired(shape),
   ...(unknownKeys === 'strict' && { additionalProperties: false }),
-  ...(catchAll &&
-    !(catchAll instanceof ZodNever) && {
-      additionalProperties: createSchemaOrRef(catchAll, state),
-    }),
+  ...(!(catchAll instanceof ZodNever) && {
+    additionalProperties: createSchemaOrRef(catchAll, state),
+  }),
 });
 
 export const mapRequired = (
