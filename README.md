@@ -437,6 +437,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodArray
   - `minItems`/`maxItems` mapping for `.length()`, `.min()`, `.max()`
 - ZodBoolean
+- ZodBranded
 - ZodCatch
 - ZodDate
   - `string` `type` mapping by default
