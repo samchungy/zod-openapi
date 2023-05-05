@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../extendZod';
-import { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist';
 
 import { getDefaultComponents } from './components';
-import { ZodOpenApiPathsObject } from './document';
+import type { ZodOpenApiPathsObject } from './document';
 import { createPaths } from './paths';
 
 extendZodWithOpenApi(z);

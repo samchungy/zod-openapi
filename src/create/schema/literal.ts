@@ -1,6 +1,6 @@
-import { ZodLiteral } from 'zod';
+import type { ZodLiteral } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
 export const createLiteralSchema = (
   zodLiteral: ZodLiteral<any>,

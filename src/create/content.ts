@@ -1,9 +1,12 @@
 import { ZodType } from 'zod';
 
-import { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist';
 
-import { ComponentsObject, CreationType } from './components';
-import { ZodOpenApiContentObject, ZodOpenApiMediaTypeObject } from './document';
+import type { ComponentsObject, CreationType } from './components';
+import type {
+  ZodOpenApiContentObject,
+  ZodOpenApiMediaTypeObject,
+} from './document';
 import { createSchemaOrRef } from './schema';
 
 const createMediaTypeSchema = (

@@ -1,9 +1,9 @@
-import { EnumLike, ZodNativeEnum } from 'zod';
+import type { EnumLike, ZodNativeEnum } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState } from '.';
+import type { SchemaState } from '.';
 
 export const createNativeEnumSchema = <T extends EnumLike>(
   zodEnum: ZodNativeEnum<T>,

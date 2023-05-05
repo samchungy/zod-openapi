@@ -1,25 +1,25 @@
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../extendZod';
-import { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist';
 
 import {
-  CompleteSchemaComponent,
-  ComponentsObject,
-  HeaderComponent,
-  HeaderComponentMap,
-  ParameterComponent,
-  ParameterComponentMap,
-  RequestBodyComponent,
-  RequestBodyComponentMap,
-  ResponseComponent,
-  ResponseComponentMap,
-  SchemaComponent,
-  SchemaComponentMap,
+  type CompleteSchemaComponent,
+  type ComponentsObject,
+  type HeaderComponent,
+  type HeaderComponentMap,
+  type ParameterComponent,
+  type ParameterComponentMap,
+  type RequestBodyComponent,
+  type RequestBodyComponentMap,
+  type ResponseComponent,
+  type ResponseComponentMap,
+  type SchemaComponent,
+  type SchemaComponentMap,
   createComponents,
   getDefaultComponents,
 } from './components';
-import {
+import type {
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
 } from './document';

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../extendZod';
 
-import { ZodOpenApiObject, createDocument } from './document';
+import { type ZodOpenApiObject, createDocument } from './document';
 
 extendZodWithOpenApi(z);
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import { createOutputState } from '../../testing/state';
 
 import { createArraySchema } from './array';

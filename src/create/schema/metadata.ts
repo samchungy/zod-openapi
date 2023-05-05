@@ -1,8 +1,8 @@
-import { ZodType, ZodTypeDef } from 'zod';
+import type { ZodType, ZodTypeDef } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState, createSchema } from '.';
+import { type SchemaState, createSchema } from '.';
 
 export const createSchemaWithMetadata = <
   Output = any,

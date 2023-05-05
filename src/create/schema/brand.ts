@@ -1,8 +1,8 @@
-import { ZodBranded, ZodType } from 'zod';
+import type { ZodBranded, ZodType } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 export const createBrandedSchema = (
   zodBranded: ZodBranded<any, any>,
   state: SchemaState,

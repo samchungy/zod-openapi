@@ -21,16 +21,16 @@ import {
   ZodRecord,
   ZodString,
   ZodTuple,
-  ZodType,
-  ZodTypeDef,
+  type ZodType,
+  type ZodTypeDef,
   ZodUnion,
   ZodUnknown,
 } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import {
-  ComponentsObject,
-  CreationType,
+  type ComponentsObject,
+  type CreationType,
   createComponentSchemaRef,
 } from '../components';
 import { throwTransformError } from '../errors';

@@ -1,15 +1,15 @@
 import {
-  UnknownKeysParam,
+  type UnknownKeysParam,
   ZodNever,
-  ZodObject,
-  ZodRawShape,
-  ZodType,
+  type ZodObject,
+  type ZodRawShape,
+  type ZodType,
 } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createObjectSchema = <
   T extends ZodRawShape,

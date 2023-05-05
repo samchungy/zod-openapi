@@ -1,8 +1,8 @@
-import { ZodRawShape, ZodType } from 'zod';
+import { type ZodRawShape, ZodType } from 'zod';
 
-import { oas30, oas31 } from '../openapi3-ts/dist';
+import type { oas30, oas31 } from '../openapi3-ts/dist';
 
-import {
+import type {
   ZodOpenApiComponentsObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
@@ -11,7 +11,7 @@ import {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { SchemaState, createSchemaOrRef } from './schema';
+import { type SchemaState, createSchemaOrRef } from './schema';
 
 export type CreationType = 'input' | 'output';
 

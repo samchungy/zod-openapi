@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 import { createOutputState } from '../../testing/state';
 
 import { createBrandedSchema } from './brand';

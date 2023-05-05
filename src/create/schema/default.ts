@@ -1,10 +1,10 @@
-import { ZodDefault, ZodTypeAny } from 'zod';
+import type { ZodDefault, ZodTypeAny } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
 import { enhanceWithMetadata } from './metadata';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createDefaultSchema = (
   zodDefault: ZodDefault<any>,

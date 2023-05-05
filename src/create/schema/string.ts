@@ -1,6 +1,6 @@
-import { ZodString, ZodStringCheck } from 'zod';
+import type { ZodString, ZodStringCheck } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
 export const createStringSchema = (
   zodString: ZodString,

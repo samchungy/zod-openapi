@@ -1,14 +1,14 @@
 import {
-  AnyZodObject,
-  ZodDiscriminatedUnion,
+  type AnyZodObject,
+  type ZodDiscriminatedUnion,
   ZodEnum,
-  ZodLiteralDef,
-  ZodRawShape,
+  type ZodLiteralDef,
+  type ZodRawShape,
 } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
-import { SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createDiscriminatedUnionSchema = (
   zodDiscriminatedUnion: ZodDiscriminatedUnion<any, any>,

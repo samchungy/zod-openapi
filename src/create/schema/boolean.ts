@@ -1,6 +1,6 @@
-import { ZodBoolean } from 'zod';
+import type { ZodBoolean } from 'zod';
 
-import { oas31 } from '../../openapi3-ts/dist';
+import type { oas31 } from '../../openapi3-ts/dist';
 
 export const createBooleanSchema = (
   _zodBoolean: ZodBoolean,
