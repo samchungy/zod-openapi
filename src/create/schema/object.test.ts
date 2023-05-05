@@ -47,6 +47,30 @@ describe('createObjectSchema', () => {
 
     expect(result).toStrictEqual(expected);
   });
+
+  it('supports catchall', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'string',
+        },
+      },
+      required: ['a'],
+      additionalProperties: {
+        type: 'boolean',
+      },
+    };
+    const schema = z
+      .object({
+        a: z.string(),
+      })
+      .catchall(z.boolean());
+
+    expect(createObjectSchema(schema, createOutputState())).toStrictEqual(
+      expected,
+    );
+  });
 });
 
 describe('extend', () => {
@@ -70,6 +94,70 @@ describe('extend', () => {
     };
     const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
     const object2 = object1.extend({ b: z.string() });
+    const schema = z.object({
+      obj1: object1,
+      obj2: object2,
+    });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('does not create an allOf schema when the base object has a catchall', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        obj1: { $ref: '#/components/schemas/obj1' },
+        obj2: {
+          type: 'object',
+          properties: { a: { type: 'string' }, b: { type: 'number' } },
+          required: ['a', 'b'],
+          additionalProperties: {
+            type: 'boolean',
+          },
+        },
+      },
+      required: ['obj1', 'obj2'],
+    };
+    const object1 = z
+      .object({ a: z.string() })
+      .catchall(z.boolean())
+      .openapi({ ref: 'obj1' });
+    const object2 = object1.extend({ b: z.number() });
+    const schema = z.object({
+      obj1: object1,
+      obj2: object2,
+    });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('creates an allOf schema when catchall is on the extended object', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        obj1: { $ref: '#/components/schemas/obj1' },
+        obj2: {
+          allOf: [
+            { $ref: '#/components/schemas/obj1' },
+            {
+              type: 'object',
+              properties: { b: { type: 'number' } },
+              required: ['b'],
+              additionalProperties: {
+                type: 'boolean',
+              },
+            },
+          ],
+        },
+      },
+      required: ['obj1', 'obj2'],
+    };
+    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
+    const object2 = object1.extend({ b: z.number() }).catchall(z.boolean());
     const schema = z.object({
       obj1: object1,
       obj2: object2,

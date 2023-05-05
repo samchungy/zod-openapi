@@ -1,4 +1,10 @@
-import { UnknownKeysParam, ZodObject, ZodRawShape } from 'zod';
+import {
+  UnknownKeysParam,
+  ZodNever,
+  ZodObject,
+  ZodRawShape,
+  ZodType,
+} from 'zod';
 
 import { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
@@ -12,26 +18,35 @@ export const createObjectSchema = <
   zodObject: ZodObject<T, UnknownKeys, any, any, any>,
   state: SchemaState,
 ): oas31.SchemaObject => {
-  if (zodObject._def.extendMetadata?.extends) {
-    return createExtendedSchema(
-      zodObject,
-      zodObject._def.extendMetadata?.extends,
-      state,
-    );
+  const extendedSchema = createExtendedSchema(
+    zodObject,
+    zodObject._def.extendMetadata?.extends,
+    state,
+  );
+
+  if (extendedSchema) {
+    return extendedSchema;
   }
 
   return createObjectSchemaFromShape(
     zodObject.shape,
-    zodObject._def.unknownKeys === 'strict',
+    {
+      unknownKeys: zodObject._def.unknownKeys,
+      catchAll: zodObject._def.catchall as ZodType,
+    },
     state,
   );
 };
 
 export const createExtendedSchema = (
   zodObject: ZodObject<any, any, any, any, any>,
-  baseZodObject: ZodObject<any, any, any, any, any>,
+  baseZodObject: ZodObject<any, any, any, any, any> | undefined,
   state: SchemaState,
-): oas31.SchemaObject => {
+): oas31.SchemaObject | undefined => {
+  if (!baseZodObject) {
+    return undefined;
+  }
+
   const component = state.components.schemas.get(baseZodObject);
   if (component || baseZodObject._def.openapi?.ref) {
     createSchemaOrRef(baseZodObject, state);
@@ -39,11 +54,21 @@ export const createExtendedSchema = (
 
   const completeComponent = state.components.schemas.get(baseZodObject);
   if (!completeComponent) {
-    return createObjectSchemaFromShape(
-      zodObject._def.shape() as ZodRawShape,
-      zodObject._def.unknownKeys === 'strict',
-      state,
-    );
+    return undefined;
+  }
+
+  const diffOpts = createDiffOpts(
+    {
+      unknownKeys: baseZodObject._def.unknownKeys as UnknownKeysParam,
+      catchAll: baseZodObject._def.catchall as ZodType,
+    },
+    {
+      unknownKeys: zodObject._def.unknownKeys as UnknownKeysParam,
+      catchAll: zodObject._def.catchall as ZodType,
+    },
+  );
+  if (!diffOpts) {
+    return undefined;
   }
 
   const diffShape = createShapeDiff(
@@ -52,18 +77,31 @@ export const createExtendedSchema = (
   );
 
   if (!diffShape) {
-    return createObjectSchemaFromShape(
-      zodObject._def.shape() as ZodRawShape,
-      zodObject._def.unknownKeys === 'strict',
-      state,
-    );
+    return undefined;
   }
 
   return {
     allOf: [
       { $ref: createComponentSchemaRef(completeComponent.ref) },
-      createObjectSchemaFromShape(diffShape, false, state),
+      createObjectSchemaFromShape(diffShape, diffOpts, state),
     ],
+  };
+};
+
+const createDiffOpts = (
+  baseOpts: AdditionalPropertyOptions,
+  extendedOpts: AdditionalPropertyOptions,
+): AdditionalPropertyOptions | undefined => {
+  if (
+    baseOpts.unknownKeys === 'strict' ||
+    !(baseOpts.catchAll instanceof ZodNever)
+  ) {
+    return undefined;
+  }
+
+  return {
+    catchAll: extendedOpts.catchAll,
+    unknownKeys: extendedOpts.unknownKeys,
   };
 };
 
@@ -90,15 +128,23 @@ const createShapeDiff = (
   return acc;
 };
 
+interface AdditionalPropertyOptions {
+  unknownKeys?: UnknownKeysParam;
+  catchAll: ZodType;
+}
+
 export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
-  strict: boolean,
+  { unknownKeys, catchAll }: AdditionalPropertyOptions,
   state: SchemaState,
 ): oas31.SchemaObject => ({
   type: 'object',
   properties: mapProperties(shape, state),
   required: mapRequired(shape),
-  ...(strict && { additionalProperties: false }),
+  ...(unknownKeys === 'strict' && { additionalProperties: false }),
+  ...(!(catchAll instanceof ZodNever) && {
+    additionalProperties: createSchemaOrRef(catchAll, state),
+  }),
 });
 
 export const mapRequired = (
