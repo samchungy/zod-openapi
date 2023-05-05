@@ -12,8 +12,10 @@ import { oas30, oas31 } from './openapi3-ts/dist';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
-interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
-  extends SchemaObject {
+interface ZodOpenApiMetadata<
+  T extends ZodTypeAny,
+  TInferred = z.input<T> | z.output<T>,
+> extends SchemaObject {
   example?: TInferred;
   examples?: [TInferred, ...TInferred[]];
   default?: T extends ZodDate ? string : TInferred;
