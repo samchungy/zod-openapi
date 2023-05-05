@@ -12,11 +12,10 @@ export const createObjectSchema = <
   zodObject: ZodObject<T, UnknownKeys, any, any, any>,
   state: SchemaState,
 ): oas31.SchemaObject => {
-  if (zodObject._def.extendMetadata?.extendsRef) {
+  if (zodObject._def.extendMetadata?.extends) {
     return createExtendedSchema(
       zodObject,
-      zodObject._def.extendMetadata.extends,
-      zodObject._def.extendMetadata.extendsRef,
+      zodObject._def.extendMetadata?.extends,
       state,
     );
   }
@@ -31,17 +30,38 @@ export const createObjectSchema = <
 export const createExtendedSchema = (
   zodObject: ZodObject<any, any, any, any, any>,
   baseZodObject: ZodObject<any, any, any, any, any>,
-  schemaRef: string,
   state: SchemaState,
 ): oas31.SchemaObject => {
+  const component = state.components.schemas.get(baseZodObject);
+  if (component || baseZodObject._def.openapi?.ref) {
+    createSchemaOrRef(baseZodObject, state);
+  }
+
+  const completeComponent = state.components.schemas.get(baseZodObject);
+  if (!completeComponent) {
+    return createObjectSchemaFromShape(
+      zodObject._def.shape() as ZodRawShape,
+      zodObject._def.unknownKeys === 'strict',
+      state,
+    );
+  }
+
   const diffShape = createShapeDiff(
     baseZodObject._def.shape() as ZodRawShape,
     zodObject._def.shape() as ZodRawShape,
   );
 
+  if (!diffShape) {
+    return createObjectSchemaFromShape(
+      zodObject._def.shape() as ZodRawShape,
+      zodObject._def.unknownKeys === 'strict',
+      state,
+    );
+  }
+
   return {
     allOf: [
-      { $ref: createComponentSchemaRef(schemaRef) },
+      { $ref: createComponentSchemaRef(completeComponent.ref) },
       createObjectSchemaFromShape(diffShape, false, state),
     ],
   };
@@ -50,14 +70,25 @@ export const createExtendedSchema = (
 const createShapeDiff = (
   baseObj: ZodRawShape,
   extendedObj: ZodRawShape,
-): ZodRawShape =>
-  Object.entries(extendedObj).reduce<ZodRawShape>((acc, [key, val]) => {
-    if (val !== baseObj[key]) {
-      acc[key as keyof oas31.SchemaObject] = extendedObj[key];
+): ZodRawShape | null => {
+  const acc: ZodRawShape = {};
+
+  for (const [key, val] of Object.entries(extendedObj)) {
+    const baseValue = baseObj[key];
+    if (val === baseValue) {
+      continue;
     }
 
-    return acc;
-  }, {});
+    if (baseValue === undefined) {
+      acc[key] = extendedObj[key];
+      continue;
+    }
+
+    return null;
+  }
+
+  return acc;
+};
 
 export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
