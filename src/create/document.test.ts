@@ -93,6 +93,8 @@ const baseObject = z
   })
   .openapi({ ref: 'b' });
 const manual = z.boolean();
+type Lazy = Lazy[];
+const zodLazy: z.ZodType<Lazy> = z.lazy(() => zodLazy.array());
 const complex = z.object({
   a: z.string().openapi({ ref: 'a' }),
   b: baseObject,
@@ -103,6 +105,7 @@ const complex = z.object({
     z.object({ type: z.literal('b') }).openapi({ ref: 'union-b' }),
   ]),
   f: z.tuple([z.string(), z.number(), manual]),
+  g: zodLazy,
 });
 const complexZodOpenApiObject: ZodOpenApiObject = {
   info: {
@@ -142,6 +145,7 @@ const complexZodOpenApiObject: ZodOpenApiObject = {
   components: {
     schemas: {
       manual,
+      lazy: zodLazy,
     },
   },
 };
@@ -366,6 +370,12 @@ describe('createDocument', () => {
                 },
               ],
             },
+            "lazy": {
+              "items": {
+                "$ref": "#/components/schemas/lazy",
+              },
+              "type": "array",
+            },
             "manual": {
               "type": "boolean",
             },
@@ -462,6 +472,9 @@ describe('createDocument', () => {
                           ],
                           "type": "array",
                         },
+                        "g": {
+                          "$ref": "#/components/schemas/lazy",
+                        },
                       },
                       "required": [
                         "a",
@@ -469,6 +482,7 @@ describe('createDocument', () => {
                         "d",
                         "e",
                         "f",
+                        "g",
                       ],
                       "type": "object",
                     },
@@ -526,6 +540,9 @@ describe('createDocument', () => {
                             ],
                             "type": "array",
                           },
+                          "g": {
+                            "$ref": "#/components/schemas/lazy",
+                          },
                         },
                         "required": [
                           "a",
@@ -533,6 +550,7 @@ describe('createDocument', () => {
                           "d",
                           "e",
                           "f",
+                          "g",
                         ],
                         "type": "object",
                       },
@@ -613,6 +631,12 @@ describe('createDocument', () => {
                   "type": "object",
                 },
               ],
+            },
+            "lazy": {
+              "items": {
+                "$ref": "#/components/schemas/lazy",
+              },
+              "type": "array",
             },
             "manual": {
               "type": "boolean",
@@ -712,6 +736,9 @@ describe('createDocument', () => {
                           "minItems": 3,
                           "type": "array",
                         },
+                        "g": {
+                          "$ref": "#/components/schemas/lazy",
+                        },
                       },
                       "required": [
                         "a",
@@ -719,6 +746,7 @@ describe('createDocument', () => {
                         "d",
                         "e",
                         "f",
+                        "g",
                       ],
                       "type": "object",
                     },
@@ -778,6 +806,9 @@ describe('createDocument', () => {
                             "minItems": 3,
                             "type": "array",
                           },
+                          "g": {
+                            "$ref": "#/components/schemas/lazy",
+                          },
                         },
                         "required": [
                           "a",
@@ -785,6 +816,7 @@ describe('createDocument', () => {
                           "d",
                           "e",
                           "f",
+                          "g",
                         ],
                         "type": "object",
                       },

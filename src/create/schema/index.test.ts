@@ -214,12 +214,20 @@ const expectedZodRefine: oas31.SchemaObject = {
   type: 'string',
 };
 
-const zodUnknwn = z.unknown();
+const zodUnknown = z.unknown();
 const expectedManualType: oas31.SchemaObject = {};
 
 const zodOverride = z.string().openapi({ type: 'number' });
 const expectedZodOverride: oas31.SchemaObject = {
   type: 'number',
+};
+
+type Lazy = Lazy[];
+const zodLazy: z.ZodType<Lazy> = z
+  .lazy(() => zodLazy.array())
+  .openapi({ ref: 'lazy' });
+const expectedZodLazy: oas31.ReferenceObject = {
+  $ref: '#/components/schemas/lazy',
 };
 
 describe('createSchemaOrRef', () => {
@@ -248,8 +256,9 @@ describe('createSchemaOrRef', () => {
     ${'ZodPipeline'}             | ${zodPipeline}           | ${expectedZodPipelineOutput}
     ${'ZodEffects - Preprocess'} | ${zodPreprocess}         | ${expectedZodPreprocess}
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
-    ${'manual type'}             | ${zodUnknwn}             | ${expectedManualType}
+    ${'manual type'}             | ${zodUnknown}            | ${expectedManualType}
     ${'override'}                | ${zodOverride}           | ${expectedZodOverride}
+    ${'lazy'}                    | ${zodLazy}               | ${expectedZodLazy}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createOutputState())).toStrictEqual(
       expected,
@@ -282,7 +291,8 @@ describe('createSchemaOrRef', () => {
     ${'ZodEffects - Preprocess'} | ${zodPreprocess}         | ${expectedZodPreprocess}
     ${'ZodEffects - Transform'}  | ${zodTransform}          | ${expectedZodTransform}
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
-    ${'unknown'}                 | ${zodUnknwn}             | ${expectedManualType}
+    ${'unknown'}                 | ${zodUnknown}            | ${expectedManualType}
+    ${'lazy'}                    | ${zodLazy}               | ${expectedZodLazy}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
       expected,

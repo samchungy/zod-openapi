@@ -27,7 +27,7 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
 }
 
 export interface PartialSchemaComponent extends BaseSchemaComponent {
-  type: 'partial';
+  type: 'partial' | 'lazy';
 }
 
 interface BaseSchemaComponent {

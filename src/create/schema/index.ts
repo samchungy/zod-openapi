@@ -8,6 +8,7 @@ import {
   ZodEffects,
   ZodEnum,
   ZodIntersection,
+  ZodLazy,
   ZodLiteral,
   ZodNativeEnum,
   ZodNull,
@@ -41,6 +42,7 @@ import { createDefaultSchema } from './default';
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
 import { createEnumSchema } from './enum';
 import { createIntersectionSchema } from './intersection';
+import { createLazySchema } from './lazy';
 import { createLiteralSchema } from './literal';
 import { createManualTypeSchema } from './manual';
 import { createSchemaWithMetadata } from './metadata';
@@ -185,6 +187,10 @@ export const createSchema = <
 
   if (zodSchema instanceof ZodUnknown) {
     return createUnknownSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodLazy) {
+    return createLazySchema(zodSchema, state);
   }
 
   return createManualTypeSchema(zodSchema);
