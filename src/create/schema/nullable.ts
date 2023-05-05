@@ -50,6 +50,9 @@ export const createNullableSchema = (
     type,
     nullable: true,
     ...schema,
+    // https://github.com/OAI/OpenAPI-Specification/blob/main/proposals/2019-10-31-Clarify-Nullable.md#if-a-schema-specifies-nullable-true-and-enum-1-2-3-does-that-schema-allow-null-values-see-1900
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ...(schema.enum && { enum: [...schema.enum, null] }),
   } as oas31.SchemaObject;
 };
 
