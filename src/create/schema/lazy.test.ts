@@ -55,4 +55,13 @@ describe('createLazySchema', () => {
     const result = createLazySchema(lazy as ZodLazy<any>, state);
     expect(result).toStrictEqual(expected);
   });
+
+  it('throws an error when the schema does not have a ref', () => {
+    type Lazy = Lazy[];
+    const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
+
+    expect(() =>
+      createLazySchema(lazy as ZodLazy<any>, createOutputState()),
+    ).toThrow(`Please register the ${JSON.stringify(lazy._def)} type`);
+  });
 });

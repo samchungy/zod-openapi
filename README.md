@@ -448,6 +448,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `pre-process` full support.
   - `refine` full support.
 - ZodEnum
+- ZodLazy
 - ZodLiteral
 - ZodNativeEnum
   - supporting `string`, `number` and combined enums.
