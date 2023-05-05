@@ -230,6 +230,17 @@ const expectedZodLazy: oas31.ReferenceObject = {
   $ref: '#/components/schemas/lazy',
 };
 
+const zodBranded = z.object({ name: z.string() }).brand<'Cat'>();
+const expectedZodBranded: oas31.SchemaObject = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+    },
+  },
+  required: ['name'],
+};
+
 describe('createSchemaOrRef', () => {
   it.each`
     zodType                      | schema                   | expected
@@ -258,7 +269,8 @@ describe('createSchemaOrRef', () => {
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
     ${'manual type'}             | ${zodUnknown}            | ${expectedManualType}
     ${'override'}                | ${zodOverride}           | ${expectedZodOverride}
-    ${'lazy'}                    | ${zodLazy}               | ${expectedZodLazy}
+    ${'ZodLazy'}                 | ${zodLazy}               | ${expectedZodLazy}
+    ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createOutputState())).toStrictEqual(
       expected,
@@ -292,7 +304,8 @@ describe('createSchemaOrRef', () => {
     ${'ZodEffects - Transform'}  | ${zodTransform}          | ${expectedZodTransform}
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
     ${'unknown'}                 | ${zodUnknown}            | ${expectedManualType}
-    ${'lazy'}                    | ${zodLazy}               | ${expectedZodLazy}
+    ${'ZodLazy'}                 | ${zodLazy}               | ${expectedZodLazy}
+    ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
       expected,

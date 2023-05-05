@@ -1,6 +1,7 @@
 import {
   ZodArray,
   ZodBoolean,
+  ZodBranded,
   ZodCatch,
   ZodDate,
   ZodDefault,
@@ -36,6 +37,7 @@ import { throwTransformError } from '../errors';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
+import { createBrandedSchema } from './brand';
 import { createCatchSchema } from './catch';
 import { createDateSchema } from './date';
 import { createDefaultSchema } from './default';
@@ -191,6 +193,10 @@ export const createSchema = <
 
   if (zodSchema instanceof ZodLazy) {
     return createLazySchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodBranded) {
+    return createBrandedSchema(zodSchema, state);
   }
 
   return createManualTypeSchema(zodSchema);
