@@ -51,8 +51,6 @@ interface ZodOpenApiMetadata<T extends ZodTypeAny, TInferred = z.infer<T>>
 
 interface ZodOpenApiExtendMetadata {
   extends: ZodObject<any, any, any, any, any>;
-
-  extendsRef?: string;
 }
 
 declare module 'zod' {
@@ -101,7 +99,6 @@ export function extendZodWithOpenApi(zod: typeof z) {
     const extendResult = zodObjectExtend.apply(this, args);
     extendResult._def.extendMetadata = {
       extends: this,
-      extendsRef: extendResult._def.openapi?.ref,
     };
     delete extendResult._def.openapi;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return

@@ -34,7 +34,6 @@ describe('extendZodWithOpenApi', () => {
 
     expect(a._def.openapi?.ref).toBe('a');
     expect(b._def.extendMetadata?.extends).toStrictEqual(a);
-    expect(b._def.extendMetadata?.extendsRef).toBe('a');
   });
 
   it('adds removes extendsMetadata to an object when .omit or .pick is used', () => {
@@ -45,7 +44,6 @@ describe('extendZodWithOpenApi', () => {
 
     expect(a._def.openapi?.ref).toBe('a');
     expect(b._def.extendMetadata?.extends).toStrictEqual(a);
-    expect(b._def.extendMetadata?.extendsRef).toBe('a');
     expect(c._def.extendMetadata).toBeUndefined();
     expect(c._def.openapi).toBeUndefined();
     expect(d._def.extendMetadata).toBeUndefined();
