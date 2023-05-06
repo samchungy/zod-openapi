@@ -438,6 +438,7 @@ describe('createComponents', () => {
         a: {
           in: 'header',
           name: 'some-header',
+          required: true,
           schema: {
             type: 'string',
           },
@@ -466,7 +467,7 @@ describe('createComponents', () => {
       type: 'partial',
       in: 'header',
       ref: 'a',
-      name: 'a',
+      name: 'some-header',
     });
     const headerMap: HeaderComponentMap = new Map();
     headerMap.set(z.string(), {
