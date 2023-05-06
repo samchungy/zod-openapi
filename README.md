@@ -395,14 +395,14 @@ const header = z.string().openapi({
 
 const jobIdHeader = z.string().openapi({
   description: 'Job ID',
-  example: '1234'
+  example: '1234',
 });
 
 createDocument({
   components: {
-    headers: z.object(
-      'some-header': jobIdHeader
-    )
+    headers: {
+      someHeaderRef: jobIdHeader,
+    },
   },
 });
 ```
