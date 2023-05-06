@@ -4,12 +4,12 @@ import { extendZodWithOpenApi } from '../extendZod';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import {
-  type CompleteSchemaComponent,
   type ComponentsObject,
   type HeaderComponent,
   type HeaderComponentMap,
   type ParameterComponent,
   type ParameterComponentMap,
+  type PartialSchemaComponent,
   type RequestBodyComponent,
   type RequestBodyComponentMap,
   type ResponseComponent,
@@ -40,7 +40,7 @@ describe('getDefaultComponents', () => {
     expect(result).toStrictEqual(expected);
   });
 
-  it('returns components combined with manually declared components', () => {
+  it('returns partial components', () => {
     const aSchema = z.string();
     const bSchema = z.string();
     const cSchema = z.string();
@@ -99,70 +99,25 @@ describe('getDefaultComponents', () => {
       openapi: '3.1.0',
     };
     const expectedParameter: ParameterComponent = {
-      paramObject: {
-        in: 'header',
-        name: 'b',
-        required: true,
-        schema: { type: 'string' },
-      },
       ref: 'b',
-      type: 'complete',
+      type: 'partial',
+      in: 'header',
     };
     const expectedSchema: SchemaComponent = {
-      schemaObject: {
-        type: 'string',
-      },
       ref: 'a',
-      type: 'complete',
+      type: 'partial',
     };
     const expectedHeader: HeaderComponent = {
-      headerObject: {
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
       ref: 'c',
-      type: 'complete',
+      type: 'partial',
     };
     const expectedResponse: ResponseComponent = {
-      responseObject: {
-        description: '200 OK',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                a: {
-                  type: 'string',
-                },
-              },
-              required: ['a'],
-            },
-          },
-        },
-      },
       ref: 'd',
-      type: 'complete',
+      type: 'partial',
     };
     const expectedRequestBodies: RequestBodyComponent = {
-      requestBodyObject: {
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                a: {
-                  type: 'string',
-                },
-              },
-              required: ['a'],
-            },
-          },
-        },
-      },
       ref: 'e',
-      type: 'complete',
+      type: 'partial',
     };
 
     expect(result).toStrictEqual(expected);
@@ -193,25 +148,13 @@ describe('getDefaultComponents', () => {
         a,
       },
     });
-    const expectedA: CompleteSchemaComponent = {
+    const expectedA: PartialSchemaComponent = {
       ref: 'a',
-      schemaObject: {
-        type: 'string',
-      },
-      type: 'complete',
+      type: 'partial',
     };
-    const expectedB: CompleteSchemaComponent = {
+    const expectedB: PartialSchemaComponent = {
       ref: 'b',
-      schemaObject: {
-        type: 'object',
-        properties: {
-          a: {
-            $ref: '#/components/schemas/a',
-          },
-        },
-        required: ['a'],
-      },
-      type: 'complete',
+      type: 'partial',
     };
 
     expect(componentsObject).toStrictEqual(expected);
@@ -461,6 +404,72 @@ describe('createComponents', () => {
           type: 'string',
         },
       },
+    });
+    const componentsObject = createComponents(
+      {
+        examples: {
+          a: {
+            description: 'hello',
+          },
+        },
+      },
+      {
+        parameters: paramMap,
+        schemas: schemaMap,
+        headers: headerMap,
+        responses: new Map(),
+        requestBodies: new Map(),
+        openapi: '3.1.0',
+      },
+    );
+
+    expect(componentsObject).toStrictEqual(expected);
+  });
+
+  it('completes partial components', () => {
+    const expected: oas31.ComponentsObject = {
+      examples: {
+        a: {
+          description: 'hello',
+        },
+      },
+      parameters: {
+        a: {
+          in: 'header',
+          name: 'some-header',
+          schema: {
+            type: 'string',
+          },
+        },
+      },
+      schemas: {
+        a: {
+          type: 'string',
+        },
+      },
+      headers: {
+        a: {
+          schema: {
+            type: 'string',
+          },
+        },
+      },
+    };
+    const schemaMap: SchemaComponentMap = new Map();
+    schemaMap.set(z.string(), {
+      type: 'partial',
+      ref: 'a',
+    });
+    const paramMap: ParameterComponentMap = new Map();
+    paramMap.set(z.string(), {
+      type: 'partial',
+      in: 'header',
+      ref: 'a',
+    });
+    const headerMap: HeaderComponentMap = new Map();
+    headerMap.set(z.string(), {
+      type: 'partial',
+      ref: 'a',
     });
     const componentsObject = createComponents(
       {

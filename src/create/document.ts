@@ -81,8 +81,16 @@ export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
 export interface ZodOpenApiComponentsObject
   extends Omit<
     oas31.ComponentsObject & oas30.ComponentsObject,
-    'schemas' | 'responses' | 'requestBodies' | 'headers'
+    'schemas' | 'responses' | 'requestBodies' | 'headers' | 'parameters'
   > {
+  parameters?: {
+    [parameter: string]:
+      | ZodType
+      | oas31.ParameterObject
+      | oas31.ReferenceObject
+      | oas30.ParameterObject
+      | oas30.ReferenceObject;
+  };
   schemas?: {
     [ref: string]:
       | ZodType
@@ -94,7 +102,6 @@ export interface ZodOpenApiComponentsObject
   requestBodies?: {
     [ref: string]: ZodOpenApiRequestBodyObject;
   };
-  requestParams?: ZodOpenApiParameters;
   headers?: AnyZodObject | oas31.HeadersObject | oas30.HeadersObject;
   responses?: {
     [ref: string]: ZodOpenApiResponseObject;

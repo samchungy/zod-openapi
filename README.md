@@ -310,7 +310,7 @@ Query, Path, Header & Cookie parameters can be similarly registered:
 const jobId = z.string().openapi({
   description: 'Job ID',
   example: '1234',
-  param: { ref: 'jobId' },
+  param: { ref: 'jobRef' },
 });
 
 // or
@@ -322,14 +322,7 @@ const commonHeaders = z.object({
 const path = z.string();
 
 createDocument({
-  components: {
-    requestParams: {
-      header: commonHeaders,
-      path: z.object({ path }),
-      query: z.object({ query: z.string() }),
-      cookie: z.object({ cookie: z.string() }),
-    },
-  },
+  components: {},
 });
 ```
 
