@@ -181,7 +181,26 @@ createDocument({
 });
 ```
 
-If you would like to declare parameters using OpenAPI syntax you may also declare them using the [parameters](https://swagger.io/docs/specification/describing-parameters/) key. The definitions will then all be combined.
+If you would like to declare parameters in a more traditional way you may also declare them using the [parameters](https://swagger.io/docs/specification/describing-parameters/) key. The definitions will then all be combined.
+
+```ts
+createDocument({
+  paths: {
+    '/jobs/:a': {
+      put: {
+        parameters: [
+          z.string().openapi({
+            param: {
+              name: 'job-header',
+              in: 'header',
+            },
+          }),
+        ],
+      },
+    },
+  },
+});
+```
 
 ### Request Body
 
@@ -307,22 +326,57 @@ If a registered schema with a transform is used in both a request and response s
 Query, Path, Header & Cookie parameters can be similarly registered:
 
 ```typescript
+// Easy auto registration
 const jobId = z.string().openapi({
   description: 'Job ID',
   example: '1234',
   param: { ref: 'jobRef' },
 });
 
-// or
-
-const commonHeaders = z.object({
-  jobId: z.string(),
+createDocument({
+  paths: {
+    '/jobs/{jobId}': {
+      put: {
+        requestParams: {
+          header: z.object({
+            jobId,
+          }),
+        },
+      },
+    },
+  },
 });
 
-const path = z.string();
+// or more verbose auto registration
+const jobId = z.string().openapi({
+  description: 'Job ID',
+  example: '1234',
+  param: { in: 'header', name: 'jobId', ref: 'jobRef' },
+});
 
 createDocument({
-  components: {},
+  paths: {
+    '/jobs/{jobId}': {
+      put: {
+        parameters: [jobId],
+      },
+    },
+  },
+});
+
+// or manual registeration
+const otherJobId = z.string().openapi({
+  description: 'Job ID',
+  example: '1234',
+  param: { in: 'header', name: 'jobId' },
+});
+
+createDocument({
+  components: {
+    parameters: {
+      jobRef: jobId,
+    },
+  },
 });
 ```
 

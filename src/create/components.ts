@@ -49,12 +49,12 @@ export interface CompleteParameterComponent extends BaseParameterComponent {
 
 export interface PartialParameterComponent extends BaseParameterComponent {
   type: 'partial';
-  in: oas31.ParameterLocation;
-  name: string;
 }
 
 interface BaseParameterComponent {
   ref: string;
+  in: oas31.ParameterLocation;
+  name: string;
 }
 
 export type ParameterComponent =
@@ -389,7 +389,7 @@ const createParamComponents = (
 ): oas31.ComponentsObject['parameters'] => {
   Array.from(components.parameters).forEach(([schema, component]) => {
     if (component.type === 'partial') {
-      createParamOrRef(schema, component.in, component.ref, components);
+      createParamOrRef(schema, components, component.in, component.ref);
     }
   });
 
@@ -397,11 +397,13 @@ const createParamComponents = (
     componentsObject.parameters ?? {},
   ).reduce<NonNullable<oas31.ComponentsObject['parameters']>>(
     (acc, [key, value]) => {
-      if (acc[key]) {
-        throw new Error(`Parameter "${key}" is already registered`);
-      }
+      if (!(value instanceof ZodType)) {
+        if (acc[key]) {
+          throw new Error(`Parameter "${key}" is already registered`);
+        }
 
-      acc[key] = value as oas31.ParameterObject;
+        acc[key] = value as oas31.ParameterObject;
+      }
       return acc;
     },
     {},

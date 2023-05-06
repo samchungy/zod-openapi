@@ -37,6 +37,26 @@ describe('createBaseParameter', () => {
 });
 
 describe('createParametersObject', () => {
+  it('should create a parameters object using parameters', () => {
+    const expectedResult: oas31.OperationObject['parameters'] = [
+      {
+        in: 'header',
+        name: 'd',
+        schema: {
+          type: 'string',
+        },
+        required: true,
+      },
+    ];
+    const result = createParametersObject(
+      [z.string().openapi({ param: { in: 'header', name: 'd' } })],
+      {},
+      getDefaultComponents(),
+    );
+
+    expect(result).toStrictEqual(expectedResult);
+  });
+
   it('should create a parameters object using requestParams', () => {
     const expectedResult: oas31.OperationObject['parameters'] = [
       {
@@ -180,6 +200,21 @@ describe('createParametersObject', () => {
         cookie: z.object({ c: z.string().openapi({ param: { ref: 'c' } }) }),
         header: z.object({ d: z.string().openapi({ param: { ref: 'd' } }) }),
       },
+      getDefaultComponents(),
+    );
+
+    expect(result).toStrictEqual(expectedResult);
+  });
+
+  it('should create refs using parameters', () => {
+    const expectedResult: oas31.OperationObject['parameters'] = [
+      {
+        $ref: '#/components/parameters/a',
+      },
+    ];
+    const result = createParametersObject(
+      [z.string().openapi({ param: { ref: 'a', name: 'a', in: 'header' } })],
+      {},
       getDefaultComponents(),
     );
 

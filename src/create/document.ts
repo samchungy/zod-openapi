@@ -52,8 +52,15 @@ export type ZodOpenApiParameters = {
 export interface ZodOpenApiOperationObject
   extends Omit<
     oas31.OperationObject & oas30.OperationObject,
-    'requestBody' | 'responses'
+    'requestBody' | 'responses' | 'parameters'
   > {
+  parameters?: (
+    | ZodType
+    | oas31.ParameterObject
+    | oas30.ParameterObject
+    | oas31.ReferenceObject
+    | oas30.ReferenceObject
+  )[];
   requestBody?: ZodOpenApiRequestBodyObject;
   requestParams?: ZodOpenApiParameters;
   responses: ZodOpenApiResponsesObject;
@@ -87,8 +94,8 @@ export interface ZodOpenApiComponentsObject
     [parameter: string]:
       | ZodType
       | oas31.ParameterObject
-      | oas31.ReferenceObject
       | oas30.ParameterObject
+      | oas31.ReferenceObject
       | oas30.ReferenceObject;
   };
   schemas?: {
