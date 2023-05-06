@@ -42,7 +42,7 @@ describe('getDefaultComponents', () => {
 
   it('returns components combined with manually declared components', () => {
     const aSchema = z.string();
-    const bSchema = z.string();
+    const bSchema = z.string().openapi({ param: { in: 'header', name: 'b' } });
     const cSchema = z.string();
     const dResponse: ZodOpenApiResponseObject = {
       description: '200 OK',
@@ -68,11 +68,7 @@ describe('getDefaultComponents', () => {
             type: 'string',
           },
         },
-      },
-      requestParams: {
-        header: z.object({
-          b: bSchema,
-        }),
+        b: bSchema,
       },
       schemas: {
         a: aSchema,
@@ -107,6 +103,8 @@ describe('getDefaultComponents', () => {
       },
       ref: 'b',
       type: 'complete',
+      in: 'header',
+      name: 'b',
     };
     const expectedSchema: SchemaComponent = {
       schemaObject: {
@@ -316,6 +314,8 @@ describe('createComponents', () => {
           type: 'string',
         },
       },
+      in: 'header',
+      name: 'some-header',
     });
     const headerMap: HeaderComponentMap = new Map();
     headerMap.set(z.string(), {
@@ -451,6 +451,8 @@ describe('createComponents', () => {
         },
       },
       ref: 'a',
+      in: 'header',
+      name: 'some-header',
     });
     const headerMap: HeaderComponentMap = new Map();
     headerMap.set(z.string(), {

@@ -52,8 +52,15 @@ export type ZodOpenApiParameters = {
 export interface ZodOpenApiOperationObject
   extends Omit<
     oas31.OperationObject & oas30.OperationObject,
-    'requestBody' | 'responses'
+    'requestBody' | 'responses' | 'parameters'
   > {
+  parameters?: (
+    | ZodType
+    | oas31.ParameterObject
+    | oas30.ParameterObject
+    | oas31.ReferenceObject
+    | oas30.ReferenceObject
+  )[];
   requestBody?: ZodOpenApiRequestBodyObject;
   requestParams?: ZodOpenApiParameters;
   responses: ZodOpenApiResponsesObject;
@@ -81,8 +88,16 @@ export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
 export interface ZodOpenApiComponentsObject
   extends Omit<
     oas31.ComponentsObject & oas30.ComponentsObject,
-    'schemas' | 'responses' | 'requestBodies' | 'headers'
+    'schemas' | 'responses' | 'requestBodies' | 'headers' | 'parameters'
   > {
+  parameters?: {
+    [parameter: string]:
+      | ZodType
+      | oas31.ParameterObject
+      | oas30.ParameterObject
+      | oas31.ReferenceObject
+      | oas30.ReferenceObject;
+  };
   schemas?: {
     [ref: string]:
       | ZodType
@@ -94,7 +109,6 @@ export interface ZodOpenApiComponentsObject
   requestBodies?: {
     [ref: string]: ZodOpenApiRequestBodyObject;
   };
-  requestParams?: ZodOpenApiParameters;
   headers?: AnyZodObject | oas31.HeadersObject | oas30.HeadersObject;
   responses?: {
     [ref: string]: ZodOpenApiResponseObject;

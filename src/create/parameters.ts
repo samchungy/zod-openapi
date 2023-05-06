@@ -1,6 +1,7 @@
-import type { AnyZodObject, ZodRawShape, ZodType } from 'zod';
+import { ZodType } from 'zod';
+import type { AnyZodObject, ZodRawShape } from 'zod';
 
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas30, oas31 } from '../openapi3-ts/dist';
 
 import type { ComponentsObject } from './components';
 import type { ZodOpenApiParameters } from './document';
@@ -28,15 +29,27 @@ export const createBaseParameter = (
 
 export const createParamOrRef = (
   zodSchema: ZodType,
-  type: keyof ZodOpenApiParameters,
-  name: string,
   components: ComponentsObject,
+  type?: keyof ZodOpenApiParameters,
+  name?: string,
 ): oas31.ParameterObject | oas31.ReferenceObject => {
   const component = components.parameters.get(zodSchema);
+  const paramType = zodSchema._def?.openapi?.param?.in ?? component?.in ?? type;
+  const paramName =
+    zodSchema._def?.openapi?.param?.name ?? component?.name ?? name;
+
+  if (!paramType) {
+    throw new Error('Parameter type missing');
+  }
+
+  if (!paramName) {
+    throw new Error('Parameter name missing');
+  }
+
   if (component && component.type === 'complete') {
     if (
       !('$ref' in component.paramObject) &&
-      (component.paramObject.in !== type || component.paramObject.name !== name)
+      (component.in !== type || component.name !== name)
     ) {
       throw new Error(`parameterRef "${component.ref}" is already registered`);
     }
@@ -54,8 +67,8 @@ export const createParamOrRef = (
   const ref = zodSchema?._def?.openapi?.param?.ref ?? component?.ref;
 
   const paramObject: oas31.ParameterObject = {
-    in: type,
-    name,
+    in: paramType,
+    name: paramName,
     ...baseParamOrRef,
   };
 
@@ -64,6 +77,8 @@ export const createParamOrRef = (
       type: 'complete',
       paramObject,
       ref,
+      in: paramType,
+      name: paramName,
     });
 
     return {
@@ -85,7 +100,7 @@ const createParameters = (
 
   return Object.entries(zodObject.shape as ZodRawShape).map(
     ([key, zodSchema]: [string, ZodType]) =>
-      createParamOrRef(zodSchema, type, key, components),
+      createParamOrRef(zodSchema, components, type, key),
   );
 };
 
@@ -117,14 +132,42 @@ const createRequestParams = (
   return [...pathParams, ...queryParams, ...cookieParams, ...headerParams];
 };
 
+export const createManualParameters = (
+  parameters:
+    | (
+        | oas31.ParameterObject
+        | oas31.ReferenceObject
+        | oas30.ParameterObject
+        | oas30.ReferenceObject
+        | ZodType
+      )[]
+    | undefined,
+  components: ComponentsObject,
+): (oas31.ParameterObject | oas31.ReferenceObject)[] =>
+  parameters?.map((param) => {
+    if (param instanceof ZodType) {
+      return createParamOrRef(param, components);
+    }
+    return param as oas31.ParameterObject | oas31.ReferenceObject;
+  }) ?? [];
+
 export const createParametersObject = (
-  parameters: (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined,
+  parameters:
+    | (
+        | oas31.ParameterObject
+        | oas31.ReferenceObject
+        | oas30.ParameterObject
+        | oas30.ReferenceObject
+        | ZodType
+      )[]
+    | undefined,
   requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined => {
+  const manualParameters = createManualParameters(parameters, components);
   const createdParams = createRequestParams(requestParams, components);
   const combinedParameters: oas31.OperationObject['parameters'] = [
-    ...(parameters ? parameters : []),
+    ...manualParameters,
     ...createdParams,
   ];
 
