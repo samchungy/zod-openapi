@@ -49,11 +49,12 @@ export interface CompleteParameterComponent extends BaseParameterComponent {
 
 export interface PartialParameterComponent extends BaseParameterComponent {
   type: 'partial';
-  in: oas31.ParameterLocation;
 }
 
 interface BaseParameterComponent {
   ref: string;
+  in: oas31.ParameterLocation;
+  name: string;
 }
 
 export type ParameterComponent =
@@ -161,7 +162,7 @@ export const getDefaultComponents = (
   }
 
   createSchemas(componentsObject.schemas, defaultComponents);
-  createParameters(componentsObject.requestParams, defaultComponents);
+  createParameters(componentsObject.parameters, defaultComponents);
   createRequestBodies(componentsObject.requestBodies, defaultComponents);
   createHeaders(componentsObject.headers, defaultComponents);
   createResponses(componentsObject.responses, defaultComponents);
@@ -205,36 +206,39 @@ const createSchemas = (
 };
 
 const createParameters = (
-  requestParams: ZodOpenApiComponentsObject['requestParams'],
+  parameters: ZodOpenApiComponentsObject['parameters'],
   components: ComponentsObject,
 ): void => {
-  if (!requestParams) {
+  if (!parameters) {
     return;
   }
 
-  Object.entries(requestParams).forEach(([paramType, zodObject]) => {
-    Object.entries(zodObject._def.shape() as ZodRawShape).forEach(
-      ([key, schema]: [string, ZodType]) => {
-        if (schema instanceof ZodType) {
-          if (components.parameters.has(schema)) {
-            throw new Error(
-              `Parameter ${JSON.stringify(schema._def)} is already registered`,
-            );
-          }
-          const ref = schema._def.openapi?.param?.ref ?? key;
-          components.parameters.set(schema, {
-            type: 'partial',
-            ref,
-            in: paramType as oas31.ParameterLocation,
-          });
-        }
-      },
-    );
+  Object.entries(parameters).forEach(([key, schema]) => {
+    if (schema instanceof ZodType) {
+      if (components.parameters.has(schema)) {
+        throw new Error(
+          `Parameter ${JSON.stringify(schema._def)} is already registered`,
+        );
+      }
+      const ref = schema._def.openapi?.param?.ref ?? key;
+      const name = schema._def.openapi?.param?.name;
+      const location = schema._def.openapi?.param?.in;
+
+      if (!name || !location) {
+        throw new Error('`name` or `in` missing in .openapi()');
+      }
+      components.parameters.set(schema, {
+        type: 'partial',
+        ref,
+        in: location,
+        name,
+      });
+    }
   });
 
   return Array.from(components.parameters).forEach(([schema, component]) => {
     if (component.type === 'partial') {
-      createParamOrRef(schema, component.in, component.ref, components);
+      createParamOrRef(schema, components, component.in, component.ref);
     }
   });
 };
@@ -419,11 +423,13 @@ const createParamComponents = (
     componentsObject.parameters ?? {},
   ).reduce<NonNullable<oas31.ComponentsObject['parameters']>>(
     (acc, [key, value]) => {
-      if (acc[key]) {
-        throw new Error(`Parameter "${key}" is already registered`);
-      }
+      if (!(value instanceof ZodType)) {
+        if (acc[key]) {
+          throw new Error(`Parameter "${key}" is already registered`);
+        }
 
-      acc[key] = value as oas31.ParameterObject;
+        acc[key] = value as oas31.ParameterObject;
+      }
       return acc;
     },
     {},
