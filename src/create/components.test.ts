@@ -454,6 +454,7 @@ describe('createComponents', () => {
           schema: {
             type: 'string',
           },
+          required: true,
         },
       },
     };
