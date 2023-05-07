@@ -109,7 +109,14 @@ export interface ZodOpenApiComponentsObject
   requestBodies?: {
     [ref: string]: ZodOpenApiRequestBodyObject;
   };
-  headers?: AnyZodObject | oas31.HeadersObject | oas30.HeadersObject;
+  headers?: {
+    [header: string]:
+      | ZodType
+      | oas31.HeaderObject
+      | oas30.HeaderObject
+      | oas31.ReferenceObject
+      | oas30.ReferenceObject;
+  };
   responses?: {
     [ref: string]: ZodOpenApiResponseObject;
   };

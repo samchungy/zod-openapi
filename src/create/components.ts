@@ -1,4 +1,4 @@
-import { type ZodRawShape, ZodType } from 'zod';
+import { ZodType } from 'zod';
 
 import type { oas30, oas31 } from '../openapi3-ts/dist';
 
@@ -234,12 +234,8 @@ const createHeaders = (
     return;
   }
 
-  if (!(responseHeaders instanceof ZodType)) {
-    return;
-  }
-
-  Object.entries(responseHeaders._def.shape() as ZodRawShape).forEach(
-    ([key, schema]: [string, ZodType]) => {
+  Object.entries(responseHeaders).forEach(([key, schema]) => {
+    if (schema instanceof ZodType) {
       if (components.parameters.has(schema)) {
         throw new Error(
           `Header ${JSON.stringify(schema._def)} is already registered`,
@@ -250,8 +246,8 @@ const createHeaders = (
         type: 'partial',
         ref,
       });
-    },
-  );
+    }
+  });
 };
 
 const createResponses = (
@@ -436,19 +432,18 @@ const createHeaderComponents = (
   });
 
   const headers = componentsObject.headers ?? {};
-  const customComponents =
-    headers instanceof ZodType
-      ? {}
-      : Object.entries(headers).reduce<
-          NonNullable<oas31.ComponentsObject['headers']>
-        >((acc, [key, value]) => {
-          if (acc[key]) {
-            throw new Error(`Header "${key}" is already registered`);
-          }
+  const customComponents = Object.entries(headers).reduce<
+    NonNullable<oas31.ComponentsObject['headers']>
+  >((acc, [key, value]) => {
+    if (!(value instanceof ZodType)) {
+      if (acc[key]) {
+        throw new Error(`Header Ref "${key}" is already registered`);
+      }
 
-          acc[key] = value as oas31.HeaderObject;
-          return acc;
-        }, {});
+      acc[key] = value as oas31.HeaderObject;
+    }
+    return acc;
+  }, {});
 
   const finalComponents = Array.from(components.headers).reduce<
     NonNullable<oas31.ComponentsObject['headers']>

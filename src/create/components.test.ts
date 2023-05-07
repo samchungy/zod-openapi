@@ -76,9 +76,9 @@ describe('getDefaultComponents', () => {
           type: 'string',
         },
       },
-      headers: z.object({
+      headers: {
         c: cSchema,
-      }),
+      },
       responses: {
         d: dResponse,
       },
