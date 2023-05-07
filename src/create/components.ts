@@ -192,17 +192,6 @@ const createSchemas = (
       });
     }
   });
-
-  return Array.from(components.schemas).forEach(([schema, { type }]) => {
-    if (type === 'partial') {
-      const state: SchemaState = {
-        components,
-        type: schema._def.openapi?.refType ?? 'output',
-      };
-
-      createSchemaOrRef(schema, state);
-    }
-  });
 };
 
 const createParameters = (
@@ -235,12 +224,6 @@ const createParameters = (
       });
     }
   });
-
-  return Array.from(components.parameters).forEach(([schema, component]) => {
-    if (component.type === 'partial') {
-      createParamOrRef(schema, components, component.in, component.ref);
-    }
-  });
 };
 
 const createHeaders = (
@@ -265,12 +248,6 @@ const createHeaders = (
       });
     }
   });
-
-  return Array.from(components.headers).forEach(([schema, component]) => {
-    if (component.type === 'partial') {
-      createHeaderOrRef(schema, components);
-    }
-  });
 };
 
 const createResponses = (
@@ -292,12 +269,6 @@ const createResponses = (
       type: 'partial',
       ref,
     });
-  });
-
-  return Array.from(components.responses).forEach(([schema, component]) => {
-    if (component.type === 'partial') {
-      createResponse(schema, components);
-    }
   });
 };
 
@@ -321,12 +292,6 @@ const createRequestBodies = (
       ref,
     });
   });
-
-  return Array.from(components.requestBodies).forEach(([schema, component]) => {
-    if (component.type === 'partial') {
-      createRequestBody(schema, components);
-    }
-  });
 };
 
 export const createComponentSchemaRef = (schemaRef: string) =>
@@ -342,22 +307,14 @@ export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
 ): oas31.ComponentsObject | undefined => {
-  const combinedSchemas = createSchemaComponents(
-    componentsObject,
-    components.schemas,
-  );
+  const combinedSchemas = createSchemaComponents(componentsObject, components);
   const combinedParameters = createParamComponents(
     componentsObject,
-    components.parameters,
+    components,
   );
-  const combinedHeaders = createHeaderComponents(
-    componentsObject,
-    components.headers,
-  );
-  const combinedResponses = createResponseComponents(components.responses);
-  const combinedRequestBodies = createRequestBodiesComponents(
-    components.requestBodies,
-  );
+  const combinedHeaders = createHeaderComponents(componentsObject, components);
+  const combinedResponses = createResponseComponents(components);
+  const combinedRequestBodies = createRequestBodiesComponents(components);
 
   const { schemas, parameters, headers, responses, requestBodies, ...rest } =
     componentsObject;
@@ -375,8 +332,19 @@ export const createComponents = (
 
 const createSchemaComponents = (
   componentsObject: ZodOpenApiComponentsObject,
-  componentMap: SchemaComponentMap,
+  components: ComponentsObject,
 ): oas31.ComponentsObject['schemas'] => {
+  Array.from(components.schemas).forEach(([schema, { type }]) => {
+    if (type === 'partial') {
+      const state: SchemaState = {
+        components,
+        type: schema._def.openapi?.refType ?? 'output',
+      };
+
+      createSchemaOrRef(schema, state);
+    }
+  });
+
   const customComponents = Object.entries(
     componentsObject.schemas ?? {},
   ).reduce<NonNullable<oas31.ComponentsObject['schemas']>>(
@@ -395,7 +363,7 @@ const createSchemaComponents = (
     {},
   );
 
-  const components = Array.from(componentMap).reduce<
+  const finalComponents = Array.from(components.schemas).reduce<
     NonNullable<oas31.ComponentsObject['schemas']>
   >((acc, [_zodType, component]) => {
     if (component.type === 'complete') {
@@ -408,13 +376,19 @@ const createSchemaComponents = (
     return acc;
   }, customComponents);
 
-  return Object.keys(components).length ? components : undefined;
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
 const createParamComponents = (
   componentsObject: ZodOpenApiComponentsObject,
-  componentMap: ParameterComponentMap,
+  components: ComponentsObject,
 ): oas31.ComponentsObject['parameters'] => {
+  Array.from(components.parameters).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      createParamOrRef(schema, components, component.in, component.ref);
+    }
+  });
+
   const customComponents = Object.entries(
     componentsObject.parameters ?? {},
   ).reduce<NonNullable<oas31.ComponentsObject['parameters']>>(
@@ -431,7 +405,7 @@ const createParamComponents = (
     {},
   );
 
-  const components = Array.from(componentMap).reduce<
+  const finalComponents = Array.from(components.parameters).reduce<
     NonNullable<oas31.ComponentsObject['parameters']>
   >((acc, [_zodType, component]) => {
     if (component.type === 'complete') {
@@ -444,13 +418,19 @@ const createParamComponents = (
     return acc;
   }, customComponents);
 
-  return Object.keys(components).length ? components : undefined;
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
 const createHeaderComponents = (
   componentsObject: ZodOpenApiComponentsObject,
-  componentMap: HeaderComponentMap,
+  components: ComponentsObject,
 ): oas31.ComponentsObject['headers'] => {
+  Array.from(components.headers).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      createHeaderOrRef(schema, components);
+    }
+  });
+
   const headers = componentsObject.headers ?? {};
   const customComponents = Object.entries(headers).reduce<
     NonNullable<oas31.ComponentsObject['headers']>
@@ -465,7 +445,7 @@ const createHeaderComponents = (
     return acc;
   }, {});
 
-  const components = Array.from(componentMap).reduce<
+  const finalComponents = Array.from(components.headers).reduce<
     NonNullable<oas31.ComponentsObject['headers']>
   >((acc, [_zodType, component]) => {
     if (component.type === 'complete') {
@@ -478,13 +458,19 @@ const createHeaderComponents = (
     return acc;
   }, customComponents);
 
-  return Object.keys(components).length ? components : undefined;
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
 const createResponseComponents = (
-  componentMap: ResponseComponentMap,
+  components: ComponentsObject,
 ): oas31.ComponentsObject['responses'] => {
-  const components = Array.from(componentMap).reduce<
+  Array.from(components.responses).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      createResponse(schema, components);
+    }
+  });
+
+  const finalComponents = Array.from(components.responses).reduce<
     NonNullable<oas31.ComponentsObject['responses']>
   >((acc, [_zodType, component]) => {
     if (component.type === 'complete') {
@@ -497,13 +483,19 @@ const createResponseComponents = (
     return acc;
   }, {});
 
-  return Object.keys(components).length ? components : undefined;
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
 const createRequestBodiesComponents = (
-  componentMap: RequestBodyComponentMap,
+  components: ComponentsObject,
 ): oas31.ComponentsObject['requestBodies'] => {
-  const components = Array.from(componentMap).reduce<
+  Array.from(components.requestBodies).forEach(([schema, component]) => {
+    if (component.type === 'partial') {
+      createRequestBody(schema, components);
+    }
+  });
+
+  const finalComponents = Array.from(components.requestBodies).reduce<
     NonNullable<oas31.ComponentsObject['requestBodies']>
   >((acc, [_zodType, component]) => {
     if (component.type === 'complete') {
@@ -517,5 +509,5 @@ const createRequestBodiesComponents = (
     return acc;
   }, {});
 
-  return Object.keys(components).length ? components : undefined;
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
