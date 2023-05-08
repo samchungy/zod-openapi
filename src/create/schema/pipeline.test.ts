@@ -34,6 +34,34 @@ describe('createTransformSchema', () => {
 
       expect(result).toStrictEqual(expected);
     });
+
+    it('overrides the input type from a transform pipeline with a custom effectType', () => {
+      const expected: oas31.SchemaObject = {
+        type: 'number',
+      };
+      const schema = z
+        .string()
+        .transform((arg) => arg.length)
+        .pipe(z.number())
+        .openapi({ effectType: 'output' });
+
+      const result = createPipelineSchema(schema, createInputState());
+
+      expect(result).toStrictEqual(expected);
+    });
+
+    it('throws an error when the current state effectType is output', () => {
+      const schema = z
+        .string()
+        .transform((arg) => arg.length)
+        .pipe(z.number());
+
+      const state = createInputState();
+      state.effectType = 'output';
+      expect(() => createPipelineSchema(schema, state)).toThrow(
+        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+      );
+    });
   });
 
   describe('output', () => {
@@ -60,6 +88,33 @@ describe('createTransformSchema', () => {
       const result = createPipelineSchema(schema, createOutputState());
 
       expect(result).toStrictEqual(expected);
+    });
+
+    it('overrides the input type from a transform pipeline with a custom effectType', () => {
+      const expected: oas31.SchemaObject = {
+        type: 'string',
+      };
+      const schema = z
+        .string()
+        .pipe(z.number())
+        .openapi({ effectType: 'input' });
+
+      const result = createPipelineSchema(schema, createOutputState());
+
+      expect(result).toStrictEqual(expected);
+    });
+
+    it('throws an error when the current state effectType is input', () => {
+      const schema = z
+        .string()
+        .transform((arg) => arg.length)
+        .pipe(z.number());
+
+      const state = createOutputState();
+      state.effectType = 'input';
+      expect(() => createPipelineSchema(schema, state)).toThrow(
+        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+      );
     });
   });
 });

@@ -11,16 +11,21 @@ export const createTransformSchema = (
   zodTransform: ZodEffects<any, any, any>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  const creationType = zodTransform._def.openapi?.effectType ?? state.type;
-  if (creationType === 'output') {
+  if (zodTransform._def.openapi?.effectType === 'output') {
     return createManualTypeSchema(zodTransform);
   }
 
-  if (!zodTransform._def.openapi?.effectType && state.type === 'input') {
-    if (state.effectType && state.effectType !== 'input') {
-      throwTransformError(zodTransform);
-    }
-    state.effectType = 'input';
+  if (zodTransform._def.openapi?.effectType === 'input') {
+    return createSchemaOrRef(zodTransform._def.schema as ZodType, state);
   }
+
+  if (state.type === 'output') {
+    return createManualTypeSchema(zodTransform);
+  }
+
+  if (state.effectType === 'output') {
+    throwTransformError(zodTransform);
+  }
+  state.effectType = 'input';
   return createSchemaOrRef(zodTransform._def.schema as ZodType, state);
 };
