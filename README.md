@@ -317,7 +317,7 @@ createDocument({
 
 `.transform()` is complicated because it technically comprises of two types (input & output). This means that we need to understand which type you are creating.
 
-If a registered schema with a transform is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field and set the `effectType` field to `input`. This will force this library to always generate the input type even if we are creating a response type.
+If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field and set the `effectType` field to `input` or `output`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to use this when your know your transform has not changed the type.
 
 `.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
 
@@ -553,7 +553,7 @@ zod-openapi was created while trying to add a feature to support auto registerin
 
 3. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
 
-4. Eslint rules. I initially created some rules for that library, however, I had to add some awkward logic to account for the registry class. With more creative control, I can create better rules going forward. See [eslint-plugin-zod-openapi](https://github.com/samchungy/eslint-plugin-zod-openapi) for some magic.
+4. No input/output validation with components. What happens when you register a component with a transform which technically comprises of two types in a request and a response?
 
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
 

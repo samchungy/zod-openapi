@@ -9,8 +9,10 @@ export const createOutputState = (
   type: 'output',
 });
 
-export const createInputState = (): SchemaState => ({
-  components: getDefaultComponents(),
+export const createInputState = (
+  componentsObject?: ZodOpenApiComponentsObject,
+): SchemaState => ({
+  components: getDefaultComponents(componentsObject),
   type: 'input',
 });
 
