@@ -37,15 +37,6 @@ export const enhanceWithMetadata = (
     };
   }
 
-  if (schemaOrRef.allOf) {
-    const rest = schemaOrRef.allOf.slice(0, -1);
-    const end = schemaOrRef.allOf.at(-1);
-    return {
-      ...schemaOrRef,
-      allOf: [...rest, ...(end ? [enhanceWithMetadata(end, metadata)] : [])],
-    };
-  }
-
   return {
     ...schemaOrRef,
     ...metadata,

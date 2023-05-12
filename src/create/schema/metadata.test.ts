@@ -110,15 +110,11 @@ describe('createSchemaWithMetadata', () => {
       type: 'object',
       properties: {
         b: {
-          allOf: [
-            { $ref: '#/components/schemas/a' },
-            {
-              type: 'object',
-              properties: { b: { type: 'string' } },
-              required: ['b'],
-              description: 'jello',
-            },
-          ],
+          allOf: [{ $ref: '#/components/schemas/a' }],
+          type: 'object',
+          properties: { b: { type: 'string' } },
+          required: ['b'],
+          description: 'jello',
         },
       },
       required: ['b'],
