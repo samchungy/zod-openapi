@@ -80,14 +80,10 @@ describe('extend', () => {
       properties: {
         obj1: { $ref: '#/components/schemas/obj1' },
         obj2: {
-          allOf: [
-            { $ref: '#/components/schemas/obj1' },
-            {
-              type: 'object',
-              properties: { b: { type: 'string' } },
-              required: ['b'],
-            },
-          ],
+          allOf: [{ $ref: '#/components/schemas/obj1' }],
+          type: 'object',
+          properties: { b: { type: 'string' } },
+          required: ['b'],
         },
       },
       required: ['obj1', 'obj2'],
@@ -141,17 +137,13 @@ describe('extend', () => {
       properties: {
         obj1: { $ref: '#/components/schemas/obj1' },
         obj2: {
-          allOf: [
-            { $ref: '#/components/schemas/obj1' },
-            {
-              type: 'object',
-              properties: { b: { type: 'number' } },
-              required: ['b'],
-              additionalProperties: {
-                type: 'boolean',
-              },
-            },
-          ],
+          allOf: [{ $ref: '#/components/schemas/obj1' }],
+          type: 'object',
+          properties: { b: { type: 'number' } },
+          required: ['b'],
+          additionalProperties: {
+            type: 'boolean',
+          },
         },
       },
       required: ['obj1', 'obj2'],

@@ -354,21 +354,19 @@ describe('createDocument', () => {
                 {
                   "$ref": "#/components/schemas/b",
                 },
-                {
-                  "properties": {
-                    "d": {
-                      "type": [
-                        "string",
-                        "null",
-                      ],
-                    },
-                  },
-                  "required": [
-                    "d",
-                  ],
-                  "type": "object",
-                },
               ],
+              "properties": {
+                "d": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "required": [
+                "d",
+              ],
+              "type": "object",
             },
             "lazy": {
               "items": {
@@ -618,19 +616,17 @@ describe('createDocument', () => {
                 {
                   "$ref": "#/components/schemas/b",
                 },
-                {
-                  "properties": {
-                    "d": {
-                      "nullable": true,
-                      "type": "string",
-                    },
-                  },
-                  "required": [
-                    "d",
-                  ],
-                  "type": "object",
-                },
               ],
+              "properties": {
+                "d": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [
+                "d",
+              ],
+              "type": "object",
             },
             "lazy": {
               "items": {

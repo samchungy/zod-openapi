@@ -81,10 +81,8 @@ export const createExtendedSchema = (
   }
 
   return {
-    allOf: [
-      { $ref: createComponentSchemaRef(completeComponent.ref) },
-      createObjectSchemaFromShape(diffShape, diffOpts, state),
-    ],
+    allOf: [{ $ref: createComponentSchemaRef(completeComponent.ref) }],
+    ...createObjectSchemaFromShape(diffShape, diffOpts, state),
   };
 };
 
