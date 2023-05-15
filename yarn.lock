@@ -1289,12 +1289,12 @@
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-"@redocly/cli@1.0.0-beta.125":
-  version "1.0.0-beta.125"
-  resolved "https://registry.yarnpkg.com/@redocly/cli/-/cli-1.0.0-beta.125.tgz#3b107579193572289b264fb12edc2127e3175dbe"
-  integrity sha512-3n5wtCux2vtWdxPvLs5nvbiYiEz+gkAPs/1kC/df7tzBOZ3zld6onrwuBjhMKtzJbJ1B3i1yzrfJz0mMmoNrtQ==
+"@redocly/cli@1.0.0-beta.126":
+  version "1.0.0-beta.126"
+  resolved "https://registry.yarnpkg.com/@redocly/cli/-/cli-1.0.0-beta.126.tgz#0ed7ea5bae1963ea7a077f28395aa9e154299cb4"
+  integrity sha512-GljpdQrzMmmZ6hEa4rdRuylSGAiMT5XF4tp/eDIPI9g8THVfyKFL2BLuSmnQ0We93wLOA3ASUZmG9jH6t6DpmQ==
   dependencies:
-    "@redocly/openapi-core" "1.0.0-beta.125"
+    "@redocly/openapi-core" "1.0.0-beta.126"
     assert-node-version "^1.0.3"
     chokidar "^3.5.1"
     colorette "^1.2.0"
@@ -1310,10 +1310,10 @@
     styled-components "5.3.3"
     yargs "17.0.1"
 
-"@redocly/openapi-core@1.0.0-beta.125", "@redocly/openapi-core@^1.0.0-beta.104":
-  version "1.0.0-beta.125"
-  resolved "https://registry.yarnpkg.com/@redocly/openapi-core/-/openapi-core-1.0.0-beta.125.tgz#a87b7cbbbd1cef2206bcc2c6c7b498f07378466b"
-  integrity sha512-3kpvIP6nzqrXl59BXovm1aGcbqSJv37t9kjFxuEvsGZzVSUC8rGZl4tNEZ3Qfm+mbPs+XWDi/U43kf/u3bUCpw==
+"@redocly/openapi-core@1.0.0-beta.126", "@redocly/openapi-core@^1.0.0-beta.104":
+  version "1.0.0-beta.126"
+  resolved "https://registry.yarnpkg.com/@redocly/openapi-core/-/openapi-core-1.0.0-beta.126.tgz#6a1ba25fb02b8aa5e7a591390b809fe65ab247af"
+  integrity sha512-09oIEh3zBio2CqJz4ERVuJ6KVG7q9LdjU5g7VG4+VSR91mrEA//lkcuZLoSJHvMJfcBWKR3AfYuuvaDijuszCg==
   dependencies:
     "@redocly/ajv" "^8.11.0"
     "@types/node" "^14.11.8"
@@ -8014,20 +8014,7 @@ yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-yargs@^17.0.1, yargs@^17.3.1:
-  version "17.7.1"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.1.tgz#34a77645201d1a8fc5213ace787c220eabbd0967"
-  integrity sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==
-  dependencies:
-    cliui "^8.0.1"
-    escalade "^3.1.1"
-    get-caller-file "^2.0.5"
-    require-directory "^2.1.1"
-    string-width "^4.2.3"
-    y18n "^5.0.5"
-    yargs-parser "^21.1.1"
-
-yargs@^17.7.1:
+yargs@^17.0.1, yargs@^17.3.1, yargs@^17.7.1:
   version "17.7.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.2.tgz#991df39aca675a192b816e1e0363f9d75d2aa269"
   integrity sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==
