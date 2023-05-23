@@ -241,6 +241,15 @@ const expectedZodBranded: oas31.SchemaObject = {
   required: ['name'],
 };
 
+const zodSet = z.set(z.string());
+const expectedZodSet: oas31.SchemaObject = {
+  type: 'array',
+  items: {
+    type: 'string',
+  },
+  uniqueItems: true,
+};
+
 describe('createSchemaOrRef', () => {
   it.each`
     zodType                      | schema                   | expected
@@ -271,6 +280,7 @@ describe('createSchemaOrRef', () => {
     ${'override'}                | ${zodOverride}           | ${expectedZodOverride}
     ${'ZodLazy'}                 | ${zodLazy}               | ${expectedZodLazy}
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
+    ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createOutputState())).toStrictEqual(
       expected,
@@ -306,6 +316,7 @@ describe('createSchemaOrRef', () => {
     ${'unknown'}                 | ${zodUnknown}            | ${expectedManualType}
     ${'ZodLazy'}                 | ${zodLazy}               | ${expectedZodLazy}
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
+    ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
       expected,

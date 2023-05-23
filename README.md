@@ -513,6 +513,8 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodOptional
 - ZodPipeline
 - ZodRecord
+- ZodSet
+  - Treated as an array with `uniqueItems`, you may need to add a pre-process)
 - ZodString
   - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`
   - `minLength`/`maxLength` mapping for `.length()`, `.min()`, `.max()`
@@ -550,7 +552,6 @@ zod-openapi was created while trying to add a feature to support auto registerin
 1. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
 
 2. No auto registering schema. Most users do not want to think about this so having to import and call `.register()` is a nuisance.
-    
 3. When you register a schema using the registry you need to use the outputted type from the `.register()` call. You do not need to do such a thing with this library.
 
 4. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
