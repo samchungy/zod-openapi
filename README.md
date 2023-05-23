@@ -516,7 +516,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodPipeline
 - ZodRecord
 - ZodSet
-  - Treated as an array with `uniqueItems`, you may need to add a pre-process)
+  - Treated as an array with `uniqueItems` (you may need to add a pre-process)
 - ZodString
   - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`
   - `minLength`/`maxLength` mapping for `.length()`, `.min()`, `.max()`
