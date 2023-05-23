@@ -19,6 +19,7 @@ import {
   ZodOptional,
   ZodPipeline,
   ZodRecord,
+  ZodSet,
   ZodString,
   ZodTuple,
   type ZodType,
@@ -58,6 +59,7 @@ import { createPipelineSchema } from './pipeline';
 import { createPreprocessSchema } from './preprocess';
 import { createRecordSchema } from './record';
 import { createRefineSchema } from './refine';
+import { createSetSchema } from './set';
 import { createStringSchema } from './string';
 import { createTransformSchema } from './transform';
 import { createTupleSchema } from './tuple';
@@ -197,6 +199,10 @@ export const createSchema = <
 
   if (zodSchema instanceof ZodBranded) {
     return createBrandedSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodSet) {
+    return createSetSchema(zodSchema, state);
   }
 
   return createManualTypeSchema(zodSchema);
