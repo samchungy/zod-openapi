@@ -9,7 +9,7 @@ export const createLazySchema = (
   zodLazy: ZodLazy<any>,
   state: SchemaState,
 ): oas31.ReferenceObject | oas31.SchemaObject => {
-  const component = state.components.schemas.get(zodLazy);
+  const component = state.components.schemas.get(zodLazy) ?? state.components.schemas.get(zodLazy.schema);
   const ref = component?.ref ?? zodLazy._def.openapi?.ref;
   if (!ref) {
     throw new Error(`Please register the ${JSON.stringify(zodLazy._def)} type`);
