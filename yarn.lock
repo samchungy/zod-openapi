@@ -5988,7 +5988,7 @@ openapi-sampler@^1.3.0:
     "@types/json-schema" "^7.0.7"
     json-pointer "0.6.2"
 
-openapi3-ts@^4.1.2:
+openapi3-ts@4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/openapi3-ts/-/openapi3-ts-4.1.2.tgz#f15cd4794e3a7c9b388fd45dfbefc78501f7043e"
   integrity sha512-B7gOkwsYMZO7BZXwJzXCuVagym2xhqsrilVvV0dnq2Di4+iLUXKVX9gOK23ZqaAHZOwABXN0QTdW8QnkUTX6DA==
