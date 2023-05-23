@@ -9,6 +9,8 @@ A Typescript library to create full OpenAPI 3.x documentation from <a href="http
 <a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/><a>
 <a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/dm/zod-openapi"/><a>
 <a href="https://nodejs.org/en/"><img src="https://img.shields.io/badge/node-%3E%3D%2016.11-brightgreen"/><a>
+<a href="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml/badge.svg"/><a>
+<a href="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml/badge.svg"/><a>
 <a href="https://github.com/seek-oss/skuba"><img src="https://img.shields.io/badge/🤿%20skuba-powered-009DC4"/><a>
 </div>
 <br>
@@ -495,8 +497,8 @@ For example in `z.string().nullable()` will be rendered differently
   - `discriminator` mapping when all schemas in the union contain a `ref`.
 - ZodEffects
   - `transform` support for request schemas. See [Zod Effects](#zod-effects) for how to enable response schema support
-  - `pre-process` full support.
-  - `refine` full support.
+  - `pre-process` support. We assume that the input type is the same as the output type. Otherwise pipe and transform can be used instead.
+  - `refine` full support
 - ZodEnum
 - ZodLazy
 - ZodLiteral
