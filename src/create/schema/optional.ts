@@ -1,5 +1,6 @@
 import {
   ZodDefault,
+  ZodDiscriminatedUnion,
   ZodEffects,
   ZodIntersection,
   ZodNullable,
@@ -33,6 +34,12 @@ export const isOptionalSchema = (
   }
 
   if (zodSchema instanceof ZodUnion) {
+    return (zodSchema._def.options as ZodTypeAny[]).some((schema) =>
+      isOptionalSchema(schema, state),
+    );
+  }
+
+  if (zodSchema instanceof ZodDiscriminatedUnion) {
     return (zodSchema._def.options as ZodTypeAny[]).some((schema) =>
       isOptionalSchema(schema, state),
     );
