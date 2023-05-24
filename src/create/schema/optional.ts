@@ -35,6 +35,7 @@ export const isOptionalSchema = (
   if (
     zodSchema instanceof ZodNullable ||
     zodSchema instanceof ZodDefault ||
+    zodSchema instanceof ZodDefault ||
     zodSchema instanceof ZodCatch
   ) {
     return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
@@ -44,17 +45,10 @@ export const isOptionalSchema = (
     return isOptionalSchema(zodSchema._def.schema as ZodTypeAny, state);
   }
 
-  if (zodSchema instanceof ZodDefault) {
-    return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
-  }
-
-  if (zodSchema instanceof ZodUnion) {
-    return (zodSchema._def.options as ZodTypeAny[]).some((schema) =>
-      isOptionalSchema(schema, state),
-    );
-  }
-
-  if (zodSchema instanceof ZodDiscriminatedUnion) {
+  if (
+    zodSchema instanceof ZodUnion ||
+    zodSchema instanceof ZodDiscriminatedUnion
+  ) {
     return (zodSchema._def.options as ZodTypeAny[]).some((schema) =>
       isOptionalSchema(schema, state),
     );
