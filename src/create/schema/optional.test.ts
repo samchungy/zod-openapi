@@ -100,7 +100,7 @@ describe('isOptionalSchema', () => {
     expect(result).toBe(true);
   });
 
-  it('returns true for an optional zod default', () => {
+  it('returns true for a zod default', () => {
     const schema = z.string().default('a');
 
     const result = isOptionalSchema(schema, createInputState());
