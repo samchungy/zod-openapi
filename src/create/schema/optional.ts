@@ -83,7 +83,7 @@ export const isOptionalSchema = (
   }
 
   if (zodSchema instanceof ZodLazy) {
-    return isOptionalSchema(zodSchema.schema as ZodType, state);
+    return isOptionalSchema(zodSchema._def.getter() as ZodType, state);
   }
 
   return zodSchema.isOptional();
