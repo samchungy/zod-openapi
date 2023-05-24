@@ -28,16 +28,11 @@ export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
   state: SchemaState,
 ): boolean => {
-  if (zodSchema instanceof ZodOptional) {
+  if (zodSchema instanceof ZodOptional || zodSchema instanceof ZodDefault) {
     return true;
   }
 
-  if (
-    zodSchema instanceof ZodNullable ||
-    zodSchema instanceof ZodDefault ||
-    zodSchema instanceof ZodDefault ||
-    zodSchema instanceof ZodCatch
-  ) {
+  if (zodSchema instanceof ZodNullable || zodSchema instanceof ZodCatch) {
     return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
   }
 
