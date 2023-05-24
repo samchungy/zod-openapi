@@ -8,6 +8,7 @@ import { createLazySchema } from './lazy';
 import { createObjectSchema } from './object';
 
 import { createSchemaOrRef } from '.';
+import { createSchema } from './index';
 
 extendZodWithOpenApi(z);
 
@@ -146,10 +147,14 @@ describe('createLazySchema', () => {
 
     const PostArray = z.array(z.lazy(() => PostSchema));
 
-    const UserSchema: ZodType<User> = BaseUser.extend({
-      posts: PostArray.optional(),
-      comments: PostArray.optional(),
-    }).openapi({ ref: 'user' });
+    const UserSchema: ZodType<User> = z
+      .lazy(() =>
+        BaseUser.extend({
+          posts: PostArray.optional(),
+          comments: PostArray.optional(),
+        }),
+      )
+      .openapi({ ref: 'user' });
 
     const state = createOutputState();
     state.components.schemas.set(UserSchema, {
@@ -157,10 +162,7 @@ describe('createLazySchema', () => {
       ref: 'user',
     });
 
-    const result = createObjectSchema(
-      UserSchema as ZodObject<any, any, any, any, any>,
-      state,
-    );
+    const result = createSchema(UserSchema, state);
 
     expect(result).toStrictEqual(expected);
   });
