@@ -99,4 +99,12 @@ describe('isOptionalSchema', () => {
 
     expect(result).toBe(true);
   });
+
+  it('returns true for an optional zod lazy', () => {
+    const schema = z.string().default('a');
+
+    const result = isOptionalSchema(schema, createInputState());
+
+    expect(result).toBe(true);
+  });
 });
