@@ -79,7 +79,7 @@ export const createBaseHeader = (
   const { ref, ...rest } = schema._def.openapi?.header ?? {};
   const state: SchemaState = {
     components,
-    type: 'input',
+    type: 'output',
   };
   const schemaOrRef = createSchemaOrRef(schema, state);
   const required = !isOptionalSchema(schema, state);
