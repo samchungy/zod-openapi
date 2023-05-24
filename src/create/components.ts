@@ -27,14 +27,21 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
 }
 
 export interface PartialSchemaComponent extends BaseSchemaComponent {
-  type: 'partial' | 'lazy';
+  type: 'partial';
+}
+
+export interface InProgressSchemaComponent extends BaseSchemaComponent {
+  type: 'inProgress';
 }
 
 interface BaseSchemaComponent {
   ref: string;
 }
 
-export type SchemaComponent = CompleteSchemaComponent | PartialSchemaComponent;
+export type SchemaComponent =
+  | CompleteSchemaComponent
+  | PartialSchemaComponent
+  | InProgressSchemaComponent;
 
 export type SchemaComponentMap = Map<ZodType, SchemaComponent>;
 

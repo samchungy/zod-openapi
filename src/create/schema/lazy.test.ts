@@ -1,71 +1,50 @@
-import { type ZodLazy, type ZodType, z } from 'zod';
+import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
 import { createOutputState } from '../../testing/state';
 
 import { createLazySchema } from './lazy';
+import { createObjectSchema } from './object';
+
+import { createSchemaOrRef } from '.';
 
 extendZodWithOpenApi(z);
 
 describe('createLazySchema', () => {
+  it('throws an error when a lazy schema has no ref', () => {
+    type Lazy = Lazy[];
+    const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
+
+    expect(() =>
+      createSchemaOrRef(lazy as ZodLazy<any>, createOutputState()),
+    ).toThrow(
+      'The ZodLazy Schema {"typeName":"ZodLazy"} or inner ZodLazy Schema {"type":{"_def":{"typeName":"ZodLazy"}},"minLength":null,"maxLength":null,"exactLength":null,"typeName":"ZodArray"} must be registered',
+    );
+  });
+
   it('creates an lazy schema when the schema contains a ref', () => {
     const expected: oas31.SchemaObject = {
       type: 'array',
       items: { $ref: '#/components/schemas/lazy' },
     };
+
     type Lazy = Lazy[];
     const lazy: z.ZodType<Lazy> = z
       .lazy(() => lazy.array())
       .openapi({ ref: 'lazy' });
 
-    const result = createLazySchema(lazy as ZodLazy<any>, createOutputState());
-    expect(result).toStrictEqual(expected);
-  });
-
-  it('creates an lazy schema when the schema is the components as lazy', () => {
-    const expected: oas31.ReferenceObject = {
-      $ref: '#/components/schemas/lazy',
-    };
-    type Lazy = Lazy[];
-    const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
     const state = createOutputState();
     state.components.schemas.set(lazy, {
+      type: 'inProgress',
       ref: 'lazy',
-      type: 'lazy',
     });
 
     const result = createLazySchema(lazy as ZodLazy<any>, state);
     expect(result).toStrictEqual(expected);
   });
 
-  it('creates an lazy schema when the schema is the components as partial', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'array',
-      items: { $ref: '#/components/schemas/lazy' },
-    };
-    type Lazy = Lazy[];
-    const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
-    const state = createOutputState();
-    state.components.schemas.set(lazy, {
-      ref: 'lazy',
-      type: 'partial',
-    });
-
-    const result = createLazySchema(lazy as ZodLazy<any>, state);
-    expect(result).toStrictEqual(expected);
-  });
-
-  it('throws an error when the schema does not have a ref', () => {
-    type Lazy = Lazy[];
-    const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
-
-    expect(() =>
-      createLazySchema(lazy as ZodLazy<any>, createOutputState()),
-    ).toThrow(`Please register the ${JSON.stringify(lazy._def)} type`);
-  });
-
-  it('should support registering the base schema', () => {
+  it('supports registering the base schema', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       properties: {
@@ -107,11 +86,17 @@ describe('createLazySchema', () => {
       posts: z.array(z.lazy(() => PostSchema)).optional(),
     }).openapi({ ref: 'user' });
 
-    const result = createLazySchema(
-      UserSchema as ZodLazy<any>,
-      createOutputState(),
+    const state = createOutputState();
+    state.components.schemas.set(UserSchema, {
+      type: 'inProgress',
+      ref: 'user',
+    });
+
+    const result = createObjectSchema(
+      UserSchema as ZodObject<any, any, any, any, any>,
+      state,
     );
 
-    expect(result).toBe(expected);
+    expect(result).toStrictEqual(expected);
   });
 });

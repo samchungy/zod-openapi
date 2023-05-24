@@ -66,10 +66,13 @@ import { createTupleSchema } from './tuple';
 import { createUnionSchema } from './union';
 import { createUnknownSchema } from './unknown';
 
+export type LazyMap = Map<ZodType, true>;
+
 export interface SchemaState {
   components: ComponentsObject;
   type: CreationType;
   effectType?: CreationType;
+  lazy?: LazyMap;
 }
 
 export const createSchema = <
@@ -228,11 +231,25 @@ export const createSchemaOrRef = <
     };
   }
 
+  if (component && component.type === 'inProgress') {
+    return {
+      $ref: createComponentSchemaRef(component.ref),
+    };
+  }
+
   const schemaRef = zodSchema._def.openapi?.ref ?? component?.ref;
+
+  if (zodSchema._def.openapi?.ref || component?.type === 'partial') {
+    state.components.schemas.set(zodSchema, {
+      type: 'inProgress',
+      ref: (zodSchema._def.openapi?.ref ?? component?.ref) as string,
+    });
+  }
 
   const newState: SchemaState = {
     components: state.components,
     type: state.type,
+    lazy: state.lazy,
   };
 
   const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);
