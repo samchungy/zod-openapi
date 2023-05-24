@@ -5,7 +5,8 @@ import type { oas30, oas31 } from '../openapi3-ts/dist';
 
 import type { ComponentsObject } from './components';
 import type { ZodOpenApiParameters } from './document';
-import { createSchemaOrRef } from './schema';
+import { type SchemaState, createSchemaOrRef } from './schema';
+import { isOptionalSchema } from './schema/optional';
 
 export const createComponentParamRef = (ref: string) =>
   `#/components/parameters/${ref}`;
@@ -15,11 +16,12 @@ export const createBaseParameter = (
   components: ComponentsObject,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
-  const schemaOrRef = createSchemaOrRef(schema, {
+  const state: SchemaState = {
     components,
     type: 'input',
-  });
-  const required = !schema.isOptional();
+  };
+  const schemaOrRef = createSchemaOrRef(schema, state);
+  const required = !isOptionalSchema(schema, state);
   return {
     ...rest,
     ...(schema && { schema: schemaOrRef }),

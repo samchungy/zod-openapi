@@ -9,6 +9,8 @@ import {
 import type { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
 
+import { isOptionalSchema } from './optional';
+
 import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createObjectSchema = <
@@ -138,7 +140,7 @@ export const createObjectSchemaFromShape = (
 ): oas31.SchemaObject => ({
   type: 'object',
   properties: mapProperties(shape, state),
-  required: mapRequired(shape),
+  required: mapRequired(shape, state),
   ...(unknownKeys === 'strict' && { additionalProperties: false }),
   ...(!(catchAll instanceof ZodNever) && {
     additionalProperties: createSchemaOrRef(catchAll, state),
@@ -147,9 +149,10 @@ export const createObjectSchemaFromShape = (
 
 export const mapRequired = (
   shape: ZodRawShape,
+  state: SchemaState,
 ): oas31.SchemaObject['required'] => {
   const required: string[] = Object.entries(shape)
-    .filter(([_key, zodSchema]) => !zodSchema.isOptional())
+    .filter(([_key, zodSchema]) => !isOptionalSchema(zodSchema, state))
     .map(([key]) => key);
 
   if (!required.length) {
