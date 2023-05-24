@@ -20,7 +20,22 @@ describe('createLazySchema', () => {
     expect(() =>
       createSchemaOrRef(lazy as ZodLazy<any>, createOutputState()),
     ).toThrow(
-      `The schema {\"typeName\":\"ZodLazy\"} needs to be registered because it's circularly referenced`,
+      `The schema at lazy schema > array items needs to be registered because it's circularly referenced`,
+    );
+  });
+
+  it('throws errors when cycles without refs are detected', () => {
+    const cycle1: any = z.lazy(() => z.array(z.object({ foo: cycle1 })));
+    expect(() => createSchemaOrRef(cycle1, createOutputState())).toThrow(
+      `The schema at lazy schema > array items > property: foo needs to be registered because it's circularly referenced`,
+    );
+    const cycle2: any = z.lazy(() => z.union([z.number(), z.array(cycle2)]));
+    expect(() => createSchemaOrRef(cycle2, createOutputState())).toThrow(
+      `The schema at lazy schema > union option 1 > array items needs to be registered because it's circularly referenced`,
+    );
+    const cycle3: any = z.lazy(() => z.record(z.tuple([cycle3.optional()])));
+    expect(() => createSchemaOrRef(cycle3, createOutputState())).toThrow(
+      `The schema at lazy schema > record value > tuple item 0 > optional needs to be registered because it's circularly referenced`,
     );
   });
 

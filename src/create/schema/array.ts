@@ -15,7 +15,7 @@ export const createArraySchema = (
     zodArray._def.exactLength?.value ?? zodArray._def.maxLength?.value;
   return {
     type: 'array',
-    items: createSchemaOrRef(zodType, state),
+    items: createSchemaOrRef(zodType, state, ['array items']),
     ...(minItems !== undefined && { minItems }),
     ...(maxItems !== undefined && { maxItems }),
   };

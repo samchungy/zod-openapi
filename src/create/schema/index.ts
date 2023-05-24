@@ -71,6 +71,7 @@ export type LazyMap = Map<ZodType, true>;
 export interface SchemaState {
   components: ComponentsObject;
   type: CreationType;
+  path?: string[];
   effectType?: CreationType;
   visited?: Set<ZodType>;
 }
@@ -221,9 +222,9 @@ export const createSchema = <
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (state.visited?.has(zodSchema)) {
     throw new Error(
-      `The schema ${JSON.stringify(
-        zodSchema._def,
-      )} needs to be registered because it's circularly referenced`,
+      `The schema at ${
+        state.path?.join(' > ') || '<root>'
+      } needs to be registered because it's circularly referenced`,
     );
   }
   state.visited ??= new Set();
@@ -240,7 +241,16 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
+  subpath?: string[],
 ): oas31.ReferenceObject | oas31.SchemaObject => {
+  if (subpath) {
+    const path = (state.path ??= []);
+    const lengthBefore = path.length;
+    path.push(...subpath);
+    const result = createSchemaOrRef(zodSchema, state);
+    path.length = lengthBefore;
+    return result;
+  }
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {
     if (component.creationType && component.creationType !== state.type) {
@@ -272,6 +282,7 @@ export const createSchemaOrRef = <
     components: state.components,
     type: state.type,
     visited: state.visited,
+    path: state.path,
   };
 
   const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);

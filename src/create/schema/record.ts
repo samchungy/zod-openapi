@@ -12,5 +12,6 @@ export const createRecordSchema = (
   additionalProperties: createSchemaOrRef(
     zodRecord.valueSchema as ZodTypeAny,
     state,
+    ['record value'],
   ),
 });

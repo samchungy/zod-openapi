@@ -22,7 +22,7 @@ export const createOptionalSchema = (
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject =>
   // Optional doesn't change OpenAPI schema
-  createSchemaOrRef(zodOptional.unwrap() as ZodTypeAny, state);
+  createSchemaOrRef(zodOptional.unwrap() as ZodTypeAny, state, ['optional']);
 
 export const isOptionalSchema = (
   zodSchema: ZodTypeAny,

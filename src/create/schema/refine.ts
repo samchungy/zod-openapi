@@ -8,4 +8,4 @@ export const createRefineSchema = (
   zodRefine: ZodEffects<any, any, any>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject =>
-  createSchemaOrRef(zodRefine._def.schema as ZodType, state);
+  createSchemaOrRef(zodRefine._def.schema as ZodType, state, ['refine schema']);
