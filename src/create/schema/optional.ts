@@ -4,9 +4,11 @@ import {
   ZodDiscriminatedUnion,
   ZodEffects,
   ZodIntersection,
+  ZodLazy,
   ZodNullable,
   ZodOptional,
   ZodPipeline,
+  type ZodType,
   type ZodTypeAny,
   ZodUnion,
 } from 'zod';
@@ -28,6 +30,14 @@ export const isOptionalSchema = (
 ): boolean => {
   if (zodSchema instanceof ZodOptional) {
     return true;
+  }
+
+  if (
+    zodSchema instanceof ZodNullable ||
+    zodSchema instanceof ZodDefault ||
+    zodSchema instanceof ZodCatch
+  ) {
+    return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
   }
 
   if (zodSchema instanceof ZodEffects) {
@@ -72,12 +82,8 @@ export const isOptionalSchema = (
     }
   }
 
-  if (
-    zodSchema instanceof ZodNullable ||
-    zodSchema instanceof ZodDefault ||
-    zodSchema instanceof ZodCatch
-  ) {
-    return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
+  if (zodSchema instanceof ZodLazy) {
+    return isOptionalSchema(zodSchema.schema as ZodType, state);
   }
 
   return zodSchema.isOptional();
