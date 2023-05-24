@@ -1,4 +1,4 @@
-import { type ZodLazy, z } from 'zod';
+import { type ZodLazy, type ZodType, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
@@ -63,5 +63,55 @@ describe('createLazySchema', () => {
     expect(() =>
       createLazySchema(lazy as ZodLazy<any>, createOutputState()),
     ).toThrow(`Please register the ${JSON.stringify(lazy._def)} type`);
+  });
+
+  it('should support registering the base schema', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+        },
+        posts: {
+          type: 'array',
+          items: {
+            $ref: '#/components/schemas/post',
+          },
+        },
+      },
+      required: ['id'],
+    };
+
+    const BasePost = z.object({
+      id: z.string(),
+      userId: z.string(),
+    });
+
+    type Post = z.infer<typeof BasePost> & {
+      user?: User;
+    };
+
+    const BaseUser = z.object({
+      id: z.string(),
+    });
+
+    type User = z.infer<typeof BaseUser> & {
+      posts?: Post[];
+    };
+
+    const PostSchema: ZodType<Post> = BasePost.extend({
+      user: z.lazy(() => UserSchema).optional(),
+    }).openapi({ ref: 'post' });
+
+    const UserSchema: ZodType<User> = BaseUser.extend({
+      posts: z.array(z.lazy(() => PostSchema)).optional(),
+    }).openapi({ ref: 'user' });
+
+    const result = createLazySchema(
+      UserSchema as ZodLazy<any>,
+      createOutputState(),
+    );
+
+    expect(result).toBe(expected);
   });
 });
