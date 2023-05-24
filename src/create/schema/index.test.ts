@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { type ZodType, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
@@ -230,6 +230,35 @@ const expectedZodLazy: oas31.ReferenceObject = {
   $ref: '#/components/schemas/lazy',
 };
 
+const expectedZodLazyComplex: oas31.ReferenceObject = {
+  $ref: '#/components/schemas/user',
+};
+
+const BasePost = z.object({
+  id: z.string(),
+  userId: z.string(),
+});
+
+type Post = z.infer<typeof BasePost> & {
+  user?: User;
+};
+
+const BaseUser = z.object({
+  id: z.string(),
+});
+
+type User = z.infer<typeof BaseUser> & {
+  posts?: Post[];
+};
+
+const PostSchema: ZodType<Post> = BasePost.extend({
+  user: z.lazy(() => zodLazyComplex).optional(),
+}).openapi({ ref: 'post' });
+
+const zodLazyComplex: ZodType<User> = BaseUser.extend({
+  posts: z.array(z.lazy(() => PostSchema)).optional(),
+}).openapi({ ref: 'user' });
+
 const zodBranded = z.object({ name: z.string() }).brand<'Cat'>();
 const expectedZodBranded: oas31.SchemaObject = {
   type: 'object',
@@ -279,6 +308,7 @@ describe('createSchemaOrRef', () => {
     ${'manual type'}             | ${zodUnknown}            | ${expectedManualType}
     ${'override'}                | ${zodOverride}           | ${expectedZodOverride}
     ${'ZodLazy'}                 | ${zodLazy}               | ${expectedZodLazy}
+    ${'ZodLazy - Complex'}       | ${zodLazyComplex}        | ${expectedZodLazyComplex}
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
@@ -315,6 +345,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodEffects - Refine'}     | ${zodRefine}             | ${expectedZodRefine}
     ${'unknown'}                 | ${zodUnknown}            | ${expectedManualType}
     ${'ZodLazy'}                 | ${zodLazy}               | ${expectedZodLazy}
+    ${'ZodLazy - Complex'}       | ${zodLazyComplex}        | ${expectedZodLazyComplex}
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an input schema for $zodType', ({ schema, expected }) => {

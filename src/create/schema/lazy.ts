@@ -1,7 +1,6 @@
 import type { ZodLazy, ZodType } from 'zod';
 
 import type { oas31 } from '../../openapi3-ts/dist';
-import { createComponentSchemaRef } from '../components';
 
 import { type SchemaState, createSchemaOrRef } from '.';
 
@@ -9,21 +8,18 @@ export const createLazySchema = (
   zodLazy: ZodLazy<any>,
   state: SchemaState,
 ): oas31.ReferenceObject | oas31.SchemaObject => {
-  const component = state.components.schemas.get(zodLazy);
-  const ref = component?.ref ?? zodLazy._def.openapi?.ref;
-  if (!ref) {
-    throw new Error(`Please register the ${JSON.stringify(zodLazy._def)} type`);
+  const innerSchema = zodLazy._def.getter() as ZodType;
+  if (state.lazy?.get(zodLazy)) {
+    throw new Error(
+      `The ZodLazy Schema ${JSON.stringify(
+        zodLazy._def,
+      )} or inner ZodLazy Schema ${JSON.stringify(
+        innerSchema._def,
+      )} must be registered`,
+    );
   }
+  state.lazy ??= new Map();
+  state.lazy.set(zodLazy, true);
 
-  if (!component || component.type === 'partial') {
-    state.components.schemas.set(zodLazy, {
-      type: 'lazy',
-      ref,
-    });
-    return createSchemaOrRef(zodLazy._def.getter() as ZodType, state);
-  }
-
-  return {
-    $ref: createComponentSchemaRef(ref),
-  };
+  return createSchemaOrRef(innerSchema, state);
 };

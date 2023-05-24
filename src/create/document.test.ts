@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { type ZodType, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../extendZod';
 
@@ -95,6 +95,32 @@ const baseObject = z
 const manual = z.boolean();
 type Lazy = Lazy[];
 const zodLazy: z.ZodType<Lazy> = z.lazy(() => zodLazy.array());
+
+const BasePost = z.object({
+  id: z.string(),
+  userId: z.string(),
+});
+
+type Post = z.infer<typeof BasePost> & {
+  user?: User;
+};
+
+const BaseUser = z.object({
+  id: z.string(),
+});
+
+type User = z.infer<typeof BaseUser> & {
+  posts?: Post[];
+};
+
+const PostSchema: ZodType<Post> = BasePost.extend({
+  user: z.lazy(() => zodLazyComplex).optional(),
+}).openapi({ ref: 'post' });
+
+const zodLazyComplex: ZodType<User> = BaseUser.extend({
+  posts: z.array(z.lazy(() => PostSchema)).optional(),
+}).openapi({ ref: 'user' });
+
 const complex = z.object({
   a: z.string().openapi({ ref: 'a' }),
   b: baseObject,
@@ -106,6 +132,7 @@ const complex = z.object({
   ]),
   f: z.tuple([z.string(), z.number(), manual]),
   g: zodLazy,
+  h: zodLazyComplex,
 });
 const complexZodOpenApiObject: ZodOpenApiObject = {
   info: {
@@ -377,6 +404,24 @@ describe('createDocument', () => {
             "manual": {
               "type": "boolean",
             },
+            "post": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+                "user": {
+                  "$ref": "#/components/schemas/user",
+                },
+                "userId": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "userId",
+              ],
+              "type": "object",
+            },
             "union-a": {
               "properties": {
                 "type": {
@@ -402,6 +447,23 @@ describe('createDocument', () => {
               },
               "required": [
                 "type",
+              ],
+              "type": "object",
+            },
+            "user": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+                "posts": {
+                  "items": {
+                    "$ref": "#/components/schemas/post",
+                  },
+                  "type": "array",
+                },
+              },
+              "required": [
+                "id",
               ],
               "type": "object",
             },
@@ -473,6 +535,9 @@ describe('createDocument', () => {
                         "g": {
                           "$ref": "#/components/schemas/lazy",
                         },
+                        "h": {
+                          "$ref": "#/components/schemas/user",
+                        },
                       },
                       "required": [
                         "a",
@@ -481,6 +546,7 @@ describe('createDocument', () => {
                         "e",
                         "f",
                         "g",
+                        "h",
                       ],
                       "type": "object",
                     },
@@ -541,6 +607,9 @@ describe('createDocument', () => {
                           "g": {
                             "$ref": "#/components/schemas/lazy",
                           },
+                          "h": {
+                            "$ref": "#/components/schemas/user",
+                          },
                         },
                         "required": [
                           "a",
@@ -549,6 +618,7 @@ describe('createDocument', () => {
                           "e",
                           "f",
                           "g",
+                          "h",
                         ],
                         "type": "object",
                       },
@@ -637,6 +707,24 @@ describe('createDocument', () => {
             "manual": {
               "type": "boolean",
             },
+            "post": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+                "user": {
+                  "$ref": "#/components/schemas/user",
+                },
+                "userId": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "userId",
+              ],
+              "type": "object",
+            },
             "union-a": {
               "properties": {
                 "type": {
@@ -662,6 +750,23 @@ describe('createDocument', () => {
               },
               "required": [
                 "type",
+              ],
+              "type": "object",
+            },
+            "user": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+                "posts": {
+                  "items": {
+                    "$ref": "#/components/schemas/post",
+                  },
+                  "type": "array",
+                },
+              },
+              "required": [
+                "id",
               ],
               "type": "object",
             },
@@ -735,6 +840,9 @@ describe('createDocument', () => {
                         "g": {
                           "$ref": "#/components/schemas/lazy",
                         },
+                        "h": {
+                          "$ref": "#/components/schemas/user",
+                        },
                       },
                       "required": [
                         "a",
@@ -743,6 +851,7 @@ describe('createDocument', () => {
                         "e",
                         "f",
                         "g",
+                        "h",
                       ],
                       "type": "object",
                     },
@@ -805,6 +914,9 @@ describe('createDocument', () => {
                           "g": {
                             "$ref": "#/components/schemas/lazy",
                           },
+                          "h": {
+                            "$ref": "#/components/schemas/user",
+                          },
                         },
                         "required": [
                           "a",
@@ -813,6 +925,7 @@ describe('createDocument', () => {
                           "e",
                           "f",
                           "g",
+                          "h",
                         ],
                         "type": "object",
                       },
