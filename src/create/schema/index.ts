@@ -75,6 +75,142 @@ export interface SchemaState {
   visited?: Set<ZodType>;
 }
 
+const createSchemaSwitch = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
+  state: SchemaState,
+): oas31.SchemaObject | oas31.ReferenceObject => {
+  if (zodSchema._def.openapi?.type) {
+    return createManualTypeSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodString) {
+    return createStringSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodNumber) {
+    return createNumberSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodBoolean) {
+    return createBooleanSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodEnum) {
+    return createEnumSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodLiteral) {
+    return createLiteralSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodNativeEnum) {
+    return createNativeEnumSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodArray) {
+    return createArraySchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodObject) {
+    return createObjectSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodUnion) {
+    return createUnionSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodDiscriminatedUnion) {
+    return createDiscriminatedUnionSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodNull) {
+    return createNullSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodNullable) {
+    return createNullableSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodOptional) {
+    return createOptionalSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodDefault) {
+    return createDefaultSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodRecord) {
+    return createRecordSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodTuple) {
+    return createTupleSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodDate) {
+    return createDateSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodPipeline) {
+    return createPipelineSchema(zodSchema, state);
+  }
+
+  if (
+    zodSchema instanceof ZodEffects &&
+    zodSchema._def.effect.type === 'transform'
+  ) {
+    return createTransformSchema(zodSchema, state);
+  }
+
+  if (
+    zodSchema instanceof ZodEffects &&
+    zodSchema._def.effect.type === 'preprocess'
+  ) {
+    return createPreprocessSchema(zodSchema, state);
+  }
+
+  if (
+    zodSchema instanceof ZodEffects &&
+    zodSchema._def.effect.type === 'refinement'
+  ) {
+    return createRefineSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodNativeEnum) {
+    return createNativeEnumSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodIntersection) {
+    return createIntersectionSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodCatch) {
+    return createCatchSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodUnknown) {
+    return createUnknownSchema(zodSchema);
+  }
+
+  if (zodSchema instanceof ZodLazy) {
+    return createLazySchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodBranded) {
+    return createBrandedSchema(zodSchema, state);
+  }
+
+  if (zodSchema instanceof ZodSet) {
+    return createSetSchema(zodSchema, state);
+  }
+
+  return createManualTypeSchema(zodSchema);
+};
+
 export const createSchema = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -92,136 +228,9 @@ export const createSchema = <
   }
   state.visited ??= new Set();
   state.visited.add(zodSchema);
-  try {
-    if (zodSchema._def.openapi?.type) {
-      return createManualTypeSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodString) {
-      return createStringSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodNumber) {
-      return createNumberSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodBoolean) {
-      return createBooleanSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodEnum) {
-      return createEnumSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodLiteral) {
-      return createLiteralSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodNativeEnum) {
-      return createNativeEnumSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodArray) {
-      return createArraySchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodObject) {
-      return createObjectSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodUnion) {
-      return createUnionSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodDiscriminatedUnion) {
-      return createDiscriminatedUnionSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodNull) {
-      return createNullSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodNullable) {
-      return createNullableSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodOptional) {
-      return createOptionalSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodDefault) {
-      return createDefaultSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodRecord) {
-      return createRecordSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodTuple) {
-      return createTupleSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodDate) {
-      return createDateSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodPipeline) {
-      return createPipelineSchema(zodSchema, state);
-    }
-
-    if (
-      zodSchema instanceof ZodEffects &&
-      zodSchema._def.effect.type === 'transform'
-    ) {
-      return createTransformSchema(zodSchema, state);
-    }
-
-    if (
-      zodSchema instanceof ZodEffects &&
-      zodSchema._def.effect.type === 'preprocess'
-    ) {
-      return createPreprocessSchema(zodSchema, state);
-    }
-
-    if (
-      zodSchema instanceof ZodEffects &&
-      zodSchema._def.effect.type === 'refinement'
-    ) {
-      return createRefineSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodNativeEnum) {
-      return createNativeEnumSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodIntersection) {
-      return createIntersectionSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodCatch) {
-      return createCatchSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodUnknown) {
-      return createUnknownSchema(zodSchema);
-    }
-
-    if (zodSchema instanceof ZodLazy) {
-      return createLazySchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodBranded) {
-      return createBrandedSchema(zodSchema, state);
-    }
-
-    if (zodSchema instanceof ZodSet) {
-      return createSetSchema(zodSchema, state);
-    }
-
-    return createManualTypeSchema(zodSchema);
-  } finally {
-    state.visited.delete(zodSchema);
-  }
+  const result = createSchemaSwitch(zodSchema, state);
+  state.visited.delete(zodSchema);
+  return result;
 };
 
 export const createSchemaOrRef = <
