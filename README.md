@@ -276,9 +276,7 @@ const title = z.string().openapi({
 Wherever `title` is used in schemas across the document, it will instead be created as a reference.
 
 ```json
-{
-  "title": { "$ref": "#/components/schemas/jobTitle" }
-}
+{ "$ref": "#/components/schemas/jobTitle" }
 ```
 
 `title` will then be outputted as a schema within the components section of the documentation.
@@ -309,7 +307,7 @@ eg.
 createDocument({
   components: {
     schemas: {
-      jobTitle, // this will register this Zod Schema as jobTitle unless `ref` in `.openapi()` is specified on the type
+      jobTitle: title, // this will register this Zod Schema as jobTitle unless `ref` in `.openapi()` is specified on the type
     },
   },
 });
@@ -323,7 +321,7 @@ If a registered schema with a transform or pipeline is used in both a request an
 
 `.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
 
-If you are adding the ZodSchema directly to the `components` section which is not referenced anywhere in the document, context may required with knowing to create an input schema or an output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
+If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input schema or an output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
 
 #### Parameters
 
@@ -501,6 +499,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `refine` full support
 - ZodEnum
 - ZodLazy
+  - The recursive schema within the ZodLazy or the ZodLazy _**must**_ be registered as a component. See [Creating Components](#creating-components) for more information.
 - ZodLiteral
 - ZodNativeEnum
   - supporting `string`, `number` and combined enums.
