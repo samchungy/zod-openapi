@@ -321,7 +321,7 @@ If a registered schema with a transform or pipeline is used in both a request an
 
 `.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
 
-If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create an input schema or an output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
+If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input schema or an output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
 
 #### Parameters
 
