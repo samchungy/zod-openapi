@@ -34,7 +34,6 @@ import {
   type CreationType,
   createComponentSchemaRef,
 } from '../components';
-import { throwTransformError } from '../errors';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -61,7 +60,7 @@ import { createRecordSchema } from './record';
 import { createRefineSchema } from './refine';
 import { createSetSchema } from './set';
 import { createStringSchema } from './string';
-import { createTransformSchema } from './transform';
+import { createTransformSchema, throwTransformError } from './transform';
 import { createTupleSchema } from './tuple';
 import { createUnionSchema } from './union';
 import { createUnknownSchema } from './unknown';
@@ -302,7 +301,7 @@ export const createSchemaOrRef = <
 
   if (newState.effectType) {
     if (state.effectType && newState.effectType !== state.effectType) {
-      throwTransformError(zodSchema);
+      throwTransformError(zodSchema, newState);
     }
     state.effectType = newState.effectType;
   }

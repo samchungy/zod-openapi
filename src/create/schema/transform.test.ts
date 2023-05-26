@@ -4,7 +4,7 @@ import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
 import { createInputState, createOutputState } from '../../testing/state';
 
-import { createTransformSchema } from './transform';
+import { createTransformSchema, throwTransformError } from './transform';
 
 extendZodWithOpenApi(z);
 
@@ -103,5 +103,17 @@ describe('createTransformSchema', () => {
 
       expect(state.effectType).toBeUndefined();
     });
+  });
+});
+
+describe('throwTransformError', () => {
+  it('throws an transform error', () => {
+    const state = createOutputState();
+    state.path.push(...['previous', 'path']);
+    expect(() =>
+      throwTransformError(z.string().openapi({ description: 'a' }), state),
+    ).toThrow(
+      '{"_def":{"checks":[],"typeName":"ZodString","coerce":false,"openapi":{"description":"a"}}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+    );
   });
 });

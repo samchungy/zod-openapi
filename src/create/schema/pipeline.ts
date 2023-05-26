@@ -1,7 +1,8 @@
 import type { ZodPipeline, ZodTypeAny } from 'zod';
 
 import type { oas31 } from '../../openapi3-ts/dist';
-import { throwTransformError } from '../errors';
+
+import { throwTransformError } from './transform';
 
 import { type SchemaState, createSchemaOrRef } from '.';
 
@@ -23,7 +24,7 @@ export const createPipelineSchema = (
 
   if (state.type === 'input') {
     if (state.effectType === 'output') {
-      throwTransformError(zodPipeline);
+      throwTransformError(zodPipeline, state);
     }
     state.effectType = 'input';
     return createSchemaOrRef(zodPipeline._def.in as ZodTypeAny, state, [
@@ -32,7 +33,7 @@ export const createPipelineSchema = (
   }
 
   if (state.effectType === 'input') {
-    throwTransformError(zodPipeline);
+    throwTransformError(zodPipeline, state);
   }
   state.effectType = 'output';
   return createSchemaOrRef(zodPipeline._def.out as ZodTypeAny, state, [
