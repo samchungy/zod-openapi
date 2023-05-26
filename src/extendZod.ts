@@ -57,7 +57,7 @@ interface ZodOpenApiExtendMetadata {
 
 declare module 'zod' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ZodSchema<Output, Def extends ZodTypeDef, Input = Output> {
+  interface ZodType<Output, Def extends ZodTypeDef, Input = Output> {
     openapi<T extends ZodTypeAny>(this: T, metadata: ZodOpenApiMetadata<T>): T;
   }
 
@@ -78,10 +78,10 @@ declare module 'zod' {
 }
 
 export function extendZodWithOpenApi(zod: typeof z) {
-  if (typeof zod.ZodSchema.prototype.openapi !== 'undefined') {
+  if (typeof zod.ZodType.prototype.openapi !== 'undefined') {
     return;
   }
-  zod.ZodSchema.prototype.openapi = function (openapi) {
+  zod.ZodType.prototype.openapi = function (openapi) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
     const result = new (this as any).constructor({
       ...this._def,

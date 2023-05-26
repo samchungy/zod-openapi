@@ -11,16 +11,25 @@ async function copyDTs(src: string, dest: string): Promise<void> {
     const stats = await fs.stat(filePath);
     if (stats.isDirectory()) {
       await copyDTs(filePath, destPath);
-    } else if (filePath.endsWith('.d.ts')) {
+      continue;
+    }
+    if (filePath.endsWith('.d.ts')) {
       const dirPath = join(
         dest,
         relative(src, filePath).split('/').slice(0, -1).join('/'),
       );
       await fs.mkdir(dirPath, { recursive: true });
-      await fs.copyFile(
-        filePath,
-        `${destPath.slice(0, destPath.length - 5)}.ts`,
-      );
+      const destination = `${destPath.slice(0, destPath.length - 5)}.ts`;
+      await fs.copyFile(filePath, destination);
+
+      const contents = (await fs.readFile(destination)).toString('utf-8');
+      if (contents.includes('export { Server, ServerVariable }')) {
+        const patched = contents.replaceAll(
+          'export { Server, ServerVariable }',
+          'export type { Server, ServerVariable }',
+        );
+        await fs.writeFile(destination, Buffer.from(patched));
+      }
     }
   }
 }
