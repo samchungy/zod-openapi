@@ -260,28 +260,6 @@ const createSchemaSwitch = <
   return createManualTypeSchema(zodSchema);
 };
 
-export const createSchema = <
-  Output = any,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(
-  zodSchema: ZodType<Output, Def, Input>,
-  state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
-  if (state.visited?.has(zodSchema)) {
-    throw new Error(
-      `The schema at ${
-        state.path?.join(' > ') || '<root>'
-      } needs to be registered because it's circularly referenced`,
-    );
-  }
-  state.visited ??= new Set();
-  state.visited.add(zodSchema);
-  const result = createSchemaSwitch(zodSchema, state);
-  state.visited.delete(zodSchema);
-  return result;
-};
-
 export const createSchemaOrRef = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -291,13 +269,6 @@ export const createSchemaOrRef = <
   state: SchemaState,
   subpath: string,
 ): oas31.ReferenceObject | oas31.SchemaObject => {
-  if (subpath) {
-    const path = (state.path ??= []);
-    path.push(subpath);
-    const result = createSchemaOrRef(zodSchema, state);
-    path.pop();
-    return result;
-  }
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {
     if (component.creationType && component.creationType !== state.type) {
