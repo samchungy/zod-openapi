@@ -398,8 +398,10 @@ describe('createSchemaOrRef', () => {
       effectType: 'output',
     };
 
-    expect(() => createSchemaOrRef(outputSchema, state, ['previous'])).toThrow(
-      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+    expect(() =>
+      createSchemaOrRef(outputSchema, state, ['previous', 'path']),
+    ).toThrow(
+      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
     );
   });
 });

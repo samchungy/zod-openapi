@@ -11,7 +11,7 @@ export const createTransformSchema = (
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodTransform._def.openapi?.effectType === 'output') {
-    return createManualTypeSchema(zodTransform);
+    return createManualTypeSchema(zodTransform, state);
   }
 
   if (zodTransform._def.openapi?.effectType === 'input') {
@@ -21,7 +21,7 @@ export const createTransformSchema = (
   }
 
   if (state.type === 'output') {
-    return createManualTypeSchema(zodTransform);
+    return createManualTypeSchema(zodTransform, state);
   }
 
   if (state.effectType === 'output') {

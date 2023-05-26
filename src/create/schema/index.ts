@@ -94,9 +94,9 @@ export const createSchema = <
   state.path.push(...subpath);
   if (state.visited.has(zodSchema)) {
     throw new Error(
-      `The schema at ${
-        state.path?.join(' > ') || '<root>'
-      } needs to be registered because it's circularly referenced`,
+      `The schema at ${state.path.join(
+        ' > ',
+      )} needs to be registered because it's circularly referenced`,
     );
   }
   state.visited.add(zodSchema);
@@ -132,7 +132,7 @@ const createSchemaSwitch = <
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodSchema._def.openapi?.type) {
-    return createManualTypeSchema(zodSchema);
+    return createManualTypeSchema(zodSchema, state);
   }
 
   if (zodSchema instanceof ZodString) {
@@ -256,7 +256,7 @@ const createSchemaSwitch = <
     return createSetSchema(zodSchema, state);
   }
 
-  return createManualTypeSchema(zodSchema);
+  return createManualTypeSchema(zodSchema, state);
 };
 
 export const createSchemaOrRef = <
