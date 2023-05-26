@@ -312,9 +312,9 @@ describe('createSchemaOrRef', () => {
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
-    expect(createSchemaOrRef(schema, createOutputState())).toStrictEqual(
-      expected,
-    );
+    expect(
+      createSchemaOrRef(schema, createOutputState(), 'schema'),
+    ).toStrictEqual(expected);
   });
 
   it.each`
@@ -349,9 +349,9 @@ describe('createSchemaOrRef', () => {
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
-    expect(createSchemaOrRef(schema, createInputState())).toStrictEqual(
-      expected,
-    );
+    expect(
+      createSchemaOrRef(schema, createInputState(), 'schema'),
+    ).toStrictEqual(expected);
   });
 
   it('throws an error when an ZodEffect input component is referenced in an output', () => {
@@ -362,16 +362,22 @@ describe('createSchemaOrRef', () => {
     const state: SchemaState = newSchemaState({
       components,
       type: 'input',
+      path: [],
+      visited: new Set(),
     });
-    createSchemaOrRef(inputSchema, state);
+    createSchemaOrRef(inputSchema, state, 'schema');
 
     const outputState: SchemaState = newSchemaState({
       components,
       type: 'output',
+      path: [],
+      visited: new Set(),
     });
 
     const outputSchema = z.object({ a: inputSchema });
-    expect(() => createSchemaOrRef(outputSchema, outputState)).toThrow(
+    expect(() =>
+      createSchemaOrRef(outputSchema, outputState, 'schema'),
+    ).toThrow(
       'schemaRef "a" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType',
     );
   });
@@ -384,13 +390,15 @@ describe('createSchemaOrRef', () => {
       b: z.string(),
     });
     const components = getDefaultComponents();
-    const state: SchemaState = newSchemaState({
+    const state: SchemaState = {
       components,
       type: 'input',
+      path: [],
+      visited: new Set(),
       effectType: 'output',
-    });
+    };
 
-    expect(() => createSchemaOrRef(outputSchema, state)).toThrow(
+    expect(() => createSchemaOrRef(outputSchema, state, 'schema')).toThrow(
       '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
     );
   });

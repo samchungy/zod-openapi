@@ -19,8 +19,10 @@ export const createBaseParameter = (
   const state: SchemaState = newSchemaState({
     components,
     type: 'input',
+    path: [],
+    visited: new Set(),
   });
-  const schemaOrRef = createSchemaOrRef(schema, state);
+  const schemaOrRef = createSchemaOrRef(schema, state, 'parameter');
   const required = !isOptionalSchema(schema, state);
   return {
     ...rest,

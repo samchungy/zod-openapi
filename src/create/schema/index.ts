@@ -48,7 +48,7 @@ import { createIntersectionSchema } from './intersection';
 import { createLazySchema } from './lazy';
 import { createLiteralSchema } from './literal';
 import { createManualTypeSchema } from './manual';
-import { createSchemaWithMetadata } from './metadata';
+import { enhanceWithMetadata } from './metadata';
 import { createNativeEnumSchema } from './nativeEnum';
 import { createNullSchema } from './null';
 import { createNullableSchema } from './nullable';
@@ -76,11 +76,53 @@ export interface SchemaState {
   visited: Set<ZodType>;
 }
 
-export function newSchemaState(
-  state: Omit<SchemaState, 'path' | 'visited'>,
-): SchemaState {
-  return { ...state, path: [], visited: new Set() };
-}
+export const newSchemaState = (state: SchemaState): SchemaState => ({
+  type: state.type,
+  components: state.components,
+  path: [...state.path],
+  visited: new Set(state.visited),
+});
+
+export const createSchema = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
+  state: SchemaState,
+  path: string,
+): oas31.SchemaObject | oas31.ReferenceObject => {
+  state.path.push(path);
+  if (state.visited.has(zodSchema)) {
+    throw new Error(
+      `The schema at ${
+        state.path?.join(' > ') || '<root>'
+      } needs to be registered because it's circularly referenced`,
+    );
+  }
+  state.visited.add(zodSchema);
+  const schema = createSchemaWithMetadata(zodSchema, state);
+  return schema;
+};
+
+export const createSchemaWithMetadata = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
+  state: SchemaState,
+): oas31.SchemaObject | oas31.ReferenceObject => {
+  const { effectType, param, header, ref, refType, ...additionalMetadata } =
+    zodSchema._def.openapi ?? {};
+  const schemaOrRef = createSchemaSwitch(zodSchema, state);
+  const description = zodSchema.description;
+
+  return enhanceWithMetadata(schemaOrRef, {
+    ...(description && { description }),
+    ...additionalMetadata,
+  });
+};
 
 const createSchemaSwitch = <
   Output = any,
@@ -218,28 +260,6 @@ const createSchemaSwitch = <
   return createManualTypeSchema(zodSchema);
 };
 
-export const createSchema = <
-  Output = any,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(
-  zodSchema: ZodType<Output, Def, Input>,
-  state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
-  if (state.visited?.has(zodSchema)) {
-    throw new Error(
-      `The schema at ${
-        state.path?.join(' > ') || '<root>'
-      } needs to be registered because it's circularly referenced`,
-    );
-  }
-  state.visited ??= new Set();
-  state.visited.add(zodSchema);
-  const result = createSchemaSwitch(zodSchema, state);
-  state.visited.delete(zodSchema);
-  return result;
-};
-
 export const createSchemaOrRef = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -247,15 +267,8 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-  subpath?: string,
+  subpath: string,
 ): oas31.ReferenceObject | oas31.SchemaObject => {
-  if (subpath) {
-    const path = (state.path ??= []);
-    path.push(subpath);
-    const result = createSchemaOrRef(zodSchema, state);
-    path.pop();
-    return result;
-  }
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {
     if (component.creationType && component.creationType !== state.type) {
@@ -283,12 +296,9 @@ export const createSchemaOrRef = <
     });
   }
 
-  const newState: SchemaState = newSchemaState({
-    components: state.components,
-    type: state.type,
-  });
+  const newState = newSchemaState(state);
 
-  const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);
+  const schemaOrRef = createSchema(zodSchema, newState, subpath);
 
   if (newState.effectType) {
     if (state.effectType && newState.effectType !== state.effectType) {

@@ -4,7 +4,7 @@ import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
 import { createOutputState } from '../../testing/state';
 
-import { createSchemaWithMetadata } from './metadata';
+import { createSchemaWithMetadata } from './';
 
 extendZodWithOpenApi(z);
 
