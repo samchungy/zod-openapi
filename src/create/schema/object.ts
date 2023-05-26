@@ -137,17 +137,21 @@ export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
   { unknownKeys, catchAll }: AdditionalPropertyOptions,
   state: SchemaState,
-): oas31.SchemaObject => ({
-  type: 'object',
-  properties: mapProperties(shape, state),
-  required: mapRequired(shape, state),
-  ...(unknownKeys === 'strict' && { additionalProperties: false }),
-  ...(!(catchAll instanceof ZodNever) && {
-    additionalProperties: createSchemaOrRef(catchAll, state, [
-      'additional properties',
-    ]),
-  }),
-});
+): oas31.SchemaObject => {
+  const properties = mapProperties(shape, state);
+  const required = mapRequired(shape, state);
+  return {
+    type: 'object',
+    ...(properties && { properties }),
+    ...(required && { required }),
+    ...(unknownKeys === 'strict' && { additionalProperties: false }),
+    ...(!(catchAll instanceof ZodNever) && {
+      additionalProperties: createSchemaOrRef(catchAll, state, [
+        'additional properties',
+      ]),
+    }),
+  };
+};
 
 export const mapRequired = (
   shape: ZodRawShape,
