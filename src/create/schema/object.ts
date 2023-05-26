@@ -51,7 +51,7 @@ export const createExtendedSchema = (
 
   const component = state.components.schemas.get(baseZodObject);
   if (component || baseZodObject._def.openapi?.ref) {
-    createSchemaOrRef(baseZodObject, state);
+    createSchemaOrRef(baseZodObject, state, 'extended schema');
   }
 
   const completeComponent = state.components.schemas.get(baseZodObject);
@@ -143,7 +143,11 @@ export const createObjectSchemaFromShape = (
   required: mapRequired(shape, state),
   ...(unknownKeys === 'strict' && { additionalProperties: false }),
   ...(!(catchAll instanceof ZodNever) && {
-    additionalProperties: createSchemaOrRef(catchAll, state),
+    additionalProperties: createSchemaOrRef(
+      catchAll,
+      state,
+      'additional properties',
+    ),
   }),
 });
 
@@ -168,7 +172,7 @@ export const mapProperties = (
 ): oas31.SchemaObject['properties'] =>
   Object.entries(shape).reduce<NonNullable<oas31.SchemaObject['properties']>>(
     (acc, [key, zodSchema]): NonNullable<oas31.SchemaObject['properties']> => {
-      acc[key] = createSchemaOrRef(zodSchema, state);
+      acc[key] = createSchemaOrRef(zodSchema, state, `property: ${key}`);
       return acc;
     },
     {},

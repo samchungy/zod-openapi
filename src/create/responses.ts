@@ -11,7 +11,7 @@ import type {
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from './document';
-import { type SchemaState, createSchemaOrRef } from './schema';
+import { type SchemaState, createSchemaOrRef, newSchemaState } from './schema';
 import { isOptionalSchema } from './schema/optional';
 import { isISpecificationExtension } from './specificationExtension';
 
@@ -77,10 +77,10 @@ export const createBaseHeader = (
   components: ComponentsObject,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.header ?? {};
-  const state: SchemaState = {
+  const state: SchemaState = newSchemaState({
     components,
     type: 'output',
-  };
+  });
   const schemaOrRef = createSchemaOrRef(schema, state);
   const required = !isOptionalSchema(schema, state);
   return {

@@ -5,7 +5,7 @@ import type { oas31 } from '../../openapi3-ts/dist';
 import { createInputState, createOutputState } from '../../testing/state';
 import { getDefaultComponents } from '../components';
 
-import { type SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef, newSchemaState } from '.';
 
 extendZodWithOpenApi(z);
 
@@ -359,16 +359,16 @@ describe('createSchemaOrRef', () => {
       .object({ a: z.string().transform((arg) => arg.length) })
       .openapi({ ref: 'a' });
     const components = getDefaultComponents();
-    const state: SchemaState = {
+    const state: SchemaState = newSchemaState({
       components,
       type: 'input',
-    };
+    });
     createSchemaOrRef(inputSchema, state);
 
-    const outputState: SchemaState = {
+    const outputState: SchemaState = newSchemaState({
       components,
       type: 'output',
-    };
+    });
 
     const outputSchema = z.object({ a: inputSchema });
     expect(() => createSchemaOrRef(outputSchema, outputState)).toThrow(
@@ -384,11 +384,11 @@ describe('createSchemaOrRef', () => {
       b: z.string(),
     });
     const components = getDefaultComponents();
-    const state: SchemaState = {
+    const state: SchemaState = newSchemaState({
       components,
       type: 'input',
       effectType: 'output',
-    };
+    });
 
     expect(() => createSchemaOrRef(outputSchema, state)).toThrow(
       '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',

@@ -11,7 +11,7 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchemaOrRef } from './schema';
+import { type SchemaState, createSchemaOrRef, newSchemaState } from './schema';
 
 export type CreationType = 'input' | 'output';
 
@@ -343,10 +343,10 @@ const createSchemaComponents = (
 ): oas31.ComponentsObject['schemas'] => {
   Array.from(components.schemas).forEach(([schema, { type }]) => {
     if (type === 'partial') {
-      const state: SchemaState = {
+      const state: SchemaState = newSchemaState({
         components,
         type: schema._def.openapi?.refType ?? 'output',
-      };
+      });
 
       createSchemaOrRef(schema, state);
     }
