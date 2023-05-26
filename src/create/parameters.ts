@@ -159,12 +159,11 @@ export const createManualParameters = (
   components: ComponentsObject,
   subpath: string[],
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] =>
-  parameters?.map((param) => {
+  parameters?.map((param, index) => {
     if (param instanceof ZodType) {
       return createParamOrRef(param, components, [
         ...subpath,
-        // @ts-ignore types are wrong https://github.com/colinhacks/zod/pull/2459
-        param._def.typeName as string,
+        `param index ${index}`,
       ]);
     }
     return param as oas31.ParameterObject | oas31.ReferenceObject;
