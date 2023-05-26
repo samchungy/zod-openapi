@@ -346,9 +346,11 @@ const createSchemaComponents = (
       const state: SchemaState = newSchemaState({
         components,
         type: schema._def.openapi?.refType ?? 'output',
+        path: [],
+        visited: new Set(),
       });
 
-      createSchemaOrRef(schema, state);
+      createSchemaOrRef(schema, state, 'components');
     }
   });
 

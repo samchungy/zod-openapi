@@ -80,8 +80,10 @@ export const createBaseHeader = (
   const state: SchemaState = newSchemaState({
     components,
     type: 'output',
+    path: [],
+    visited: new Set(),
   });
-  const schemaOrRef = createSchemaOrRef(schema, state);
+  const schemaOrRef = createSchemaOrRef(schema, state, 'header');
   const required = !isOptionalSchema(schema, state);
   return {
     ...rest,

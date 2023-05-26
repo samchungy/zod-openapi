@@ -31,7 +31,10 @@ const createMediaTypeSchema = (
     newSchemaState({
       components,
       type,
+      path: [],
+      visited: new Set(),
     }),
+    'media', // TODO pipe the proper path from earlier bits
   );
 };
 
