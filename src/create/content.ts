@@ -17,6 +17,7 @@ const createMediaTypeSchema = (
     | undefined,
   components: ComponentsObject,
   type: CreationType,
+  subpath: string[],
 ): oas31.SchemaObject | oas31.ReferenceObject | undefined => {
   if (!schemaObject) {
     return undefined;
@@ -34,7 +35,7 @@ const createMediaTypeSchema = (
       path: [],
       visited: new Set(),
     }),
-    'media', // TODO pipe the proper path from earlier bits
+    subpath,
   );
 };
 
@@ -42,6 +43,7 @@ const createMediaTypeObject = (
   mediaTypeObject: ZodOpenApiMediaTypeObject | undefined,
   components: ComponentsObject,
   type: CreationType,
+  subpath: string[],
 ): oas31.MediaTypeObject | undefined => {
   if (!mediaTypeObject) {
     return undefined;
@@ -49,7 +51,10 @@ const createMediaTypeObject = (
 
   return {
     ...mediaTypeObject,
-    schema: createMediaTypeSchema(mediaTypeObject.schema, components, type),
+    schema: createMediaTypeSchema(mediaTypeObject.schema, components, type, [
+      ...subpath,
+      'schema',
+    ]),
   };
 };
 
@@ -57,17 +62,19 @@ export const createContent = (
   contentObject: ZodOpenApiContentObject,
   components: ComponentsObject,
   type: CreationType,
+  subpath: string[],
 ): oas31.ContentObject =>
   Object.entries(contentObject).reduce<oas31.ContentObject>(
-    (acc, [path, zodOpenApiMediaTypeObject]): oas31.ContentObject => {
+    (acc, [mediaType, zodOpenApiMediaTypeObject]): oas31.ContentObject => {
       const mediaTypeObject = createMediaTypeObject(
         zodOpenApiMediaTypeObject,
         components,
         type,
+        [...subpath, mediaType],
       );
 
       if (mediaTypeObject) {
-        acc[path] = mediaTypeObject;
+        acc[mediaType] = mediaTypeObject;
       }
       return acc;
     },

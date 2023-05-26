@@ -34,7 +34,6 @@ import {
   type CreationType,
   createComponentSchemaRef,
 } from '../components';
-import { throwTransformError } from '../errors';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -61,7 +60,7 @@ import { createRecordSchema } from './record';
 import { createRefineSchema } from './refine';
 import { createSetSchema } from './set';
 import { createStringSchema } from './string';
-import { createTransformSchema } from './transform';
+import { createTransformSchema, throwTransformError } from './transform';
 import { createTupleSchema } from './tuple';
 import { createUnionSchema } from './union';
 import { createUnknownSchema } from './unknown';
@@ -90,14 +89,14 @@ export const createSchema = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-  path: string,
+  subpath: string[],
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  state.path.push(path);
+  state.path.push(...subpath);
   if (state.visited.has(zodSchema)) {
     throw new Error(
-      `The schema at ${
-        state.path?.join(' > ') || '<root>'
-      } needs to be registered because it's circularly referenced`,
+      `The schema at ${state.path.join(
+        ' > ',
+      )} needs to be registered because it's circularly referenced`,
     );
   }
   state.visited.add(zodSchema);
@@ -133,7 +132,7 @@ const createSchemaSwitch = <
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodSchema._def.openapi?.type) {
-    return createManualTypeSchema(zodSchema);
+    return createManualTypeSchema(zodSchema, state);
   }
 
   if (zodSchema instanceof ZodString) {
@@ -257,7 +256,7 @@ const createSchemaSwitch = <
     return createSetSchema(zodSchema, state);
   }
 
-  return createManualTypeSchema(zodSchema);
+  return createManualTypeSchema(zodSchema, state);
 };
 
 export const createSchemaOrRef = <
@@ -267,7 +266,7 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-  subpath: string,
+  subpath: string[],
 ): oas31.ReferenceObject | oas31.SchemaObject => {
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {
@@ -302,7 +301,7 @@ export const createSchemaOrRef = <
 
   if (newState.effectType) {
     if (state.effectType && newState.effectType !== state.effectType) {
-      throwTransformError(zodSchema);
+      throwTransformError(zodSchema, newState);
     }
     state.effectType = newState.effectType;
   }

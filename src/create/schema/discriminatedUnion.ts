@@ -16,7 +16,7 @@ export const createDiscriminatedUnionSchema = (
 ): oas31.SchemaObject => {
   const options = zodDiscriminatedUnion.options as AnyZodObject[];
   const schemas = options.map((option, index) =>
-    createSchemaOrRef(option, state, `discriminated union option ${index}`),
+    createSchemaOrRef(option, state, [`discriminated union option ${index}`]),
   );
   const discriminator = mapDiscriminator(
     schemas,

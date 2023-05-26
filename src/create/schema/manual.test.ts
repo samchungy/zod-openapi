@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
+import { createOutputState } from '../../testing/state';
 
 import { createManualTypeSchema } from './manual';
 
@@ -14,7 +15,7 @@ describe('createManualTypeSchema', () => {
     };
     const schema = z.unknown().openapi({ type: 'string' });
 
-    const result = createManualTypeSchema(schema);
+    const result = createManualTypeSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });

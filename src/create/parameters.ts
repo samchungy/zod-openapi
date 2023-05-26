@@ -14,6 +14,7 @@ export const createComponentParamRef = (ref: string) =>
 export const createBaseParameter = (
   schema: ZodType,
   components: ComponentsObject,
+  subpath: string[],
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
   const state: SchemaState = newSchemaState({
@@ -22,7 +23,7 @@ export const createBaseParameter = (
     path: [],
     visited: new Set(),
   });
-  const schemaOrRef = createSchemaOrRef(schema, state, 'parameter');
+  const schemaOrRef = createSchemaOrRef(schema, state, [...subpath, 'schema']);
   const required = !isOptionalSchema(schema, state);
   return {
     ...rest,
@@ -34,6 +35,7 @@ export const createBaseParameter = (
 export const createParamOrRef = (
   zodSchema: ZodType,
   components: ComponentsObject,
+  subpath: string[],
   type?: keyof ZodOpenApiParameters,
   name?: string,
 ): oas31.ParameterObject | oas31.ReferenceObject => {
@@ -63,7 +65,7 @@ export const createParamOrRef = (
   }
 
   // Optional Objects can return a reference object
-  const baseParamOrRef = createBaseParameter(zodSchema, components);
+  const baseParamOrRef = createBaseParameter(zodSchema, components, subpath);
   if ('$ref' in baseParamOrRef) {
     throw new Error('Unexpected Error: received a reference object');
   }
@@ -97,6 +99,7 @@ const createParameters = (
   type: keyof ZodOpenApiParameters,
   zodObject: AnyZodObject | undefined,
   components: ComponentsObject,
+  subpath: string[],
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] => {
   if (!zodObject) {
     return [];
@@ -104,33 +107,40 @@ const createParameters = (
 
   return Object.entries(zodObject.shape as ZodRawShape).map(
     ([key, zodSchema]: [string, ZodType]) =>
-      createParamOrRef(zodSchema, components, type, key),
+      createParamOrRef(zodSchema, components, [...subpath, key], type, key),
   );
 };
 
 const createRequestParams = (
   requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
+  subpath: string[],
 ): NonNullable<oas31.OperationObject['parameters']> => {
   if (!requestParams) {
     return [];
   }
 
-  const pathParams = createParameters('path', requestParams.path, components);
+  const pathParams = createParameters('path', requestParams.path, components, [
+    ...subpath,
+    'path',
+  ]);
   const queryParams = createParameters(
     'query',
     requestParams.query,
     components,
+    [...subpath, 'query'],
   );
   const cookieParams = createParameters(
     'cookie',
     requestParams.cookie,
     components,
+    [...subpath, 'cookie'],
   );
   const headerParams = createParameters(
     'header',
     requestParams.header,
     components,
+    [...subpath, 'header'],
   );
 
   return [...pathParams, ...queryParams, ...cookieParams, ...headerParams];
@@ -147,10 +157,14 @@ export const createManualParameters = (
       )[]
     | undefined,
   components: ComponentsObject,
+  subpath: string[],
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] =>
-  parameters?.map((param) => {
+  parameters?.map((param, index) => {
     if (param instanceof ZodType) {
-      return createParamOrRef(param, components);
+      return createParamOrRef(param, components, [
+        ...subpath,
+        `param index ${index}`,
+      ]);
     }
     return param as oas31.ParameterObject | oas31.ReferenceObject;
   }) ?? [];
@@ -167,9 +181,14 @@ export const createParametersObject = (
     | undefined,
   requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
+  subpath: string[],
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined => {
-  const manualParameters = createManualParameters(parameters, components);
-  const createdParams = createRequestParams(requestParams, components);
+  const manualParameters = createManualParameters(
+    parameters,
+    components,
+    subpath,
+  );
+  const createdParams = createRequestParams(requestParams, components, subpath);
   const combinedParameters: oas31.OperationObject['parameters'] = [
     ...manualParameters,
     ...createdParams,
