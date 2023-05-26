@@ -165,23 +165,38 @@ describe('createLazySchema', () => {
 
     const PostSchema: ZodType<Post> = BasePost.extend({
       user: z.lazy(() => UserSchema).optional(),
-    }).openapi({ ref: 'post' });
+    });
 
     const PostArray = z.array(z.lazy(() => PostSchema));
 
-    const UserSchema: ZodType<User> = z
-      .lazy(() =>
-        BaseUser.extend({
-          posts: PostArray.optional(),
-          comments: PostArray.optional(),
-        }),
-      )
-      .openapi({ ref: 'user' });
+    const UserSchema: ZodType<User> = z.lazy(() =>
+      BaseUser.extend({
+        posts: PostArray.optional(),
+        comments: PostArray.optional(),
+      }),
+    );
 
     const state = createOutputState();
+
+    /**
+     * Mimic initial state when doing
+     *
+     * createDocument({
+     *   components: {
+     *     schemas: {
+     *       user: UserSchema,
+     *       post: PostSchema
+     *     }
+     *   }
+     * })
+     */
     state.components.schemas.set(UserSchema, {
-      type: 'inProgress',
+      type: 'partial',
       ref: 'user',
+    });
+    state.components.schemas.set(PostSchema, {
+      type: 'partial',
+      ref: 'post',
     });
 
     const result = createSchema(UserSchema, state, ['lazy schema']);
