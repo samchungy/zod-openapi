@@ -13,7 +13,7 @@ export const createDefaultSchema = (
   const schemaOrRef = createSchemaOrRef(
     zodDefault._def.innerType as ZodTypeAny,
     state,
-    'default',
+    ['default'],
   );
 
   return enhanceWithMetadata(schemaOrRef, {

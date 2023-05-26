@@ -90,9 +90,9 @@ export const createSchema = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-  path: string,
+  subpath: string[],
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  state.path.push(path);
+  state.path.push(...subpath);
   if (state.visited.has(zodSchema)) {
     throw new Error(
       `The schema at ${
@@ -267,7 +267,7 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-  subpath: string,
+  subpath: string[],
 ): oas31.ReferenceObject | oas31.SchemaObject => {
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {

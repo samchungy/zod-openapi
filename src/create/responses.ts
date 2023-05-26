@@ -83,7 +83,7 @@ export const createBaseHeader = (
     path: [],
     visited: new Set(),
   });
-  const schemaOrRef = createSchemaOrRef(schema, state, 'header');
+  const schemaOrRef = createSchemaOrRef(schema, state, ['header']);
   const required = !isOptionalSchema(schema, state);
   return {
     ...rest,
@@ -98,6 +98,7 @@ export const createComponentHeaderRef = (ref: string) =>
 export const createResponse = (
   responseObject: ZodOpenApiResponseObject | oas31.ReferenceObject,
   components: ComponentsObject,
+  subpath: string[],
 ): oas31.ResponseObject | oas31.ReferenceObject => {
   if ('$ref' in responseObject) {
     return responseObject;
@@ -115,7 +116,12 @@ export const createResponse = (
   const response: oas31.ResponseObject = {
     ...rest,
     ...(maybeHeaders && { headers: maybeHeaders }),
-    ...(content && { content: createContent(content, components, 'output') }),
+    ...(content && {
+      content: createContent(content, components, 'output', [
+        ...subpath,
+        'content',
+      ]),
+    }),
   };
 
   const responseRef = ref ?? component?.ref;
@@ -137,20 +143,24 @@ export const createResponse = (
 export const createResponses = (
   responsesObject: ZodOpenApiResponsesObject,
   components: ComponentsObject,
+  subpath: string[],
 ): oas31.ResponsesObject =>
   Object.entries(responsesObject).reduce<oas31.ResponsesObject>(
     (
       acc,
-      [path, responseObject]: [
+      [statusCode, responseObject]: [
         string,
         ZodOpenApiResponseObject | oas31.ReferenceObject,
       ],
     ): oas31.ResponsesObject => {
-      if (isISpecificationExtension(path)) {
-        acc[path] = responseObject;
+      if (isISpecificationExtension(statusCode)) {
+        acc[statusCode] = responseObject;
         return acc;
       }
-      acc[path] = createResponse(responseObject, components);
+      acc[statusCode] = createResponse(responseObject, components, [
+        ...subpath,
+        statusCode,
+      ]);
       return acc;
     },
     {},

@@ -313,7 +313,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(
-      createSchemaOrRef(schema, createOutputState(), 'schema'),
+      createSchemaOrRef(schema, createOutputState(), ['previous']),
     ).toStrictEqual(expected);
   });
 
@@ -350,7 +350,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(
-      createSchemaOrRef(schema, createInputState(), 'schema'),
+      createSchemaOrRef(schema, createInputState(), ['previous']),
     ).toStrictEqual(expected);
   });
 
@@ -365,7 +365,7 @@ describe('createSchemaOrRef', () => {
       path: [],
       visited: new Set(),
     });
-    createSchemaOrRef(inputSchema, state, 'schema');
+    createSchemaOrRef(inputSchema, state, ['previous']);
 
     const outputState: SchemaState = newSchemaState({
       components,
@@ -376,7 +376,7 @@ describe('createSchemaOrRef', () => {
 
     const outputSchema = z.object({ a: inputSchema });
     expect(() =>
-      createSchemaOrRef(outputSchema, outputState, 'schema'),
+      createSchemaOrRef(outputSchema, outputState, ['previous']),
     ).toThrow(
       'schemaRef "a" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType',
     );
@@ -398,7 +398,7 @@ describe('createSchemaOrRef', () => {
       effectType: 'output',
     };
 
-    expect(() => createSchemaOrRef(outputSchema, state, 'schema')).toThrow(
+    expect(() => createSchemaOrRef(outputSchema, state, ['previous'])).toThrow(
       '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
     );
   });
