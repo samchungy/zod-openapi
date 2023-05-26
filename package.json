@@ -1,6 +1,6 @@
 {
   "name": "zod-openapi",
-  "version": "2.3.3",
+  "version": "2.4.0",
   "description": "A library to create full OpenAPI documents from your Zod types",
   "homepage": "https://github.com/samchungy/zod-openapi#readme",
   "bugs": {
