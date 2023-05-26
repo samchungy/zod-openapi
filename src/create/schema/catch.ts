@@ -8,4 +8,4 @@ export const createCatchSchema = (
   zodCatch: ZodCatch<any>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject =>
-  createSchemaOrRef(zodCatch._def.innerType as ZodType, state, ['catch']);
+  createSchemaOrRef(zodCatch._def.innerType as ZodType, state, 'catch');

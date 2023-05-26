@@ -10,7 +10,7 @@ export const createUnionSchema = (
 ): oas31.SchemaObject => {
   const options = zodUnion.options as ZodTypeAny[];
   const schemas = options.map((option, index) =>
-    createSchemaOrRef(option, state, [`union option ${index}`]),
+    createSchemaOrRef(option, state, `union option ${index}`),
   );
   return {
     anyOf: schemas,

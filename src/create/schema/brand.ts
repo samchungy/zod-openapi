@@ -7,4 +7,4 @@ export const createBrandedSchema = (
   zodBranded: ZodBranded<any, any>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject =>
-  createSchemaOrRef(zodBranded._def.type as ZodType, state, ['brand']);
+  createSchemaOrRef(zodBranded._def.type as ZodType, state, 'brand');

@@ -16,9 +16,11 @@ export const createTransformSchema = (
   }
 
   if (zodTransform._def.openapi?.effectType === 'input') {
-    return createSchemaOrRef(zodTransform._def.schema as ZodType, state, [
+    return createSchemaOrRef(
+      zodTransform._def.schema as ZodType,
+      state,
       'transform input',
-    ]);
+    );
   }
 
   if (state.type === 'output') {
@@ -29,7 +31,9 @@ export const createTransformSchema = (
     throwTransformError(zodTransform);
   }
   state.effectType = 'input';
-  return createSchemaOrRef(zodTransform._def.schema as ZodType, state, [
+  return createSchemaOrRef(
+    zodTransform._def.schema as ZodType,
+    state,
     'transform input',
-  ]);
+  );
 };

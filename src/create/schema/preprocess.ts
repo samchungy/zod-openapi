@@ -8,6 +8,8 @@ export const createPreprocessSchema = (
   zodPreprocess: ZodEffects<any, any, any>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject =>
-  createSchemaOrRef(zodPreprocess._def.schema as ZodType, state, [
+  createSchemaOrRef(
+    zodPreprocess._def.schema as ZodType,
+    state,
     'preprocess schema',
-  ]);
+  );

@@ -23,7 +23,7 @@ const mapPrefixItems = (
 ): oas31.SchemaObject['prefixItems'] | undefined => {
   if (items.length) {
     return items.map((item, index) =>
-      createSchemaOrRef(item, state, [`tuple item ${index}`]),
+      createSchemaOrRef(item, state, `tuple item ${index}`),
     );
   }
   return undefined;
@@ -49,7 +49,7 @@ const mapItemProperties = (
     }
 
     return {
-      items: createSchemaOrRef(rest, state, ['tuple items']),
+      items: createSchemaOrRef(rest, state, 'tuple items'),
       ...(prefixItems && { prefixItems }),
     };
   }
@@ -65,10 +65,7 @@ const mapItemProperties = (
   return {
     ...(prefixItems && {
       items: {
-        oneOf: [
-          ...prefixItems,
-          createSchemaOrRef(rest, state, ['tuple items']),
-        ],
+        oneOf: [...prefixItems, createSchemaOrRef(rest, state, 'tuple items')],
       },
     }),
   };

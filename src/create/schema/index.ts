@@ -241,14 +241,13 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-  subpath?: string[],
+  subpath?: string,
 ): oas31.ReferenceObject | oas31.SchemaObject => {
   if (subpath) {
     const path = (state.path ??= []);
-    const lengthBefore = path.length;
-    path.push(...subpath);
+    path.push(subpath);
     const result = createSchemaOrRef(zodSchema, state);
-    path.length = lengthBefore;
+    path.pop();
     return result;
   }
   const component = state.components.schemas.get(zodSchema);

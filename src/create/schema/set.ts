@@ -13,7 +13,7 @@ export const createSetSchema = (
   const maxItems = zodSet._def.maxSize?.value;
   return {
     type: 'array',
-    items: createSchemaOrRef(schema, state, ['set items']),
+    items: createSchemaOrRef(schema, state, 'set items'),
     uniqueItems: true,
     ...(minItems !== undefined && { minItems }),
     ...(maxItems !== undefined && { maxItems }),
