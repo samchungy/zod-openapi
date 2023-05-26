@@ -191,7 +191,7 @@ describe('createLazySchema', () => {
      * })
      */
     state.components.schemas.set(UserSchema, {
-      type: 'partial',
+      type: 'inProgress',
       ref: 'user',
     });
     state.components.schemas.set(PostSchema, {
@@ -199,7 +199,7 @@ describe('createLazySchema', () => {
       ref: 'post',
     });
 
-    const result = createSchema(UserSchema, state, ['lazy schema']);
+    const result = createSchema(UserSchema, state, []);
 
     expect(result).toStrictEqual(expected);
   });

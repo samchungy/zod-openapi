@@ -964,18 +964,25 @@ describe('createDocument', () => {
       posts?: Post[];
     };
 
-    const PostSchema2: ZodType<Post2> = BasePost2.extend({
+    const PostSchema2: ZodType<Post2, z.ZodObjectDef> = BasePost2.extend({
       user: z.lazy(() => UserSchema2).optional(),
+      user_fields: z.lazy(() => PartialUserSchema2).optional(),
     }); // no .openapi() for this test!
+    const PartialPostSchema2: ZodType<Partial<Post2>> = (
+      PostSchema2 as any
+    ).partial();
 
     const PostArray = z.array(z.lazy(() => PostSchema2));
 
-    const UserSchema2: ZodType<User2> = z.lazy(() =>
-      BaseUser.extend({
-        posts: PostArray.optional(),
-        comments: PostArray.optional(),
-      }),
-    ); // no .openapi() for this test!
+    const UserSchema2: ZodType<User2> = BaseUser.extend({
+      posts: PostArray.optional(),
+      posts_fields: z.array(z.lazy(() => PartialPostSchema2)).optional(),
+      comments: PostArray.optional(),
+      comments_fields: z.array(z.lazy(() => PartialPostSchema2)).optional(),
+    }); // no .openapi() for this test!
+    const PartialUserSchema2: ZodType<Partial<User2>> = (
+      UserSchema2 as any
+    ).partial();
 
     const document = createDocument({
       info: {
@@ -986,7 +993,9 @@ describe('createDocument', () => {
       components: {
         schemas: {
           User: UserSchema2,
+          PartialUser: PartialUserSchema2,
           Post: PostSchema2,
+          PartialPost: PartialPostSchema2,
         },
       },
       paths: {
@@ -1044,6 +1053,55 @@ describe('createDocument', () => {
       {
         "components": {
           "schemas": {
+            "PartialPost": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+                "user": {
+                  "$ref": "#/components/schemas/User",
+                },
+                "userId": {
+                  "type": "string",
+                },
+                "user_fields": {
+                  "$ref": "#/components/schemas/PartialUser",
+                },
+              },
+              "type": "object",
+            },
+            "PartialUser": {
+              "properties": {
+                "comments": {
+                  "items": {
+                    "$ref": "#/components/schemas/Post",
+                  },
+                  "type": "array",
+                },
+                "comments_fields": {
+                  "items": {
+                    "$ref": "#/components/schemas/PartialPost",
+                  },
+                  "type": "array",
+                },
+                "id": {
+                  "type": "string",
+                },
+                "posts": {
+                  "items": {
+                    "$ref": "#/components/schemas/Post",
+                  },
+                  "type": "array",
+                },
+                "posts_fields": {
+                  "items": {
+                    "$ref": "#/components/schemas/PartialPost",
+                  },
+                  "type": "array",
+                },
+              },
+              "type": "object",
+            },
             "Post": {
               "properties": {
                 "id": {
@@ -1054,6 +1112,9 @@ describe('createDocument', () => {
                 },
                 "userId": {
                   "type": "string",
+                },
+                "user_fields": {
+                  "$ref": "#/components/schemas/PartialUser",
                 },
               },
               "required": [
@@ -1070,12 +1131,24 @@ describe('createDocument', () => {
                   },
                   "type": "array",
                 },
+                "comments_fields": {
+                  "items": {
+                    "$ref": "#/components/schemas/PartialPost",
+                  },
+                  "type": "array",
+                },
                 "id": {
                   "type": "string",
                 },
                 "posts": {
                   "items": {
                     "$ref": "#/components/schemas/Post",
+                  },
+                  "type": "array",
+                },
+                "posts_fields": {
+                  "items": {
+                    "$ref": "#/components/schemas/PartialPost",
                   },
                   "type": "array",
                 },
