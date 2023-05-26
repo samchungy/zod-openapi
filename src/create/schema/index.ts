@@ -281,8 +281,8 @@ export const createSchemaOrRef = <
   const newState: SchemaState = {
     components: state.components,
     type: state.type,
-    visited: state.visited,
-    path: state.path,
+    visited: new Set(),
+    path: [],
   };
 
   const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);
