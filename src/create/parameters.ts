@@ -163,7 +163,8 @@ export const createManualParameters = (
     if (param instanceof ZodType) {
       return createParamOrRef(param, components, [
         ...subpath,
-        param._def.openapi?.param?.in ?? '',
+        // @ts-ignore types are wrong https://github.com/colinhacks/zod/pull/2459
+        param._def.typeName as string,
       ]);
     }
     return param as oas31.ParameterObject | oas31.ReferenceObject;
