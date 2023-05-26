@@ -22,6 +22,7 @@ export const createDiscriminatedUnionSchema = (
     schemas,
     options,
     zodDiscriminatedUnion.discriminator,
+    state,
   );
   return {
     oneOf: schemas,
@@ -33,6 +34,7 @@ export const mapDiscriminator = (
   schemas: (oas31.SchemaObject | oas31.ReferenceObject)[],
   zodObjects: AnyZodObject[],
   discriminator: unknown,
+  state: SchemaState,
 ): oas31.SchemaObject['discriminator'] => {
   if (typeof discriminator !== 'string') {
     return undefined;
@@ -59,7 +61,9 @@ export const mapDiscriminator = (
 
     if (typeof literalValue !== 'string') {
       throw new Error(
-        `Discriminator ${discriminator} could not be found in one of the values of a discriminated union`,
+        `Discriminator ${discriminator} could not be found in on index ${index} of a discriminated union at ${state.path.join(
+          ' > ',
+        )}`,
       );
     }
 
