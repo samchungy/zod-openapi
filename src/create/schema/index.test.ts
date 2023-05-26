@@ -390,13 +390,13 @@ describe('createSchemaOrRef', () => {
       b: z.string(),
     });
     const components = getDefaultComponents();
-    const state: SchemaState = newSchemaState({
+    const state: SchemaState = {
       components,
       type: 'input',
       path: [],
       visited: new Set(),
       effectType: 'output',
-    });
+    };
 
     expect(() => createSchemaOrRef(outputSchema, state, 'schema')).toThrow(
       '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
