@@ -16,7 +16,9 @@ describe('createBaseParameter', () => {
       },
       required: true,
     };
-    const result = createBaseParameter(z.string(), getDefaultComponents());
+    const result = createBaseParameter(z.string(), getDefaultComponents(), [
+      'query',
+    ]);
 
     expect(result).toStrictEqual(expectedResult);
   });
@@ -30,6 +32,7 @@ describe('createBaseParameter', () => {
     const result = createBaseParameter(
       z.string().optional(),
       getDefaultComponents(),
+      ['query'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -52,6 +55,7 @@ describe('createParametersObject', () => {
       [z.string().openapi({ param: { in: 'header', name: 'd' } })],
       {},
       getDefaultComponents(),
+      ['header'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -101,6 +105,7 @@ describe('createParametersObject', () => {
         header: z.object({ d: z.string() }),
       },
       getDefaultComponents(),
+      ['parameters'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -172,6 +177,7 @@ describe('createParametersObject', () => {
         path: z.object({ b: z.string() }),
       },
       getDefaultComponents(),
+      ['parameters'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -201,6 +207,7 @@ describe('createParametersObject', () => {
         header: z.object({ d: z.string().openapi({ param: { ref: 'd' } }) }),
       },
       getDefaultComponents(),
+      ['parameters'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -216,6 +223,7 @@ describe('createParametersObject', () => {
       [z.string().openapi({ param: { ref: 'a', name: 'a', in: 'header' } })],
       {},
       getDefaultComponents(),
+      ['parameters'],
     );
 
     expect(result).toStrictEqual(expectedResult);

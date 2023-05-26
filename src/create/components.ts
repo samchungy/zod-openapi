@@ -341,7 +341,7 @@ const createSchemaComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
 ): oas31.ComponentsObject['schemas'] => {
-  Array.from(components.schemas).forEach(([schema, { type }]) => {
+  Array.from(components.schemas).forEach(([schema, { type }], index) => {
     if (type === 'partial') {
       const state: SchemaState = newSchemaState({
         components,
@@ -350,7 +350,7 @@ const createSchemaComponents = (
         visited: new Set(),
       });
 
-      createSchemaOrRef(schema, state, 'components');
+      createSchemaOrRef(schema, state, [`component schema index ${index}`]);
     }
   });
 
@@ -392,9 +392,15 @@ const createParamComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
 ): oas31.ComponentsObject['parameters'] => {
-  Array.from(components.parameters).forEach(([schema, component]) => {
+  Array.from(components.parameters).forEach(([schema, component], index) => {
     if (component.type === 'partial') {
-      createParamOrRef(schema, components, component.in, component.ref);
+      createParamOrRef(
+        schema,
+        components,
+        [`component parameter index ${index}`],
+        component.in,
+        component.ref,
+      );
     }
   });
 
@@ -473,9 +479,9 @@ const createHeaderComponents = (
 const createResponseComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['responses'] => {
-  Array.from(components.responses).forEach(([schema, component]) => {
+  Array.from(components.responses).forEach(([schema, component], index) => {
     if (component.type === 'partial') {
-      createResponse(schema, components);
+      createResponse(schema, components, [`component response index ${index}`]);
     }
   });
 
@@ -498,9 +504,11 @@ const createResponseComponents = (
 const createRequestBodiesComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['requestBodies'] => {
-  Array.from(components.requestBodies).forEach(([schema, component]) => {
+  Array.from(components.requestBodies).forEach(([schema, component], index) => {
     if (component.type === 'partial') {
-      createRequestBody(schema, components);
+      createRequestBody(schema, components, [
+        `component request body ${index}`,
+      ]);
     }
   });
 

@@ -32,6 +32,7 @@ describe('createContent', () => {
       },
       getDefaultComponents(),
       'output',
+      ['/job', 'post'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -68,6 +69,7 @@ describe('createContent', () => {
       },
       getDefaultComponents(),
       'output',
+      ['/job', 'post'],
     );
 
     expect(result).toStrictEqual(expectedResult);
@@ -102,6 +104,7 @@ describe('createContent', () => {
       },
       getDefaultComponents(),
       'output',
+      ['/job', 'post'],
     );
 
     expect(result).toStrictEqual(expectedResult);

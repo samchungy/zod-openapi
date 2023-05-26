@@ -48,6 +48,7 @@ describe('createResponses', () => {
         },
       },
       getDefaultComponents(),
+      ['previous'],
     );
     expect(result).toStrictEqual(expected);
   });
