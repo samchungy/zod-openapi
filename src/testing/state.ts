@@ -1,22 +1,25 @@
 import { getDefaultComponents } from '../create/components';
 import type { ZodOpenApiComponentsObject } from '../create/document';
-import type { SchemaState } from '../create/schema';
+import { type SchemaState, newSchemaState } from '../create/schema';
 
 export const createOutputState = (
   componentsObject?: ZodOpenApiComponentsObject,
-): SchemaState => ({
-  components: getDefaultComponents(componentsObject),
-  type: 'output',
-});
+): SchemaState =>
+  newSchemaState({
+    components: getDefaultComponents(componentsObject),
+    type: 'output',
+  });
 
 export const createInputState = (
   componentsObject?: ZodOpenApiComponentsObject,
-): SchemaState => ({
-  components: getDefaultComponents(componentsObject),
-  type: 'input',
-});
+): SchemaState =>
+  newSchemaState({
+    components: getDefaultComponents(componentsObject),
+    type: 'input',
+  });
 
-export const createOutputOpenapi3State = (): SchemaState => ({
-  components: { ...getDefaultComponents(), openapi: '3.0.0' },
-  type: 'output',
-});
+export const createOutputOpenapi3State = (): SchemaState =>
+  newSchemaState({
+    components: { ...getDefaultComponents(), openapi: '3.0.0' },
+    type: 'output',
+  });

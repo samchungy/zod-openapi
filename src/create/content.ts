@@ -7,7 +7,7 @@ import type {
   ZodOpenApiContentObject,
   ZodOpenApiMediaTypeObject,
 } from './document';
-import { createSchemaOrRef } from './schema';
+import { createSchemaOrRef, newSchemaState } from './schema';
 
 const createMediaTypeSchema = (
   schemaObject:
@@ -26,10 +26,13 @@ const createMediaTypeSchema = (
     return schemaObject;
   }
 
-  return createSchemaOrRef(schemaObject, {
-    components,
-    type,
-  });
+  return createSchemaOrRef(
+    schemaObject,
+    newSchemaState({
+      components,
+      type,
+    }),
+  );
 };
 
 const createMediaTypeObject = (

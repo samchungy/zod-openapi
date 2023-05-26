@@ -13,6 +13,7 @@ export const createNullableSchema = (
   const schemaOrReference = createSchemaOrRef(
     zodNullable.unwrap() as ZodTypeAny,
     state,
+    'nullable',
   );
 
   if ('$ref' in schemaOrReference || schemaOrReference.allOf) {

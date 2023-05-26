@@ -72,10 +72,17 @@ export interface SchemaState {
   components: ComponentsObject;
   type: CreationType;
   effectType?: CreationType;
-  lazy?: LazyMap;
+  path: string[];
+  visited: Set<ZodType>;
 }
 
-export const createSchema = <
+export function newSchemaState(
+  state: Omit<SchemaState, 'path' | 'visited'>,
+): SchemaState {
+  return { ...state, path: [], visited: new Set() };
+}
+
+const createSchemaSwitch = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
@@ -211,6 +218,28 @@ export const createSchema = <
   return createManualTypeSchema(zodSchema);
 };
 
+export const createSchema = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
+  state: SchemaState,
+): oas31.SchemaObject | oas31.ReferenceObject => {
+  if (state.visited?.has(zodSchema)) {
+    throw new Error(
+      `The schema at ${
+        state.path?.join(' > ') || '<root>'
+      } needs to be registered because it's circularly referenced`,
+    );
+  }
+  state.visited ??= new Set();
+  state.visited.add(zodSchema);
+  const result = createSchemaSwitch(zodSchema, state);
+  state.visited.delete(zodSchema);
+  return result;
+};
+
 export const createSchemaOrRef = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -218,7 +247,15 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
+  subpath?: string,
 ): oas31.ReferenceObject | oas31.SchemaObject => {
+  if (subpath) {
+    const path = (state.path ??= []);
+    path.push(subpath);
+    const result = createSchemaOrRef(zodSchema, state);
+    path.pop();
+    return result;
+  }
   const component = state.components.schemas.get(zodSchema);
   if (component && component.type === 'complete') {
     if (component.creationType && component.creationType !== state.type) {
@@ -246,11 +283,10 @@ export const createSchemaOrRef = <
     });
   }
 
-  const newState: SchemaState = {
+  const newState: SchemaState = newSchemaState({
     components: state.components,
     type: state.type,
-    lazy: state.lazy,
-  };
+  });
 
   const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);
 
