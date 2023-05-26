@@ -71,9 +71,15 @@ export type LazyMap = Map<ZodType, true>;
 export interface SchemaState {
   components: ComponentsObject;
   type: CreationType;
-  path?: string[];
   effectType?: CreationType;
-  visited?: Set<ZodType>;
+  path: string[];
+  visited: Set<ZodType>;
+}
+
+export function newSchemaState(
+  state: Omit<SchemaState, 'path' | 'visited'>,
+): SchemaState {
+  return { ...state, path: [], visited: new Set() };
 }
 
 const createSchemaSwitch = <
@@ -277,12 +283,10 @@ export const createSchemaOrRef = <
     });
   }
 
-  const newState: SchemaState = {
+  const newState: SchemaState = newSchemaState({
     components: state.components,
     type: state.type,
-    visited: new Set(),
-    path: [],
-  };
+  });
 
   const schemaOrRef = createSchemaWithMetadata(zodSchema, newState);
 
