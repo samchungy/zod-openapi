@@ -58,7 +58,7 @@ jobs:
 
       - name: Raise Release PR
         run: |
-          gh pr create -H release -B master --title "Release ${{ github.event.release.tag_name }}" --body "Please merge this with a Merge Request to update master\n\n[View the release](${{ github.event.release.url }})\n\n${{ github.event.release.body }}" -l "chore"
+          gh pr create -H release -B master --title "Release ${{ github.event.release.tag_name }}" --body "Please merge this with a Merge Request to update master<br><br>[${{ github.event.release.tag_name }}](${{ github.event.release.html_url }})<br><br>${{ github.event.release.body }}" -l "chore"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
