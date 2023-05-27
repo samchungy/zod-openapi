@@ -288,14 +288,17 @@ export const createSchemaOrRef = <
 
   const schemaRef = zodSchema._def.openapi?.ref ?? component?.ref;
 
+  let newState;
+
   if (zodSchema._def.openapi?.ref || component?.type === 'partial') {
     state.components.schemas.set(zodSchema, {
       type: 'inProgress',
       ref: (zodSchema._def.openapi?.ref ?? component?.ref) as string,
     });
+    newState = newSchemaState({ ...state, path: [], visited: new Set() });
+  } else {
+    newState = newSchemaState(state);
   }
-
-  const newState = newSchemaState(state);
 
   const schemaOrRef = createSchema(zodSchema, newState, subpath);
 
