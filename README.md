@@ -315,13 +315,16 @@ createDocument({
 
 ##### Zod Effects
 
-`.transform()` is complicated because it technically comprises of two types (input & output). This means that we need to understand which type you are creating.
+`.transform()` and `.pipe()` are complicated because they technically comprises of two types (input & output). This means that we need to understand which type you are creating. By default, this library will automatically select which _type_ to use by checking how the schema is used.
 
-If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field and set the `effectType` field to `input` or `output`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to use this when your know your transform has not changed the type.
+Input: Request Bodies, Request Parameters, Headers
+Output: Responses, Response Headers
+
+If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field on it and set the `effectType` field to `input` or `output`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to use this when your know your transform has not changed the type.
 
 `.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
 
-If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input schema or an output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
+If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input or output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
 
 #### Parameters
 
@@ -513,6 +516,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `allOf` mapping for `.extend()` when the base object is registered and does not have `catchall()`, `strict()` and extension does not override a field.
 - ZodOptional
 - ZodPipeline
+  - See 
 - ZodRecord
 - ZodSet
   - Treated as an array with `uniqueItems` (you may need to add a pre-process)
