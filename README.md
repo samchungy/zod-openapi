@@ -517,7 +517,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `allOf` mapping for `.extend()` when the base object is registered and does not have `catchall()`, `strict()` and extension does not override a field.
 - ZodOptional
 - ZodPipeline
-  - See [Zod Effects](#zod-effects) for more information. 
+  - See [Zod Effects](#zod-effects) for more information.
 - ZodRecord
 - ZodSet
   - Treated as an array with `uniqueItems` (you may need to add a pre-process)
