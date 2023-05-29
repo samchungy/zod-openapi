@@ -28,7 +28,7 @@
     "format": "skuba format",
     "lint": "skuba lint",
     "prepare": "yarn build",
-    "release": "yarn build && npm publish",
+    "release": "yarn build && npm publish --provenance",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
     "test:watch": "skuba test --watch"
