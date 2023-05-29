@@ -317,8 +317,9 @@ createDocument({
 
 `.transform()` and `.pipe()` are complicated because they technically comprises of two types (input & output). This means that we need to understand which type you are creating. By default, this library will automatically select which _type_ to use by checking how the schema is used.
 
-Input: Request Bodies, Request Parameters, Headers
-Output: Responses, Response Headers
+_Input_: Request Bodies, Request Parameters, Headers
+
+_Output_: Responses, Response Headers
 
 If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field on it and set the `effectType` field to `input` or `output`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to use this when your know your transform has not changed the type.
 
