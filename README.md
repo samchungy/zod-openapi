@@ -206,7 +206,7 @@ createDocument({
 
 ### Request Body
 
-Where you would normally declare the [media type](https://swagger.io/docs/specification/media-types/), instead declare the `content` as `application/json` and set the `schema` as your Zod Schema as follows.
+Where you would normally declare the [media type](https://swagger.io/docs/specification/media-types/), set the `schema` as your Zod Schema as follows.
 
 ```typescript
 createDocument({
