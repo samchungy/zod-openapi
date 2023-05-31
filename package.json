@@ -2,6 +2,15 @@
   "name": "zod-openapi",
   "version": "2.5.1",
   "description": "A library to create full OpenAPI documents from your Zod types",
+  "keywords": [
+    "typescript",
+    "json-schema",
+    "swagger",
+    "openapi",
+    "openapi3",
+    "zod",
+    "zod-openapi"
+  ],
   "homepage": "https://github.com/samchungy/zod-openapi#readme",
   "bugs": {
     "url": "https://github.com/samchungy/zod-openapi/issues"
