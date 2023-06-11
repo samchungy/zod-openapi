@@ -1,7 +1,7 @@
 {
   "name": "zod-openapi",
   "version": "2.5.1",
-  "description": "A library to create full OpenAPI documents from your Zod types",
+  "description": "Convert Zod Schemas to OpenAPI v3.x documentation",
   "keywords": [
     "typescript",
     "json-schema",
