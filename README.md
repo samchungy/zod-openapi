@@ -487,6 +487,7 @@ For example in `z.string().nullable()` will be rendered differently
 
 ## Supported Zod Schema
 
+- ZodAny
 - ZodArray
   - `minItems`/`maxItems` mapping for `.length()`, `.min()`, `.max()`
 - ZodBoolean

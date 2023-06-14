@@ -1,4 +1,5 @@
 import {
+  ZodAny,
   ZodArray,
   ZodBoolean,
   ZodBranded,
@@ -240,7 +241,7 @@ const createSchemaSwitch = <
     return createCatchSchema(zodSchema, state);
   }
 
-  if (zodSchema instanceof ZodUnknown) {
+  if (zodSchema instanceof ZodUnknown || zodSchema instanceof ZodAny) {
     return createUnknownSchema(zodSchema);
   }
 
