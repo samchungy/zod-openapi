@@ -60,7 +60,7 @@
   },
   "publishConfig": {
     "provenance": true,
-    "registry": "https://registry.npmjs.org/",
+    "registry": "https://registry.npmjs.org/"
   },
   "skuba": {
     "entryPoint": "src/index.ts",
