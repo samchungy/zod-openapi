@@ -670,7 +670,8 @@ const document = createDocument({
 - Yarn 1.x
 
 ```shell
-yarn install
+yarn
+yarn build
 ```
 
 ### Test
