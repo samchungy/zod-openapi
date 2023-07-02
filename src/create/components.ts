@@ -168,16 +168,16 @@ export const getDefaultComponents = (
     return defaultComponents;
   }
 
-  createSchemas(componentsObject.schemas, defaultComponents);
-  createParameters(componentsObject.parameters, defaultComponents);
-  createRequestBodies(componentsObject.requestBodies, defaultComponents);
-  createHeaders(componentsObject.headers, defaultComponents);
-  createResponses(componentsObject.responses, defaultComponents);
+  getSchemas(componentsObject.schemas, defaultComponents);
+  getParameters(componentsObject.parameters, defaultComponents);
+  getRequestBodies(componentsObject.requestBodies, defaultComponents);
+  getHeaders(componentsObject.headers, defaultComponents);
+  getResponses(componentsObject.responses, defaultComponents);
 
   return defaultComponents;
 };
 
-const createSchemas = (
+const getSchemas = (
   schemas: ZodOpenApiComponentsObject['schemas'],
   components: ComponentsObject,
 ): void => {
@@ -201,7 +201,7 @@ const createSchemas = (
   });
 };
 
-const createParameters = (
+const getParameters = (
   parameters: ZodOpenApiComponentsObject['parameters'],
   components: ComponentsObject,
 ): void => {
@@ -233,7 +233,7 @@ const createParameters = (
   });
 };
 
-const createHeaders = (
+const getHeaders = (
   responseHeaders: ZodOpenApiComponentsObject['headers'],
   components: ComponentsObject,
 ): void => {
@@ -257,7 +257,7 @@ const createHeaders = (
   });
 };
 
-const createResponses = (
+const getResponses = (
   responses: ZodOpenApiComponentsObject['responses'],
   components: ComponentsObject,
 ): void => {
@@ -279,7 +279,7 @@ const createResponses = (
   });
 };
 
-const createRequestBodies = (
+const getRequestBodies = (
   requestBodies: ZodOpenApiComponentsObject['requestBodies'],
   components: ComponentsObject,
 ): void => {

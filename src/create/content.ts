@@ -9,7 +9,7 @@ import type {
 } from './document';
 import { createSchemaOrRef, newSchemaState } from './schema';
 
-const createMediaTypeSchema = (
+export const createMediaTypeSchema = (
   schemaObject:
     | ZodType
     | oas31.SchemaObject
