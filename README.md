@@ -548,6 +548,8 @@ See the library in use in the [examples](./examples/) folder.
 
 ## Ecosystem
 
+- [fastify-zod-openapi](https://github.com/samchungy/fastify-zod-openapi) - Fastify plugin for zod-openapi. This includes type provider, Zod schema validation, Zod schema serialization and Swagger UI support.
+
 - [eslint-plugin-zod-openapi](https://github.com/samchungy/eslint-plugin-zod-openapi) - Eslint rules for zod-openapi. This includes features which can autogenerate Typescript comments for your Zod types based on your `description`, `example` and `deprecated` fields.
 
 ## Credits
