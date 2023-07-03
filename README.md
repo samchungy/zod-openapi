@@ -25,11 +25,11 @@ npm install zod zod-openapi
 yarn add zod zod-openapi
 ```
 
-## API
+## Usage
 
 ### `extendZodWithOpenApi`
 
-Mutates Zod with an `.openapi()` method and extra metadata. Make a side-effectful import at the top of your entry point(s).
+This mutates Zod to add an extra `.openapi()` method. Make a side-effectful import at the top of your entry point(s).
 
 ```typescript
 import { z } from 'zod';
@@ -159,8 +159,6 @@ Generates the following object:
   }
 }
 ```
-
-## Usage
 
 ### Request Parameters
 
