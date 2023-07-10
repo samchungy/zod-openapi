@@ -1,4 +1,5 @@
 export {
+  createComponents,
   getDefaultComponents,
   type ComponentsObject,
 } from './create/components';
