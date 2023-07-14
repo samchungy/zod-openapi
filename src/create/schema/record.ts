@@ -1,4 +1,4 @@
-import { ZodEnum, type ZodRecord, ZodString, type ZodTypeAny } from 'zod';
+import type { ZodRecord, ZodType, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
 import type { oas31 } from '../../openapi3-ts/dist';
@@ -15,10 +15,24 @@ export const createRecordSchema = (
     ['record value'],
   );
 
-  if (zodRecord.keySchema instanceof ZodEnum) {
+  const keySchema = createSchemaOrRef(zodRecord.keySchema as ZodType, state, [
+    'record key',
+  ]);
+
+  const maybeComponent =
+    '$ref' in keySchema &&
+    state.components.schemas.get(zodRecord.keySchema as ZodType);
+  const maybeSchema =
+    maybeComponent &&
+    maybeComponent.type === 'complete' &&
+    maybeComponent.schemaObject;
+
+  const renderedKeySchema = keySchema ?? maybeSchema;
+
+  if ('enum' in renderedKeySchema && renderedKeySchema.enum) {
     return {
       type: 'object',
-      properties: (zodRecord.keySchema._def.values as string[]).reduce<
+      properties: (renderedKeySchema.enum as string[]).reduce<
         NonNullable<oas31.SchemaObject['properties']>
       >((acc, key) => {
         acc[key] = additionalProperties;
@@ -30,17 +44,14 @@ export const createRecordSchema = (
 
   if (
     satisfiesVersion(state.components.openapi, '3.1.0') &&
-    zodRecord.keySchema instanceof ZodString &&
-    zodRecord.keySchema._def.checks.length
+    'type' in renderedKeySchema &&
+    renderedKeySchema.type === 'string' &&
+    Object.keys(renderedKeySchema).length > 1
   ) {
     return {
       type: 'object',
       // @ts-expect-error FIXME: https://github.com/metadevpro/openapi3-ts/pull/120
-      propertyNames: createSchemaOrRef(
-        zodRecord.keySchema as ZodTypeAny,
-        state,
-        ['record key'],
-      ),
+      propertyNames: renderedKeySchema,
       additionalProperties,
     };
   }

@@ -60,4 +60,32 @@ describe('createRecordSchema', () => {
 
     expect(result).toStrictEqual(expected);
   });
+
+  it('unwraps the a key schema in 3.0.0', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        A: {
+          type: 'string',
+        },
+        B: {
+          type: 'string',
+        },
+      },
+      additionalProperties: false,
+    };
+    const basicEnum = z.enum(['A', 'B']);
+    const complexSchema = z
+      .string()
+      .trim()
+      .length(1)
+      .transform((val) => val.toUpperCase())
+      .pipe(basicEnum);
+
+    const schema = z.record(complexSchema, z.string());
+
+    const result = createRecordSchema(schema, createOutputOpenapi3State());
+
+    expect(result).toStrictEqual(expected);
+  });
 });
