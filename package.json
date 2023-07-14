@@ -1,6 +1,6 @@
 {
   "name": "zod-openapi",
-  "version": "2.6.3",
+  "version": "2.7.0",
   "description": "Convert Zod Schemas to OpenAPI v3.x documentation",
   "keywords": [
     "typescript",
