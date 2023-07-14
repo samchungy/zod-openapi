@@ -27,7 +27,7 @@ export const createRecordSchema = (
     maybeComponent.type === 'complete' &&
     maybeComponent.schemaObject;
 
-  const renderedKeySchema = keySchema ?? maybeSchema;
+  const renderedKeySchema = maybeSchema || keySchema;
 
   if ('enum' in renderedKeySchema && renderedKeySchema.enum) {
     return {
@@ -51,7 +51,7 @@ export const createRecordSchema = (
     return {
       type: 'object',
       // @ts-expect-error FIXME: https://github.com/metadevpro/openapi3-ts/pull/120
-      propertyNames: renderedKeySchema,
+      propertyNames: keySchema,
       additionalProperties,
     };
   }
