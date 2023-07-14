@@ -12,7 +12,7 @@ import { createRecordSchema } from './record';
 extendZodWithOpenApi(z);
 
 describe('createRecordSchema', () => {
-  it('creates an object schema with additional properties', () => {
+  it('creates an object schema with additional properties in 3.0.0', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       additionalProperties: {

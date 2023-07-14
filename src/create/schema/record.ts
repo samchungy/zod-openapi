@@ -1,4 +1,4 @@
-import { ZodEnum, type ZodRecord, type ZodTypeAny } from 'zod';
+import { ZodEnum, type ZodRecord, ZodString, type ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../openapi';
 import type { oas31 } from '../../openapi3-ts/dist';
@@ -28,7 +28,11 @@ export const createRecordSchema = (
     };
   }
 
-  if (satisfiesVersion(state.components.openapi, '3.1.0')) {
+  if (
+    satisfiesVersion(state.components.openapi, '3.1.0') &&
+    zodRecord.keySchema instanceof ZodString &&
+    zodRecord.keySchema._def.checks.length
+  ) {
     return {
       type: 'object',
       // @ts-expect-error FIXME: https://github.com/metadevpro/openapi3-ts/pull/120
