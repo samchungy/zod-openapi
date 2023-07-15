@@ -98,22 +98,34 @@ export const createNewRef = <
   };
 };
 
-export const createExistingRef = (
+export const createExistingRef = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
   component: SchemaComponent | undefined,
   state: SchemaState,
   subpath: string[],
 ): Schema | undefined => {
-  if (
-    component &&
-    (component.type === 'complete' || component.type === 'in-progress')
-  ) {
-    const newState = newSchemaState(state);
-    newState.path.push(...subpath);
+  const newState = newSchemaState(state);
+  newState.path.push(...subpath);
 
-    if (component.type === 'complete') {
-      newState.effectType = component.creationType;
+  if (component && component.type === 'complete') {
+    if (component.creationType && component.creationType !== state.type) {
+      throwTransformError(zodSchema, newState);
     }
 
+    return {
+      schema: { $ref: createComponentSchemaRef(component.ref) },
+      newState: {
+        ...newState,
+        effectType: component.creationType,
+      },
+    };
+  }
+
+  if (component && component.type === 'in-progress') {
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
       newState,
@@ -138,7 +150,7 @@ export const createSchemaOrRef = <
   subpath: string[],
 ): Schema => {
   const component = state.components.schemas.get(zodSchema);
-  const existingRef = createExistingRef(component, state, subpath);
+  const existingRef = createExistingRef(zodSchema, component, state, subpath);
 
   if (existingRef) {
     return existingRef;

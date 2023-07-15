@@ -382,7 +382,7 @@ describe('createSchemaObject', () => {
     );
   });
 
-  it('throws an error when a transform is generated with different types', () => {
+  it('throws an error when a registered transform is generated with different types', () => {
     const inputSchema = z
       .string()
       .transform((arg) => arg.length)
@@ -414,6 +414,99 @@ describe('createSchemaObject', () => {
     ).toThrow(
       '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"},"openapi":{"ref":"input"}}} at previous > path > property: a contains a transformation but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
     );
+  });
+
+  it('does not throw an error when a transform is generated with different types', () => {
+    const inputSchema = z
+      .string()
+      .transform((arg) => arg.length)
+      .openapi({ effectType: 'input' });
+
+    const components = getDefaultComponents();
+
+    const inputState: SchemaState = {
+      components,
+      type: 'input',
+      path: [],
+      visited: new Set(),
+    };
+    createSchemaObject(inputSchema, inputState, ['previous', 'path']);
+
+    const outputSchema = z.object({
+      a: inputSchema,
+      b: z.string(),
+    });
+    const outputState: SchemaState = {
+      components,
+      type: 'output',
+      path: [],
+      visited: new Set(),
+    };
+
+    const result = createSchemaObject(outputSchema, outputState, [
+      'previous',
+      'path',
+    ]);
+    expect(result).toStrictEqual({
+      properties: {
+        a: {
+          type: 'string',
+        },
+        b: {
+          type: 'string',
+        },
+      },
+      required: ['a', 'b'],
+      type: 'object',
+    });
+  });
+
+  it('does not throw an error when a pipe is generated with different types', () => {
+    const inputSchema = z.string().pipe(z.number());
+
+    const components = getDefaultComponents();
+
+    const inputState: SchemaState = {
+      components,
+      type: 'input',
+      path: [],
+      visited: new Set(),
+    };
+    const result1 = createSchemaObject(inputSchema, inputState, [
+      'previous',
+      'path',
+    ]);
+    expect(result1).toStrictEqual({
+      type: 'string',
+    });
+
+    const outputSchema = z.object({
+      a: inputSchema,
+      b: z.string(),
+    });
+    const outputState: SchemaState = {
+      components,
+      type: 'output',
+      path: [],
+      visited: new Set(),
+    };
+
+    const result2 = createSchemaObject(outputSchema, outputState, [
+      'previous',
+      'path',
+    ]);
+    expect(result2).toStrictEqual({
+      properties: {
+        a: {
+          type: 'number',
+        },
+        b: {
+          type: 'string',
+        },
+      },
+      required: ['a', 'b'],
+      type: 'object',
+    });
   });
 
   it('throws an error when a pipe is generated with different types', () => {
