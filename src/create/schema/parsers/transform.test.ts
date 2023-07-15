@@ -38,7 +38,7 @@ describe('createTransformSchema', () => {
       state.path.push(...['previous', 'path']);
 
       expect(() => createTransformSchema(schema, state)).toThrow(
-        '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+        '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
       );
     });
 
@@ -114,7 +114,7 @@ describe('throwTransformError', () => {
     expect(() =>
       throwTransformError(z.string().openapi({ description: 'a' }), state),
     ).toThrow(
-      '{"_def":{"checks":[],"typeName":"ZodString","coerce":false,"openapi":{"description":"a"}}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+      '{"_def":{"checks":[],"typeName":"ZodString","coerce":false,"openapi":{"description":"a"}}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
     );
   });
 });

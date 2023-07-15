@@ -378,7 +378,7 @@ describe('createSchemaObject', () => {
     expect(() =>
       createSchemaObject(outputSchema, outputState, ['previous']),
     ).toThrow(
-      'schemaRef "a" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType',
+      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject","openapi":{"ref":"a"}},"_cached":null} at previous contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
     );
   });
 
@@ -401,7 +401,7 @@ describe('createSchemaObject', () => {
     expect(() =>
       createSchemaObject(outputSchema, state, ['previous', 'path']),
     ).toThrow(
-      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
     );
   });
 });

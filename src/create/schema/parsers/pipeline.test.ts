@@ -60,7 +60,7 @@ describe('createTransformSchema', () => {
       state.effectType = 'output';
       state.path.push(...['previous', 'path']);
       expect(() => createPipelineSchema(schema, state)).toThrow(
-        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
       );
     });
   });
@@ -115,7 +115,7 @@ describe('createTransformSchema', () => {
       state.effectType = 'input';
       state.path.push(...['previous', 'path']);
       expect(() => createPipelineSchema(schema, state)).toThrow(
-        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
+        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
       );
     });
   });

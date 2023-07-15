@@ -36,6 +36,6 @@ export const throwTransformError = (zodType: ZodType, state: SchemaState) => {
   throw new Error(
     `${JSON.stringify(zodType)} at ${state.path.join(
       ' > ',
-    )} contains a transform but is used in both an input and an output. This is likely a mistake. Set an \`effectType\` to resolve`,
+    )} contains a transform but is used in both an input and an output. This is likely a mistake. Set an \`effectType\`, wrap it in a ZodPipeline or assign it a manual type to resolve`,
   );
 };

@@ -103,24 +103,19 @@ export const createExistingRef = (
   state: SchemaState,
 ): Schema | undefined => {
   if (component && component.type === 'complete') {
-    if (component.creationType && component.creationType !== state.type) {
-      throw new Error(
-        `schemaRef "${component.ref}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
-      );
-    }
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
-      newState: newSchemaState({
-        ...state,
+      newState: {
+        ...newSchemaState(state),
         effectType: component.creationType,
-      }),
+      },
     };
   }
 
   if (component && component.type === 'in-progress') {
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
-      newState: state,
+      newState: newSchemaState(state),
     };
   }
   return;
@@ -166,7 +161,10 @@ export const createSchemaObject = <
 ): oas31.ReferenceObject | oas31.SchemaObject => {
   const { schema, newState } = createSchemaOrRef(zodSchema, state, subpath);
   if (newState?.effectType) {
-    if (state.effectType && newState.effectType !== state.effectType) {
+    if (
+      state.type !== newState?.effectType ||
+      (state.effectType && newState.effectType !== state.effectType)
+    ) {
       throwTransformError(zodSchema, newState);
     }
     state.effectType = newState.effectType;
