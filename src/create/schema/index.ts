@@ -101,28 +101,25 @@ export const createNewRef = <
 export const createExistingRef = (
   component: SchemaComponent | undefined,
   state: SchemaState,
+  subpath: string[],
 ): Schema | undefined => {
-  if (component && component.type === 'complete') {
-    if (component.creationType && component.creationType !== state.type) {
-      throw new Error(
-        `schemaRef "${component.ref}" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType`,
-      );
+  if (
+    component &&
+    (component.type === 'complete' || component.type === 'in-progress')
+  ) {
+    const newState = newSchemaState(state);
+    newState.path.push(...subpath);
+
+    if (component.type === 'complete') {
+      newState.effectType = component.creationType;
     }
+
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
-      newState: newSchemaState({
-        ...state,
-        effectType: component.creationType,
-      }),
+      newState,
     };
   }
 
-  if (component && component.type === 'in-progress') {
-    return {
-      schema: { $ref: createComponentSchemaRef(component.ref) },
-      newState: state,
-    };
-  }
   return;
 };
 
@@ -141,7 +138,7 @@ export const createSchemaOrRef = <
   subpath: string[],
 ): Schema => {
   const component = state.components.schemas.get(zodSchema);
-  const existingRef = createExistingRef(component, state);
+  const existingRef = createExistingRef(component, state, subpath);
 
   if (existingRef) {
     return existingRef;
@@ -166,7 +163,10 @@ export const createSchemaObject = <
 ): oas31.ReferenceObject | oas31.SchemaObject => {
   const { schema, newState } = createSchemaOrRef(zodSchema, state, subpath);
   if (newState?.effectType) {
-    if (state.effectType && newState.effectType !== state.effectType) {
+    if (
+      state.type !== newState?.effectType ||
+      (state.effectType && newState.effectType !== state.effectType)
+    ) {
       throwTransformError(zodSchema, newState);
     }
     state.effectType = newState.effectType;
