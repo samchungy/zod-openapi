@@ -3,7 +3,7 @@ import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 import { extendZodWithOpenApi } from '../../../extendZod';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
-import { createSchema, createSchemaOrRef } from '../../schema';
+import { createNewSchema, createSchemaOrRef } from '../../schema';
 
 import { createLazySchema } from './lazy';
 import { createObjectSchema } from './object';
@@ -198,7 +198,7 @@ describe('createLazySchema', () => {
       ref: 'post',
     });
 
-    const result = createSchema(UserSchema, state, []);
+    const result = createNewSchema(UserSchema, state, state, []);
 
     expect(result).toStrictEqual(expected);
   });

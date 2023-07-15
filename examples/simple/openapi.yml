@@ -5,24 +5,6 @@ info:
   description: A simple demo for zod-openapi
   license:
     name: MIT
-components:
-  securitySchemes:
-    s2sauth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: An s2s token issued by an allow listed consumer
-  schemas:
-    jobTitle:
-      type: string
-      minLength: 1
-      description: A name that describes the job
-      example: Mid level developer
-    jobId:
-      type: string
-      format: uuid
-      description: A unique identifier for a job
-      example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
 servers:
   - url: http://example.com/dev
     description: Dev Endpoint
@@ -90,3 +72,21 @@ paths:
                 required:
                   - id
                 description: Create Job Response
+components:
+  securitySchemes:
+    s2sauth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: An s2s token issued by an allow listed consumer
+  schemas:
+    jobTitle:
+      type: string
+      minLength: 1
+      description: A name that describes the job
+      example: Mid level developer
+    jobId:
+      type: string
+      format: uuid
+      description: A unique identifier for a job
+      example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
