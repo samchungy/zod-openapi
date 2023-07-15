@@ -34,7 +34,7 @@ export interface ManualSchemaComponent extends BaseSchemaComponent {
 }
 
 export interface InProgressSchemaComponent extends BaseSchemaComponent {
-  type: 'inProgress';
+  type: 'in-progress';
 }
 
 interface BaseSchemaComponent {

@@ -90,7 +90,7 @@ export const createSchemaOrRef = <
     };
   }
 
-  if (component && component.type === 'inProgress') {
+  if (component && component.type === 'in-progress') {
     return {
       $ref: createComponentSchemaRef(component.ref),
     };
@@ -102,7 +102,7 @@ export const createSchemaOrRef = <
 
   if (zodSchema._def.openapi?.ref || component?.type === 'manual') {
     state.components.schemas.set(zodSchema, {
-      type: 'inProgress',
+      type: 'in-progress',
       ref: (zodSchema._def.openapi?.ref ?? component?.ref) as string,
     });
     newState = newSchemaState({ ...state, path: [], visited: new Set() });
