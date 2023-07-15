@@ -12,7 +12,7 @@ import type {
   ZodOpenApiResponsesObject,
 } from './document';
 import { type SchemaState, createSchemaOrRef, newSchemaState } from './schema';
-import { isOptionalSchema } from './schema/optional';
+import { isOptionalSchema } from './schema/parsers/optional';
 import { isISpecificationExtension } from './specificationExtension';
 
 export const createResponseHeaders = (
