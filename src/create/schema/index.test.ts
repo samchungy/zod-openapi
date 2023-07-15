@@ -382,26 +382,69 @@ describe('createSchemaObject', () => {
     );
   });
 
-  it('throws an error when a schema is generated with a different effectTypes', () => {
-    const inputSchema = z.string().transform((arg) => arg.length);
+  it('throws an error when a transform is generated with different types', () => {
+    const inputSchema = z
+      .string()
+      .transform((arg) => arg.length)
+      .openapi({ ref: 'input' });
+
+    const components = getDefaultComponents();
+
+    const inputState: SchemaState = {
+      components,
+      type: 'input',
+      path: [],
+      visited: new Set(),
+    };
+    createSchemaObject(inputSchema, inputState, ['previous', 'path']);
 
     const outputSchema = z.object({
       a: inputSchema,
       b: z.string(),
     });
+    const outputState: SchemaState = {
+      components,
+      type: 'output',
+      path: [],
+      visited: new Set(),
+    };
+
+    expect(() =>
+      createSchemaObject(outputSchema, outputState, ['previous', 'path']),
+    ).toThrow(
+      '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"},"openapi":{"ref":"input"}}} at previous > path > property: a contains a transformation but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
+    );
+  });
+
+  it('throws an error when a pipe is generated with different types', () => {
+    const inputSchema = z.string().pipe(z.number()).openapi({ ref: 'input' });
+
     const components = getDefaultComponents();
-    const state: SchemaState = {
+
+    const inputState: SchemaState = {
       components,
       type: 'input',
       path: [],
       visited: new Set(),
-      effectType: 'output',
+    };
+
+    createSchemaObject(inputSchema, inputState, ['previous', 'path']);
+
+    const outputSchema = z.object({
+      a: inputSchema,
+      b: z.string(),
+    });
+    const outputState: SchemaState = {
+      components,
+      type: 'output',
+      path: [],
+      visited: new Set(),
     };
 
     expect(() =>
-      createSchemaObject(outputSchema, state, ['previous', 'path']),
+      createSchemaObject(outputSchema, outputState, ['previous', 'path']),
     ).toThrow(
-      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
+      '{"_def":{"in":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline","openapi":{"ref":"input"}}} at previous > path > property: a contains a transformation but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
     );
   });
 });

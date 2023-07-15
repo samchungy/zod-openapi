@@ -101,12 +101,16 @@ export const createNewRef = <
 export const createExistingRef = (
   component: SchemaComponent | undefined,
   state: SchemaState,
+  subpath: string[],
 ): Schema | undefined => {
+  const newState = newSchemaState(state);
+  newState.path.push(...subpath);
+
   if (component && component.type === 'complete') {
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
       newState: {
-        ...newSchemaState(state),
+        ...newState,
         effectType: component.creationType,
       },
     };
@@ -115,7 +119,7 @@ export const createExistingRef = (
   if (component && component.type === 'in-progress') {
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
-      newState: newSchemaState(state),
+      newState,
     };
   }
   return;
@@ -136,7 +140,7 @@ export const createSchemaOrRef = <
   subpath: string[],
 ): Schema => {
   const component = state.components.schemas.get(zodSchema);
-  const existingRef = createExistingRef(component, state);
+  const existingRef = createExistingRef(component, state, subpath);
 
   if (existingRef) {
     return existingRef;

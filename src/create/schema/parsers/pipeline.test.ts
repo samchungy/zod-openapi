@@ -49,20 +49,6 @@ describe('createTransformSchema', () => {
 
       expect(result).toStrictEqual(expected);
     });
-
-    it('throws an error when the current state effectType is output', () => {
-      const schema = z
-        .string()
-        .transform((arg) => arg.length)
-        .pipe(z.number());
-
-      const state = createInputState();
-      state.effectType = 'output';
-      state.path.push(...['previous', 'path']);
-      expect(() => createPipelineSchema(schema, state)).toThrow(
-        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
-      );
-    });
   });
 
   describe('output', () => {
@@ -103,20 +89,6 @@ describe('createTransformSchema', () => {
       const result = createPipelineSchema(schema, createOutputState());
 
       expect(result).toStrictEqual(expected);
-    });
-
-    it('throws an error when the current state effectType is input', () => {
-      const schema = z
-        .string()
-        .transform((arg) => arg.length)
-        .pipe(z.number());
-
-      const state = createOutputState();
-      state.effectType = 'input';
-      state.path.push(...['previous', 'path']);
-      expect(() => createPipelineSchema(schema, state)).toThrow(
-        '{"_def":{"in":{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"}}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline"}} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
-      );
     });
   });
 });
