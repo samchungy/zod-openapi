@@ -26,8 +26,11 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
   creationType?: CreationType;
 }
 
-export interface PartialSchemaComponent extends BaseSchemaComponent {
-  type: 'partial';
+/**
+ *
+ */
+export interface ManualSchemaComponent extends BaseSchemaComponent {
+  type: 'manual';
 }
 
 export interface InProgressSchemaComponent extends BaseSchemaComponent {
@@ -40,7 +43,7 @@ interface BaseSchemaComponent {
 
 export type SchemaComponent =
   | CompleteSchemaComponent
-  | PartialSchemaComponent
+  | ManualSchemaComponent
   | InProgressSchemaComponent;
 
 export type SchemaComponentMap = Map<ZodType, SchemaComponent>;
@@ -55,7 +58,7 @@ export interface CompleteParameterComponent extends BaseParameterComponent {
 }
 
 export interface PartialParameterComponent extends BaseParameterComponent {
-  type: 'partial';
+  type: 'manual';
 }
 
 interface BaseParameterComponent {
@@ -80,7 +83,7 @@ export interface CompleteHeaderComponent extends BaseHeaderComponent {
 }
 
 export interface PartialHeaderComponent extends BaseHeaderComponent {
-  type: 'partial';
+  type: 'manual';
 }
 
 interface BaseHeaderComponent {
@@ -105,7 +108,7 @@ export interface CompleteResponseComponent extends BaseResponseComponent {
 }
 
 export interface PartialResponseComponent extends BaseResponseComponent {
-  type: 'partial';
+  type: 'manual';
 }
 
 export type ResponseComponent =
@@ -131,7 +134,7 @@ export interface CompleteRequestBodyComponent extends BaseRequestBodyComponent {
 }
 
 export interface PartialRequestBodyComponent extends BaseRequestBodyComponent {
-  type: 'partial';
+  type: 'manual';
 }
 
 export type RequestBodyComponent =
@@ -194,7 +197,7 @@ const getSchemas = (
       }
       const ref = schema._def.openapi?.ref ?? key;
       components.schemas.set(schema, {
-        type: 'partial',
+        type: 'manual',
         ref,
       });
     }
@@ -224,7 +227,7 @@ const getParameters = (
         throw new Error('`name` or `in` missing in .openapi()');
       }
       components.parameters.set(schema, {
-        type: 'partial',
+        type: 'manual',
         ref,
         in: location,
         name,
@@ -250,7 +253,7 @@ const getHeaders = (
       }
       const ref = schema._def.openapi?.param?.ref ?? key;
       components.headers.set(schema, {
-        type: 'partial',
+        type: 'manual',
         ref,
       });
     }
@@ -273,7 +276,7 @@ const getResponses = (
     }
     const ref = responseObject?.ref ?? key;
     components.responses.set(responseObject, {
-      type: 'partial',
+      type: 'manual',
       ref,
     });
   });
@@ -295,7 +298,7 @@ const getRequestBodies = (
     }
     const ref = requestBody?.ref ?? key;
     components.requestBodies.set(requestBody, {
-      type: 'partial',
+      type: 'manual',
       ref,
     });
   });
@@ -342,7 +345,7 @@ const createSchemaComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['schemas'] => {
   Array.from(components.schemas).forEach(([schema, { type }], index) => {
-    if (type === 'partial') {
+    if (type === 'manual') {
       const state: SchemaState = newSchemaState({
         components,
         type: schema._def.openapi?.refType ?? 'output',
@@ -393,7 +396,7 @@ const createParamComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['parameters'] => {
   Array.from(components.parameters).forEach(([schema, component], index) => {
-    if (component.type === 'partial') {
+    if (component.type === 'manual') {
       createParamOrRef(
         schema,
         components,
@@ -441,7 +444,7 @@ const createHeaderComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['headers'] => {
   Array.from(components.headers).forEach(([schema, component]) => {
-    if (component.type === 'partial') {
+    if (component.type === 'manual') {
       createHeaderOrRef(schema, components);
     }
   });
@@ -480,7 +483,7 @@ const createResponseComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['responses'] => {
   Array.from(components.responses).forEach(([schema, component], index) => {
-    if (component.type === 'partial') {
+    if (component.type === 'manual') {
       createResponse(schema, components, [`component response index ${index}`]);
     }
   });
@@ -505,7 +508,7 @@ const createRequestBodiesComponents = (
   components: ComponentsObject,
 ): oas31.ComponentsObject['requestBodies'] => {
   Array.from(components.requestBodies).forEach(([schema, component], index) => {
-    if (component.type === 'partial') {
+    if (component.type === 'manual') {
       createRequestBody(schema, components, [
         `component request body ${index}`,
       ]);

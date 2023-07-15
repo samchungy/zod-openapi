@@ -194,7 +194,7 @@ describe('createLazySchema', () => {
       ref: 'user',
     });
     state.components.schemas.set(PostSchema, {
-      type: 'partial',
+      type: 'manual',
       ref: 'post',
     });
 

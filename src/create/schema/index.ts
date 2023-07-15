@@ -100,7 +100,7 @@ export const createSchemaOrRef = <
 
   let newState;
 
-  if (zodSchema._def.openapi?.ref || component?.type === 'partial') {
+  if (zodSchema._def.openapi?.ref || component?.type === 'manual') {
     state.components.schemas.set(zodSchema, {
       type: 'inProgress',
       ref: (zodSchema._def.openapi?.ref ?? component?.ref) as string,
