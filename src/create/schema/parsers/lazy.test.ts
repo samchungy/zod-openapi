@@ -3,7 +3,7 @@ import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 import { extendZodWithOpenApi } from '../../../extendZod';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
-import { createNewSchema, createSchemaOrRef } from '../../schema';
+import { createNewSchema, createSchemaObject } from '../../schema';
 
 import { createLazySchema } from './lazy';
 import { createObjectSchema } from './object';
@@ -16,7 +16,7 @@ describe('createLazySchema', () => {
     const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
 
     expect(() =>
-      createSchemaOrRef(lazy as ZodLazy<any>, createOutputState(), [
+      createSchemaObject(lazy as ZodLazy<any>, createOutputState(), [
         'response',
       ]),
     ).toThrow(
@@ -27,19 +27,19 @@ describe('createLazySchema', () => {
   it('throws errors when cycles without refs are detected', () => {
     const cycle1: any = z.lazy(() => z.array(z.object({ foo: cycle1 })));
     expect(() =>
-      createSchemaOrRef(cycle1, createOutputState(), ['response']),
+      createSchemaObject(cycle1, createOutputState(), ['response']),
     ).toThrow(
       `The schema at response > lazy schema > array items > property: foo needs to be registered because it's circularly referenced`,
     );
     const cycle2: any = z.lazy(() => z.union([z.number(), z.array(cycle2)]));
     expect(() =>
-      createSchemaOrRef(cycle2, createOutputState(), ['response']),
+      createSchemaObject(cycle2, createOutputState(), ['response']),
     ).toThrow(
       `The schema at response > lazy schema > union option 1 > array items needs to be registered because it's circularly referenced`,
     );
     const cycle3: any = z.lazy(() => z.record(z.tuple([cycle3.optional()])));
     expect(() =>
-      createSchemaOrRef(cycle3, createOutputState(), ['response']),
+      createSchemaObject(cycle3, createOutputState(), ['response']),
     ).toThrow(
       `The schema at response > lazy schema > record value > tuple item 0 > optional needs to be registered because it's circularly referenced`,
     );
@@ -198,8 +198,8 @@ describe('createLazySchema', () => {
       ref: 'post',
     });
 
-    const result = createNewSchema(UserSchema, state, state, []);
+    const result = createNewSchema(UserSchema, state, []);
 
-    expect(result).toStrictEqual(expected);
+    expect(result.schema).toStrictEqual(expected);
   });
 });

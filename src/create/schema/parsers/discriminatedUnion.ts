@@ -7,7 +7,7 @@ import {
 } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaOrRef } from '../../schema';
+import { type SchemaState, createSchemaObject } from '../../schema';
 
 export const createDiscriminatedUnionSchema = (
   zodDiscriminatedUnion: ZodDiscriminatedUnion<any, any>,
@@ -15,7 +15,7 @@ export const createDiscriminatedUnionSchema = (
 ): oas31.SchemaObject => {
   const options = zodDiscriminatedUnion.options as AnyZodObject[];
   const schemas = options.map((option, index) =>
-    createSchemaOrRef(option, state, [`discriminated union option ${index}`]),
+    createSchemaObject(option, state, [`discriminated union option ${index}`]),
   );
   const discriminator = mapDiscriminator(
     schemas,

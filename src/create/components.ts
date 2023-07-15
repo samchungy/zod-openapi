@@ -11,7 +11,7 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchemaOrRef, newSchemaState } from './schema';
+import { type SchemaState, createSchemaObject, newSchemaState } from './schema';
 
 export type CreationType = 'input' | 'output';
 
@@ -353,7 +353,7 @@ const createSchemaComponents = (
         visited: new Set(),
       });
 
-      createSchemaOrRef(schema, state, [`component schema index ${index}`]);
+      createSchemaObject(schema, state, [`component schema index ${index}`]);
     }
   });
 

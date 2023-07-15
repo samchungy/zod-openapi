@@ -1,7 +1,7 @@
 import type { ZodArray, ZodTypeAny } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaOrRef } from '../../schema';
+import { type SchemaState, createSchemaObject } from '../../schema';
 
 export const createArraySchema = (
   zodArray: ZodArray<any, any>,
@@ -14,7 +14,7 @@ export const createArraySchema = (
     zodArray._def.exactLength?.value ?? zodArray._def.maxLength?.value;
   return {
     type: 'array',
-    items: createSchemaOrRef(zodType, state, ['array items']),
+    items: createSchemaObject(zodType, state, ['array items']),
     ...(minItems !== undefined && { minItems }),
     ...(maxItems !== undefined && { maxItems }),
   };

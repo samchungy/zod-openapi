@@ -14,13 +14,13 @@ import {
 } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaOrRef } from '../../schema';
+import { type SchemaState, createSchemaObject } from '../../schema';
 
 export const createOptionalSchema = (
   zodOptional: ZodOptional<any>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => // Optional doesn't change OpenAPI schema
-  createSchemaOrRef(zodOptional.unwrap() as ZodTypeAny, state, ['optional']);
+  createSchemaObject(zodOptional.unwrap() as ZodTypeAny, state, ['optional']);
 
 export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
