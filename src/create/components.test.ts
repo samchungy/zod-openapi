@@ -7,9 +7,9 @@ import {
   type ComponentsObject,
   type HeaderComponent,
   type HeaderComponentMap,
+  type ManualSchemaComponent,
   type ParameterComponent,
   type ParameterComponentMap,
-  type PartialSchemaComponent,
   type RequestBodyComponent,
   type RequestBodyComponentMap,
   type ResponseComponent,
@@ -40,7 +40,7 @@ describe('getDefaultComponents', () => {
     expect(result).toStrictEqual(expected);
   });
 
-  it('returns partial components', () => {
+  it('returns manual components', () => {
     const aSchema = z.string();
     const bSchema = z.string().openapi({ param: { in: 'header', name: 'b' } });
     const cSchema = z.string();
@@ -96,25 +96,25 @@ describe('getDefaultComponents', () => {
     };
     const expectedParameter: ParameterComponent = {
       ref: 'b',
-      type: 'partial',
+      type: 'manual',
       in: 'header',
       name: 'b',
     };
     const expectedSchema: SchemaComponent = {
       ref: 'a',
-      type: 'partial',
+      type: 'manual',
     };
     const expectedHeader: HeaderComponent = {
       ref: 'c',
-      type: 'partial',
+      type: 'manual',
     };
     const expectedResponse: ResponseComponent = {
       ref: 'd',
-      type: 'partial',
+      type: 'manual',
     };
     const expectedRequestBodies: RequestBodyComponent = {
       ref: 'e',
-      type: 'partial',
+      type: 'manual',
     };
 
     expect(result).toStrictEqual(expected);
@@ -145,13 +145,13 @@ describe('getDefaultComponents', () => {
         a,
       },
     });
-    const expectedA: PartialSchemaComponent = {
+    const expectedA: ManualSchemaComponent = {
       ref: 'a',
-      type: 'partial',
+      type: 'manual',
     };
-    const expectedB: PartialSchemaComponent = {
+    const expectedB: ManualSchemaComponent = {
       ref: 'b',
-      type: 'partial',
+      type: 'manual',
     };
 
     expect(componentsObject).toStrictEqual(expected);
@@ -427,7 +427,7 @@ describe('createComponents', () => {
     expect(componentsObject).toStrictEqual(expected);
   });
 
-  it('completes partial components', () => {
+  it('completes manual components', () => {
     const expected: oas31.ComponentsObject = {
       examples: {
         a: {
@@ -460,19 +460,19 @@ describe('createComponents', () => {
     };
     const schemaMap: SchemaComponentMap = new Map();
     schemaMap.set(z.string(), {
-      type: 'partial',
+      type: 'manual',
       ref: 'a',
     });
     const paramMap: ParameterComponentMap = new Map();
     paramMap.set(z.string(), {
-      type: 'partial',
+      type: 'manual',
       in: 'header',
       ref: 'a',
       name: 'some-header',
     });
     const headerMap: HeaderComponentMap = new Map();
     headerMap.set(z.string(), {
-      type: 'partial',
+      type: 'manual',
       ref: 'a',
     });
     const componentsObject = createComponents(

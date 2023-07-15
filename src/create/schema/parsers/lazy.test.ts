@@ -58,7 +58,7 @@ describe('createLazySchema', () => {
 
     const state = createOutputState();
     state.components.schemas.set(lazy, {
-      type: 'inProgress',
+      type: 'in-progress',
       ref: 'lazy',
     });
 
@@ -110,7 +110,7 @@ describe('createLazySchema', () => {
 
     const state = createOutputState();
     state.components.schemas.set(UserSchema, {
-      type: 'inProgress',
+      type: 'in-progress',
       ref: 'user',
     });
 
@@ -190,11 +190,11 @@ describe('createLazySchema', () => {
      * })
      */
     state.components.schemas.set(UserSchema, {
-      type: 'inProgress',
+      type: 'in-progress',
       ref: 'user',
     });
     state.components.schemas.set(PostSchema, {
-      type: 'partial',
+      type: 'manual',
       ref: 'post',
     });
 
