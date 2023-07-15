@@ -1,13 +1,14 @@
 import { z } from 'zod';
 
-import { extendZodWithOpenApi } from '../../../extendZod';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
-import { createSchemaWithMetadata } from '../../schema';
+import { extendZodWithOpenApi } from '../../extendZod';
+import type { oas31 } from '../../openapi3-ts/dist';
+import { createOutputState } from '../../testing/state';
+
+import { createSchemaOrRef } from './index';
 
 extendZodWithOpenApi(z);
 
-describe('createSchemaWithMetadata', () => {
+describe('enhanceWithMetadata', () => {
   it('adds .openapi metadata', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
@@ -15,7 +16,7 @@ describe('createSchemaWithMetadata', () => {
     };
     const schema = z.string().openapi({ description: 'bla' });
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -27,7 +28,7 @@ describe('createSchemaWithMetadata', () => {
     };
     const schema = z.string().describe('bla');
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -40,7 +41,7 @@ describe('createSchemaWithMetadata', () => {
 
     const schema = z.string().describe('bla').openapi({ description: 'foo' });
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -51,7 +52,7 @@ describe('createSchemaWithMetadata', () => {
     };
     const schema = z.string().openapi({ type: 'integer' });
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -72,7 +73,7 @@ describe('createSchemaWithMetadata', () => {
 
     const schema = ref.optional().openapi({ description: 'hello' });
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -86,7 +87,7 @@ describe('createSchemaWithMetadata', () => {
 
     const schema = ref.optional();
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -99,7 +100,7 @@ describe('createSchemaWithMetadata', () => {
     const ref = z.string().openapi({ ref: 'ref2' });
     const schema = ref.optional().default('a');
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -124,7 +125,7 @@ describe('createSchemaWithMetadata', () => {
       b: object2.openapi({ description: 'jello' }),
     });
 
-    const result = createSchemaWithMetadata(schema, createOutputState());
+    const result = createSchemaOrRef(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });

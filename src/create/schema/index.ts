@@ -4,11 +4,12 @@ import type { oas31 } from '../../openapi3-ts/dist';
 import {
   type ComponentsObject,
   type CreationType,
+  type SchemaComponent,
   createComponentSchemaRef,
 } from '../components';
 
+import { enhanceWithMetadata } from './metadata';
 import { createSchemaSwitch } from './parsers';
-import { enhanceWithMetadata } from './parsers/metadata';
 import { throwTransformError } from './parsers/transform';
 
 export type LazyMap = Map<ZodType, true>;
@@ -28,57 +29,84 @@ export const newSchemaState = (state: SchemaState): SchemaState => ({
   visited: new Set(state.visited),
 });
 
-export const createSchema = <
+export const createNewSchema = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
-  state: SchemaState,
+  newState: SchemaState,
+  previousState: SchemaState,
   subpath: string[],
-): oas31.SchemaObject | oas31.ReferenceObject => {
-  state.path.push(...subpath);
-  if (state.visited.has(zodSchema)) {
+): oas31.ReferenceObject | oas31.SchemaObject => {
+  newState.path.push(...subpath);
+  if (newState.visited.has(zodSchema)) {
     throw new Error(
-      `The schema at ${state.path.join(
+      `The schema at ${newState.path.join(
         ' > ',
       )} needs to be registered because it's circularly referenced`,
     );
   }
-  state.visited.add(zodSchema);
-  const schema = createSchemaWithMetadata(zodSchema, state);
-  return schema;
-};
-
-export const createSchemaWithMetadata = <
-  Output = any,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(
-  zodSchema: ZodType<Output, Def, Input>,
-  state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
+  newState.visited.add(zodSchema);
   const { effectType, param, header, ref, refType, ...additionalMetadata } =
     zodSchema._def.openapi ?? {};
-  const schemaOrRef = createSchemaSwitch(zodSchema, state);
+
+  const schema = createSchemaSwitch(zodSchema, newState);
   const description = zodSchema.description;
 
-  return enhanceWithMetadata(schemaOrRef, {
+  const schemaWithMetadata = enhanceWithMetadata(schema, {
     ...(description && { description }),
     ...additionalMetadata,
   });
+
+  if (newState.effectType) {
+    if (
+      previousState.effectType &&
+      newState.effectType !== previousState.effectType
+    ) {
+      throwTransformError(zodSchema, newState);
+    }
+    previousState.effectType = newState.effectType;
+  }
+
+  return schemaWithMetadata;
 };
 
-export const createSchemaOrRef = <
+export const createNewRef = <
   Output = any,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
+  ref: string,
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
   subpath: string[],
-): oas31.ReferenceObject | oas31.SchemaObject => {
-  const component = state.components.schemas.get(zodSchema);
+): oas31.ReferenceObject => {
+  state.components.schemas.set(zodSchema, {
+    type: 'in-progress',
+    ref,
+  });
+
+  const newState = newSchemaState({ ...state, visited: new Set() });
+
+  const newSchema = createNewSchema(zodSchema, newState, state, subpath);
+
+  state.components.schemas.set(zodSchema, {
+    type: 'complete',
+    ref,
+    schemaObject: newSchema,
+    ...(newState.effectType && { creationType: newState.effectType }),
+  });
+
+  return {
+    $ref: createComponentSchemaRef(ref),
+  };
+};
+
+export const createExistingRef = (
+  component: SchemaComponent | undefined,
+  state: SchemaState,
+): oas31.ReferenceObject | undefined => {
   if (component && component.type === 'complete') {
     if (component.creationType && component.creationType !== state.type) {
       throw new Error(
@@ -95,42 +123,29 @@ export const createSchemaOrRef = <
       $ref: createComponentSchemaRef(component.ref),
     };
   }
+  return;
+};
 
-  const schemaRef = zodSchema._def.openapi?.ref ?? component?.ref;
+export const createSchemaOrRef = <
+  Output = any,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output,
+>(
+  zodSchema: ZodType<Output, Def, Input>,
+  state: SchemaState,
+  subpath: string[],
+): oas31.ReferenceObject | oas31.SchemaObject => {
+  const component = state.components.schemas.get(zodSchema);
+  const existingRef = createExistingRef(component, state);
 
-  let newState;
-
-  if (zodSchema._def.openapi?.ref || component?.type === 'manual') {
-    state.components.schemas.set(zodSchema, {
-      type: 'in-progress',
-      ref: (zodSchema._def.openapi?.ref ?? component?.ref) as string,
-    });
-    newState = newSchemaState({ ...state, path: [], visited: new Set() });
-  } else {
-    newState = newSchemaState(state);
+  if (existingRef) {
+    return existingRef;
   }
 
-  const schemaOrRef = createSchema(zodSchema, newState, subpath);
-
-  if (newState.effectType) {
-    if (state.effectType && newState.effectType !== state.effectType) {
-      throwTransformError(zodSchema, newState);
-    }
-    state.effectType = newState.effectType;
+  const ref = zodSchema._def.openapi?.ref ?? component?.ref;
+  if (ref) {
+    return createNewRef(ref, zodSchema, state, subpath);
   }
 
-  if (schemaRef) {
-    state.components.schemas.set(zodSchema, {
-      type: 'complete',
-      ref: schemaRef,
-      schemaObject: schemaOrRef,
-      ...(newState.effectType && { creationType: newState.effectType }),
-    });
-
-    return {
-      $ref: createComponentSchemaRef(schemaRef),
-    };
-  }
-
-  return schemaOrRef;
+  return createNewSchema(zodSchema, newSchemaState(state), state, subpath);
 };
