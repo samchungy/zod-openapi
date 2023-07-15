@@ -378,7 +378,7 @@ describe('createSchemaObject', () => {
     expect(() =>
       createSchemaObject(outputSchema, outputState, ['previous']),
     ).toThrow(
-      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject","openapi":{"ref":"a"}},"_cached":null} at previous contains a transformation but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
+      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject","openapi":{"ref":"a"}},"_cached":null} at previous > property: a contains a transformation but is used in both an input and an output. This is likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve',
     );
   });
 

@@ -103,25 +103,23 @@ export const createExistingRef = (
   state: SchemaState,
   subpath: string[],
 ): Schema | undefined => {
-  const newState = newSchemaState(state);
-  newState.path.push(...subpath);
+  if (
+    component &&
+    (component.type === 'complete' || component.type === 'in-progress')
+  ) {
+    const newState = newSchemaState(state);
+    newState.path.push(...subpath);
 
-  if (component && component.type === 'complete') {
-    return {
-      schema: { $ref: createComponentSchemaRef(component.ref) },
-      newState: {
-        ...newState,
-        effectType: component.creationType,
-      },
-    };
-  }
+    if (component.type === 'complete') {
+      newState.effectType = component.creationType;
+    }
 
-  if (component && component.type === 'in-progress') {
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
       newState,
     };
   }
+
   return;
 };
 
