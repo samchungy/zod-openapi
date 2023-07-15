@@ -1,8 +1,7 @@
 import type { ZodArray, ZodTypeAny } from 'zod';
 
 import type { oas31 } from '../../openapi3-ts/dist';
-
-import { type SchemaState, createSchemaOrRef } from '.';
+import { type SchemaState, createSchemaOrRef } from '../schema';
 
 export const createArraySchema = (
   zodArray: ZodArray<any, any>,

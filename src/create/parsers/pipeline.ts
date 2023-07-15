@@ -1,10 +1,9 @@
 import type { ZodPipeline, ZodTypeAny } from 'zod';
 
 import type { oas31 } from '../../openapi3-ts/dist';
+import { type SchemaState, createSchemaOrRef } from '../schema';
 
 import { throwTransformError } from './transform';
-
-import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createPipelineSchema = (
   zodPipeline: ZodPipeline<any, any>,

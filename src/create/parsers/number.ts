@@ -3,8 +3,7 @@ import type { ZodNumber, ZodNumberCheck } from 'zod';
 import { satisfiesVersion } from '../../openapi';
 import type { oas30, oas31 } from '../../openapi3-ts/dist';
 import type { ZodOpenApiVersion } from '../document';
-
-import type { SchemaState } from '.';
+import type { SchemaState } from '../schema';
 
 export const createNumberSchema = (
   zodNumber: ZodNumber,

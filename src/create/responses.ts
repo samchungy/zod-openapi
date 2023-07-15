@@ -11,8 +11,8 @@ import type {
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from './document';
+import { isOptionalSchema } from './parsers/optional';
 import { type SchemaState, createSchemaOrRef, newSchemaState } from './schema';
-import { isOptionalSchema } from './schema/optional';
 import { isISpecificationExtension } from './specificationExtension';
 
 export const createResponseHeaders = (

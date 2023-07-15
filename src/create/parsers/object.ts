@@ -8,10 +8,9 @@ import {
 
 import type { oas31 } from '../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../components';
+import { type SchemaState, createSchemaOrRef } from '../schema';
 
 import { isOptionalSchema } from './optional';
-
-import { type SchemaState, createSchemaOrRef } from '.';
 
 export const createObjectSchema = <
   T extends ZodRawShape,
