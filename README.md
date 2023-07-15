@@ -44,14 +44,15 @@ z.string().openapi({ description: 'hello world!', example: 'hello world' });
 
 Use the `.openapi()` method to add metadata to a specific Zod type. The `.openapi()` method takes an object with the following options:
 
-|    Option    |                                         Description                                         |
-| :----------: | :-----------------------------------------------------------------------------------------: |
-| `effectType` |             Use to override the creation type for a [Zod Effect](#zod-effects)              |
-|   `param`    |                Use to provide metadata for [request parameters](#parameters)                |
-|   `header`   |              Use to provide metadata for [response headers](#response-headers)              |
-|    `ref`     |                 Use this to [auto register a schema](#creating-components)                  |
-|  `refType`   | Use this to set the creation type for a component which is not referenced in the document.  |
-|    `type`    | Use this to override the generated type. If this is provided no metadata will be generated. |
+|     Option      |                                                         Description                                                         |
+| :-------------: | :-------------------------------------------------------------------------------------------------------------------------: |
+| OpenAPI Options | This will take any option you would put on a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/). |
+|  `effectType`   |                             Use to override the creation type for a [Zod Effect](#zod-effects)                              |
+|     `param`     |                                Use to provide metadata for [request parameters](#parameters)                                |
+|    `header`     |                              Use to provide metadata for [response headers](#response-headers)                              |
+|      `ref`      |                                 Use this to [auto register a schema](#creating-components)                                  |
+|    `refType`    |                 Use this to set the creation type for a component which is not referenced in the document.                  |
+|     `type`      |                 Use this to override the generated type. If this is provided no metadata will be generated.                 |
 
 ### `createDocument`
 
