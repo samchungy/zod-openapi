@@ -1,7 +1,7 @@
 import type { ZodPipeline, ZodTypeAny } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaOrRef } from '../../schema';
+import { type SchemaState, createSchemaObject } from '../../schema';
 
 import { throwTransformError } from './transform';
 
@@ -10,13 +10,13 @@ export const createPipelineSchema = (
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodPipeline._def.openapi?.effectType === 'input') {
-    return createSchemaOrRef(zodPipeline._def.in as ZodTypeAny, state, [
+    return createSchemaObject(zodPipeline._def.in as ZodTypeAny, state, [
       'pipeline input',
     ]);
   }
 
   if (zodPipeline._def.openapi?.effectType === 'output') {
-    return createSchemaOrRef(zodPipeline._def.out as ZodTypeAny, state, [
+    return createSchemaObject(zodPipeline._def.out as ZodTypeAny, state, [
       'pipeline output',
     ]);
   }
@@ -26,7 +26,7 @@ export const createPipelineSchema = (
       throwTransformError(zodPipeline, state);
     }
     state.effectType = 'input';
-    return createSchemaOrRef(zodPipeline._def.in as ZodTypeAny, state, [
+    return createSchemaObject(zodPipeline._def.in as ZodTypeAny, state, [
       'pipeline input',
     ]);
   }
@@ -35,7 +35,7 @@ export const createPipelineSchema = (
     throwTransformError(zodPipeline, state);
   }
   state.effectType = 'output';
-  return createSchemaOrRef(zodPipeline._def.out as ZodTypeAny, state, [
+  return createSchemaObject(zodPipeline._def.out as ZodTypeAny, state, [
     'pipeline output',
   ]);
 };

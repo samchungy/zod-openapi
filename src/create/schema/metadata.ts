@@ -1,21 +1,21 @@
 import type { oas31 } from '../../openapi3-ts/dist';
 
 export const enhanceWithMetadata = (
-  schemaOrRef: oas31.SchemaObject | oas31.ReferenceObject,
+  schemaObject: oas31.SchemaObject | oas31.ReferenceObject,
   metadata: oas31.SchemaObject | oas31.ReferenceObject,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
-  if ('$ref' in schemaOrRef) {
+  if ('$ref' in schemaObject) {
     if (Object.values(metadata).every((val) => val === undefined)) {
-      return schemaOrRef;
+      return schemaObject;
     }
 
     return {
-      allOf: [schemaOrRef, metadata],
+      allOf: [schemaObject, metadata],
     };
   }
 
   return {
-    ...schemaOrRef,
+    ...schemaObject,
     ...metadata,
   };
 };

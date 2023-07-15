@@ -8,7 +8,7 @@ import {
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createComponentSchemaRef } from '../../components';
-import { type SchemaState, createSchemaOrRef } from '../../schema';
+import { type SchemaState, createSchemaObject } from '../../schema';
 
 import { isOptionalSchema } from './optional';
 
@@ -50,7 +50,7 @@ export const createExtendedSchema = (
 
   const component = state.components.schemas.get(baseZodObject);
   if (component || baseZodObject._def.openapi?.ref) {
-    createSchemaOrRef(baseZodObject, state, ['extended schema']);
+    createSchemaObject(baseZodObject, state, ['extended schema']);
   }
 
   const completeComponent = state.components.schemas.get(baseZodObject);
@@ -145,7 +145,7 @@ export const createObjectSchemaFromShape = (
     ...(required && { required }),
     ...(unknownKeys === 'strict' && { additionalProperties: false }),
     ...(!(catchAll instanceof ZodNever) && {
-      additionalProperties: createSchemaOrRef(catchAll, state, [
+      additionalProperties: createSchemaObject(catchAll, state, [
         'additional properties',
       ]),
     }),
@@ -173,7 +173,7 @@ export const mapProperties = (
 ): oas31.SchemaObject['properties'] =>
   Object.entries(shape).reduce<NonNullable<oas31.SchemaObject['properties']>>(
     (acc, [key, zodSchema]): NonNullable<oas31.SchemaObject['properties']> => {
-      acc[key] = createSchemaOrRef(zodSchema, state, [`property: ${key}`]);
+      acc[key] = createSchemaObject(zodSchema, state, [`property: ${key}`]);
       return acc;
     },
     {},

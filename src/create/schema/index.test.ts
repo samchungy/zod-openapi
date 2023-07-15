@@ -5,7 +5,7 @@ import type { oas31 } from '../../openapi3-ts/dist';
 import { createInputState, createOutputState } from '../../testing/state';
 import { getDefaultComponents } from '../components';
 
-import { type SchemaState, createSchemaOrRef, newSchemaState } from '.';
+import { type SchemaState, createSchemaObject, newSchemaState } from '.';
 
 extendZodWithOpenApi(z);
 
@@ -279,7 +279,7 @@ const expectedZodSet: oas31.SchemaObject = {
   uniqueItems: true,
 };
 
-describe('createSchemaOrRef', () => {
+describe('createSchemaObject', () => {
   it.each`
     zodType                      | schema                   | expected
     ${'ZodArray'}                | ${zodArray}              | ${expectedZodArray}
@@ -313,7 +313,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(
-      createSchemaOrRef(schema, createOutputState(), ['previous']),
+      createSchemaObject(schema, createOutputState(), ['previous']),
     ).toStrictEqual(expected);
   });
 
@@ -350,7 +350,7 @@ describe('createSchemaOrRef', () => {
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(
-      createSchemaOrRef(schema, createInputState(), ['previous']),
+      createSchemaObject(schema, createInputState(), ['previous']),
     ).toStrictEqual(expected);
   });
 
@@ -365,7 +365,7 @@ describe('createSchemaOrRef', () => {
       path: [],
       visited: new Set(),
     });
-    createSchemaOrRef(inputSchema, state, ['previous']);
+    createSchemaObject(inputSchema, state, ['previous']);
 
     const outputState: SchemaState = newSchemaState({
       components,
@@ -376,7 +376,7 @@ describe('createSchemaOrRef', () => {
 
     const outputSchema = z.object({ a: inputSchema });
     expect(() =>
-      createSchemaOrRef(outputSchema, outputState, ['previous']),
+      createSchemaObject(outputSchema, outputState, ['previous']),
     ).toThrow(
       'schemaRef "a" was created with a ZodTransform meaning that the input type is different from the output type. This type is currently being referenced in a response and request. Wrap it in a ZodPipeline, assign it a manual type or effectType',
     );
@@ -399,7 +399,7 @@ describe('createSchemaOrRef', () => {
     };
 
     expect(() =>
-      createSchemaOrRef(outputSchema, state, ['previous', 'path']),
+      createSchemaObject(outputSchema, state, ['previous', 'path']),
     ).toThrow(
       '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject"},"_cached":null} at previous > path contains a transform but is used in both an input and an output. This is likely a mistake. Set an `effectType` to resolve',
     );

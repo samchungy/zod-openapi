@@ -4,7 +4,7 @@ import { extendZodWithOpenApi } from '../../extendZod';
 import type { oas31 } from '../../openapi3-ts/dist';
 import { createOutputState } from '../../testing/state';
 
-import { createSchemaOrRef } from './index';
+import { createSchemaObject } from './index';
 
 extendZodWithOpenApi(z);
 
@@ -16,7 +16,7 @@ describe('enhanceWithMetadata', () => {
     };
     const schema = z.string().openapi({ description: 'bla' });
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -28,7 +28,7 @@ describe('enhanceWithMetadata', () => {
     };
     const schema = z.string().describe('bla');
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -41,7 +41,7 @@ describe('enhanceWithMetadata', () => {
 
     const schema = z.string().describe('bla').openapi({ description: 'foo' });
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -52,7 +52,7 @@ describe('enhanceWithMetadata', () => {
     };
     const schema = z.string().openapi({ type: 'integer' });
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -73,7 +73,7 @@ describe('enhanceWithMetadata', () => {
 
     const schema = ref.optional().openapi({ description: 'hello' });
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -87,7 +87,7 @@ describe('enhanceWithMetadata', () => {
 
     const schema = ref.optional();
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -100,7 +100,7 @@ describe('enhanceWithMetadata', () => {
     const ref = z.string().openapi({ ref: 'ref2' });
     const schema = ref.optional().default('a');
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });
@@ -125,7 +125,7 @@ describe('enhanceWithMetadata', () => {
       b: object2.openapi({ description: 'jello' }),
     });
 
-    const result = createSchemaOrRef(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toStrictEqual(expected);
   });

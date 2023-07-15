@@ -2,7 +2,7 @@ import type { ZodTuple, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaOrRef } from '../../schema';
+import { type SchemaState, createSchemaObject } from '../../schema';
 
 export const createTupleSchema = (
   zodTuple: ZodTuple<any, any>,
@@ -22,7 +22,7 @@ const mapPrefixItems = (
 ): oas31.SchemaObject['prefixItems'] | undefined => {
   if (items.length) {
     return items.map((item, index) =>
-      createSchemaOrRef(item, state, [`tuple item ${index}`]),
+      createSchemaObject(item, state, [`tuple item ${index}`]),
     );
   }
   return undefined;
@@ -48,7 +48,7 @@ const mapItemProperties = (
     }
 
     return {
-      items: createSchemaOrRef(rest, state, ['tuple items']),
+      items: createSchemaObject(rest, state, ['tuple items']),
       ...(prefixItems && { prefixItems }),
     };
   }
@@ -66,7 +66,7 @@ const mapItemProperties = (
       items: {
         oneOf: [
           ...prefixItems,
-          createSchemaOrRef(rest, state, ['tuple items']),
+          createSchemaObject(rest, state, ['tuple items']),
         ],
       },
     }),
