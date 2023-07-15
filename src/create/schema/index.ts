@@ -115,6 +115,7 @@ export const createExistingRef = <
     if (component.creationType && component.creationType !== state.type) {
       throwTransformError(zodSchema, newState);
     }
+
     return {
       schema: { $ref: createComponentSchemaRef(component.ref) },
       newState: {
@@ -174,7 +175,10 @@ export const createSchemaObject = <
 ): oas31.ReferenceObject | oas31.SchemaObject => {
   const { schema, newState } = createSchemaOrRef(zodSchema, state, subpath);
   if (newState?.effectType) {
-    if (state.effectType && newState.effectType !== state.effectType) {
+    if (
+      state.type !== newState?.effectType ||
+      (state.effectType && newState.effectType !== state.effectType)
+    ) {
       throwTransformError(zodSchema, newState);
     }
     state.effectType = newState.effectType;
