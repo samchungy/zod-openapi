@@ -1,6 +1,7 @@
-import { ZodType } from 'zod';
+import type { ZodType } from 'zod';
 
 import type { oas31 } from '../openapi3-ts/dist';
+import { isAnyZodType } from '../zodType';
 
 import type { ComponentsObject, CreationType } from './components';
 import type {
@@ -23,7 +24,7 @@ export const createMediaTypeSchema = (
     return undefined;
   }
 
-  if (!(schemaObject instanceof ZodType)) {
+  if (!isAnyZodType(schemaObject)) {
     return schemaObject;
   }
 

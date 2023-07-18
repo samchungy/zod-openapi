@@ -1,12 +1,7 @@
-import {
-  type UnknownKeysParam,
-  ZodNever,
-  type ZodObject,
-  type ZodRawShape,
-  type ZodType,
-} from 'zod';
+import type { UnknownKeysParam, ZodObject, ZodRawShape, ZodType } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
+import { isZodType } from '../../../zodType';
 import { createComponentSchemaRef } from '../../components';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
@@ -93,7 +88,7 @@ const createDiffOpts = (
 ): AdditionalPropertyOptions | undefined => {
   if (
     baseOpts.unknownKeys === 'strict' ||
-    !(baseOpts.catchAll instanceof ZodNever)
+    !isZodType(baseOpts.catchAll, 'ZodNever')
   ) {
     return undefined;
   }
@@ -144,7 +139,7 @@ export const createObjectSchemaFromShape = (
     ...(properties && { properties }),
     ...(required && { required }),
     ...(unknownKeys === 'strict' && { additionalProperties: false }),
-    ...(!(catchAll instanceof ZodNever) && {
+    ...(!isZodType(catchAll, 'ZodNever') && {
       additionalProperties: createSchemaObject(catchAll, state, [
         'additional properties',
       ]),

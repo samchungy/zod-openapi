@@ -1,19 +1,7 @@
-import {
-  ZodCatch,
-  ZodDefault,
-  ZodDiscriminatedUnion,
-  ZodEffects,
-  ZodIntersection,
-  ZodLazy,
-  ZodNullable,
-  ZodOptional,
-  ZodPipeline,
-  type ZodType,
-  type ZodTypeAny,
-  ZodUnion,
-} from 'zod';
+import type { ZodOptional, ZodType, ZodTypeAny } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
+import { isZodType } from '../../../zodType';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
 export const createOptionalSchema = (
@@ -26,34 +14,37 @@ export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
   state: SchemaState,
 ): boolean => {
-  if (zodSchema instanceof ZodOptional || zodSchema instanceof ZodDefault) {
+  if (
+    isZodType(zodSchema, 'ZodOptional') ||
+    isZodType(zodSchema, 'ZodDefault')
+  ) {
     return true;
   }
 
-  if (zodSchema instanceof ZodNullable || zodSchema instanceof ZodCatch) {
+  if (isZodType(zodSchema, 'ZodNullable') || isZodType(zodSchema, 'ZodCatch')) {
     return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
   }
 
-  if (zodSchema instanceof ZodEffects) {
+  if (isZodType(zodSchema, 'ZodEffects')) {
     return isOptionalSchema(zodSchema._def.schema as ZodTypeAny, state);
   }
 
   if (
-    zodSchema instanceof ZodUnion ||
-    zodSchema instanceof ZodDiscriminatedUnion
+    isZodType(zodSchema, 'ZodUnion') ||
+    isZodType(zodSchema, 'ZodDiscriminatedUnion')
   ) {
     return (zodSchema._def.options as ZodTypeAny[]).some((schema) =>
       isOptionalSchema(schema, state),
     );
   }
 
-  if (zodSchema instanceof ZodIntersection) {
+  if (isZodType(zodSchema, 'ZodIntersection')) {
     return [zodSchema._def.left, zodSchema._def.right].some((schema) =>
       isOptionalSchema(schema as ZodTypeAny, state),
     );
   }
 
-  if (zodSchema instanceof ZodPipeline) {
+  if (isZodType(zodSchema, 'ZodPipeline')) {
     if (
       state.effectType === 'input' ||
       (state.type === 'input' && state.effectType !== 'output')
@@ -69,7 +60,7 @@ export const isOptionalSchema = (
     }
   }
 
-  if (zodSchema instanceof ZodLazy) {
+  if (isZodType(zodSchema, 'ZodLazy')) {
     return isOptionalSchema(zodSchema._def.getter() as ZodType, state);
   }
 

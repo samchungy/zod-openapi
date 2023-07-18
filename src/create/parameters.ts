@@ -1,7 +1,7 @@
-import { ZodType } from 'zod';
-import type { AnyZodObject, ZodRawShape } from 'zod';
+import type { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
 import type { oas30, oas31 } from '../openapi3-ts/dist';
+import { isAnyZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
 import type { ZodOpenApiParameters } from './document';
@@ -163,7 +163,7 @@ export const createManualParameters = (
   subpath: string[],
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] =>
   parameters?.map((param, index) => {
-    if (param instanceof ZodType) {
+    if (isAnyZodType(param)) {
       return createParamOrRef(param, components, [
         ...subpath,
         `param index ${index}`,

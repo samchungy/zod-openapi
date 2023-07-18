@@ -1,12 +1,12 @@
-import {
-  type AnyZodObject,
-  type ZodDiscriminatedUnion,
-  ZodEnum,
-  type ZodLiteralDef,
-  type ZodRawShape,
+import type {
+  AnyZodObject,
+  ZodDiscriminatedUnion,
+  ZodLiteralDef,
+  ZodRawShape,
 } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
+import { isZodType } from '../../../zodType';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
 export const createDiscriminatedUnionSchema = (
@@ -49,7 +49,7 @@ export const mapDiscriminator = (
 
     const value = (zodObject.shape as ZodRawShape)[discriminator];
 
-    if (value instanceof ZodEnum) {
+    if (isZodType(value, 'ZodEnum')) {
       for (const enumValue of value._def.values as string[]) {
         mapping[enumValue] = componentSchemaRef;
       }
