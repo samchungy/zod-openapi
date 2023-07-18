@@ -87,11 +87,13 @@ export const isZodType = <U extends keyof ZodTypeMap>(
     (zodType as ZodType)?._def as ZodTypeDef & {
       typeName: ZodFirstPartyTypeKind; // FIXME: https://github.com/colinhacks/zod/pull/2459
     }
-  ).typeName === typeName;
+  )?.typeName === typeName;
 
 export const isAnyZodType = (zodType: unknown): zodType is ZodType =>
   Boolean(
-    (zodType as ZodType)?._def as ZodTypeDef & {
-      typeName: ZodFirstPartyTypeKind;
-    },
+    (
+      (zodType as ZodType)?._def as ZodTypeDef & {
+        typeName: ZodFirstPartyTypeKind;
+      }
+    )?.typeName,
   );
