@@ -1,6 +1,7 @@
-import { type AnyZodObject, type ZodRawShape, ZodType } from 'zod';
+import type { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
 import type { oas30, oas31 } from '../openapi3-ts/dist';
+import { isAnyZodType } from '../zodType';
 
 import {
   type ComponentsObject,
@@ -27,7 +28,7 @@ export const createResponseHeaders = (
     return undefined;
   }
 
-  if (responseHeaders instanceof ZodType) {
+  if (isAnyZodType(responseHeaders)) {
     return Object.entries(responseHeaders.shape as ZodRawShape).reduce<
       NonNullable<oas31.ResponseObject['headers']>
     >((acc, [key, zodSchema]: [string, ZodType]) => {

@@ -1,6 +1,7 @@
-import { ZodType } from 'zod';
+import type { ZodType } from 'zod';
 
 import type { oas30, oas31 } from '../openapi3-ts/dist';
+import { isAnyZodType } from '../zodType';
 
 import type {
   ZodOpenApiComponentsObject,
@@ -189,7 +190,7 @@ const getSchemas = (
   }
 
   Object.entries(schemas).forEach(([key, schema]) => {
-    if (schema instanceof ZodType) {
+    if (isAnyZodType(schema)) {
       if (components.schemas.has(schema)) {
         throw new Error(
           `Schema ${JSON.stringify(schema._def)} is already registered`,
@@ -213,7 +214,7 @@ const getParameters = (
   }
 
   Object.entries(parameters).forEach(([key, schema]) => {
-    if (schema instanceof ZodType) {
+    if (isAnyZodType(schema)) {
       if (components.parameters.has(schema)) {
         throw new Error(
           `Parameter ${JSON.stringify(schema._def)} is already registered`,
@@ -245,7 +246,7 @@ const getHeaders = (
   }
 
   Object.entries(responseHeaders).forEach(([key, schema]) => {
-    if (schema instanceof ZodType) {
+    if (isAnyZodType(schema)) {
       if (components.parameters.has(schema)) {
         throw new Error(
           `Header ${JSON.stringify(schema._def)} is already registered`,
@@ -361,7 +362,7 @@ const createSchemaComponents = (
     componentsObject.schemas ?? {},
   ).reduce<NonNullable<oas31.ComponentsObject['schemas']>>(
     (acc, [key, value]) => {
-      if (value instanceof ZodType) {
+      if (isAnyZodType(value)) {
         return acc;
       }
 
@@ -411,7 +412,7 @@ const createParamComponents = (
     componentsObject.parameters ?? {},
   ).reduce<NonNullable<oas31.ComponentsObject['parameters']>>(
     (acc, [key, value]) => {
-      if (!(value instanceof ZodType)) {
+      if (!isAnyZodType(value)) {
         if (acc[key]) {
           throw new Error(`Parameter "${key}" is already registered`);
         }
@@ -453,7 +454,7 @@ const createHeaderComponents = (
   const customComponents = Object.entries(headers).reduce<
     NonNullable<oas31.ComponentsObject['headers']>
   >((acc, [key, value]) => {
-    if (!(value instanceof ZodType)) {
+    if (!isAnyZodType(value)) {
       if (acc[key]) {
         throw new Error(`Header Ref "${key}" is already registered`);
       }
