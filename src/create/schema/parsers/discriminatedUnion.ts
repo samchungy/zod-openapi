@@ -41,7 +41,7 @@ export const mapDiscriminator = (
 
   const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
   for (const [index, zodObject] of zodObjects.entries()) {
-    const schema = schemas[index];
+    const schema = schemas[index]!;
     const componentSchemaRef = '$ref' in schema ? schema?.$ref : undefined;
     if (!componentSchemaRef) {
       return undefined;

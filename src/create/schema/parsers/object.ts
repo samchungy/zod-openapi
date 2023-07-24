@@ -112,7 +112,7 @@ const createShapeDiff = (
     }
 
     if (baseValue === undefined) {
-      acc[key] = extendedObj[key];
+      acc[key] = extendedObj[key]!;
       continue;
     }
 
