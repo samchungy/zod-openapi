@@ -111,6 +111,76 @@ describe('createParametersObject', () => {
     expect(result).toStrictEqual(expectedResult);
   });
 
+  it('should support wrapped ZodObject schema', () => {
+    const expectedResult: oas31.OperationObject['parameters'] = [
+      {
+        in: 'path',
+        name: 'b',
+        schema: {
+          type: 'string',
+        },
+        required: true,
+      },
+      {
+        in: 'query',
+        name: 'a',
+        schema: {
+          type: 'string',
+        },
+        required: true,
+      },
+      {
+        in: 'cookie',
+        name: 'c',
+        schema: {
+          type: 'string',
+        },
+        required: true,
+      },
+      {
+        in: 'header',
+        name: 'd',
+        schema: {
+          type: 'string',
+        },
+        required: true,
+      },
+    ];
+    const result = createParametersObject(
+      [],
+      {
+        path: z
+          .lazy(() =>
+            z.object({ b: z.string() }).pipe(z.object({ b: z.string() })),
+          )
+          .brand('test')
+          .transform((x) => x),
+        query: z
+          .lazy(() =>
+            z.object({ a: z.string() }).pipe(z.object({ a: z.string() })),
+          )
+          .brand('test')
+          .transform((x) => x),
+        cookie: z
+          .lazy(() =>
+            z.object({ c: z.string() }).pipe(z.object({ c: z.string() })),
+          )
+          .brand('test')
+          .transform((x) => x),
+        header: z
+          .lazy(() =>
+            z.object({ d: z.string() }).pipe(z.object({ d: z.string() })),
+          )
+          .brand('test')
+          .transform((x) => x),
+      },
+      getDefaultComponents(),
+      ['parameters'],
+    );
+
+    expect(result).toStrictEqual(expectedResult);
+  });
+
   it('should combine parameters with requestParams', () => {
     const expectedResult: oas31.OperationObject['parameters'] = [
       {

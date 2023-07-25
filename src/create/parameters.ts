@@ -1,10 +1,14 @@
-import type { AnyZodObject, ZodRawShape, ZodType } from 'zod';
+import type { ZodRawShape, ZodType } from 'zod';
 
 import type { oas30, oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
-import type { ZodOpenApiParameters } from './document';
+import {
+  type AnyObjectZodType,
+  type ZodOpenApiParameters,
+  getZodObject,
+} from './document';
 import { type SchemaState, createSchemaObject, newSchemaState } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
@@ -100,13 +104,14 @@ export const createParamOrRef = (
 
 const createParameters = (
   type: keyof ZodOpenApiParameters,
-  zodObject: AnyZodObject | undefined,
+  schema: AnyObjectZodType | undefined,
   components: ComponentsObject,
   subpath: string[],
 ): (oas31.ParameterObject | oas31.ReferenceObject)[] => {
-  if (!zodObject) {
+  if (!schema) {
     return [];
   }
+  const zodObject = getZodObject(schema);
 
   return Object.entries(zodObject.shape as ZodRawShape).map(
     ([key, zodSchema]: [string, ZodType]) =>

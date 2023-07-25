@@ -1,4 +1,12 @@
-import type { AnyZodObject, ZodType } from 'zod';
+import {
+  type AnyZodObject,
+  ZodBranded,
+  ZodEffects,
+  ZodLazy,
+  ZodObject,
+  ZodPipeline,
+  type ZodType,
+} from 'zod';
 
 import type { OpenApiVersion } from '../openapi';
 import type { oas30, oas31 } from '../openapi3-ts/dist';
@@ -45,8 +53,35 @@ export interface ZodOpenApiResponsesObject
     | oas31.ReferenceObject;
 }
 
+export type AnyObjectZodType = ZodType<object, any, any>;
+
+export function getZodObject(schema: AnyObjectZodType): AnyZodObject {
+  if (schema instanceof ZodObject) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return schema as any;
+  }
+  if (schema instanceof ZodLazy) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return getZodObject(schema.schema);
+  }
+  if (schema instanceof ZodEffects) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return getZodObject(schema.innerType());
+  }
+  if (schema instanceof ZodBranded) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return getZodObject(schema.unwrap());
+  }
+  if (schema instanceof ZodPipeline) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return getZodObject(schema._def.out);
+  }
+  throw new Error('failed to find ZodObject in schema');
+}
+
 export type ZodOpenApiParameters = {
-  [type in oas31.ParameterLocation & oas30.ParameterLocation]?: AnyZodObject;
+  [type in oas31.ParameterLocation &
+    oas30.ParameterLocation]?: AnyObjectZodType;
 };
 
 export interface ZodOpenApiOperationObject
