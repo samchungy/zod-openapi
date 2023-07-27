@@ -13,6 +13,7 @@ import type { oas30, oas31 } from '../openapi3-ts/dist';
 
 import { createComponents, getDefaultComponents } from './components';
 import { createPaths } from './paths';
+import { isZodType } from '../zodType';
 
 export interface ZodOpenApiMediaTypeObject
   extends Omit<oas31.MediaTypeObject & oas30.MediaTypeObject, 'schema'> {
@@ -55,26 +56,25 @@ export interface ZodOpenApiResponsesObject
 
 export type AnyObjectZodType = ZodType<object, any, any>;
 
-export const getZodObject = (schema: AnyObjectZodType): AnyZodObject => {
-  if (schema instanceof ZodObject) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return schema as any;
+export function getZodObject(schema: AnyObjectZodType): AnyZodObject {
+  if (isZodType(schema, 'ZodObject')) {
+    return schema;
   }
-  if (schema instanceof ZodLazy) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return getZodObject(schema.schema);
+  if (isZodType(schema, 'ZodLazy')) {
+    return getZodObject((schema as ZodLazy<AnyObjectZodType>).schema);
   }
-  if (schema instanceof ZodEffects) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return getZodObject(schema.innerType());
+  if (isZodType(schema, 'ZodEffects')) {
+    return getZodObject(
+      (schema as ZodEffects<AnyObjectZodType, object, any>).innerType(),
+    );
   }
-  if (schema instanceof ZodBranded) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return getZodObject(schema.unwrap());
+  if (isZodType(schema, 'ZodBranded')) {
+    return getZodObject((schema as ZodBranded<AnyObjectZodType, any>).unwrap());
   }
-  if (schema instanceof ZodPipeline) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return getZodObject(schema._def.out);
+  if (isZodType(schema, 'ZodPipeline')) {
+    return getZodObject(
+      (schema as ZodPipeline<any, AnyObjectZodType>)._def.out,
+    );
   }
   throw new Error('failed to find ZodObject in schema');
 }
