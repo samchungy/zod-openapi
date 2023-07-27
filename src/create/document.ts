@@ -55,7 +55,7 @@ export interface ZodOpenApiResponsesObject
 
 export type AnyObjectZodType = ZodType<object, any, any>;
 
-export function getZodObject(schema: AnyObjectZodType): AnyZodObject {
+export const getZodObject = (schema: AnyObjectZodType): AnyZodObject => {
   if (schema instanceof ZodObject) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return schema as any;
