@@ -42,6 +42,7 @@ const zodDiscriminatedUnion = z.discriminatedUnion('type', [
   }),
 ]);
 const expectedZodDiscriminatedUnion: oas31.SchemaObject = {
+  type: 'object',
   oneOf: [
     {
       type: 'object',
