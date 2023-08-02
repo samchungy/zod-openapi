@@ -12,6 +12,7 @@ extendZodWithOpenApi(z);
 describe('createDiscriminatedUnionSchema', () => {
   it('creates a oneOf schema', () => {
     const expected: oas31.SchemaObject = {
+      type: 'object',
       oneOf: [
         {
           type: 'object',
@@ -51,6 +52,7 @@ describe('createDiscriminatedUnionSchema', () => {
 
   it('creates a oneOf schema with discriminator mapping when schemas are registered', () => {
     const expected: oas31.SchemaObject = {
+      type: 'object',
       oneOf: [
         { $ref: '#/components/schemas/a' },
         { $ref: '#/components/schemas/b' },
@@ -83,6 +85,7 @@ describe('createDiscriminatedUnionSchema', () => {
 
   it('creates a oneOf schema with discriminator mapping when schemas with enums are registered', () => {
     const expected: oas31.SchemaObject = {
+      type: 'object',
       oneOf: [
         { $ref: '#/components/schemas/c' },
         { $ref: '#/components/schemas/d' },
@@ -130,6 +133,7 @@ describe('createDiscriminatedUnionSchema', () => {
       },
     };
     const expected: oas31.SchemaObject = {
+      type: 'object',
       oneOf: [
         { $ref: '#/components/schemas/c' },
         { $ref: '#/components/schemas/d' },

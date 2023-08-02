@@ -24,6 +24,7 @@ export const createDiscriminatedUnionSchema = (
     state,
   );
   return {
+    type: 'object',
     oneOf: schemas,
     ...(discriminator && { discriminator }),
   };
