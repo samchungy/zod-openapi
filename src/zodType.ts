@@ -28,6 +28,7 @@ import type {
   ZodOptional,
   ZodPipeline,
   ZodPromise,
+  ZodReadonly,
   ZodRecord,
   ZodSet,
   ZodString,
@@ -68,6 +69,7 @@ type ZodTypeMap = {
   ZodOptional: ZodOptional<any>;
   ZodPipeline: ZodPipeline<any, any>;
   ZodPromise: ZodPromise<any>;
+  ZodReadonly: ZodReadonly<any>;
   ZodRecord: ZodRecord;
   ZodSet: ZodSet;
   ZodString: ZodString;
