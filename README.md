@@ -531,6 +531,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodOptional
 - ZodPipeline
   - See [Zod Effects](#zod-effects) for more information.
+- ZodReadonly
 - ZodRecord
 - ZodSet
   - Treated as an array with `uniqueItems` (you may need to add a pre-process)

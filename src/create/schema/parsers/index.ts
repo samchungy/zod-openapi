@@ -24,6 +24,7 @@ import { createObjectSchema } from './object';
 import { createOptionalSchema } from './optional';
 import { createPipelineSchema } from './pipeline';
 import { createPreprocessSchema } from './preprocess';
+import { createReadonlySchema } from './readonly';
 import { createRecordSchema } from './record';
 import { createRefineSchema } from './refine';
 import { createSetSchema } from './set';
@@ -95,6 +96,10 @@ export const createSchemaSwitch = <
 
   if (isZodType(zodSchema, 'ZodOptional')) {
     return createOptionalSchema(zodSchema, state);
+  }
+
+  if (isZodType(zodSchema, 'ZodReadonly')) {
+    return createReadonlySchema(zodSchema, state);
   }
 
   if (isZodType(zodSchema, 'ZodDefault')) {

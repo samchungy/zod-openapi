@@ -279,6 +279,11 @@ const expectedZodSet: oas31.SchemaObject = {
   uniqueItems: true,
 };
 
+const zodReadonly = z.string().readonly();
+const expectedZodReadonly: oas31.SchemaObject = {
+  type: 'string',
+};
+
 describe('createSchemaObject', () => {
   it.each`
     zodType                      | schema                   | expected
@@ -311,6 +316,7 @@ describe('createSchemaObject', () => {
     ${'ZodLazy - Complex'}       | ${zodLazyComplex}        | ${expectedZodLazyComplex}
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
+    ${'ZodReadonly'}             | ${zodReadonly}           | ${expectedZodReadonly}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(
       createSchemaObject(schema, createOutputState(), ['previous']),
@@ -348,6 +354,7 @@ describe('createSchemaObject', () => {
     ${'ZodLazy - Complex'}       | ${zodLazyComplex}        | ${expectedZodLazyComplex}
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
+    ${'ZodReadonly'}             | ${zodReadonly}           | ${expectedZodReadonly}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(
       createSchemaObject(schema, createInputState(), ['previous']),
