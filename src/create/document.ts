@@ -54,13 +54,13 @@ export interface ZodOpenApiOperationObject
     oas31.OperationObject & oas30.OperationObject,
     'requestBody' | 'responses' | 'parameters'
   > {
-  parameters?: (
+  parameters?: Array<
     | ZodType
     | oas31.ParameterObject
     | oas30.ParameterObject
     | oas31.ReferenceObject
     | oas30.ReferenceObject
-  )[];
+  >;
   requestBody?: ZodOpenApiRequestBodyObject;
   requestParams?: ZodOpenApiParameters;
   responses: ZodOpenApiResponsesObject;
@@ -90,36 +90,32 @@ export interface ZodOpenApiComponentsObject
     oas31.ComponentsObject & oas30.ComponentsObject,
     'schemas' | 'responses' | 'requestBodies' | 'headers' | 'parameters'
   > {
-  parameters?: {
-    [parameter: string]:
-      | ZodType
-      | oas31.ParameterObject
-      | oas30.ParameterObject
-      | oas31.ReferenceObject
-      | oas30.ReferenceObject;
-  };
-  schemas?: {
-    [ref: string]:
-      | ZodType
-      | oas31.SchemaObject
-      | oas31.ReferenceObject
-      | oas30.SchemaObject
-      | oas30.ReferenceObject;
-  };
-  requestBodies?: {
-    [ref: string]: ZodOpenApiRequestBodyObject;
-  };
-  headers?: {
-    [header: string]:
-      | ZodType
-      | oas31.HeaderObject
-      | oas30.HeaderObject
-      | oas31.ReferenceObject
-      | oas30.ReferenceObject;
-  };
-  responses?: {
-    [ref: string]: ZodOpenApiResponseObject;
-  };
+  parameters?: Record<
+    string,
+    | ZodType
+    | oas31.ParameterObject
+    | oas30.ParameterObject
+    | oas31.ReferenceObject
+    | oas30.ReferenceObject
+  >;
+  schemas?: Record<
+    string,
+    | ZodType
+    | oas31.SchemaObject
+    | oas31.ReferenceObject
+    | oas30.SchemaObject
+    | oas30.ReferenceObject
+  >;
+  requestBodies?: Record<string, ZodOpenApiRequestBodyObject>;
+  headers?: Record<
+    string,
+    | ZodType
+    | oas31.HeaderObject
+    | oas30.HeaderObject
+    | oas31.ReferenceObject
+    | oas30.ReferenceObject
+  >;
+  responses?: Record<string, ZodOpenApiResponseObject>;
 }
 
 export type ZodOpenApiVersion = OpenApiVersion;

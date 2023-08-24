@@ -71,9 +71,9 @@ const mapNullType = (
 };
 
 const mapNullOf = (
-  ofSchema: (oas31.SchemaObject | oas31.ReferenceObject)[],
+  ofSchema: Array<oas31.SchemaObject | oas31.ReferenceObject>,
   openapi: ZodOpenApiVersion,
-): (oas31.SchemaObject | oas31.ReferenceObject)[] => {
+): Array<oas31.SchemaObject | oas31.ReferenceObject> => {
   if (satisfiesVersion(openapi, '3.1.0')) {
     return [...ofSchema, { type: 'null' }];
   }

@@ -30,7 +30,7 @@ export const createDiscriminatedUnionSchema = (
 };
 
 export const mapDiscriminator = (
-  schemas: (oas31.SchemaObject | oas31.ReferenceObject)[],
+  schemas: Array<oas31.SchemaObject | oas31.ReferenceObject>,
   zodObjects: AnyZodObject[],
   discriminator: unknown,
   state: SchemaState,

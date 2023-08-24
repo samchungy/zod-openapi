@@ -33,11 +33,10 @@ interface ZodOpenApiMetadata<
   effectType?: CreationType;
   param?: Partial<oas31.ParameterObject> & {
     example?: TInferred;
-    examples?: {
-      [param: string]:
-        | (oas31.ExampleObject & { value: TInferred })
-        | oas31.ReferenceObject;
-    };
+    examples?: Record<
+      string,
+      (oas31.ExampleObject & { value: TInferred }) | oas31.ReferenceObject
+    >;
     /**
      * Use this field to output this Zod Schema in the components parameters section. Any usage of this Zod Schema will then be transformed into a $ref.
      */
@@ -111,7 +110,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
   const zodObjectOmit = zod.ZodObject.prototype.omit;
 
   zod.ZodObject.prototype.omit = function (
-    ...args: [mask: { [x: string]: true | undefined }]
+    ...args: [mask: Record<string, true | undefined>]
   ) {
     const omitResult = zodObjectOmit.apply(this, args);
     delete omitResult._def.extendMetadata;
@@ -124,7 +123,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
   const zodObjectPick = zod.ZodObject.prototype.pick;
 
   zod.ZodObject.prototype.pick = function (
-    ...args: [mask: { [x: string]: true | undefined }]
+    ...args: [mask: Record<string, true | undefined>]
   ) {
     const pickResult = zodObjectPick.apply(this, args);
     delete pickResult._def.extendMetadata;

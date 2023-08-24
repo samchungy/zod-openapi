@@ -51,7 +51,7 @@ export const getValidEnumValues = (enumValues: EnumLike) => {
 };
 
 export const sortStringsAndNumbers = (
-  values: (string | number)[],
+  values: Array<string | number>,
 ): StringsAndNumbers => ({
   strings: values.filter((value): value is string => typeof value === 'string'),
   numbers: values.filter((value): value is number => typeof value === 'number'),
