@@ -107,6 +107,9 @@ const mapIncludes = (
   zodStringChecks: ZodStringCheckMap,
 ): string[] | undefined =>
   zodStringChecks.includes?.map((includeCheck) => {
+    if (includeCheck.position === 0) {
+      return `^${includeCheck.value}`;
+    }
     if (includeCheck.position) {
       return `^.{${includeCheck.position}}${includeCheck.value}`;
     }

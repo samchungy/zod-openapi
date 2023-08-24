@@ -79,6 +79,18 @@ describe('createStringSchema', () => {
     expect(result).toStrictEqual(expected);
   });
 
+  it('creates a string schema with an includes starting at index 0', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'string',
+      pattern: '^hello',
+    };
+    const schema = z.string().includes('hello', { position: 0 });
+
+    const result = createStringSchema(schema);
+
+    expect(result).toStrictEqual(expected);
+  });
+
   it('creates a string schema with multiple patterns and length checks', () => {
     const expected: oas31.SchemaObject = {
       allOf: [
