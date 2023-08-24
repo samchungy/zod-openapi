@@ -45,7 +45,7 @@ export const createStringSchema = (
 type ZodStringCheckMap = {
   [kind in ZodStringCheck['kind']]?: [
     Extract<ZodStringCheck, { kind: kind }>,
-    ...Extract<ZodStringCheck, { kind: kind }>[],
+    ...Array<Extract<ZodStringCheck, { kind: kind }>>,
   ];
 };
 
