@@ -538,7 +538,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodString
   - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`
   - `minLength`/`maxLength` mapping for `.length()`, `.min()`, `.max()`
-  - `pattern` mapping for `.regex()`
+  - `pattern` mapping for `.regex()`, `.startsWith()`, `.endsWith()`, `.includes()`
 - ZodTuple
   - `items` mapping for `.rest()`
   - `prefixItems` mapping for OpenAPI 3.1.0+
