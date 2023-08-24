@@ -35,7 +35,7 @@ import { createUnionSchema } from './union';
 import { createUnknownSchema } from './unknown';
 
 export const createSchemaSwitch = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(

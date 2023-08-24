@@ -1,12 +1,16 @@
-import type { ZodEffects, ZodType } from 'zod';
+import type { ZodEffects, ZodType, ZodTypeAny, input, output } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
 import { createManualTypeSchema } from './manual';
 
-export const createTransformSchema = (
-  zodTransform: ZodEffects<any, any, any>,
+export const createTransformSchema = <
+  T extends ZodTypeAny,
+  Output = output<T>,
+  Input = input<T>,
+>(
+  zodTransform: ZodEffects<T, Output, Input>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodTransform._def.openapi?.effectType === 'output') {
@@ -14,7 +18,7 @@ export const createTransformSchema = (
   }
 
   if (zodTransform._def.openapi?.effectType === 'input') {
-    return createSchemaObject(zodTransform._def.schema as ZodType, state, [
+    return createSchemaObject(zodTransform._def.schema, state, [
       'transform input',
     ]);
   }
@@ -24,7 +28,7 @@ export const createTransformSchema = (
   }
 
   state.effectType = 'input';
-  return createSchemaObject(zodTransform._def.schema as ZodType, state, [
+  return createSchemaObject(zodTransform._def.schema, state, [
     'transform input',
   ]);
 };

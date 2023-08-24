@@ -4,6 +4,7 @@
 /.gantry/**/*.yml
 gantry*.yaml
 gantry*.yml
+pnpm-lock.yaml
 # end managed by skuba
 
 examples/**/*.yml

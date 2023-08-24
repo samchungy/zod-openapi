@@ -21,8 +21,6 @@ export const createNumberSchema = (
   };
 };
 
-export const mapNumberChecks = () => {};
-
 export const mapMaximum = (
   zodNumberCheck: ZodNumberCheckMap,
   openapi: ZodOpenApiVersion,
@@ -74,8 +72,8 @@ type ZodNumberCheckMap = {
 
 const getZodNumberChecks = (zodNumber: ZodNumber): ZodNumberCheckMap =>
   zodNumber._def.checks.reduce<ZodNumberCheckMap>((acc, check) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    acc[check.kind] = check as any;
+    // union type issues
+    acc[check.kind] = check as never;
     return acc;
   }, {});
 

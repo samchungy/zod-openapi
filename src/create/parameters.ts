@@ -103,7 +103,7 @@ const createParameters = (
   zodObject: AnyZodObject | undefined,
   components: ComponentsObject,
   subpath: string[],
-): (oas31.ParameterObject | oas31.ReferenceObject)[] => {
+): Array<oas31.ParameterObject | oas31.ReferenceObject> => {
   if (!zodObject) {
     return [];
   }
@@ -151,17 +151,17 @@ const createRequestParams = (
 
 export const createManualParameters = (
   parameters:
-    | (
+    | Array<
         | oas31.ParameterObject
         | oas31.ReferenceObject
         | oas30.ParameterObject
         | oas30.ReferenceObject
         | ZodType
-      )[]
+      >
     | undefined,
   components: ComponentsObject,
   subpath: string[],
-): (oas31.ParameterObject | oas31.ReferenceObject)[] =>
+): Array<oas31.ParameterObject | oas31.ReferenceObject> =>
   parameters?.map((param, index) => {
     if (isAnyZodType(param)) {
       return createParamOrRef(param, components, [
@@ -174,18 +174,18 @@ export const createManualParameters = (
 
 export const createParametersObject = (
   parameters:
-    | (
+    | Array<
         | oas31.ParameterObject
         | oas31.ReferenceObject
         | oas30.ParameterObject
         | oas30.ReferenceObject
         | ZodType
-      )[]
+      >
     | undefined,
   requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
   subpath: string[],
-): (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined => {
+): Array<oas31.ParameterObject | oas31.ReferenceObject> | undefined => {
   const manualParameters = createManualParameters(
     parameters,
     components,

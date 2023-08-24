@@ -1,4 +1,12 @@
-import type { UnknownKeysParam, ZodObject, ZodRawShape, ZodType } from 'zod';
+import type {
+  UnknownKeysParam,
+  ZodObject,
+  ZodRawShape,
+  ZodType,
+  ZodTypeAny,
+  objectInputType,
+  objectOutputType,
+} from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
@@ -10,8 +18,11 @@ import { isOptionalSchema } from './optional';
 export const createObjectSchema = <
   T extends ZodRawShape,
   UnknownKeys extends UnknownKeysParam = UnknownKeysParam,
+  Catchall extends ZodTypeAny = ZodTypeAny,
+  Output = objectOutputType<T, Catchall, UnknownKeys>,
+  Input = objectInputType<T, Catchall, UnknownKeys>,
 >(
-  zodObject: ZodObject<T, UnknownKeys, any, any, any>,
+  zodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input>,
   state: SchemaState,
 ): oas31.SchemaObject => {
   const extendedSchema = createExtendedSchema(
@@ -34,9 +45,15 @@ export const createObjectSchema = <
   );
 };
 
-export const createExtendedSchema = (
-  zodObject: ZodObject<any, any, any, any, any>,
-  baseZodObject: ZodObject<any, any, any, any, any> | undefined,
+export const createExtendedSchema = <
+  T extends ZodRawShape,
+  UnknownKeys extends UnknownKeysParam = UnknownKeysParam,
+  Catchall extends ZodTypeAny = ZodTypeAny,
+  Output = objectOutputType<T, Catchall, UnknownKeys>,
+  Input = objectInputType<T, Catchall, UnknownKeys>,
+>(
+  zodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input>,
+  baseZodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input> | undefined,
   state: SchemaState,
 ): oas31.SchemaObject | undefined => {
   if (!baseZodObject) {
@@ -44,7 +61,7 @@ export const createExtendedSchema = (
   }
 
   const component = state.components.schemas.get(baseZodObject);
-  if (component || baseZodObject._def.openapi?.ref) {
+  if (component ?? baseZodObject._def.openapi?.ref) {
     createSchemaObject(baseZodObject, state, ['extended schema']);
   }
 
@@ -55,11 +72,11 @@ export const createExtendedSchema = (
 
   const diffOpts = createDiffOpts(
     {
-      unknownKeys: baseZodObject._def.unknownKeys as UnknownKeysParam,
+      unknownKeys: baseZodObject._def.unknownKeys,
       catchAll: baseZodObject._def.catchall as ZodType,
     },
     {
-      unknownKeys: zodObject._def.unknownKeys as UnknownKeysParam,
+      unknownKeys: zodObject._def.unknownKeys,
       catchAll: zodObject._def.catchall as ZodType,
     },
   );
@@ -112,7 +129,7 @@ const createShapeDiff = (
     }
 
     if (baseValue === undefined) {
-      acc[key] = extendedObj[key]!;
+      acc[key] = extendedObj[key] as ZodTypeAny;
       continue;
     }
 

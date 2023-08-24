@@ -4,11 +4,11 @@ import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
-export const createOptionalSchema = (
-  zodOptional: ZodOptional<any>,
+export const createOptionalSchema = <T extends ZodTypeAny>(
+  zodOptional: ZodOptional<T>,
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => // Optional doesn't change OpenAPI schema
-  createSchemaObject(zodOptional.unwrap() as ZodTypeAny, state, ['optional']);
+  createSchemaObject(zodOptional.unwrap(), state, ['optional']);
 
 export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
@@ -22,11 +22,11 @@ export const isOptionalSchema = (
   }
 
   if (isZodType(zodSchema, 'ZodNullable') || isZodType(zodSchema, 'ZodCatch')) {
-    return isOptionalSchema(zodSchema._def.innerType as ZodTypeAny, state);
+    return isOptionalSchema(zodSchema._def.innerType, state);
   }
 
   if (isZodType(zodSchema, 'ZodEffects')) {
-    return isOptionalSchema(zodSchema._def.schema as ZodTypeAny, state);
+    return isOptionalSchema(zodSchema._def.schema, state);
   }
 
   if (
@@ -40,7 +40,7 @@ export const isOptionalSchema = (
 
   if (isZodType(zodSchema, 'ZodIntersection')) {
     return [zodSchema._def.left, zodSchema._def.right].some((schema) =>
-      isOptionalSchema(schema as ZodTypeAny, state),
+      isOptionalSchema(schema, state),
     );
   }
 
@@ -49,14 +49,14 @@ export const isOptionalSchema = (
       state.effectType === 'input' ||
       (state.type === 'input' && state.effectType !== 'output')
     ) {
-      return isOptionalSchema(zodSchema._def.in as ZodTypeAny, state);
+      return isOptionalSchema(zodSchema._def.in, state);
     }
 
     if (
       state.effectType === 'output' ||
       (state.type === 'output' && state.effectType !== 'input')
     ) {
-      return isOptionalSchema(zodSchema._def.out as ZodTypeAny, state);
+      return isOptionalSchema(zodSchema._def.out, state);
     }
   }
 

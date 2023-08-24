@@ -30,7 +30,7 @@ export const newSchemaState = (state: SchemaState): SchemaState => ({
 });
 
 export const createNewSchema = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
@@ -65,7 +65,7 @@ export const createNewSchema = <
 };
 
 export const createNewRef = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
@@ -99,7 +99,7 @@ export const createNewRef = <
 };
 
 export const createExistingRef = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
@@ -141,7 +141,7 @@ type Schema = {
 };
 
 export const createSchemaOrRef = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
@@ -165,7 +165,7 @@ export const createSchemaOrRef = <
 };
 
 export const createSchemaObject = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(

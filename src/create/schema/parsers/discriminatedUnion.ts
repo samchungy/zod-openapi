@@ -1,6 +1,7 @@
 import type {
   AnyZodObject,
   ZodDiscriminatedUnion,
+  ZodDiscriminatedUnionOption,
   ZodLiteralDef,
   ZodRawShape,
 } from 'zod';
@@ -9,11 +10,14 @@ import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
-export const createDiscriminatedUnionSchema = (
-  zodDiscriminatedUnion: ZodDiscriminatedUnion<any, any>,
+export const createDiscriminatedUnionSchema = <
+  Discriminator extends string,
+  Options extends Array<ZodDiscriminatedUnionOption<Discriminator>>,
+>(
+  zodDiscriminatedUnion: ZodDiscriminatedUnion<Discriminator, Options>,
   state: SchemaState,
 ): oas31.SchemaObject => {
-  const options = zodDiscriminatedUnion.options as AnyZodObject[];
+  const options = zodDiscriminatedUnion.options;
   const schemas = options.map((option, index) =>
     createSchemaObject(option, state, [`discriminated union option ${index}`]),
   );
@@ -30,7 +34,7 @@ export const createDiscriminatedUnionSchema = (
 };
 
 export const mapDiscriminator = (
-  schemas: (oas31.SchemaObject | oas31.ReferenceObject)[],
+  schemas: Array<oas31.SchemaObject | oas31.ReferenceObject>,
   zodObjects: AnyZodObject[],
   discriminator: unknown,
   state: SchemaState,
@@ -41,7 +45,7 @@ export const mapDiscriminator = (
 
   const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
   for (const [index, zodObject] of zodObjects.entries()) {
-    const schema = schemas[index]!;
+    const schema = schemas[index] as oas31.SchemaObject | oas31.ReferenceObject;
     const componentSchemaRef = '$ref' in schema ? schema?.$ref : undefined;
     if (!componentSchemaRef) {
       return undefined;

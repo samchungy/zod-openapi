@@ -33,11 +33,10 @@ interface ZodOpenApiMetadata<
   effectType?: CreationType;
   param?: Partial<oas31.ParameterObject> & {
     example?: TInferred;
-    examples?: {
-      [param: string]:
-        | (oas31.ExampleObject & { value: TInferred })
-        | oas31.ReferenceObject;
-    };
+    examples?: Record<
+      string,
+      (oas31.ExampleObject & { value: TInferred }) | oas31.ReferenceObject
+    >;
     /**
      * Use this field to output this Zod Schema in the components parameters section. Any usage of this Zod Schema will then be transformed into a $ref.
      */
@@ -52,6 +51,7 @@ interface ZodOpenApiMetadata<
 }
 
 interface ZodOpenApiExtendMetadata {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extends: ZodObject<any, any, any, any, any>;
 }
 
@@ -82,7 +82,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
     return;
   }
   zod.ZodType.prototype.openapi = function (openapi) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     const result = new (this as any).constructor({
       ...this._def,
       openapi,
@@ -103,7 +103,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
       extends: this,
     };
     delete extendResult._def.openapi;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return extendResult as any;
   };
 
@@ -111,12 +111,12 @@ export function extendZodWithOpenApi(zod: typeof z) {
   const zodObjectOmit = zod.ZodObject.prototype.omit;
 
   zod.ZodObject.prototype.omit = function (
-    ...args: [mask: { [x: string]: true | undefined }]
+    ...args: [mask: Record<string, true | undefined>]
   ) {
     const omitResult = zodObjectOmit.apply(this, args);
     delete omitResult._def.extendMetadata;
     delete omitResult._def.openapi;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return omitResult as any;
   };
 
@@ -124,12 +124,12 @@ export function extendZodWithOpenApi(zod: typeof z) {
   const zodObjectPick = zod.ZodObject.prototype.pick;
 
   zod.ZodObject.prototype.pick = function (
-    ...args: [mask: { [x: string]: true | undefined }]
+    ...args: [mask: Record<string, true | undefined>]
   ) {
     const pickResult = zodObjectPick.apply(this, args);
     delete pickResult._def.extendMetadata;
     delete pickResult._def.openapi;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return pickResult as any;
   };
 }

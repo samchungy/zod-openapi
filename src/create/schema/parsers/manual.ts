@@ -5,7 +5,7 @@ import { isZodType } from '../../../zodType';
 import type { SchemaState } from '../../schema';
 
 export const createManualTypeSchema = <
-  Output = any,
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Output,
 >(
