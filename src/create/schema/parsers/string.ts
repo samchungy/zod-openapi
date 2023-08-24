@@ -7,40 +7,111 @@ export const createStringSchema = (
 ): oas31.SchemaObject => {
   const zodStringChecks = getZodStringChecks(zodString);
   const format = mapStringFormat(zodStringChecks);
-  const pattern = mapRegex(zodStringChecks);
-  const minLength = zodStringChecks.length?.value ?? zodStringChecks.min?.value;
-  const maxLength = zodStringChecks.length?.value ?? zodStringChecks.max?.value;
+  const patterns = mapPatterns(zodStringChecks);
+  const minLength =
+    zodStringChecks.length?.[0]?.value ?? zodStringChecks.min?.[0]?.value;
+  const maxLength =
+    zodStringChecks.length?.[0]?.value ?? zodStringChecks.max?.[0]?.value;
+
+  if (patterns.length <= 1) {
+    return {
+      type: 'string',
+      ...(format && { format }),
+      ...(patterns[0] && { pattern: patterns[0] }),
+      ...(minLength !== undefined && { minLength }),
+      ...(maxLength !== undefined && { maxLength }),
+    };
+  }
 
   return {
-    type: 'string',
-    ...(format && { format }),
-    ...(pattern && { pattern }),
-    ...(minLength !== undefined && { minLength }),
-    ...(maxLength !== undefined && { maxLength }),
+    allOf: [
+      {
+        type: 'string',
+        ...(format && { format }),
+        ...(patterns[0] && { pattern: patterns[0] }),
+        ...(minLength !== undefined && { minLength }),
+        ...(maxLength !== undefined && { maxLength }),
+      },
+      ...patterns.slice(1).map(
+        (pattern): oas31.SchemaObject => ({
+          type: 'string',
+          pattern,
+        }),
+      ),
+    ],
   };
 };
 
 type ZodStringCheckMap = {
-  [kind in ZodStringCheck['kind']]?: Extract<ZodStringCheck, { kind: kind }>;
+  [kind in ZodStringCheck['kind']]?: [
+    Extract<ZodStringCheck, { kind: kind }>,
+    ...Extract<ZodStringCheck, { kind: kind }>[],
+  ];
 };
 
 const getZodStringChecks = (zodString: ZodString): ZodStringCheckMap =>
-  zodString._def.checks.reduce<ZodStringCheckMap>((acc, check) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    acc[check.kind] = check as any;
-    return acc;
-  }, {});
+  zodString._def.checks.reduce<ZodStringCheckMap>(
+    (acc, check: ZodStringCheck) => {
+      const mapping = acc[check.kind];
+      if (mapping) {
+        mapping.push(check as never);
+        return acc;
+      }
 
-const mapRegex = (
+      acc[check.kind] = [check as never];
+      return acc;
+    },
+    {},
+  );
+
+const mapPatterns = (zodStringChecks: ZodStringCheckMap): string[] => {
+  const startsWith = mapStartsWith(zodStringChecks);
+  const endsWith = mapEndsWith(zodStringChecks);
+  const regex = mapRegex(zodStringChecks);
+  const includes = mapIncludes(zodStringChecks);
+
+  const patterns: string[] = [
+    ...(regex ?? []),
+    ...(startsWith ? [startsWith] : []),
+    ...(endsWith ? [endsWith] : []),
+    ...(includes ?? []),
+  ];
+
+  return patterns;
+};
+
+const mapStartsWith = (
   zodStringChecks: ZodStringCheckMap,
 ): oas31.SchemaObject['pattern'] => {
-  const regexCheck = zodStringChecks.regex;
-  if (!regexCheck) {
-    return undefined;
+  if (zodStringChecks.startsWith?.[0]?.value) {
+    return `^${zodStringChecks.startsWith[0].value}`;
   }
 
-  return regexCheck?.regex.source;
+  return undefined;
 };
+
+const mapEndsWith = (
+  zodStringChecks: ZodStringCheckMap,
+): oas31.SchemaObject['pattern'] => {
+  if (zodStringChecks.endsWith?.[0]?.value) {
+    return `${zodStringChecks.endsWith[0].value}$`;
+  }
+
+  return undefined;
+};
+
+const mapRegex = (zodStringChecks: ZodStringCheckMap): string[] | undefined =>
+  zodStringChecks.regex?.map((regexCheck) => regexCheck.regex.source);
+
+const mapIncludes = (
+  zodStringChecks: ZodStringCheckMap,
+): string[] | undefined =>
+  zodStringChecks.includes?.map((includeCheck) => {
+    if (includeCheck.position) {
+      return `^.{${includeCheck.position}}${includeCheck.value}`;
+    }
+    return includeCheck.value;
+  });
 
 const mapStringFormat = (
   zodStringChecks: ZodStringCheckMap,
