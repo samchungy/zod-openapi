@@ -1,11 +1,14 @@
-import type { ZodRecord, ZodType, ZodTypeAny } from 'zod';
+import type { KeySchema, ZodRecord, ZodString, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
-export const createRecordSchema = (
-  zodRecord: ZodRecord<any, any>,
+export const createRecordSchema = <
+  Key extends KeySchema = ZodString,
+  Value extends ZodTypeAny = ZodTypeAny,
+>(
+  zodRecord: ZodRecord<Key, Value>,
   state: SchemaState,
 ): oas31.SchemaObject => {
   const additionalProperties = createSchemaObject(
@@ -14,13 +17,12 @@ export const createRecordSchema = (
     ['record value'],
   );
 
-  const keySchema = createSchemaObject(zodRecord.keySchema as ZodType, state, [
+  const keySchema = createSchemaObject(zodRecord.keySchema, state, [
     'record key',
   ]);
 
   const maybeComponent =
-    '$ref' in keySchema &&
-    state.components.schemas.get(zodRecord.keySchema as ZodType);
+    '$ref' in keySchema && state.components.schemas.get(zodRecord.keySchema);
   const maybeSchema =
     maybeComponent &&
     maybeComponent.type === 'complete' &&

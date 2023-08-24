@@ -45,9 +45,9 @@ interface StringsAndNumbers {
 
 export const getValidEnumValues = (enumValues: EnumLike) => {
   const keys = Object.keys(enumValues).filter(
-    (key) => typeof enumValues[enumValues[key]!] !== 'number',
+    (key) => typeof enumValues[enumValues[key] as number] !== 'number',
   );
-  return keys.map((key) => enumValues[key]!);
+  return keys.map((key) => enumValues[key] as number);
 };
 
 export const sortStringsAndNumbers = (

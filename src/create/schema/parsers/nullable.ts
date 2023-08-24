@@ -5,15 +5,13 @@ import type { oas31 } from '../../../openapi3-ts/dist';
 import type { ZodOpenApiVersion } from '../../document';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
-export const createNullableSchema = (
-  zodNullable: ZodNullable<any>,
+export const createNullableSchema = <T extends ZodTypeAny>(
+  zodNullable: ZodNullable<T>,
   state: SchemaState,
 ): oas31.SchemaObject => {
-  const schemaObject = createSchemaObject(
-    zodNullable.unwrap() as ZodTypeAny,
-    state,
-    ['nullable'],
-  );
+  const schemaObject = createSchemaObject(zodNullable.unwrap(), state, [
+    'nullable',
+  ]);
 
   if ('$ref' in schemaObject || schemaObject.allOf) {
     return {

@@ -4,12 +4,15 @@ import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
-export const createTupleSchema = (
-  zodTuple: ZodTuple<any, any>,
+export const createTupleSchema = <
+  T extends [] | [ZodTypeAny, ...ZodTypeAny[]] = [ZodTypeAny, ...ZodTypeAny[]],
+  Rest extends ZodTypeAny | null = null,
+>(
+  zodTuple: ZodTuple<T, Rest>,
   state: SchemaState,
 ): oas31.SchemaObject => {
-  const items = zodTuple.items as ZodTypeAny[];
-  const rest = zodTuple._def.rest as ZodTypeAny;
+  const items = zodTuple.items;
+  const rest = zodTuple._def.rest;
   return {
     type: 'array',
     ...mapItemProperties(items, rest, state),
@@ -30,7 +33,7 @@ const mapPrefixItems = (
 
 const mapItemProperties = (
   items: ZodTypeAny[],
-  rest: ZodTypeAny,
+  rest: ZodTypeAny | null,
   state: SchemaState,
 ): Pick<
   oas31.SchemaObject,

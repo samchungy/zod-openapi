@@ -1,6 +1,9 @@
 // Inspired by https://github.com/asteasolutions/zod-to-openapi/blob/master/src/lib/zod-is-type.ts
 
 import type {
+  ArrayCardinality,
+  EnumLike,
+  UnknownKeysParam,
   ZodAny,
   ZodArray,
   ZodBigInt,
@@ -10,6 +13,7 @@ import type {
   ZodDate,
   ZodDefault,
   ZodDiscriminatedUnion,
+  ZodDiscriminatedUnionOption,
   ZodEffects,
   ZodEnum,
   ZodFirstPartyTypeKind,
@@ -28,6 +32,7 @@ import type {
   ZodOptional,
   ZodPipeline,
   ZodPromise,
+  ZodRawShape,
   ZodReadonly,
   ZodRecord,
   ZodSet,
@@ -35,56 +40,132 @@ import type {
   ZodSymbol,
   ZodTuple,
   ZodType,
+  ZodTypeAny,
   ZodTypeDef,
   ZodUndefined,
   ZodUnion,
   ZodUnknown,
   ZodVoid,
+  objectInputType,
+  objectOutputType,
 } from 'zod';
 
-type ZodTypeMap = {
+type ZodTypeMap<
+  T extends ZodTypeAny,
+  U extends ZodTypeAny,
+  V,
+  W extends ZodRawShape,
+  B extends string | number | symbol,
+  Discriminator extends string,
+  Options extends Array<ZodDiscriminatedUnionOption<Discriminator>>,
+  Enum extends [string, ...string[]],
+  Returns extends ZodTypeAny,
+  Args extends ZodTuple,
+  ELike extends EnumLike,
+  Union extends readonly [ZodTypeAny, ...ZodTypeAny[]],
+  UnknownKeys extends UnknownKeysParam = UnknownKeysParam,
+  Catchall extends ZodTypeAny = ZodTypeAny,
+  Output = objectOutputType<W, Catchall, UnknownKeys>,
+  Input = objectInputType<W, Catchall, UnknownKeys>,
+  Cardinality extends ArrayCardinality = 'many',
+> = {
   ZodAny: ZodAny;
-  ZodArray: ZodArray<any>;
+  ZodArray: ZodArray<T, Cardinality>;
   ZodBigInt: ZodBigInt;
   ZodBoolean: ZodBoolean;
-  ZodBranded: ZodBranded<any, any>;
-  ZodCatch: ZodCatch<any>;
+  ZodBranded: ZodBranded<T, B>;
+  ZodCatch: ZodCatch<T>;
   ZodDate: ZodDate;
-  ZodDefault: ZodDefault<any>;
-  ZodDiscriminatedUnion: ZodDiscriminatedUnion<any, any>;
-  ZodEffects: ZodEffects<any>;
-  ZodEnum: ZodEnum<any>;
-  ZodFunction: ZodFunction<any, any>;
-  ZodIntersection: ZodIntersection<any, any>;
-  ZodLazy: ZodLazy<any>;
-  ZodLiteral: ZodLiteral<any>;
+  ZodDefault: ZodDefault<T>;
+  ZodDiscriminatedUnion: ZodDiscriminatedUnion<Discriminator, Options>;
+  ZodEffects: ZodEffects<T>;
+  ZodEnum: ZodEnum<Enum>;
+  ZodFunction: ZodFunction<Args, Returns>;
+  ZodIntersection: ZodIntersection<T, U>;
+  ZodLazy: ZodLazy<T>;
+  ZodLiteral: ZodLiteral<V>;
   ZodMap: ZodMap;
   ZodNaN: ZodNaN;
-  ZodNativeEnum: ZodNativeEnum<any>;
+  ZodNativeEnum: ZodNativeEnum<ELike>;
   ZodNever: ZodNever;
   ZodNull: ZodNull;
-  ZodNullable: ZodNullable<any>;
+  ZodNullable: ZodNullable<T>;
   ZodNumber: ZodNumber;
-  ZodObject: ZodObject<any>;
-  ZodOptional: ZodOptional<any>;
-  ZodPipeline: ZodPipeline<any, any>;
-  ZodPromise: ZodPromise<any>;
-  ZodReadonly: ZodReadonly<any>;
+  ZodObject: ZodObject<W, UnknownKeys, Catchall, Output, Input>;
+  ZodOptional: ZodOptional<T>;
+  ZodPipeline: ZodPipeline<T, U>;
+  ZodPromise: ZodPromise<T>;
+  ZodReadonly: ZodReadonly<T>;
   ZodRecord: ZodRecord;
   ZodSet: ZodSet;
   ZodString: ZodString;
   ZodSymbol: ZodSymbol;
   ZodTuple: ZodTuple;
   ZodUndefined: ZodUndefined;
-  ZodUnion: ZodUnion<any>;
+  ZodUnion: ZodUnion<Union>;
   ZodUnknown: ZodUnknown;
   ZodVoid: ZodVoid;
 };
 
-export const isZodType = <U extends keyof ZodTypeMap>(
+export const isZodType = <
+  T extends ZodTypeAny,
+  U extends ZodTypeAny,
+  V,
+  W extends ZodRawShape,
+  B extends string | number | symbol,
+  Discriminator extends string,
+  Options extends Array<ZodDiscriminatedUnionOption<Discriminator>>,
+  Enum extends [string, ...string[]],
+  Returns extends ZodTypeAny,
+  Args extends ZodTuple,
+  ELike extends EnumLike,
+  Union extends readonly [ZodTypeAny, ...ZodTypeAny[]],
+  K extends keyof ZodTypeMap<
+    T,
+    U,
+    V,
+    W,
+    B,
+    Discriminator,
+    Options,
+    Enum,
+    Returns,
+    Args,
+    ELike,
+    Union,
+    UnknownKeys,
+    Catchall,
+    Output,
+    Input,
+    Cardinality
+  >,
+  UnknownKeys extends UnknownKeysParam = UnknownKeysParam,
+  Catchall extends ZodTypeAny = ZodTypeAny,
+  Output = objectOutputType<W, Catchall, UnknownKeys>,
+  Input = objectInputType<W, Catchall, UnknownKeys>,
+  Cardinality extends ArrayCardinality = 'many',
+>(
   zodType: unknown,
-  typeName: U,
-): zodType is ZodTypeMap[U] =>
+  typeName: K,
+): zodType is ZodTypeMap<
+  T,
+  U,
+  V,
+  W,
+  B,
+  Discriminator,
+  Options,
+  Enum,
+  Returns,
+  Args,
+  ELike,
+  Union,
+  UnknownKeys,
+  Catchall,
+  Output,
+  Input,
+  Cardinality
+>[K] =>
   (
     (zodType as ZodType)?._def as ZodTypeDef & {
       typeName: ZodFirstPartyTypeKind; // FIXME: https://github.com/colinhacks/zod/pull/2459

@@ -51,6 +51,7 @@ interface ZodOpenApiMetadata<
 }
 
 interface ZodOpenApiExtendMetadata {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extends: ZodObject<any, any, any, any, any>;
 }
 
@@ -81,7 +82,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
     return;
   }
   zod.ZodType.prototype.openapi = function (openapi) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     const result = new (this as any).constructor({
       ...this._def,
       openapi,
@@ -102,7 +103,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
       extends: this,
     };
     delete extendResult._def.openapi;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return extendResult as any;
   };
 
@@ -115,7 +116,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
     const omitResult = zodObjectOmit.apply(this, args);
     delete omitResult._def.extendMetadata;
     delete omitResult._def.openapi;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return omitResult as any;
   };
 
@@ -128,7 +129,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
     const pickResult = zodObjectPick.apply(this, args);
     delete pickResult._def.extendMetadata;
     delete pickResult._def.openapi;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return pickResult as any;
   };
 }

@@ -81,6 +81,7 @@ export interface ZodOpenApiPathItemObject
   trace?: ZodOpenApiOperationObject;
 }
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
   [path: string]: ZodOpenApiPathItemObject;
 }
