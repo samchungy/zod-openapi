@@ -125,14 +125,25 @@ const expectedZodNumber: oas31.SchemaObject = {
 const zodObject = z.object({
   a: z.string(),
   b: z.string().optional(),
+  c: z.string().default('test-default'),
 });
-const expectedZodObject: oas31.SchemaObject = {
+const expectedZodObjectInput: oas31.SchemaObject = {
   type: 'object',
   properties: {
     a: { type: 'string' },
     b: { type: 'string' },
+    c: { type: 'string', default: 'test-default' },
   },
   required: ['a'],
+};
+const expectedZodObjectOutput: oas31.SchemaObject = {
+  type: 'object',
+  properties: {
+    a: { type: 'string' },
+    b: { type: 'string' },
+    c: { type: 'string', default: 'test-default' },
+  },
+  required: ['a', 'c'],
 };
 
 const zodOptional = z.string().optional();
@@ -300,7 +311,7 @@ describe('createSchemaObject', () => {
     ${'ZodNull'}                 | ${zodNull}               | ${expectedZodNull}
     ${'ZodNullable'}             | ${zodNullable}           | ${expectedZodNullable}
     ${'ZodNumber'}               | ${zodNumber}             | ${expectedZodNumber}
-    ${'ZodObject'}               | ${zodObject}             | ${expectedZodObject}
+    ${'ZodObject'}               | ${zodObject}             | ${expectedZodObjectOutput}
     ${'ZodOptional'}             | ${zodOptional}           | ${expectedZodOptional}
     ${'ZodRecord'}               | ${zodRecord}             | ${expectedZodRecord}
     ${'ZodString'}               | ${zodString}             | ${expectedZodString}
@@ -338,7 +349,7 @@ describe('createSchemaObject', () => {
     ${'ZodNull'}                 | ${zodNull}               | ${expectedZodNull}
     ${'ZodNullable'}             | ${zodNullable}           | ${expectedZodNullable}
     ${'ZodNumber'}               | ${zodNumber}             | ${expectedZodNumber}
-    ${'ZodObject'}               | ${zodObject}             | ${expectedZodObject}
+    ${'ZodObject'}               | ${zodObject}             | ${expectedZodObjectInput}
     ${'ZodOptional'}             | ${zodOptional}           | ${expectedZodOptional}
     ${'ZodRecord'}               | ${zodRecord}             | ${expectedZodRecord}
     ${'ZodString'}               | ${zodString}             | ${expectedZodString}
