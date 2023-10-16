@@ -19,7 +19,7 @@ export const isOptionalSchema = (
   }
 
   if (isZodType(zodSchema, 'ZodDefault')) {
-    return state.type === 'input'
+    return state.type === 'input';
   }
 
   if (isZodType(zodSchema, 'ZodNullable') || isZodType(zodSchema, 'ZodCatch')) {

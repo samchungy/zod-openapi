@@ -125,7 +125,7 @@ const expectedZodNumber: oas31.SchemaObject = {
 const zodObject = z.object({
   a: z.string(),
   b: z.string().optional(),
-  c: z.string().default('test-default')
+  c: z.string().default('test-default'),
 });
 const expectedZodObjectInput: oas31.SchemaObject = {
   type: 'object',
