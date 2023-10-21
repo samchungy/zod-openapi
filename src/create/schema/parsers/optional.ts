@@ -14,11 +14,12 @@ export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
   state: SchemaState,
 ): boolean => {
-  if (
-    isZodType(zodSchema, 'ZodOptional') ||
-    isZodType(zodSchema, 'ZodDefault')
-  ) {
+  if (isZodType(zodSchema, 'ZodOptional')) {
     return true;
+  }
+
+  if (isZodType(zodSchema, 'ZodDefault')) {
+    return state.type === 'input';
   }
 
   if (isZodType(zodSchema, 'ZodNullable') || isZodType(zodSchema, 'ZodCatch')) {
