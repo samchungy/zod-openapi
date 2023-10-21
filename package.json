@@ -22,7 +22,7 @@
   "license": "MIT",
   "sideEffects": false,
   "main": "./lib-commonjs/index.js",
-  "module": "./lib-es2015/index.js",
+  "module": "./lib-esm/index.js",
   "types": "./lib-types/index.d.ts",
   "files": [
     "lib*/**/*.d.ts",
@@ -31,7 +31,7 @@
     "lib*/**/*.json"
   ],
   "scripts": {
-    "build": "yarn copy:types && skuba build-package",
+    "build": "yarn copy:types && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-types --project tsconfig.build.json",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
