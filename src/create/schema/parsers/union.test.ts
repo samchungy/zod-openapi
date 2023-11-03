@@ -27,7 +27,7 @@ describe('createUnionSchema', () => {
     expect(result).toStrictEqual(expected);
   });
 
-  it('creates an oneOf schema for a union if forceUnionOneOf is true', () => {
+  it('creates an oneOf schema for a union if unionOneOf is true', () => {
     const expected: oas31.SchemaObject = {
       oneOf: [
         {
