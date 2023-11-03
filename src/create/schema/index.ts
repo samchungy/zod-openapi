@@ -47,8 +47,15 @@ export const createNewSchema = <
     );
   }
   newState.visited.add(zodSchema);
-  const { effectType, param, header, ref, refType, ...additionalMetadata } =
-    zodSchema._def.openapi ?? {};
+  const {
+    effectType,
+    param,
+    header,
+    ref,
+    refType,
+    unionOneOf,
+    ...additionalMetadata
+  } = zodSchema._def.openapi ?? {};
 
   const schema = createSchemaSwitch(zodSchema, newState);
   const description = zodSchema.description;
