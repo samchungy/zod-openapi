@@ -12,6 +12,13 @@ export const createUnionSchema = <
   const schemas = zodUnion.options.map((option, index) =>
     createSchemaObject(option, state, [`union option ${index}`]),
   );
+
+  if (zodUnion._def.openapi?.unionOneOf) {
+    return {
+      oneOf: schemas,
+    };
+  }
+
   return {
     anyOf: schemas,
   };

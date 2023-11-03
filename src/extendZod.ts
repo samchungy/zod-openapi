@@ -20,6 +20,10 @@ interface ZodOpenApiMetadata<
   examples?: [TInferred, ...TInferred[]];
   default?: T extends ZodDate ? string : TInferred;
   /**
+   * Use this field to set the output of a ZodUnion to be `oneOf` instead of `allOf`
+   */
+  unionOneOf?: boolean;
+  /**
    * Use this field to output this Zod Schema in the components schemas section. Any usage of this Zod Schema will then be transformed into a $ref.
    */
   ref?: string;
