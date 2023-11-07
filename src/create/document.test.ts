@@ -646,304 +646,304 @@ describe('createDocument', () => {
     });
 
     expect(document).toMatchInlineSnapshot(`
-      {
-        "components": {
-          "headers": {
-            "my-header": {
-              "required": true,
-              "schema": {
-                "type": "string",
-              },
-            },
+{
+  "components": {
+    "headers": {
+      "my-header": {
+        "required": true,
+        "schema": {
+          "type": "string",
+        },
+      },
+    },
+    "parameters": {
+      "b": {
+        "in": "path",
+        "name": "b",
+        "required": true,
+        "schema": {
+          "type": "string",
+        },
+      },
+    },
+    "schemas": {
+      "a": {
+        "type": "string",
+      },
+      "b": {
+        "properties": {
+          "a": {
+            "type": "string",
           },
-          "parameters": {
-            "b": {
-              "in": "path",
-              "name": "b",
-              "required": true,
-              "schema": {
-                "type": "string",
-              },
-            },
+        },
+        "required": [
+          "a",
+        ],
+        "type": "object",
+      },
+      "c": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/b",
           },
-          "schemas": {
-            "a": {
-              "type": "string",
+        ],
+        "properties": {
+          "d": {
+            "nullable": true,
+            "type": "string",
+          },
+        },
+        "required": [
+          "d",
+        ],
+        "type": "object",
+      },
+      "lazy": {
+        "items": {
+          "$ref": "#/components/schemas/lazy",
+        },
+        "type": "array",
+      },
+      "manual": {
+        "type": "boolean",
+      },
+      "post": {
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/user",
+          },
+          "userId": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "userId",
+        ],
+        "type": "object",
+      },
+      "union-a": {
+        "properties": {
+          "type": {
+            "enum": [
+              "a",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+        ],
+        "type": "object",
+      },
+      "union-b": {
+        "properties": {
+          "type": {
+            "enum": [
+              "b",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+        ],
+        "type": "object",
+      },
+      "user": {
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "posts": {
+            "items": {
+              "$ref": "#/components/schemas/post",
             },
-            "b": {
-              "properties": {
-                "a": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "a",
-              ],
-              "type": "object",
-            },
-            "c": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/b",
-                },
-              ],
-              "properties": {
-                "d": {
-                  "nullable": true,
-                  "type": "string",
-                },
-              },
-              "required": [
-                "d",
-              ],
-              "type": "object",
-            },
-            "lazy": {
-              "items": {
-                "$ref": "#/components/schemas/lazy",
-              },
-              "type": "array",
-            },
-            "manual": {
-              "type": "boolean",
-            },
-            "post": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "user": {
-                  "$ref": "#/components/schemas/user",
-                },
-                "userId": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "id",
-                "userId",
-              ],
-              "type": "object",
-            },
-            "union-a": {
-              "properties": {
-                "type": {
-                  "enum": [
-                    "a",
-                  ],
-                  "type": "string",
-                },
-              },
-              "required": [
-                "type",
-              ],
-              "type": "object",
-            },
-            "union-b": {
-              "properties": {
-                "type": {
-                  "enum": [
-                    "b",
-                  ],
-                  "type": "string",
-                },
-              },
-              "required": [
-                "type",
-              ],
-              "type": "object",
-            },
-            "user": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "posts": {
-                  "items": {
-                    "$ref": "#/components/schemas/post",
+            "type": "array",
+          },
+        },
+        "required": [
+          "id",
+        ],
+        "type": "object",
+      },
+    },
+  },
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/jobs": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/b",
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "a": {
+                    "$ref": "#/components/schemas/a",
                   },
-                  "type": "array",
-                },
-              },
-              "required": [
-                "id",
-              ],
-              "type": "object",
-            },
-          },
-        },
-        "info": {
-          "title": "My API",
-          "version": "1.0.0",
-        },
-        "openapi": "3.0.0",
-        "paths": {
-          "/jobs": {
-            "get": {
-              "parameters": [
-                {
-                  "$ref": "#/components/parameters/b",
-                },
-              ],
-              "requestBody": {
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "properties": {
-                        "a": {
-                          "$ref": "#/components/schemas/a",
-                        },
-                        "b": {
-                          "$ref": "#/components/schemas/b",
-                        },
-                        "c": {
-                          "$ref": "#/components/schemas/b",
-                        },
-                        "d": {
-                          "$ref": "#/components/schemas/c",
-                        },
-                        "e": {
-                          "discriminator": {
-                            "mapping": {
-                              "a": "#/components/schemas/union-a",
-                              "b": "#/components/schemas/union-b",
-                            },
-                            "propertyName": "type",
-                          },
-                          "oneOf": [
-                            {
-                              "$ref": "#/components/schemas/union-a",
-                            },
-                            {
-                              "$ref": "#/components/schemas/union-b",
-                            },
-                          ],
-                        },
-                        "f": {
-                          "items": {
-                            "oneOf": [
-                              {
-                                "type": "string",
-                              },
-                              {
-                                "type": "number",
-                              },
-                              {
-                                "$ref": "#/components/schemas/manual",
-                              },
-                            ],
-                          },
-                          "maxItems": 3,
-                          "minItems": 3,
-                          "type": "array",
-                        },
-                        "g": {
-                          "$ref": "#/components/schemas/lazy",
-                        },
-                        "h": {
-                          "$ref": "#/components/schemas/user",
-                        },
+                  "b": {
+                    "$ref": "#/components/schemas/b",
+                  },
+                  "c": {
+                    "$ref": "#/components/schemas/b",
+                  },
+                  "d": {
+                    "$ref": "#/components/schemas/c",
+                  },
+                  "e": {
+                    "discriminator": {
+                      "mapping": {
+                        "a": "#/components/schemas/union-a",
+                        "b": "#/components/schemas/union-b",
                       },
-                      "required": [
-                        "a",
-                        "b",
-                        "d",
-                        "e",
-                        "f",
-                        "g",
-                        "h",
+                      "propertyName": "type",
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/union-a",
+                      },
+                      {
+                        "$ref": "#/components/schemas/union-b",
+                      },
+                    ],
+                  },
+                  "f": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                        },
+                        {
+                          "type": "number",
+                        },
+                        {
+                          "$ref": "#/components/schemas/manual",
+                        },
                       ],
-                      "type": "object",
                     },
+                    "maxItems": 3,
+                    "minItems": 3,
+                    "type": "array",
+                  },
+                  "g": {
+                    "$ref": "#/components/schemas/lazy",
+                  },
+                  "h": {
+                    "$ref": "#/components/schemas/user",
                   },
                 },
-              },
-              "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "properties": {
-                          "a": {
-                            "$ref": "#/components/schemas/a",
-                          },
-                          "b": {
-                            "$ref": "#/components/schemas/b",
-                          },
-                          "c": {
-                            "$ref": "#/components/schemas/b",
-                          },
-                          "d": {
-                            "$ref": "#/components/schemas/c",
-                          },
-                          "e": {
-                            "discriminator": {
-                              "mapping": {
-                                "a": "#/components/schemas/union-a",
-                                "b": "#/components/schemas/union-b",
-                              },
-                              "propertyName": "type",
-                            },
-                            "oneOf": [
-                              {
-                                "$ref": "#/components/schemas/union-a",
-                              },
-                              {
-                                "$ref": "#/components/schemas/union-b",
-                              },
-                            ],
-                          },
-                          "f": {
-                            "items": {
-                              "oneOf": [
-                                {
-                                  "type": "string",
-                                },
-                                {
-                                  "type": "number",
-                                },
-                                {
-                                  "$ref": "#/components/schemas/manual",
-                                },
-                              ],
-                            },
-                            "maxItems": 3,
-                            "minItems": 3,
-                            "type": "array",
-                          },
-                          "g": {
-                            "$ref": "#/components/schemas/lazy",
-                          },
-                          "h": {
-                            "$ref": "#/components/schemas/user",
-                          },
-                        },
-                        "required": [
-                          "a",
-                          "b",
-                          "d",
-                          "e",
-                          "f",
-                          "g",
-                          "h",
-                        ],
-                        "type": "object",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
-                  "headers": {
-                    "my-header": {
-                      "$ref": "#/components/headers/my-header",
-                    },
-                  },
-                },
+                "required": [
+                  "a",
+                  "b",
+                  "d",
+                  "e",
+                  "f",
+                  "g",
+                  "h",
+                ],
+                "type": "object",
               },
             },
           },
         },
-      }
-    `);
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "a": {
+                      "$ref": "#/components/schemas/a",
+                    },
+                    "b": {
+                      "$ref": "#/components/schemas/b",
+                    },
+                    "c": {
+                      "$ref": "#/components/schemas/b",
+                    },
+                    "d": {
+                      "$ref": "#/components/schemas/c",
+                    },
+                    "e": {
+                      "discriminator": {
+                        "mapping": {
+                          "a": "#/components/schemas/union-a",
+                          "b": "#/components/schemas/union-b",
+                        },
+                        "propertyName": "type",
+                      },
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/union-a",
+                        },
+                        {
+                          "$ref": "#/components/schemas/union-b",
+                        },
+                      ],
+                    },
+                    "f": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                          },
+                          {
+                            "type": "number",
+                          },
+                          {
+                            "$ref": "#/components/schemas/manual",
+                          },
+                        ],
+                      },
+                      "maxItems": 3,
+                      "minItems": 3,
+                      "type": "array",
+                    },
+                    "g": {
+                      "$ref": "#/components/schemas/lazy",
+                    },
+                    "h": {
+                      "$ref": "#/components/schemas/user",
+                    },
+                  },
+                  "required": [
+                    "a",
+                    "b",
+                    "d",
+                    "e",
+                    "f",
+                    "g",
+                    "h",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "200 OK",
+            "headers": {
+              "my-header": {
+                "$ref": "#/components/headers/my-header",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`);
   });
 
   it('Supports circular schemas declared in components.schemas', () => {
