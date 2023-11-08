@@ -25,7 +25,7 @@ describe('createNullableSchema', () => {
       expect(result).toStrictEqual(expected);
     });
 
-    it('creates an oneOf nullable schema for registered schemas', () => {
+    it('creates an allOf nullable schema for registered schemas', () => {
       const expected: oas30.SchemaObject = {
         allOf: [{ $ref: '#/components/schemas/a' }],
         nullable: true,
