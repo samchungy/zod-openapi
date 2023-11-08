@@ -25,16 +25,10 @@ describe('createNullableSchema', () => {
       expect(result).toStrictEqual(expected);
     });
 
-    it('creates an oneOf nullable schema for registered schemas', () => {
+    it('creates an allOf nullable schema for registered schemas', () => {
       const expected: oas30.SchemaObject = {
-        oneOf: [
-          {
-            $ref: '#/components/schemas/a',
-          },
-          {
-            nullable: true,
-          },
-        ],
+        allOf: [{ $ref: '#/components/schemas/a' }],
+        nullable: true,
       };
       const registered = z.string().openapi({ ref: 'a' });
       const schema = registered.optional().nullable();
@@ -65,10 +59,8 @@ describe('createNullableSchema', () => {
             },
             required: ['b'],
           },
-          {
-            nullable: true,
-          },
         ],
+        nullable: true,
       };
       const schema = z
         .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
@@ -84,15 +76,11 @@ describe('createNullableSchema', () => {
         type: 'object',
         properties: {
           b: {
-            oneOf: [
-              {
-                allOf: [{ $ref: '#/components/schemas/a' }],
-                type: 'object',
-                properties: { b: { type: 'string' } },
-                required: ['b'],
-              },
-              { nullable: true },
-            ],
+            allOf: [{ $ref: '#/components/schemas/a' }],
+            type: 'object',
+            properties: { b: { type: 'string' } },
+            required: ['b'],
+            nullable: true,
           },
         },
         required: ['b'],
