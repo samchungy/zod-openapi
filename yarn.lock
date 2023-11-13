@@ -2258,6 +2258,11 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-18.0.0.tgz#f43d765b3c7533fd6fb88f3f25df079c24fccf69"
   integrity sha512-V8GImKs3TeQRxRtXFpG2wl19V7444NIOTDF24AWuIbmNaNYOQMWRbjcGDXV5B+0n887fgDcuMNOmlul+k+oJtw==
 
+"@octokit/openapi-types@^19.0.2":
+  version "19.0.2"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-19.0.2.tgz#d72778fe2f6151314b6f0201fbc771bb741276fc"
+  integrity sha512-8li32fUDUeml/ACRp/njCWTsk5t17cfTM1jp9n08pBrqs5cDFJubtjsSnuz56r5Tad6jdEPJld7LxNp9dNcyjQ==
+
 "@octokit/plugin-paginate-rest@^8.0.0":
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-8.0.0.tgz#417b5367da2ba3c2d255a59b87c1cc608228ec38"
@@ -2330,6 +2335,13 @@
   integrity sha512-Fz0+7GyLm/bHt8fwEqgvRBWwIV1S6wRRyq+V6exRKLVWaKGsuy6H9QFYeBVDV7rK6fO3XwHgQOPxv+cLj2zpXQ==
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
+
+"@octokit/types@^12.0.0":
+  version "12.3.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-12.3.0.tgz#e3f8bc53f65ef551e19cc1a0fea15adadec17d2d"
+  integrity sha512-nJ8X2HRr234q3w/FcovDlA+ttUU4m1eJAourvfUUtwAWeqL8AsyRqfnLvVnYn3NFbUnsmzQCzLNdFerPwdmcDQ==
+  dependencies:
+    "@octokit/openapi-types" "^19.0.2"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -7931,6 +7943,14 @@ prelude-ls@^1.2.1:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
+prettier-plugin-packagejson@^2.4.6:
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-packagejson/-/prettier-plugin-packagejson-2.4.6.tgz#b1d46b67fd4d80dd6b352d1f5cb472344e6db9be"
+  integrity sha512-5JGfzkJRL0DLNyhwmiAV9mV0hZLHDwddFCs2lc9CNxOChpoWUQVe8K4qTMktmevmDlMpok2uT10nvHUyU59sNw==
+  dependencies:
+    sort-package-json "2.6.0"
+    synckit "0.8.5"
+
 prettier@~3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.3.tgz#432a51f7ba422d1469096c0fdc28e235db8f9643"
@@ -8414,11 +8434,6 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-runtypes@^6.0.0:
-  version "6.6.0"
-  resolved "https://registry.yarnpkg.com/runtypes/-/runtypes-6.6.0.tgz#48e353d8b0f641ab5ec5d80fa96dd7bd41ea3281"
-  integrity sha512-ddM7sgB3fyboDlBzEYFQ04L674sKjbs4GyW2W32N/5Ae47NRd/GyMASPC2PFw8drPHYGEcZ0mZ26r5RcB8msfQ==
-
 rxjs@^7.8.0:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
@@ -8683,17 +8698,17 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-skuba@7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/skuba/-/skuba-7.2.0.tgz#3d1d2c388b26b08d357414e232d170954edd5bc9"
-  integrity sha512-VjxeXsdeD24XZ81osIt/AZYNa00XkW7PZ6lcxeNe+w8mjMAOLOVKqHcWLweEipNWCIa9ic/S7/TyP3F5xDeQqQ==
+skuba@7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/skuba/-/skuba-7.3.0.tgz#fb5a7a63467050b5578b0240dea468e66368cb95"
+  integrity sha512-cjpVwKP7lokoVenKoCpuvhsECQZ8qGmShybbSkOyoYxoulElM/J5zoB5S4lDNCfzXI4E6YEJZIuavd4baQ6bvA==
   dependencies:
     "@esbuild-plugins/tsconfig-paths" "^0.1.0"
     "@jest/types" "^29.0.0"
     "@octokit/graphql" "^7.0.0"
     "@octokit/graphql-schema" "^14.5.0"
     "@octokit/rest" "^20.0.0"
-    "@octokit/types" "^11.0.0"
+    "@octokit/types" "^12.0.0"
     "@types/jest" "^29.0.0"
     "@types/node" ">=18.12"
     chalk "^4.1.0"
@@ -8723,12 +8738,11 @@ skuba@7.2.0:
     npm-which "^3.0.1"
     picomatch "^2.2.2"
     prettier "~3.0.3"
+    prettier-plugin-packagejson "^2.4.6"
     read-pkg-up "^7.0.1"
-    runtypes "^6.0.0"
     semantic-release "^21.0.0"
     serialize-error "^8.0.1"
     simple-git "^3.5.0"
-    sort-package-json "^2.5.1"
     strip-ansi "^6.0.1"
     ts-dedent "^2.2.0"
     ts-jest "^29.1.0"
@@ -8738,6 +8752,7 @@ skuba@7.2.0:
     tsconfig-seek "2.0.0"
     typescript "~5.2.0"
     validate-npm-package-name "^5.0.0"
+    zod "^3.22.4"
 
 slash@^2.0.0:
   version "2.0.0"
@@ -8800,10 +8815,10 @@ sort-object-keys@^1.1.3:
   resolved "https://registry.yarnpkg.com/sort-object-keys/-/sort-object-keys-1.1.3.tgz#bff833fe85cab147b34742e45863453c1e190b45"
   integrity sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==
 
-sort-package-json@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-2.5.1.tgz#5c0f2ce8cc8851988e5039f76b8978439439039d"
-  integrity sha512-vx/KoZxm8YNMUqdlw7SGTfqR5pqZ/sUfgOuRtDILiOy/3AvzhAibyUe2cY3OpLs3oRSow9up4yLVtQaM24rbDQ==
+sort-package-json@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-2.6.0.tgz#68337dbbd267971add856308a9b454a7d6cbfc0a"
+  integrity sha512-XSQ+lY9bAYA8ZsoChcEoPlgcSMaheziEp1beox1JVxy1SV4F2jSq9+h2rJ+3mC/Dhu9Ius1DLnInD5AWcsDXZw==
   dependencies:
     detect-indent "^7.0.1"
     detect-newline "^4.0.0"
@@ -9168,7 +9183,7 @@ swagger2openapi@^7.0.6:
     yaml "^1.10.0"
     yargs "^17.0.1"
 
-synckit@^0.8.5:
+synckit@0.8.5, synckit@^0.8.5:
   version "0.8.5"
   resolved "https://registry.yarnpkg.com/synckit/-/synckit-0.8.5.tgz#b7f4358f9bb559437f9f167eb6bc46b3c9818fa3"
   integrity sha512-L1dapNV6vu2s/4Sputv8xGsCdAVlb5nRDMFU/E27D44l5U6cw1g0dGd45uLc+OXjNMmF4ntiMdCimzcjFKQI8Q==
@@ -9879,7 +9894,7 @@ yocto-queue@^1.0.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
 
-zod@3.22.4:
+zod@3.22.4, zod@^3.22.4:
   version "3.22.4"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.4.tgz#f31c3a9386f61b1f228af56faa9255e845cf3fff"
   integrity sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==
