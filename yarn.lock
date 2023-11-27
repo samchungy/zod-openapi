@@ -7952,10 +7952,10 @@ prettier-plugin-packagejson@^2.4.6:
     sort-package-json "2.6.0"
     synckit "0.8.5"
 
-prettier@~3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.3.tgz#432a51f7ba422d1469096c0fdc28e235db8f9643"
-  integrity sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==
+prettier@~3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.1.0.tgz#c6d16474a5f764ea1a4a373c593b779697744d5e"
+  integrity sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==
 
 pretty-format@^29.0.0, pretty-format@^29.5.0:
   version "29.5.0"
@@ -8699,10 +8699,10 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-skuba@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/skuba/-/skuba-7.3.0.tgz#fb5a7a63467050b5578b0240dea468e66368cb95"
-  integrity sha512-cjpVwKP7lokoVenKoCpuvhsECQZ8qGmShybbSkOyoYxoulElM/J5zoB5S4lDNCfzXI4E6YEJZIuavd4baQ6bvA==
+skuba@7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/skuba/-/skuba-7.3.1.tgz#11da82b37ad891ee92bf102f2816b9395233be6f"
+  integrity sha512-nHYi9d+tVDikqFYgtBjBIfHdZYqoU2eQews2d2ECw+XjDIk4xmRIMBmNacvL+QxAP0r//AGE7FbCgpb8ss98ZQ==
   dependencies:
     "@esbuild-plugins/tsconfig-paths" "^0.1.0"
     "@jest/types" "^29.0.0"
@@ -8738,7 +8738,7 @@ skuba@7.3.0:
     npm-run-path "^4.0.1"
     npm-which "^3.0.1"
     picomatch "^2.2.2"
-    prettier "~3.0.3"
+    prettier "~3.1.0"
     prettier-plugin-packagejson "^2.4.6"
     read-pkg-up "^7.0.1"
     semantic-release "^21.0.0"
