@@ -182,7 +182,7 @@ Query, Path, Header & Cookie parameters can be created using the `requestParams`
 ```typescript
 createDocument({
   paths: {
-    '/jobs/:a': {
+    '/jobs/{a}': {
       put: {
         requestParams: {
           path: z.object({ a: z.string() }),
@@ -201,7 +201,7 @@ If you would like to declare parameters in a more traditional way you may also d
 ```ts
 createDocument({
   paths: {
-    '/jobs/:a': {
+    '/jobs/{a}': {
       put: {
         parameters: [
           z.string().openapi({
