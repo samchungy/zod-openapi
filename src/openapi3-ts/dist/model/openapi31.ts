@@ -28,6 +28,7 @@ export interface ContactObject extends ISpecificationExtension {
 }
 export interface LicenseObject extends ISpecificationExtension {
     name: string;
+    identifier?: string;
     url?: string;
 }
 export interface ComponentsObject extends ISpecificationExtension {
@@ -225,6 +226,7 @@ export interface SchemaObject extends ISpecificationExtension {
         [propertyName: string]: SchemaObject | ReferenceObject;
     };
     additionalProperties?: SchemaObject | ReferenceObject | boolean;
+    propertyNames?: SchemaObject | ReferenceObject;
     description?: string;
     default?: any;
     title?: string;
@@ -244,6 +246,8 @@ export interface SchemaObject extends ISpecificationExtension {
     required?: string[];
     enum?: any[];
     prefixItems?: (SchemaObject | ReferenceObject)[];
+    contentMediaType?: string;
+    contentEncoding?: string;
 }
 export declare function isSchemaObject(schema: SchemaObject | ReferenceObject): schema is SchemaObject;
 export interface SchemasObject {

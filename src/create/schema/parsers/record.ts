@@ -51,7 +51,6 @@ export const createRecordSchema = <
   ) {
     return {
       type: 'object',
-      // @ts-expect-error FIXME: https://github.com/metadevpro/openapi3-ts/pull/120
       propertyNames: keySchema,
       additionalProperties,
     };
