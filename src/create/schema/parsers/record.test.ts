@@ -29,7 +29,6 @@ describe('createRecordSchema', () => {
   it('creates an object schema with propertyNames in 3.1.0', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
-      // @ts-expect-error FIXME: https://github.com/metadevpro/openapi3-ts/pull/120
       propertyNames: {
         type: 'string',
         pattern: '^foo',
@@ -152,7 +151,6 @@ describe('createRecordSchema', () => {
   it('supports registering key schemas in 3.1.0', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
-      // @ts-expect-error FIXME: https://github.com/metadevpro/openapi3-ts/pull/120
       propertyNames: {
         $ref: '#/components/schemas/key',
       },
