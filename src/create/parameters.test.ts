@@ -228,4 +228,43 @@ describe('createParametersObject', () => {
 
     expect(result).toStrictEqual(expectedResult);
   });
+
+  it('should extract the description from the underlying schema', () => {
+    const expectedResult: oas31.BaseParameterObject = {
+      schema: {
+        type: 'string',
+        description: 'foo',
+      },
+      description: 'foo',
+      required: true,
+    };
+    const result = createBaseParameter(
+      z.string().describe('foo'),
+      getDefaultComponents(),
+      ['query'],
+    );
+
+    expect(result).toStrictEqual(expectedResult);
+  });
+
+  it('should allow overriding the description using .openapi.param in the underlying schema', () => {
+    const expectedResult: oas31.BaseParameterObject = {
+      schema: {
+        type: 'string',
+        description: 'foo',
+      },
+      description: 'boo',
+      required: true,
+    };
+    const result = createBaseParameter(
+      z
+        .string()
+        .describe('foo')
+        .openapi({ param: { description: 'boo' } }),
+      getDefaultComponents(),
+      ['query'],
+    );
+
+    expect(result).toStrictEqual(expectedResult);
+  });
 });
