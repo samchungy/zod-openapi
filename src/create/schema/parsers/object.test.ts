@@ -199,4 +199,19 @@ describe('extend', () => {
 
     expect(result).toStrictEqual(expected);
   });
+
+  it('ignores ZodNever and ZodUndefined schemas', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'object',
+      properties: {
+        a: { type: 'string' },
+      },
+      required: ['a'],
+    };
+    const schema = z.object({ a: z.string(), b: z.undefined(), c: z.never() });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
 });

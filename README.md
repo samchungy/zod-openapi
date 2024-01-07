@@ -521,6 +521,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodLiteral
 - ZodNativeEnum
   - supporting `string`, `number` and combined enums.
+- ZodNever
 - ZodNull
 - ZodNullable
 - ZodNumber
@@ -543,6 +544,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodTuple
   - `items` mapping for `.rest()`
   - `prefixItems` mapping for OpenAPI 3.1.0+
+- ZodUndefined
 - ZodUnion
   - By default it outputs an `allOf` schema. Use `unionOneOf` to change this to output `oneOf` instead.
 - ZodUnknown

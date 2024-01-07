@@ -14,7 +14,11 @@ export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
   state: SchemaState,
 ): boolean => {
-  if (isZodType(zodSchema, 'ZodOptional')) {
+  if (
+    isZodType(zodSchema, 'ZodOptional') ||
+    isZodType(zodSchema, 'ZodNever') ||
+    isZodType(zodSchema, 'ZodUndefined')
+  ) {
     return true;
   }
 
