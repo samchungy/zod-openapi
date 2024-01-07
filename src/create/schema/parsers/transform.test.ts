@@ -50,7 +50,7 @@ describe('createTransformSchema', () => {
       state.path.push('somepath');
 
       expect(() => createTransformSchema(schema, state)).toThrow(
-        "Failed to determine type for ZodEffects - transform at somepath. Please assign it a manual 'type', wrap it in a ZodPipeline or change the `effectType` to `input`.",
+        "Failed to determine a type for ZodEffects - transform at somepath. Please change the 'effectType' to 'input', wrap it in a ZodPipeline or assign it a manual 'type'.",
       );
     });
 

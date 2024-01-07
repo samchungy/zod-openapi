@@ -43,9 +43,9 @@ export const createManualOutputTransformSchema = <
     const zodType = zodTransform.constructor.name;
     const schemaName = `${zodType} - ${zodTransform._def.effect.type}`;
     throw new Error(
-      `Failed to determine type for ${schemaName} at ${state.path.join(
+      `Failed to determine a type for ${schemaName} at ${state.path.join(
         ' > ',
-      )}. Please assign it a manual 'type', wrap it in a ZodPipeline or change the \`effectType\` to \`input\`.`,
+      )}. Please change the 'effectType' to 'input', wrap it in a ZodPipeline or assign it a manual 'type'.`,
     );
   }
 
