@@ -28,7 +28,11 @@ export const createBaseParameter = (
     'schema',
   ]);
   const required = !isOptionalSchema(schema, state);
+  const description =
+    schema._def.openapi?.description ?? schema._def.description;
+
   return {
+    ...(description && { description }),
     ...rest,
     ...(schema && { schema: schemaObject }),
     ...(required && { required }),
