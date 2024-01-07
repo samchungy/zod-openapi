@@ -185,6 +185,13 @@ export const mapProperties = (
 ): oas31.SchemaObject['properties'] =>
   Object.entries(shape).reduce<NonNullable<oas31.SchemaObject['properties']>>(
     (acc, [key, zodSchema]): NonNullable<oas31.SchemaObject['properties']> => {
+      if (
+        isZodType(zodSchema, 'ZodNever') ||
+        isZodType(zodSchema, 'ZodUndefined')
+      ) {
+        return acc;
+      }
+
       acc[key] = createSchemaObject(zodSchema, state, [`property: ${key}`]);
       return acc;
     },
