@@ -29,7 +29,7 @@ export const createBaseParameter = (
   ]);
   const required = !isOptionalSchema(schema, state);
   const description =
-    schema._def.description ?? schema._def.openapi?.description;
+    schema._def.openapi?.description ?? schema._def.description;
 
   return {
     ...(description && { description }),
