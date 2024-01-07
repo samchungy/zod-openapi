@@ -3,8 +3,6 @@ import type { ZodEffects, ZodType, ZodTypeAny, input, output } from 'zod';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { type SchemaState, createSchemaObject } from '../../schema';
 
-import { createManualTypeSchema } from './manual';
-
 export const createTransformSchema = <
   T extends ZodTypeAny,
   Output = output<T>,
@@ -14,7 +12,7 @@ export const createTransformSchema = <
   state: SchemaState,
 ): oas31.SchemaObject | oas31.ReferenceObject => {
   if (zodTransform._def.openapi?.effectType === 'output') {
-    return createManualTypeSchema(zodTransform, state);
+    return createManualOutputTransformSchema(zodTransform, state);
   }
 
   if (zodTransform._def.openapi?.effectType === 'input') {
@@ -24,13 +22,36 @@ export const createTransformSchema = <
   }
 
   if (state.type === 'output') {
-    return createManualTypeSchema(zodTransform, state);
+    return createManualOutputTransformSchema(zodTransform, state);
   }
 
   state.effectType = 'input';
   return createSchemaObject(zodTransform._def.schema, state, [
     'transform input',
   ]);
+};
+
+export const createManualOutputTransformSchema = <
+  T extends ZodTypeAny,
+  Output = output<T>,
+  Input = input<T>,
+>(
+  zodTransform: ZodEffects<T, Output, Input>,
+  state: SchemaState,
+): oas31.SchemaObject => {
+  if (!zodTransform._def.openapi?.type) {
+    const zodType = zodTransform.constructor.name;
+    const schemaName = `${zodType} - ${zodTransform._def.effect.type}`;
+    throw new Error(
+      `Failed to determine type for ${schemaName} at ${state.path.join(
+        ' > ',
+      )}. Please assign it a manual 'type', wrap it in a ZodPipeline or change the \`effectType\` to \`input\`.`,
+    );
+  }
+
+  return {
+    type: zodTransform._def.openapi.type,
+  };
 };
 
 export const throwTransformError = (zodType: ZodType, state: SchemaState) => {

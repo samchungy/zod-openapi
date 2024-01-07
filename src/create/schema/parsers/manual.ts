@@ -1,7 +1,6 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { isZodType } from '../../../zodType';
 import type { SchemaState } from '../../schema';
 
 export const createManualTypeSchema = <
@@ -13,17 +12,11 @@ export const createManualTypeSchema = <
   state: SchemaState,
 ): oas31.SchemaObject => {
   if (!zodSchema._def.openapi?.type) {
-    const zodType = zodSchema.constructor.name;
-    if (isZodType(zodSchema, 'ZodEffects')) {
-      const schemaName = `${zodType} - ${zodSchema._def.effect.type}`;
-      throw new Error(
-        `Unknown schema ${schemaName} at ${state.path.join(
-          ' > ',
-        )}. Please assign it a manual 'type', wrap it in a ZodPipeline or change the 'effectType'.`,
-      );
-    }
+    const schemaName = zodSchema.constructor.name;
     throw new Error(
-      `Unknown schema ${zodType}. Please assign it a manual 'type'.`,
+      `Unknown schema ${schemaName} at ${state.path.join(
+        ' > ',
+      )}. Please assign it a manual 'type'.`,
     );
   }
 

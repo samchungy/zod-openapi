@@ -46,10 +46,12 @@ describe('createTransformSchema', () => {
   describe('output', () => {
     it('throws an error with a schema with transform', () => {
       const schema = z.string().transform((str) => str.length);
+      const state = createOutputState();
+      state.path.push('somepath');
 
-      expect(() =>
-        createTransformSchema(schema, createOutputState()),
-      ).toThrow();
+      expect(() => createTransformSchema(schema, state)).toThrow(
+        "Failed to determine type for ZodEffects - transform at somepath. Please assign it a manual 'type', wrap it in a ZodPipeline or change the `effectType` to `input`.",
+      );
     });
 
     it('creates a schema with the manual type when a type is manually specified', () => {
