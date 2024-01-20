@@ -29,7 +29,7 @@ yarn add zod zod-openapi
 
 ### `extendZodWithOpenApi`
 
-This mutates Zod to add an extra `.openapi()` method. Make a side-effectful import at the top of your entry point(s).
+This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s).
 
 ```typescript
 import { z } from 'zod';
