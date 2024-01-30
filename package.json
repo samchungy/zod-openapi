@@ -21,9 +21,6 @@
   },
   "license": "MIT",
   "sideEffects": false,
-  "main": "./lib-commonjs/index.js",
-  "module": "./lib-esm/index.mjs",
-  "types": "./lib-types/index.d.ts",
   "exports": {
     ".": {
       "import": "./lib-esm/index.mjs",
@@ -31,6 +28,9 @@
       "types": "./lib-types/index.d.ts"
     }
   },
+  "main": "./lib-commonjs/index.js",
+  "module": "./lib-esm/index.mjs",
+  "types": "./lib-types/index.d.ts",
   "files": [
     "lib*/**/*.d.ts",
     "lib*/**/*.{js,mjs}{,.map}",
