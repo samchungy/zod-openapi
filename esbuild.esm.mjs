@@ -7,4 +7,5 @@ await build({
   format: 'esm',
   target: ['es2022'],
   outdir: './lib-esm',
+  outExtension: { '.js': '.mjs' },
 });
