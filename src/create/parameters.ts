@@ -62,7 +62,7 @@ export const createParamOrRef = (
   if (component && component.type === 'complete') {
     if (
       !('$ref' in component.paramObject) &&
-      (component.in !== type || component.name !== name)
+      (component.in !== paramType || component.name !== paramName)
     ) {
       throw new Error(`parameterRef "${component.ref}" is already registered`);
     }
