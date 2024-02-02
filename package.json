@@ -49,7 +49,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@redocly/cli": "1.6.0",
+    "@redocly/cli": "1.8.0",
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.1.0",
     "openapi3-ts": "4.2.1",
