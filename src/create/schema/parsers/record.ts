@@ -28,10 +28,16 @@ export const createRecordSchema = <
   ]);
 
   const maybeComponent = state.components.schemas.get(zodRecord.keySchema);
-  const maybeSchema =
-    maybeComponent &&
-    maybeComponent.type === 'complete' &&
-    maybeComponent.schemaObject;
+  const isComplete = maybeComponent && maybeComponent.type === 'complete';
+  const maybeSchema = isComplete && maybeComponent.schemaObject;
+  const maybeEffect =
+    (isComplete &&
+      maybeComponent.creationType && {
+        type: maybeComponent.creationType,
+        zodType: zodRecord.keySchema,
+        path: [...state.path],
+      }) ||
+    undefined;
 
   const renderedKeySchema = maybeSchema || keySchema.schema;
 
@@ -48,7 +54,11 @@ export const createRecordSchema = <
         }, {}),
         additionalProperties: false,
       },
-      effect: resolveEffect([keySchema.effect, additionalProperties.effect]),
+      effect: resolveEffect([
+        keySchema.effect,
+        additionalProperties.effect,
+        maybeEffect,
+      ]),
     };
   }
 

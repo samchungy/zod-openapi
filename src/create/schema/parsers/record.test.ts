@@ -139,6 +139,17 @@ describe('createRecordSchema', () => {
   });
 
   it('supports registering key enum schemas in 3.0.0', () => {
+    const basicEnum = z.enum(['A', 'B']);
+    const complexSchema = z
+      .string()
+      .trim()
+      .length(1)
+      .transform((val) => val.toUpperCase())
+      .pipe(basicEnum)
+      .openapi({ ref: 'key' });
+
+    const schema = z.record(complexSchema, z.string());
+
     const expected: Schema = {
       type: 'schema',
       schema: {
@@ -153,17 +164,12 @@ describe('createRecordSchema', () => {
         },
         additionalProperties: false,
       },
+      effect: {
+        type: 'output',
+        zodType: complexSchema,
+        path: [],
+      },
     };
-    const basicEnum = z.enum(['A', 'B']);
-    const complexSchema = z
-      .string()
-      .trim()
-      .length(1)
-      .transform((val) => val.toUpperCase())
-      .pipe(basicEnum)
-      .openapi({ ref: 'key' });
-
-    const schema = z.record(complexSchema, z.string());
 
     const result = createRecordSchema(schema, createOutputOpenapi3State());
 
