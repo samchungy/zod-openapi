@@ -119,6 +119,7 @@ const expectedZodMetadata: Schema = {
   schema: {
     $ref: '#/components/schemas/a',
   },
+  zodType: zodMetadata,
 };
 
 enum Direction {
@@ -340,13 +341,7 @@ const expectedZodLazy: Schema = {
   schema: {
     $ref: '#/components/schemas/lazy',
   },
-};
-
-const expectedZodLazyComplex: Schema = {
-  type: 'ref',
-  schema: {
-    $ref: '#/components/schemas/user',
-  },
+  zodType: zodLazy,
 };
 
 const BasePost = z.object({
@@ -373,6 +368,14 @@ const PostSchema: ZodType<Post> = BasePost.extend({
 const zodLazyComplex: ZodType<User> = BaseUser.extend({
   posts: z.array(z.lazy(() => PostSchema)).optional(),
 }).openapi({ ref: 'user' });
+
+const expectedZodLazyComplex: Schema = {
+  type: 'ref',
+  schema: {
+    $ref: '#/components/schemas/user',
+  },
+  zodType: zodLazyComplex,
+};
 
 const zodBranded = z.object({ name: z.string() }).brand<'Cat'>();
 const expectedZodBranded: Schema = {
