@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { FooSchema, JobIdSchema, JobTitleSchema, UserIdSchema } from './common';
+import { JobIdSchema, JobTitleSchema, UserIdSchema } from './common';
 
 /**
  * Get Job Query Parameters
@@ -16,7 +16,6 @@ export const GetJobQuerySchema = z
      * Foo Schema
      * @example "123"
      */
-    foo: FooSchema,
   })
   .openapi({ description: 'Get Job Query Parameters' });
 
@@ -44,7 +43,6 @@ export const GetJobResponseSchema = z
      * Foo Schema
      * @example "123"
      */
-    foo: FooSchema,
   })
   .openapi({
     description: 'Get Job Response',

@@ -28,12 +28,3 @@ export const JobTitleSchema = z.string().nonempty().openapi({
   example: 'Mid level developer',
   ref: 'jobTitle',
 });
-
-/**
- * Foo Schema
- * @example "123"
- */
-export const FooSchema = z
-  .string()
-  .transform((val) => Number(val))
-  .openapi({ description: 'Foo Schema', example: '123', ref: 'foo' });
