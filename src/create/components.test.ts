@@ -243,7 +243,6 @@ describe('createComponents', () => {
       schemaObject: {
         type: 'string',
       },
-      creationType: 'output',
     });
     const paramMap: ParameterComponentMap = new Map();
     paramMap.set(z.string(), {
@@ -380,7 +379,6 @@ describe('createComponents', () => {
       schemaObject: {
         type: 'string',
       },
-      creationType: 'output',
     });
     const paramMap: ParameterComponentMap = new Map();
     paramMap.set(z.string(), {

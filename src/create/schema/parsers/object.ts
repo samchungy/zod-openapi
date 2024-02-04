@@ -11,9 +11,14 @@ import type {
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
 import { createComponentSchemaRef } from '../../components';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
 
 import { isOptionalSchema } from './optional';
+import { resolveEffect } from './transform';
 
 export const createObjectSchema = <
   T extends ZodRawShape,
@@ -24,7 +29,7 @@ export const createObjectSchema = <
 >(
   zodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input>,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const extendedSchema = createExtendedSchema(
     zodObject,
     zodObject._def.extendMetadata?.extends,
@@ -55,7 +60,7 @@ export const createExtendedSchema = <
   zodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input>,
   baseZodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input> | undefined,
   state: SchemaState,
-): oas31.SchemaObject | undefined => {
+): Schema | undefined => {
   if (!baseZodObject) {
     return undefined;
   }
@@ -93,9 +98,24 @@ export const createExtendedSchema = <
     return undefined;
   }
 
+  const extendedSchema = createObjectSchemaFromShape(
+    diffShape,
+    diffOpts,
+    state,
+  );
+
   return {
-    allOf: [{ $ref: createComponentSchemaRef(completeComponent.ref) }],
-    ...createObjectSchemaFromShape(diffShape, diffOpts, state),
+    type: 'schema',
+    schema: {
+      allOf: [{ $ref: createComponentSchemaRef(completeComponent.ref) }],
+      ...extendedSchema.schema,
+    },
+    effect: resolveEffect([
+      completeComponent.type === 'complete'
+        ? completeComponent.effect
+        : undefined,
+      extendedSchema.effect,
+    ]),
   };
 };
 
@@ -148,19 +168,28 @@ export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
   { unknownKeys, catchAll }: AdditionalPropertyOptions,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const properties = mapProperties(shape, state);
   const required = mapRequired(shape, state);
+  const additionalProperties = !isZodType(catchAll, 'ZodNever')
+    ? createSchemaObject(catchAll, state, ['additional properties'])
+    : undefined;
+
   return {
-    type: 'object',
-    ...(properties && { properties }),
-    ...(required && { required }),
-    ...(unknownKeys === 'strict' && { additionalProperties: false }),
-    ...(!isZodType(catchAll, 'ZodNever') && {
-      additionalProperties: createSchemaObject(catchAll, state, [
-        'additional properties',
-      ]),
-    }),
+    type: 'schema',
+    schema: {
+      type: 'object',
+      ...(properties && { properties: properties.properties }),
+      ...(required && { required }),
+      ...(unknownKeys === 'strict' && { additionalProperties: false }),
+      ...(additionalProperties && {
+        additionalProperties: additionalProperties.schema,
+      }),
+    },
+    effect: resolveEffect([
+      ...(properties?.effects ?? []),
+      additionalProperties?.effect,
+    ]),
   };
 };
 
@@ -179,12 +208,22 @@ export const mapRequired = (
   return required;
 };
 
+interface PropertyMap {
+  properties: NonNullable<oas31.SchemaObject['properties']>;
+  effects: Array<Schema['effect']>;
+}
+
 export const mapProperties = (
   shape: ZodRawShape,
   state: SchemaState,
-): oas31.SchemaObject['properties'] =>
-  Object.entries(shape).reduce<NonNullable<oas31.SchemaObject['properties']>>(
-    (acc, [key, zodSchema]): NonNullable<oas31.SchemaObject['properties']> => {
+): PropertyMap | undefined => {
+  const shapeEntries = Object.entries(shape);
+
+  if (!shapeEntries.length) {
+    return undefined;
+  }
+  return shapeEntries.reduce(
+    (acc, [key, zodSchema]) => {
       if (
         isZodType(zodSchema, 'ZodNever') ||
         isZodType(zodSchema, 'ZodUndefined')
@@ -192,8 +231,17 @@ export const mapProperties = (
         return acc;
       }
 
-      acc[key] = createSchemaObject(zodSchema, state, [`property: ${key}`]);
+      const property = createSchemaObject(zodSchema, state, [
+        `property: ${key}`,
+      ]);
+
+      acc.properties[key] = property.schema;
+      acc.effects.push(property.effect);
       return acc;
     },
-    {},
+    {
+      properties: {},
+      effects: [],
+    } as PropertyMap,
   );
+};

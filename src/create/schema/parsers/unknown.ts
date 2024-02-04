@@ -1,7 +1,10 @@
 import type { ZodAny, ZodUnknown } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { Schema } from '..';
 
 export const createUnknownSchema = (
   _zodUnknown: ZodUnknown | ZodAny,
-): oas31.SchemaObject => ({});
+): Schema => ({
+  type: 'schema',
+  schema: {},
+});

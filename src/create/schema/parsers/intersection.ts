@@ -1,7 +1,12 @@
 import type { ZodIntersection, ZodTypeAny } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
+
+import { resolveEffect } from './transform';
 
 export const createIntersectionSchema = <
   T extends ZodTypeAny,
@@ -9,11 +14,19 @@ export const createIntersectionSchema = <
 >(
   zodIntersection: ZodIntersection<T, U>,
   state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => ({
-  allOf: [
-    createSchemaObject(zodIntersection._def.left, state, ['intersection left']),
-    createSchemaObject(zodIntersection._def.right, state, [
-      'intersection right',
-    ]),
-  ],
-});
+): Schema => {
+  const left = createSchemaObject(zodIntersection._def.left, state, [
+    'intersection left',
+  ]);
+  const right = createSchemaObject(zodIntersection._def.right, state, [
+    'intersection right',
+  ]);
+
+  return {
+    type: 'schema',
+    schema: {
+      allOf: [left.schema, right.schema],
+    },
+    effect: resolveEffect([left.effect, right.effect]),
+  };
+};

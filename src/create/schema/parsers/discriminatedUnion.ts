@@ -8,7 +8,13 @@ import type {
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
+
+import { resolveEffect } from './transform';
 
 export const createDiscriminatedUnionSchema = <
   Discriminator extends string,
@@ -16,20 +22,25 @@ export const createDiscriminatedUnionSchema = <
 >(
   zodDiscriminatedUnion: ZodDiscriminatedUnion<Discriminator, Options>,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const options = zodDiscriminatedUnion.options;
   const schemas = options.map((option, index) =>
     createSchemaObject(option, state, [`discriminated union option ${index}`]),
   );
+  const schemaObjects = schemas.map((schema) => schema.schema);
   const discriminator = mapDiscriminator(
-    schemas,
+    schemaObjects,
     options,
     zodDiscriminatedUnion.discriminator,
     state,
   );
   return {
-    oneOf: schemas,
-    ...(discriminator && { discriminator }),
+    type: 'schema',
+    schema: {
+      oneOf: schemaObjects,
+      ...(discriminator && { discriminator }),
+    },
+    effect: resolveEffect(schemas.map((schema) => schema.effect)),
   };
 };
 

@@ -12,9 +12,19 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchemaObject, newSchemaState } from './schema';
+import { type SchemaState, createSchemaObject } from './schema';
 
 export type CreationType = 'input' | 'output';
+export type Effect = {
+  type: CreationType;
+  zodType: ZodType;
+  path: string[];
+  component?: {
+    ref: string;
+    path: string[];
+    zodType: ZodType;
+  };
+};
 
 export interface CompleteSchemaComponent extends BaseSchemaComponent {
   type: 'complete';
@@ -23,8 +33,8 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
-  /** Set when the created schemaObject is specific to a particular CreationType */
-  creationType?: CreationType;
+  /** Set when the created schemaObject is specific to a particular effect */
+  effect?: Effect;
 }
 
 /**
@@ -347,12 +357,12 @@ const createSchemaComponents = (
 ): oas31.ComponentsObject['schemas'] => {
   Array.from(components.schemas).forEach(([schema, { type }], index) => {
     if (type === 'manual') {
-      const state: SchemaState = newSchemaState({
+      const state: SchemaState = {
         components,
         type: schema._def.openapi?.refType ?? 'output',
         path: [],
         visited: new Set(),
-      });
+      };
 
       createSchemaObject(schema, state, [`component schema index ${index}`]);
     }

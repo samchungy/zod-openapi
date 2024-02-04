@@ -8,7 +8,7 @@ import type {
   ZodOpenApiContentObject,
   ZodOpenApiMediaTypeObject,
 } from './document';
-import { createSchemaObject, newSchemaState } from './schema';
+import { createSchemaObject } from './schema';
 
 export const createMediaTypeSchema = (
   schemaObject:
@@ -30,14 +30,14 @@ export const createMediaTypeSchema = (
 
   return createSchemaObject(
     schemaObject,
-    newSchemaState({
+    {
       components,
       type,
       path: [],
       visited: new Set(),
-    }),
+    },
     subpath,
-  );
+  ).schema;
 };
 
 const createMediaTypeObject = (

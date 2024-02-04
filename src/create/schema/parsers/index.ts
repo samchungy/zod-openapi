@@ -1,8 +1,7 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
-import type { SchemaState } from '../../schema';
+import type { Schema, SchemaState } from '../../schema';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -41,7 +40,7 @@ export const createSchemaSwitch = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
+): Schema => {
   if (zodSchema._def.openapi?.type) {
     return createManualTypeSchema(zodSchema, state);
   }

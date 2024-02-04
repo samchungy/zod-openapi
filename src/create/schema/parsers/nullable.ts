@@ -1,66 +1,94 @@
 import type { ZodNullable, ZodTypeAny } from 'zod';
 
-import { isReferenceObject, satisfiesVersion } from '../../../openapi';
+import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import type { ZodOpenApiVersion } from '../../document';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
 
 export const createNullableSchema = <T extends ZodTypeAny>(
   zodNullable: ZodNullable<T>,
   state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
+): Schema => {
   const schemaObject = createSchemaObject(zodNullable.unwrap(), state, [
     'nullable',
   ]);
 
   if (satisfiesVersion(state.components.openapi, '3.1.0')) {
-    if (isReferenceObject(schemaObject) || schemaObject.allOf) {
+    if (schemaObject.type === 'ref' || schemaObject.schema.allOf) {
       return {
-        oneOf: mapNullOf([schemaObject], state.components.openapi),
+        type: 'schema',
+        schema: {
+          oneOf: mapNullOf([schemaObject.schema], state.components.openapi),
+        },
+        effect: schemaObject.effect,
       };
     }
 
-    if (schemaObject.oneOf) {
-      const { oneOf, ...schema } = schemaObject;
+    if (schemaObject.schema.oneOf) {
+      const { oneOf, ...schema } = schemaObject.schema;
       return {
-        oneOf: mapNullOf(oneOf, state.components.openapi),
-        ...schema,
+        type: 'schema',
+        schema: {
+          oneOf: mapNullOf(oneOf, state.components.openapi),
+          ...schema,
+        },
+        effect: schemaObject.effect,
       };
     }
 
-    if (schemaObject.anyOf) {
-      const { anyOf, ...schema } = schemaObject;
+    if (schemaObject.schema.anyOf) {
+      const { anyOf, ...schema } = schemaObject.schema;
       return {
-        anyOf: mapNullOf(anyOf, state.components.openapi),
-        ...schema,
+        type: 'schema',
+        schema: {
+          anyOf: mapNullOf(anyOf, state.components.openapi),
+          ...schema,
+        },
+        effect: schemaObject.effect,
       };
     }
 
-    const { type, ...schema } = schemaObject;
+    const { type, ...schema } = schemaObject.schema;
 
     return {
-      type: mapNullType(type),
-      ...schema,
+      type: 'schema',
+      schema: {
+        type: mapNullType(type),
+        ...schema,
+      },
+      effect: schemaObject.effect,
     };
   }
 
-  if (isReferenceObject(schemaObject)) {
+  if (schemaObject.type === 'ref') {
     return {
-      allOf: [schemaObject],
-      nullable: true,
-    } as oas31.SchemaObject;
+      type: 'schema',
+      schema: {
+        allOf: [schemaObject.schema],
+        nullable: true,
+      } as oas31.SchemaObject,
+      effect: schemaObject.effect,
+    };
   }
 
-  const { type, ...schema } = schemaObject;
+  const { type, ...schema } = schemaObject.schema;
 
   return {
-    ...(type && { type }),
-    nullable: true,
-    ...schema,
-    // https://github.com/OAI/OpenAPI-Specification/blob/main/proposals/2019-10-31-Clarify-Nullable.md#if-a-schema-specifies-nullable-true-and-enum-1-2-3-does-that-schema-allow-null-values-see-1900
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ...(schema.enum && { enum: [...schema.enum, null] }),
-  } as oas31.SchemaObject;
+    type: 'schema',
+    schema: {
+      ...(type && { type }),
+      nullable: true,
+      ...schema,
+      // https://github.com/OAI/OpenAPI-Specification/blob/main/proposals/2019-10-31-Clarify-Nullable.md#if-a-schema-specifies-nullable-true-and-enum-1-2-3-does-that-schema-allow-null-values-see-1900
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      ...(schema.enum && { enum: [...schema.enum, null] }),
+    } as oas31.SchemaObject,
+    effect: schemaObject.effect,
+  };
 };
 
 const mapNullType = (

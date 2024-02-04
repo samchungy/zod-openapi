@@ -16,6 +16,7 @@ export const UserIdSchema = z.string().openapi({
 export const JobIdSchema = z.string().uuid().openapi({
   description: 'A unique identifier for a job',
   example: '4dd643ff-7ec7-4666-9c88-50b7d3da34e4',
+  ref: 'jobId',
 });
 
 /**
@@ -25,4 +26,5 @@ export const JobIdSchema = z.string().uuid().openapi({
 export const JobTitleSchema = z.string().nonempty().openapi({
   description: 'A name that describes the job',
   example: 'Mid level developer',
+  ref: 'jobTitle',
 });

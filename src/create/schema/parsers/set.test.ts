@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
+import type { Schema } from '..';
 import { extendZodWithOpenApi } from '../../../extendZod';
-import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
 
 import { createSetSchema } from './set';
@@ -10,34 +10,40 @@ extendZodWithOpenApi(z);
 
 describe('createSetSchema', () => {
   it('creates simple arrays', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'array',
-      items: {
-        type: 'string',
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+        uniqueItems: true,
       },
-      uniqueItems: true,
     };
     const schema = z.set(z.string());
 
     const result = createSetSchema(schema, createOutputState());
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual(expected);
   });
 
   it('creates min and max', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'array',
-      uniqueItems: true,
-      items: {
-        type: 'string',
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'array',
+        uniqueItems: true,
+        items: {
+          type: 'string',
+        },
+        minItems: 0,
+        maxItems: 10,
       },
-      minItems: 0,
-      maxItems: 10,
     };
     const schema = z.set(z.string()).min(0).max(10);
 
     const result = createSetSchema(schema, createOutputState());
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual(expected);
   });
 });

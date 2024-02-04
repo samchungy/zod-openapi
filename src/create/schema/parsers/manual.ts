@@ -1,7 +1,6 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
-import type { SchemaState } from '../../schema';
+import type { Schema, SchemaState } from '../../schema';
 
 export const createManualTypeSchema = <
   Output = unknown,
@@ -10,7 +9,7 @@ export const createManualTypeSchema = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   if (!zodSchema._def.openapi?.type) {
     const schemaName = zodSchema.constructor.name;
     throw new Error(
@@ -21,6 +20,9 @@ export const createManualTypeSchema = <
   }
 
   return {
-    type: zodSchema._def.openapi.type,
+    type: 'schema',
+    schema: {
+      type: zodSchema._def.openapi.type,
+    },
   };
 };

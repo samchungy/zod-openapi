@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
+import type { Schema } from '..';
 import { extendZodWithOpenApi } from '../../../extendZod';
-import type { oas31 } from '../../../openapi3-ts/dist';
 import { createInputState, createOutputState } from '../../../testing/state';
 
 import { createOptionalSchema, isOptionalSchema } from './optional';
@@ -10,14 +10,17 @@ extendZodWithOpenApi(z);
 
 describe('createOptionalSchema', () => {
   it('creates a simple string schema for an optional string', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'string',
+      },
     };
     const schema = z.string().optional();
 
     const result = createOptionalSchema(schema, createOutputState());
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual(expected);
   });
 });
 
@@ -106,5 +109,31 @@ describe('isOptionalSchema', () => {
     const result = isOptionalSchema(schema, createInputState());
 
     expect(result).toBe(true);
+  });
+
+  it('returns true for an input effectType on an output state pipeline', () => {
+    const schema = z
+      .string()
+      .optional()
+      .transform((str) => str?.length ?? 0)
+      .pipe(z.number())
+      .openapi({ effectType: 'input' });
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toBe(true);
+  });
+
+  it('returns false for an output effectType on an input state pipeline', () => {
+    const schema = z
+      .string()
+      .optional()
+      .transform((str) => str?.length ?? 0)
+      .pipe(z.number())
+      .openapi({ effectType: 'output' });
+
+    const result = isOptionalSchema(schema, createInputState());
+
+    expect(result).toBe(false);
   });
 });

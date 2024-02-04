@@ -1,8 +1,13 @@
 import type { ZodTuple, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
+
+import { resolveEffect } from './transform';
 
 export const createTupleSchema = <
   T extends [] | [ZodTypeAny, ...ZodTypeAny[]] = [ZodTypeAny, ...ZodTypeAny[]],
@@ -10,68 +15,96 @@ export const createTupleSchema = <
 >(
   zodTuple: ZodTuple<T, Rest>,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const items = zodTuple.items;
   const rest = zodTuple._def.rest;
-  return {
-    type: 'array',
-    ...mapItemProperties(items, rest, state),
-  } as oas31.SchemaObject;
-};
 
-const mapPrefixItems = (
-  items: ZodTypeAny[],
-  state: SchemaState,
-): oas31.SchemaObject['prefixItems'] | undefined => {
-  if (items.length) {
-    return items.map((item, index) =>
-      createSchemaObject(item, state, [`tuple item ${index}`]),
-    );
-  }
-  return undefined;
-};
-
-const mapItemProperties = (
-  items: ZodTypeAny[],
-  rest: ZodTypeAny | null,
-  state: SchemaState,
-): Pick<
-  oas31.SchemaObject,
-  'items' | 'minItems' | 'maxItems' | 'prefixItems'
-> => {
   const prefixItems = mapPrefixItems(items, state);
 
   if (satisfiesVersion(state.components.openapi, '3.1.0')) {
     if (!rest) {
       return {
-        maxItems: items.length,
-        minItems: items.length,
-        ...(prefixItems && { prefixItems }),
+        type: 'schema',
+        schema: {
+          type: 'array',
+          maxItems: items.length,
+          minItems: items.length,
+          ...(prefixItems && {
+            prefixItems: prefixItems.schemas.map((item) => item.schema),
+          }),
+        },
+        effect: prefixItems?.effect,
       };
     }
 
+    const itemSchema = createSchemaObject(rest, state, ['tuple items']);
+
     return {
-      items: createSchemaObject(rest, state, ['tuple items']),
-      ...(prefixItems && { prefixItems }),
+      type: 'schema',
+      schema: {
+        type: 'array',
+        items: itemSchema.schema,
+        ...(prefixItems && {
+          prefixItems: prefixItems.schemas.map((item) => item.schema),
+        }),
+      },
+      effect: resolveEffect([prefixItems?.effect, itemSchema.effect]),
     };
   }
 
   if (!rest) {
     return {
-      maxItems: items.length,
-      minItems: items.length,
-      ...(prefixItems && { items: { oneOf: prefixItems } }),
+      type: 'schema',
+      schema: {
+        type: 'array',
+        maxItems: items.length,
+        minItems: items.length,
+        ...(prefixItems && {
+          items: { oneOf: prefixItems.schemas.map((item) => item.schema) },
+        }),
+      },
+      effect: prefixItems?.effect,
+    };
+  }
+
+  if (prefixItems) {
+    const restSchema = createSchemaObject(rest, state, ['tuple items']);
+    return {
+      type: 'schema',
+      schema: {
+        type: 'array',
+        items: {
+          oneOf: [
+            ...prefixItems.schemas.map((item) => item.schema),
+            restSchema.schema,
+          ],
+        },
+      },
+      effect: resolveEffect([restSchema.effect, restSchema.effect]),
     };
   }
 
   return {
-    ...(prefixItems && {
-      items: {
-        oneOf: [
-          ...prefixItems,
-          createSchemaObject(rest, state, ['tuple items']),
-        ],
-      },
-    }),
+    type: 'schema',
+    schema: {
+      type: 'array',
+    },
   };
+};
+
+const mapPrefixItems = (
+  items: ZodTypeAny[],
+  state: SchemaState,
+): { effect?: Schema['effect']; schemas: Schema[] } | undefined => {
+  if (items.length) {
+    const schemas = items.map((item, index) =>
+      createSchemaObject(item, state, [`tuple item ${index}`]),
+    );
+
+    return {
+      effect: resolveEffect(schemas.map((s) => s.effect)),
+      schemas,
+    };
+  }
+  return undefined;
 };

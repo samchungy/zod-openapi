@@ -1,9 +1,10 @@
 import type { ZodBoolean } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { Schema } from '..';
 
-export const createBooleanSchema = (
-  _zodBoolean: ZodBoolean,
-): oas31.SchemaObject => ({
-  type: 'boolean',
+export const createBooleanSchema = (_zodBoolean: ZodBoolean): Schema => ({
+  type: 'schema',
+  schema: {
+    type: 'boolean',
+  },
 });

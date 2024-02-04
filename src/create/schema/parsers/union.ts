@@ -1,25 +1,38 @@
 import type { ZodTypeAny, ZodUnion } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
+
+import { resolveEffect } from './transform';
 
 export const createUnionSchema = <
   T extends readonly [ZodTypeAny, ...ZodTypeAny[]],
 >(
   zodUnion: ZodUnion<T>,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const schemas = zodUnion.options.map((option, index) =>
     createSchemaObject(option, state, [`union option ${index}`]),
   );
 
   if (zodUnion._def.openapi?.unionOneOf) {
     return {
-      oneOf: schemas,
+      type: 'schema',
+      schema: {
+        oneOf: schemas.map((s) => s.schema),
+      },
+      effect: resolveEffect(schemas.map((s) => s.effect)),
     };
   }
 
   return {
-    anyOf: schemas,
+    type: 'schema',
+    schema: {
+      anyOf: schemas.map((s) => s.schema),
+    },
+    effect: resolveEffect(schemas.map((s) => s.effect)),
   };
 };

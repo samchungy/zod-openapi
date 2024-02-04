@@ -1,7 +1,10 @@
 import type { ZodNull } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { Schema } from '..';
 
-export const createNullSchema = (_zodNull: ZodNull): oas31.SchemaObject => ({
-  type: 'null',
+export const createNullSchema = (_zodNull: ZodNull): Schema => ({
+  type: 'schema',
+  schema: {
+    type: 'null',
+  },
 });
