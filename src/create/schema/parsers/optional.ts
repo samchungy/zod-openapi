@@ -52,11 +52,13 @@ export const isOptionalSchema = (
   }
 
   if (isZodType(zodSchema, 'ZodPipeline')) {
-    if (state.type === 'input') {
+    const type = zodSchema._def.openapi?.effectType ?? state.type;
+
+    if (type === 'input') {
       return isOptionalSchema(zodSchema._def.in, state);
     }
 
-    if (state.type === 'output') {
+    if (type === 'output') {
       return isOptionalSchema(zodSchema._def.out, state);
     }
   }

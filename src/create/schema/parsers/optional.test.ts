@@ -110,4 +110,30 @@ describe('isOptionalSchema', () => {
 
     expect(result).toBe(true);
   });
+
+  it('returns true for an input effectType on an output state pipeline', () => {
+    const schema = z
+      .string()
+      .optional()
+      .transform((str) => str?.length ?? 0)
+      .pipe(z.number())
+      .openapi({ effectType: 'input' });
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toBe(true);
+  });
+
+  it('returns false for an output effectType on an input state pipeline', () => {
+    const schema = z
+      .string()
+      .optional()
+      .transform((str) => str?.length ?? 0)
+      .pipe(z.number())
+      .openapi({ effectType: 'output' });
+
+    const result = isOptionalSchema(schema, createInputState());
+
+    expect(result).toBe(false);
+  });
 });
