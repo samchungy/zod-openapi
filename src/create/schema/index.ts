@@ -88,6 +88,7 @@ export const createNewRef = <
   return {
     type: 'ref',
     schema: { $ref: createComponentSchemaRef(ref) },
+    effect: newSchema.effect,
   };
 };
 

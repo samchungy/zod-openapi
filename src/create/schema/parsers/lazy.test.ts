@@ -197,8 +197,54 @@ describe('createLazySchema', () => {
       ref: 'post',
     });
 
-    const result = createNewSchema(UserSchema, state, []);
+    const result = createNewSchema(UserSchema, state);
 
     expect(result.schema).toEqual(expected);
+  });
+
+  it('creates a lazy schema which contains an effect', () => {
+    type Post = {
+      id: string;
+      userId: string;
+      user: Post;
+    };
+
+    const UserIdSchema = z.string().pipe(z.string());
+
+    const PostSchema: ZodType<Post> = z
+      .object({
+        id: z.string(),
+        userId: UserIdSchema,
+        user: z.lazy(() => PostSchema),
+      })
+      .openapi({ ref: 'post' });
+
+    const ContainerSchema = z.object({
+      post: PostSchema,
+    });
+
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        properties: {
+          post: {
+            $ref: '#/components/schemas/post',
+          },
+        },
+        required: ['post'],
+        type: 'object',
+      },
+      effect: {
+        type: 'output',
+        zodType: UserIdSchema,
+        path: ['property: post', 'property: user'],
+      },
+    };
+
+    const state = createOutputState();
+
+    const result = createObjectSchema(ContainerSchema, state);
+
+    expect(result).toEqual(expected);
   });
 });
