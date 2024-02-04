@@ -4,12 +4,7 @@ import { extendZodWithOpenApi } from '../../extendZod';
 import { createInputState, createOutputState } from '../../testing/state';
 import { getDefaultComponents } from '../components';
 
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-  newSchemaState,
-} from '.';
+import { type Schema, type SchemaState, createSchemaObject } from '.';
 
 extendZodWithOpenApi(z);
 
@@ -495,20 +490,20 @@ describe('createSchemaObject', () => {
       .object({ a: z.string().transform((arg) => arg.length) })
       .openapi({ ref: 'a' });
     const components = getDefaultComponents();
-    const state: SchemaState = newSchemaState({
+    const state: SchemaState = {
       components,
       type: 'input',
       path: [],
       visited: new Set(),
-    });
+    };
     createSchemaObject(inputSchema, state, ['previous']);
 
-    const outputState: SchemaState = newSchemaState({
+    const outputState: SchemaState = {
       components,
       type: 'output',
       path: [],
       visited: new Set(),
-    });
+    };
 
     const outputSchema = z.object({ a: inputSchema });
     expect(() =>

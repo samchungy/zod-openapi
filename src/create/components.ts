@@ -12,7 +12,7 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchemaObject, newSchemaState } from './schema';
+import { type SchemaState, createSchemaObject } from './schema';
 
 export type CreationType = 'input' | 'output';
 
@@ -347,12 +347,12 @@ const createSchemaComponents = (
 ): oas31.ComponentsObject['schemas'] => {
   Array.from(components.schemas).forEach(([schema, { type }], index) => {
     if (type === 'manual') {
-      const state: SchemaState = newSchemaState({
+      const state: SchemaState = {
         components,
         type: schema._def.openapi?.refType ?? 'output',
         path: [],
         visited: new Set(),
-      });
+      };
 
       createSchemaObject(schema, state, [`component schema index ${index}`]);
     }

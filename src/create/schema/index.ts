@@ -21,13 +21,6 @@ export interface SchemaState {
   visited: Set<ZodType>;
 }
 
-export const newSchemaState = (state: SchemaState): SchemaState => ({
-  type: state.type,
-  components: state.components,
-  path: [...state.path],
-  visited: new Set(state.visited),
-});
-
 export const createNewSchema = <
   Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -79,10 +72,10 @@ export const createNewRef = <
     ref,
   });
 
-  const newSchema = createNewSchema(
-    zodSchema,
-    newSchemaState({ ...state, visited: new Set() }),
-  );
+  const newSchema = createNewSchema(zodSchema, {
+    ...state,
+    visited: new Set(),
+  });
 
   state.components.schemas.set(zodSchema, {
     type: 'complete',

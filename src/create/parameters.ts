@@ -5,7 +5,7 @@ import { isAnyZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
 import type { ZodOpenApiParameters } from './document';
-import { type SchemaState, createSchemaObject, newSchemaState } from './schema';
+import { type SchemaState, createSchemaObject } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
 export const createComponentParamRef = (ref: string) =>
@@ -17,12 +17,12 @@ export const createBaseParameter = (
   subpath: string[],
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
-  const state: SchemaState = newSchemaState({
+  const state: SchemaState = {
     components,
     type: 'input',
     path: [],
     visited: new Set(),
-  });
+  };
   const schemaObject = createSchemaObject(schema, state, [
     ...subpath,
     'schema',
