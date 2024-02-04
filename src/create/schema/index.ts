@@ -177,10 +177,8 @@ export const createSchemaObject = <
 ): Schema => {
   state.path.push(...subpath);
   const schema = createSchemaOrRef(zodSchema, state);
-  if (schema.effect?.type) {
-    if (state.type !== schema.effect.type) {
-      throwTransformError(schema.effect.zodType, schema.effect.path);
-    }
+  if (schema.effect?.type && state.type !== schema.effect.type) {
+    throwTransformError(schema.effect.zodType, schema.effect.path);
   }
   state.path.pop();
   return schema;
