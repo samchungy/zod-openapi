@@ -27,8 +27,9 @@ export const createDiscriminatedUnionSchema = <
   const schemas = options.map((option, index) =>
     createSchemaObject(option, state, [`discriminated union option ${index}`]),
   );
+  const schemaObjects = schemas.map((schema) => schema.schema);
   const discriminator = mapDiscriminator(
-    schemas.map((schema) => schema.schema),
+    schemaObjects,
     options,
     zodDiscriminatedUnion.discriminator,
     state,
@@ -36,7 +37,7 @@ export const createDiscriminatedUnionSchema = <
   return {
     type: 'schema',
     schema: {
-      oneOf: schemas.map((schema) => schema.schema),
+      oneOf: schemaObjects,
       ...(discriminator && { discriminator }),
     },
     effect: resolveEffect(schemas.map((schema) => schema.effect)),
