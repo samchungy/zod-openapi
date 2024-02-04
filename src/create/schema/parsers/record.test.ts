@@ -168,6 +168,11 @@ describe('createRecordSchema', () => {
         type: 'output',
         zodType: complexSchema,
         path: ['record key'],
+        component: {
+          path: ['record key'],
+          ref: 'key',
+          zodType: complexSchema,
+        },
       },
     };
 

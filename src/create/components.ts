@@ -22,6 +22,7 @@ export type Effect = {
   component?: {
     ref: string;
     path: string[];
+    zodType: ZodType;
   };
 };
 

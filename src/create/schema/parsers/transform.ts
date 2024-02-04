@@ -101,7 +101,11 @@ export const throwTransformError = (effect: Effect) => {
     )} is used within a registered compoment schema${
       effect.component ? ` (${effect.component.ref})` : ''
     } and contains an ${input} transformation${
-      effect.component ? ` defined at ${effect.component.path.join(' > ')}` : ''
+      effect.component
+        ? ` (${getZodTypeName(
+            effect.component.zodType,
+          )}) defined at ${effect.component.path.join(' > ')}`
+        : ''
     } which is also used in an ${opposite} schema.
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:

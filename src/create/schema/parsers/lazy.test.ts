@@ -236,8 +236,13 @@ describe('createLazySchema', () => {
       },
       effect: {
         type: 'output',
-        zodType: UserIdSchema,
-        path: ['property: post', 'property: user'],
+        zodType: PostSchema,
+        path: ['property: post'],
+        component: {
+          ref: 'post',
+          path: ['property: post', 'property: userId'],
+          zodType: UserIdSchema,
+        },
       },
     };
 

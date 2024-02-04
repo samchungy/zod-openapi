@@ -508,7 +508,7 @@ describe('createSchemaObject', () => {
     const outputSchema = z.object({ a: inputSchema });
     expect(() => createSchemaObject(outputSchema, outputState, ['previous']))
       .toThrowErrorMatchingInlineSnapshot(`
-"The ZodObject at previous > property: a is used within a registered compoment schema (a) and contains an input transformation defined at previous > property: a which is also used in an output schema.
+"The ZodObject at previous > property: a is used within a registered compoment schema (a) and contains an input transformation (ZodEffects - transform) defined at previous > property: a which is also used in an output schema.
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
@@ -534,7 +534,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       path: [],
       visited: new Set(),
     };
-    createSchemaObject(inputSchema, inputState, ['previous', 'path']);
+    createSchemaObject(inputSchema, inputState, ['previous', 'other path']);
 
     const outputSchema = z.object({
       a: inputSchema,
@@ -550,7 +550,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
     expect(() =>
       createSchemaObject(outputSchema, outputState, ['previous', 'path']),
     ).toThrowErrorMatchingInlineSnapshot(`
-"The ZodEffects - transform at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation defined at previous > path which is also used in an output schema.
+"The ZodEffects - transform at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation (ZodEffects - transform) defined at previous > other path which is also used in an output schema.
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
@@ -576,7 +576,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       path: [],
       visited: new Set(),
     };
-    createSchemaObject(inputSchema, inputState, ['previous', 'path']);
+    createSchemaObject(inputSchema, inputState, ['previous', 'other path']);
 
     const outputSchema = z.object({
       a: inputSchema,
@@ -686,7 +686,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       visited: new Set(),
     };
 
-    createSchemaObject(inputSchema, inputState, ['previous', 'path']);
+    createSchemaObject(inputSchema, inputState, ['previous', 'other path']);
 
     const outputSchema = z.object({
       a: inputSchema,
@@ -702,7 +702,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
     expect(() =>
       createSchemaObject(outputSchema, outputState, ['previous', 'path']),
     ).toThrowErrorMatchingInlineSnapshot(`
-"The ZodPipeline at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation defined at previous > path which is also used in an output schema.
+"The ZodPipeline at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation (ZodPipeline) defined at previous > other path which is also used in an output schema.
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 

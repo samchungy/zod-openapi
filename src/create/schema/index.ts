@@ -88,7 +88,18 @@ export const createNewRef = <
   return {
     type: 'ref',
     schema: { $ref: createComponentSchemaRef(ref) },
-    effect: newSchema.effect,
+    effect: newSchema.effect
+      ? {
+          type: newSchema.effect.type,
+          path: [...state.path],
+          zodType: zodSchema,
+          component: {
+            ref,
+            path: newSchema.effect.path,
+            zodType: newSchema.effect.zodType,
+          },
+        }
+      : undefined,
   };
 };
 
@@ -108,11 +119,12 @@ export const createExistingRef = <
       effect: component.effect
         ? {
             type: component.effect.type,
-            path: state.path,
+            path: [...state.path],
             zodType: zodSchema,
             component: {
               ref: component.ref,
               path: component.effect.path,
+              zodType: component.effect.zodType,
             },
           }
         : undefined,
