@@ -1,40 +1,51 @@
 import type { EnumLike, ZodNativeEnum } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import type { SchemaState } from '../../schema';
+import type { Schema, SchemaState } from '../../schema';
 
 export const createNativeEnumSchema = <T extends EnumLike>(
   zodEnum: ZodNativeEnum<T>,
   state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
+): Schema => {
   const enumValues = getValidEnumValues(zodEnum._def.values);
   const { numbers, strings } = sortStringsAndNumbers(enumValues);
 
   if (strings.length && numbers.length) {
     if (satisfiesVersion(state.components.openapi, '3.1.0'))
       return {
-        type: ['string', 'number'],
-        enum: [...strings, ...numbers],
+        type: 'schema',
+        schema: {
+          type: ['string', 'number'],
+          enum: [...strings, ...numbers],
+        },
       };
     return {
-      oneOf: [
-        { type: 'string', enum: strings },
-        { type: 'number', enum: numbers },
-      ],
+      type: 'schema',
+      schema: {
+        oneOf: [
+          { type: 'string', enum: strings },
+          { type: 'number', enum: numbers },
+        ],
+      },
     };
   }
 
   if (strings.length) {
     return {
-      type: 'string',
-      enum: strings,
+      type: 'schema',
+      schema: {
+        type: 'string',
+        enum: strings,
+      },
     };
   }
 
   return {
-    type: 'number',
-    enum: numbers,
+    type: 'schema',
+    schema: {
+      type: 'number',
+      enum: numbers,
+    },
   };
 };
 

@@ -2,7 +2,13 @@ import type { KeySchema, ZodRecord, ZodString, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
+
+import { resolveEffect } from './transform';
 
 export const createRecordSchema = <
   Key extends KeySchema = ZodString,
@@ -10,7 +16,7 @@ export const createRecordSchema = <
 >(
   zodRecord: ZodRecord<Key, Value>,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const additionalProperties = createSchemaObject(
     zodRecord.valueSchema as ZodTypeAny,
     state,
@@ -21,25 +27,28 @@ export const createRecordSchema = <
     'record key',
   ]);
 
-  const maybeComponent =
-    '$ref' in keySchema && state.components.schemas.get(zodRecord.keySchema);
+  const maybeComponent = state.components.schemas.get(zodRecord.keySchema);
   const maybeSchema =
     maybeComponent &&
     maybeComponent.type === 'complete' &&
     maybeComponent.schemaObject;
 
-  const renderedKeySchema = maybeSchema || keySchema;
+  const renderedKeySchema = maybeSchema || keySchema.schema;
 
   if ('enum' in renderedKeySchema && renderedKeySchema.enum) {
     return {
-      type: 'object',
-      properties: (renderedKeySchema.enum as string[]).reduce<
-        NonNullable<oas31.SchemaObject['properties']>
-      >((acc, key) => {
-        acc[key] = additionalProperties;
-        return acc;
-      }, {}),
-      additionalProperties: false,
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: (renderedKeySchema.enum as string[]).reduce<
+          NonNullable<oas31.SchemaObject['properties']>
+        >((acc, key) => {
+          acc[key] = additionalProperties.schema;
+          return acc;
+        }, {}),
+        additionalProperties: false,
+      },
+      effect: resolveEffect([keySchema.effect, additionalProperties.effect]),
     };
   }
 
@@ -50,14 +59,22 @@ export const createRecordSchema = <
     Object.keys(renderedKeySchema).length > 1
   ) {
     return {
-      type: 'object',
-      propertyNames: keySchema,
-      additionalProperties,
+      type: 'schema',
+      schema: {
+        type: 'object',
+        propertyNames: keySchema.schema,
+        additionalProperties: additionalProperties.schema,
+      },
+      effect: resolveEffect([keySchema.effect, additionalProperties.effect]),
     };
   }
 
   return {
-    type: 'object',
-    additionalProperties,
+    type: 'schema',
+    schema: {
+      type: 'object',
+      additionalProperties: additionalProperties.schema,
+    },
+    effect: additionalProperties.effect,
   };
 };

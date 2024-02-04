@@ -1,9 +1,8 @@
 import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../../extendZod';
-import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
-import { createNewSchema, createSchemaObject } from '../../schema';
+import { type Schema, createNewSchema, createSchemaObject } from '../../schema';
 
 import { createLazySchema } from './lazy';
 import { createObjectSchema } from './object';
@@ -46,9 +45,12 @@ describe('createLazySchema', () => {
   });
 
   it('creates an lazy schema when the schema contains a ref', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'array',
-      items: { $ref: '#/components/schemas/lazy' },
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/lazy' },
+      },
     };
 
     type Lazy = Lazy[];
@@ -63,24 +65,25 @@ describe('createLazySchema', () => {
     });
 
     const result = createLazySchema(lazy as ZodLazy<any>, state);
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual(expected);
   });
 
   it('supports registering the base schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-        },
-        posts: {
-          type: 'array',
-          items: {
-            $ref: '#/components/schemas/post',
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+          posts: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/post' },
           },
         },
+        required: ['id'],
       },
-      required: ['id'],
     };
 
     const BasePost = z.object({
@@ -119,11 +122,11 @@ describe('createLazySchema', () => {
       state,
     );
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual(expected);
   });
 
   it('supports sibling properties that are circular references', () => {
-    const expected: oas31.SchemaObject = {
+    const expected: Schema['schema'] = {
       type: 'object',
       properties: {
         id: {
@@ -131,15 +134,11 @@ describe('createLazySchema', () => {
         },
         posts: {
           type: 'array',
-          items: {
-            $ref: '#/components/schemas/post',
-          },
+          items: { $ref: '#/components/schemas/post' },
         },
         comments: {
           type: 'array',
-          items: {
-            $ref: '#/components/schemas/post',
-          },
+          items: { $ref: '#/components/schemas/post' },
         },
       },
       required: ['id'],
@@ -200,6 +199,6 @@ describe('createLazySchema', () => {
 
     const result = createNewSchema(UserSchema, state, []);
 
-    expect(result.schema).toStrictEqual(expected);
+    expect(result.schema).toEqual(expected);
   });
 });

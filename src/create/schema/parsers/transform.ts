@@ -1,7 +1,11 @@
 import type { ZodEffects, ZodType, ZodTypeAny, input, output } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
-import { type SchemaState, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  type SchemaState,
+  createSchemaObject,
+} from '../../schema';
 
 export const createTransformSchema = <
   T extends ZodTypeAny,
@@ -10,9 +14,12 @@ export const createTransformSchema = <
 >(
   zodTransform: ZodEffects<T, Output, Input>,
   state: SchemaState,
-): oas31.SchemaObject | oas31.ReferenceObject => {
+): Schema => {
   if (zodTransform._def.openapi?.effectType === 'output') {
-    return createManualOutputTransformSchema(zodTransform, state);
+    return {
+      type: 'schema',
+      schema: createManualOutputTransformSchema(zodTransform, state),
+    };
   }
 
   if (zodTransform._def.openapi?.effectType === 'input') {
@@ -22,13 +29,27 @@ export const createTransformSchema = <
   }
 
   if (state.type === 'output') {
-    return createManualOutputTransformSchema(zodTransform, state);
+    return {
+      type: 'schema',
+      schema: createManualOutputTransformSchema(zodTransform, state),
+    };
   }
 
-  state.effectType = 'input';
-  return createSchemaObject(zodTransform._def.schema, state, [
+  const schema = createSchemaObject(zodTransform._def.schema, state, [
     'transform input',
   ]);
+
+  return {
+    ...schema,
+    effect: resolveEffect([
+      {
+        type: 'input',
+        zodType: zodTransform,
+        path: [...state.path],
+      },
+      schema.effect,
+    ]),
+  };
 };
 
 export const createManualOutputTransformSchema = <
@@ -54,10 +75,44 @@ export const createManualOutputTransformSchema = <
   };
 };
 
-export const throwTransformError = (zodType: ZodType, state: SchemaState) => {
+export const throwTransformError = (zodType: ZodType, path: string[]) => {
   throw new Error(
-    `${JSON.stringify(zodType)} at ${state.path.join(
+    `${JSON.stringify(zodType)} at ${path.join(
       ' > ',
-    )} contains a transformation but is used in both an input and an output. This is likely a mistake. Set an \`effectType\`, wrap it in a ZodPipeline or assign it a manual type to resolve`,
+    )} is used within a registered compoment schema and contains a transformation but is used in both an input schema and output schema. This may cause the schema to render incorrectly and is most likely a mistake. Set an \`effectType\`, wrap it in a ZodPipeline or assign it a manual type to resolve the issue.`,
   );
+};
+
+export const resolveEffect = (
+  effects: Array<Schema['effect']>,
+): Schema['effect'] | undefined => {
+  const { input, output } = effects.reduce(
+    (acc, effect) => {
+      if (effect?.type === 'input') {
+        acc.input.push(effect);
+      }
+      if (effect?.type === 'output') {
+        acc.output.push(effect);
+      }
+
+      if (effect && acc.input.length > 1 && acc.output.length > 1) {
+        throwTransformError(effect.zodType, effect.path);
+      }
+      return acc;
+    },
+    { input: [], output: [] } as {
+      input: Array<Schema['effect']>;
+      output: Array<Schema['effect']>;
+    },
+  );
+
+  if (input.length > 0) {
+    return input[0];
+  }
+
+  if (output.length > 0) {
+    return output[0];
+  }
+
+  return undefined;
 };

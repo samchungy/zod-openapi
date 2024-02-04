@@ -1,10 +1,13 @@
 import type { ZodEnum } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { Schema } from '..';
 
 export const createEnumSchema = <T extends [string, ...string[]]>(
   zodEnum: ZodEnum<T>,
-): oas31.SchemaObject => ({
-  type: 'string',
-  enum: zodEnum._def.values,
+): Schema => ({
+  type: 'schema',
+  schema: {
+    type: 'string',
+    enum: zodEnum._def.values,
+  },
 });

@@ -88,7 +88,7 @@ export const createBaseHeader = (
   const required = !isOptionalSchema(schema, state);
   return {
     ...rest,
-    ...(schema && { schema: schemaObject }),
+    ...(schema && { schema: schemaObject.schema }),
     ...(required && { required }),
   };
 };

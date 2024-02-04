@@ -34,7 +34,7 @@ export const createBaseParameter = (
   return {
     ...(description && { description }),
     ...rest,
-    ...(schema && { schema: schemaObject }),
+    ...(schema && { schema: schemaObject.schema }),
     ...(required && { required }),
   };
 };

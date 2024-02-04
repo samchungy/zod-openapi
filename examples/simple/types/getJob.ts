@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { JobIdSchema, JobTitleSchema, UserIdSchema } from './common';
+import { FooSchema, JobIdSchema, JobTitleSchema, UserIdSchema } from './common';
 
 /**
  * Get Job Query Parameters
@@ -12,6 +12,11 @@ export const GetJobQuerySchema = z
      * @example "4dd643ff-7ec7-4666-9c88-50b7d3da34e4"
      */
     id: JobIdSchema,
+    /**
+     * Foo Schema
+     * @example "123"
+     */
+    foo: FooSchema,
   })
   .openapi({ description: 'Get Job Query Parameters' });
 
@@ -35,6 +40,11 @@ export const GetJobResponseSchema = z
      * @example "60001234"
      */
     userId: UserIdSchema,
+    /**
+     * Foo Schema
+     * @example "123"
+     */
+    foo: FooSchema,
   })
   .openapi({
     description: 'Get Job Response',

@@ -37,7 +37,7 @@ export const createMediaTypeSchema = (
       visited: new Set(),
     }),
     subpath,
-  );
+  ).schema;
 };
 
 const createMediaTypeObject = (

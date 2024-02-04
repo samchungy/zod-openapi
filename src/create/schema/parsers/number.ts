@@ -3,21 +3,24 @@ import type { ZodNumber, ZodNumberCheck } from 'zod';
 import { satisfiesVersion } from '../../../openapi';
 import type { oas30, oas31 } from '../../../openapi3-ts/dist';
 import type { ZodOpenApiVersion } from '../../document';
-import type { SchemaState } from '../../schema';
+import type { Schema, SchemaState } from '../../schema';
 
 export const createNumberSchema = (
   zodNumber: ZodNumber,
   state: SchemaState,
-): oas31.SchemaObject => {
+): Schema => {
   const zodNumberChecks = getZodNumberChecks(zodNumber);
 
   const minimum = mapMinimum(zodNumberChecks, state.components.openapi);
   const maximum = mapMaximum(zodNumberChecks, state.components.openapi);
 
   return {
-    type: mapNumberType(zodNumberChecks),
-    ...(minimum && (minimum as oas31.SchemaObject)), // Union types are not easy to tame
-    ...(maximum && (maximum as oas31.SchemaObject)),
+    type: 'schema',
+    schema: {
+      type: mapNumberType(zodNumberChecks),
+      ...(minimum && (minimum as oas31.SchemaObject)), // Union types are not easy to tame
+      ...(maximum && (maximum as oas31.SchemaObject)),
+    },
   };
 };
 

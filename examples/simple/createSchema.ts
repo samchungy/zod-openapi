@@ -10,8 +10,6 @@ import {
   CreateJobResponseSchema,
   GetJobQuerySchema,
   GetJobResponseSchema,
-  JobIdSchema,
-  JobTitleSchema,
 } from './types';
 
 const getJobOperation: ZodOpenApiOperationObject = {
@@ -72,10 +70,6 @@ const document = createDocument({
         bearerFormat: 'JWT',
         description: 'An s2s token issued by an allow listed consumer',
       },
-    },
-    schemas: {
-      jobTitle: JobTitleSchema,
-      jobId: JobIdSchema,
     },
   },
   servers: [

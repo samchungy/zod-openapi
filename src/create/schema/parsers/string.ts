@@ -1,10 +1,9 @@
 import type { ZodString, ZodStringCheck } from 'zod';
 
+import type { Schema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';
 
-export const createStringSchema = (
-  zodString: ZodString,
-): oas31.SchemaObject => {
+export const createStringSchema = (zodString: ZodString): Schema => {
   const zodStringChecks = getZodStringChecks(zodString);
   const format = mapStringFormat(zodStringChecks);
   const patterns = mapPatterns(zodStringChecks);
@@ -15,30 +14,36 @@ export const createStringSchema = (
 
   if (patterns.length <= 1) {
     return {
-      type: 'string',
-      ...(format && { format }),
-      ...(patterns[0] && { pattern: patterns[0] }),
-      ...(minLength !== undefined && { minLength }),
-      ...(maxLength !== undefined && { maxLength }),
-    };
-  }
-
-  return {
-    allOf: [
-      {
+      type: 'schema',
+      schema: {
         type: 'string',
         ...(format && { format }),
         ...(patterns[0] && { pattern: patterns[0] }),
         ...(minLength !== undefined && { minLength }),
         ...(maxLength !== undefined && { maxLength }),
       },
-      ...patterns.slice(1).map(
-        (pattern): oas31.SchemaObject => ({
+    };
+  }
+
+  return {
+    type: 'schema',
+    schema: {
+      allOf: [
+        {
           type: 'string',
-          pattern,
-        }),
-      ),
-    ],
+          ...(format && { format }),
+          ...(patterns[0] && { pattern: patterns[0] }),
+          ...(minLength !== undefined && { minLength }),
+          ...(maxLength !== undefined && { maxLength }),
+        },
+        ...patterns.slice(1).map(
+          (pattern): oas31.SchemaObject => ({
+            type: 'string',
+            pattern,
+          }),
+        ),
+      ],
+    },
   };
 };
 
