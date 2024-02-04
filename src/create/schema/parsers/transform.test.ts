@@ -127,12 +127,21 @@ describe('createTransformSchema', () => {
 describe('throwTransformError', () => {
   it('throws an transform error', () => {
     expect(() =>
-      throwTransformError(z.string().openapi({ description: 'a' }), [
-        'previous',
-        'path',
-      ]),
-    ).toThrow(
-      '{"_def":{"checks":[],"typeName":"ZodString","coerce":false,"openapi":{"description":"a"}}} at previous > path is used within a registered compoment schema and contains a transformation but is used in both an input schema and output schema. This may cause the schema to render incorrectly and is most likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve the issue.',
-    );
+      throwTransformError({
+        type: 'input',
+        zodType: z.string().openapi({ description: 'a' }),
+        path: ['previous', 'path'],
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(`
+"The ZodString at previous > path is used within a registered compoment schema and contains an input transformation which is also used in an output schema.
+
+This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+
+1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+2. Wrapping the transformation in a ZodPipeline
+3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+4. Removing the transformation
+5. Deregistering the component containing the transformation"
+`);
   });
 });

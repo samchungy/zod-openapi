@@ -506,11 +506,18 @@ describe('createSchemaObject', () => {
     };
 
     const outputSchema = z.object({ a: inputSchema });
-    expect(() =>
-      createSchemaObject(outputSchema, outputState, ['previous']),
-    ).toThrow(
-      '{"_def":{"unknownKeys":"strip","catchall":{"_def":{"typeName":"ZodNever"}},"typeName":"ZodObject","openapi":{"ref":"a"}},"_cached":null} at previous > property: a is used within a registered compoment schema and contains a transformation but is used in both an input schema and output schema. This may cause the schema to render incorrectly and is most likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve the issue.',
-    );
+    expect(() => createSchemaObject(outputSchema, outputState, ['previous']))
+      .toThrowErrorMatchingInlineSnapshot(`
+"The ZodObject at previous > property: a is used within a registered compoment schema (a) and contains an input transformation defined at previous > property: a which is also used in an output schema.
+
+This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+
+1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+2. Wrapping the transformation in a ZodPipeline
+3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+4. Removing the transformation
+5. Deregistering the component containing the transformation"
+`);
   });
 
   it('throws an error when a registered transform is generated with different types', () => {
@@ -542,9 +549,17 @@ describe('createSchemaObject', () => {
 
     expect(() =>
       createSchemaObject(outputSchema, outputState, ['previous', 'path']),
-    ).toThrow(
-      '{"_def":{"schema":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"typeName":"ZodEffects","effect":{"type":"transform"},"openapi":{"ref":"input"}}} at previous > path > property: a is used within a registered compoment schema and contains a transformation but is used in both an input schema and output schema. This may cause the schema to render incorrectly and is most likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve the issue.',
-    );
+    ).toThrowErrorMatchingInlineSnapshot(`
+"The ZodEffects - transform at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation defined at previous > path which is also used in an output schema.
+
+This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+
+1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+2. Wrapping the transformation in a ZodPipeline
+3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+4. Removing the transformation
+5. Deregistering the component containing the transformation"
+`);
   });
 
   it('does not throw an error when a transform is generated with different types', () => {
@@ -686,8 +701,16 @@ describe('createSchemaObject', () => {
 
     expect(() =>
       createSchemaObject(outputSchema, outputState, ['previous', 'path']),
-    ).toThrow(
-      '{"_def":{"in":{"_def":{"checks":[],"typeName":"ZodString","coerce":false}},"out":{"_def":{"checks":[],"typeName":"ZodNumber","coerce":false}},"typeName":"ZodPipeline","openapi":{"ref":"input"}}} at previous > path > property: a is used within a registered compoment schema and contains a transformation but is used in both an input schema and output schema. This may cause the schema to render incorrectly and is most likely a mistake. Set an `effectType`, wrap it in a ZodPipeline or assign it a manual type to resolve the issue.',
-    );
+    ).toThrowErrorMatchingInlineSnapshot(`
+"The ZodPipeline at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation defined at previous > path which is also used in an output schema.
+
+This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+
+1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+2. Wrapping the transformation in a ZodPipeline
+3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+4. Removing the transformation
+5. Deregistering the component containing the transformation"
+`);
   });
 });

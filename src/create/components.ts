@@ -15,6 +15,15 @@ import { createHeaderOrRef, createResponse } from './responses';
 import { type SchemaState, createSchemaObject } from './schema';
 
 export type CreationType = 'input' | 'output';
+export type Effect = {
+  type: CreationType;
+  zodType: ZodType;
+  path: string[];
+  component?: {
+    ref: string;
+    path: string[];
+  };
+};
 
 export interface CompleteSchemaComponent extends BaseSchemaComponent {
   type: 'complete';
@@ -23,8 +32,8 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject;
-  /** Set when the created schemaObject is specific to a particular CreationType */
-  creationType?: CreationType;
+  /** Set when the created schemaObject is specific to a particular effect */
+  effect?: Effect;
 }
 
 /**

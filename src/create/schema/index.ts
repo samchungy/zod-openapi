@@ -4,6 +4,7 @@ import type { oas31 } from '../../openapi3-ts/dist';
 import {
   type ComponentsObject,
   type CreationType,
+  type Effect,
   type SchemaComponent,
   createComponentSchemaRef,
 } from '../components';
@@ -81,7 +82,7 @@ export const createNewRef = <
     type: 'complete',
     ref,
     schemaObject: newSchema.schema,
-    creationType: newSchema?.effect?.type,
+    effect: newSchema.effect,
   });
 
   return {
@@ -103,11 +104,15 @@ export const createExistingRef = <
     return {
       type: 'ref',
       schema: { $ref: createComponentSchemaRef(component.ref) },
-      effect: component.creationType
+      effect: component.effect
         ? {
-            type: component.creationType,
+            type: component.effect.type,
+            path: state.path,
             zodType: zodSchema,
-            path: [...state.path],
+            component: {
+              ref: component.ref,
+              path: component.effect.path,
+            },
           }
         : undefined,
     };
@@ -124,11 +129,7 @@ export const createExistingRef = <
 };
 
 export type BaseObject = {
-  effect?: {
-    type?: CreationType;
-    zodType: ZodType;
-    path: string[];
-  };
+  effect?: Effect;
 };
 
 export type RefObject = BaseObject & {
@@ -178,7 +179,7 @@ export const createSchemaObject = <
   state.path.push(...subpath);
   const schema = createSchemaOrRef(zodSchema, state);
   if (schema.effect?.type && state.type !== schema.effect.type) {
-    throwTransformError(schema.effect.zodType, schema.effect.path);
+    throwTransformError(schema.effect);
   }
   state.path.pop();
   return schema;

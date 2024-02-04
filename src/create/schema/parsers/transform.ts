@@ -1,6 +1,15 @@
-import type { ZodEffects, ZodType, ZodTypeAny, input, output } from 'zod';
+import type {
+  ZodEffects,
+  ZodFirstPartyTypeKind,
+  ZodType,
+  ZodTypeAny,
+  input,
+  output,
+} from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
+import { isZodType } from '../../../zodType';
+import type { Effect } from '../../components';
 import {
   type Schema,
   type SchemaState,
@@ -75,17 +84,39 @@ export const createManualOutputTransformSchema = <
   };
 };
 
-export const throwTransformError = (zodType: ZodType, path: string[]) => {
+const getZodTypeName = (zodType: ZodType): string => {
+  if (isZodType(zodType, 'ZodEffects')) {
+    return `${zodType._def.typeName} - ${zodType._def.effect.type}`;
+  }
+  return (zodType._def as { typeName: ZodFirstPartyTypeKind }).typeName;
+};
+
+export const throwTransformError = (effect: Effect) => {
+  const typeName = getZodTypeName(effect.zodType);
+  const input = effect.type;
+  const opposite = input === 'input' ? 'output' : 'input';
   throw new Error(
-    `${JSON.stringify(zodType)} at ${path.join(
+    `The ${typeName} at ${effect.path.join(
       ' > ',
-    )} is used within a registered compoment schema and contains a transformation but is used in both an input schema and output schema. This may cause the schema to render incorrectly and is most likely a mistake. Set an \`effectType\`, wrap it in a ZodPipeline or assign it a manual type to resolve the issue.`,
+    )} is used within a registered compoment schema${
+      effect.component ? ` (${effect.component.ref})` : ''
+    } and contains an ${input} transformation${
+      effect.component ? ` defined at ${effect.component.path.join(' > ')}` : ''
+    } which is also used in an ${opposite} schema.
+
+This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+
+1. Setting an \`effectType\` on the transformation to \`${opposite}\` eg. \`.openapi({type: '${opposite}'})\`
+2. Wrapping the transformation in a ZodPipeline
+3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+4. Removing the transformation
+5. Deregistering the component containing the transformation`,
   );
 };
 
 export const resolveEffect = (
-  effects: Array<Schema['effect']>,
-): Schema['effect'] | undefined => {
+  effects: Array<Effect | undefined>,
+): Effect | undefined => {
   const { input, output } = effects.reduce(
     (acc, effect) => {
       if (effect?.type === 'input') {
@@ -96,13 +127,13 @@ export const resolveEffect = (
       }
 
       if (effect && acc.input.length > 1 && acc.output.length > 1) {
-        throwTransformError(effect.zodType, effect.path);
+        throwTransformError(effect);
       }
       return acc;
     },
     { input: [], output: [] } as {
-      input: Array<Schema['effect']>;
-      output: Array<Schema['effect']>;
+      input: Effect[];
+      output: Effect[];
     },
   );
 

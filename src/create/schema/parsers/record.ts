@@ -30,14 +30,7 @@ export const createRecordSchema = <
   const maybeComponent = state.components.schemas.get(zodRecord.keySchema);
   const isComplete = maybeComponent && maybeComponent.type === 'complete';
   const maybeSchema = isComplete && maybeComponent.schemaObject;
-  const maybeEffect =
-    (isComplete &&
-      maybeComponent.creationType && {
-        type: maybeComponent.creationType,
-        zodType: zodRecord.keySchema,
-        path: [...state.path],
-      }) ||
-    undefined;
+  const maybeEffect = (isComplete && maybeComponent.effect) || undefined;
 
   const renderedKeySchema = maybeSchema || keySchema.schema;
 

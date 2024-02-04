@@ -111,15 +111,9 @@ export const createExtendedSchema = <
       ...extendedSchema.schema,
     },
     effect: resolveEffect([
-      {
-        path: [...state.path],
-        zodType: baseZodObject,
-        // TODO: Check this
-        type:
-          completeComponent.type === 'complete'
-            ? completeComponent.creationType
-            : undefined,
-      },
+      completeComponent.type === 'complete'
+        ? completeComponent.effect
+        : undefined,
       extendedSchema.effect,
     ]),
   };

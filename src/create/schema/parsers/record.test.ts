@@ -167,7 +167,7 @@ describe('createRecordSchema', () => {
       effect: {
         type: 'output',
         zodType: complexSchema,
-        path: [],
+        path: ['record key'],
       },
     };
 
