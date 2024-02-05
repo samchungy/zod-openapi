@@ -334,7 +334,7 @@ _Input_: Request Bodies, Request Parameters, Headers
 
 _Output_: Responses, Response Headers
 
-If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field on it and set the `effectType` field to `input`, `output` or `same`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to set this when you know the type has not changed in the transform. `same` is the optimal choice as it will throw a type error if the input and output types in the transform drift.
+If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field on it and set the `effectType` field to `input`, `output` or `same`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to set this when you know the type has not changed in the transform. `same` is the recommended choice as it will throw a type error if the input and output types in the transform drift.
 
 `.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
 
