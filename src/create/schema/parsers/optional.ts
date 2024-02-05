@@ -1,31 +1,46 @@
 import type { ZodOptional, ZodType, ZodTypeAny } from 'zod';
 
 import { isZodType } from '../../../zodType';
+import type { Effect } from '../../components';
 import {
   type Schema,
   type SchemaState,
   createSchemaObject,
 } from '../../schema';
 
+import { flattenEffects } from './transform';
+
 export const createOptionalSchema = <T extends ZodTypeAny>(
   zodOptional: ZodOptional<T>,
   state: SchemaState,
 ): Schema => createSchemaObject(zodOptional.unwrap(), state, ['optional']); // Optional doesn't change OpenAPI schema
 
+type OptionalResult = { optional: boolean; effects?: Effect[] };
+
 export const isOptionalSchema = (
   zodSchema: ZodTypeAny,
   state: SchemaState,
-): boolean => {
+): OptionalResult => {
   if (
     isZodType(zodSchema, 'ZodOptional') ||
     isZodType(zodSchema, 'ZodNever') ||
     isZodType(zodSchema, 'ZodUndefined')
   ) {
-    return true;
+    return { optional: true };
   }
 
   if (isZodType(zodSchema, 'ZodDefault')) {
-    return state.type === 'input';
+    return {
+      optional: state.type === 'input',
+      effects: [
+        {
+          type: 'schema',
+          creationType: state.type,
+          zodType: zodSchema,
+          path: [...state.path],
+        },
+      ],
+    };
   }
 
   if (isZodType(zodSchema, 'ZodNullable') || isZodType(zodSchema, 'ZodCatch')) {
@@ -40,14 +55,28 @@ export const isOptionalSchema = (
     isZodType(zodSchema, 'ZodUnion') ||
     isZodType(zodSchema, 'ZodDiscriminatedUnion')
   ) {
-    return (zodSchema._def.options as ZodTypeAny[]).some((schema) =>
+    const results = (zodSchema._def.options as ZodTypeAny[]).map((schema) =>
       isOptionalSchema(schema, state),
+    );
+    return results.reduce(
+      (acc, result) => ({
+        optional: acc.optional || result.optional,
+        effects: flattenEffects([acc.effects, result.effects]),
+      }),
+      { optional: false },
     );
   }
 
   if (isZodType(zodSchema, 'ZodIntersection')) {
-    return [zodSchema._def.left, zodSchema._def.right].some((schema) =>
+    const results = [zodSchema._def.left, zodSchema._def.right].map((schema) =>
       isOptionalSchema(schema, state),
+    );
+    return results.reduce(
+      (acc, result) => ({
+        optional: acc.optional || result.optional,
+        effects: flattenEffects([acc.effects, result.effects]),
+      }),
+      { optional: false },
     );
   }
 
@@ -67,5 +96,5 @@ export const isOptionalSchema = (
     return isOptionalSchema(zodSchema._def.getter() as ZodType, state);
   }
 
-  return zodSchema.isOptional();
+  return { optional: zodSchema.isOptional() };
 };

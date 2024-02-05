@@ -187,7 +187,7 @@ export const createObjectSchemaFromShape = (
     schema: {
       type: 'object',
       ...(properties && { properties: properties.properties }),
-      ...(required && { required }),
+      ...(required?.required.length && { required: required.required }),
       ...(unknownKeys === 'strict' && { additionalProperties: false }),
       ...(additionalProperties && {
         additionalProperties: additionalProperties.schema,
@@ -196,6 +196,7 @@ export const createObjectSchemaFromShape = (
     effects: flattenEffects([
       ...(properties?.effects ?? []),
       additionalProperties?.effects,
+      required?.effects,
     ]),
   };
 };
@@ -203,16 +204,30 @@ export const createObjectSchemaFromShape = (
 export const mapRequired = (
   shape: ZodRawShape,
   state: SchemaState,
-): oas31.SchemaObject['required'] => {
-  const required: string[] = Object.entries(shape)
-    .filter(([_key, zodSchema]) => !isOptionalSchema(zodSchema, state))
-    .map(([key]) => key);
+): { required: string[]; effects?: Effect[] } | undefined => {
+  const { required, effects: allEffects } = Object.entries(shape).reduce<{
+    required: string[];
+    effects: Effect[][];
+  }>(
+    (acc, [key, zodSchema]) => {
+      state.path.push(`property: ${key}`);
+      const { optional, effects } = isOptionalSchema(zodSchema, state);
+      state.path.pop();
+      if (!optional) {
+        acc.required.push(key);
+      }
+      if (effects) {
+        acc.effects.push(effects);
+      }
+      return acc;
+    },
+    {
+      required: [],
+      effects: [],
+    },
+  );
 
-  if (!required.length) {
-    return undefined;
-  }
-
-  return required;
+  return { required, effects: flattenEffects(allEffects) };
 };
 
 interface PropertyMap {

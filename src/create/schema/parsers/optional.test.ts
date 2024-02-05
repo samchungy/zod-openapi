@@ -30,7 +30,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for an optional transform', () => {
@@ -41,7 +41,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for a union with an optional', () => {
@@ -49,7 +49,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for an intersection with an optional', () => {
@@ -57,7 +57,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for a nullable with an optional', () => {
@@ -65,7 +65,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for an async transform with an optional', () => {
@@ -77,7 +77,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for an output state on pipeline', () => {
@@ -88,7 +88,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for an input state on pipeline', () => {
@@ -100,7 +100,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createInputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns true for a zod default', () => {
@@ -108,7 +108,17 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createInputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({
+      optional: true,
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'input',
+          zodType: schema,
+          path: [],
+        },
+      ],
+    });
   });
 
   it('returns true for an input effectType on an output state pipeline', () => {
@@ -121,7 +131,7 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createOutputState());
 
-    expect(result).toBe(true);
+    expect(result).toEqual({ optional: true });
   });
 
   it('returns false for an output effectType on an input state pipeline', () => {
@@ -134,6 +144,6 @@ describe('isOptionalSchema', () => {
 
     const result = isOptionalSchema(schema, createInputState());
 
-    expect(result).toBe(false);
+    expect(result).toEqual({ optional: false });
   });
 });
