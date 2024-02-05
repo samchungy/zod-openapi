@@ -62,12 +62,27 @@ describe('createTransformSchema', () => {
         .transform((str) => str.length)
         .openapi({ effectType: 'input' });
 
-      const state = {
-        ...createInputState(),
-        effectType: 'output',
-      };
+      const state = createInputState();
 
       createTransformSchema(schema, state);
+    });
+
+    it('renders the input schema if the effectType is same', () => {
+      const schema = z
+        .string()
+        .transform((str) => str)
+        .openapi({ effectType: 'same' });
+
+      const state = createInputState();
+      const exepctedResult: Schema = {
+        type: 'schema',
+        schema: {
+          type: 'string',
+        },
+      };
+
+      const result = createTransformSchema(schema, state);
+      expect(result).toEqual(exepctedResult);
     });
   });
 
@@ -126,6 +141,24 @@ describe('createTransformSchema', () => {
       const result = createTransformSchema(schema, state);
 
       expect(result.effects).toBeUndefined();
+    });
+
+    it('renders the input schema if the effectType is same', () => {
+      const schema = z
+        .string()
+        .transform((str) => str)
+        .openapi({ effectType: 'same' });
+
+      const state = createOutputState();
+      const exepctedResult: Schema = {
+        type: 'schema',
+        schema: {
+          type: 'string',
+        },
+      };
+
+      const result = createTransformSchema(schema, state);
+      expect(result).toEqual(exepctedResult);
     });
   });
 });

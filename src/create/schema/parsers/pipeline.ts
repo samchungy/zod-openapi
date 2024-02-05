@@ -15,7 +15,10 @@ export const createPipelineSchema = <
   zodPipeline: ZodPipeline<A, B>,
   state: SchemaState,
 ): Schema => {
-  if (zodPipeline._def.openapi?.effectType === 'input') {
+  if (
+    zodPipeline._def.openapi?.effectType === 'input' ||
+    zodPipeline._def.openapi?.effectType === 'same'
+  ) {
     return createSchemaObject(zodPipeline._def.in, state, ['pipeline input']);
   }
 

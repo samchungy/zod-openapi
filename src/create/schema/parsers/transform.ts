@@ -31,7 +31,10 @@ export const createTransformSchema = <
     };
   }
 
-  if (zodTransform._def.openapi?.effectType === 'input') {
+  if (
+    zodTransform._def.openapi?.effectType === 'input' ||
+    zodTransform._def.openapi?.effectType === 'same'
+  ) {
     return createSchemaObject(zodTransform._def.schema, state, [
       'transform input',
     ]);
