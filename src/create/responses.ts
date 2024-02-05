@@ -85,7 +85,7 @@ export const createBaseHeader = (
     visited: new Set(),
   };
   const schemaObject = createSchema(schema, state, ['header']);
-  const required = !isOptionalSchema(schema, state);
+  const required = !isOptionalSchema(schema, state)?.optional;
   return {
     ...rest,
     ...(schema && { schema: schemaObject }),
