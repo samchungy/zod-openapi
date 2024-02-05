@@ -22,6 +22,9 @@ export interface SchemaState {
   visited: Set<ZodType>;
 }
 
+const isDescriptionEqual = (schema: Schema, zodSchema: ZodType): boolean =>
+  schema.type === 'ref' && zodSchema.description === schema.zodType.description;
+
 export const createNewSchema = <
   Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -49,7 +52,10 @@ export const createNewSchema = <
   } = zodSchema._def.openapi ?? {};
 
   const schema = createSchemaSwitch(zodSchema, state);
-  const description = zodSchema.description;
+  const description =
+    zodSchema.description && !isDescriptionEqual(schema, zodSchema)
+      ? zodSchema.description
+      : undefined;
 
   const schemaWithMetadata = enhanceWithMetadata(schema, {
     ...(description && { description }),
@@ -97,6 +103,7 @@ export const createNewRef = <
           },
         ]
       : undefined,
+    zodType: zodSchema,
   };
 };
 
@@ -149,6 +156,7 @@ export type BaseObject = {
 export type RefObject = BaseObject & {
   type: 'ref';
   schema: oas31.ReferenceObject;
+  zodType: ZodType;
 };
 
 export type SchemaObject = BaseObject & {
