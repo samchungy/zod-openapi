@@ -129,6 +129,7 @@ export const createExistingRef = <
             },
           ]
         : undefined,
+      zodType: zodSchema,
     };
   }
 
@@ -143,6 +144,7 @@ export const createExistingRef = <
           path: [...state.path],
         },
       ],
+      zodType: zodSchema,
     };
   }
 

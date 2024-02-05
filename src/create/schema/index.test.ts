@@ -240,10 +240,6 @@ const expectedZodLazy: Schema['schema'] = {
   $ref: '#/components/schemas/lazy',
 };
 
-const expectedZodLazyComplex: Schema['schema'] = {
-  $ref: '#/components/schemas/user',
-};
-
 const BasePost = z.object({
   id: z.string(),
   userId: z.string(),
@@ -269,12 +265,8 @@ const zodLazyComplex: ZodType<User> = BaseUser.extend({
   posts: z.array(z.lazy(() => PostSchema)).optional(),
 }).openapi({ ref: 'user' });
 
-const expectedZodLazyComplex: Schema = {
-  type: 'ref',
-  schema: {
-    $ref: '#/components/schemas/user',
-  },
-  zodType: zodLazyComplex,
+const expectedZodLazyComplex: Schema['schema'] = {
+  $ref: '#/components/schemas/user',
 };
 
 const zodBranded = z.object({ name: z.string() }).brand<'Cat'>();
