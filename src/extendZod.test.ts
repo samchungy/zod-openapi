@@ -49,4 +49,15 @@ describe('extendZodWithOpenApi', () => {
     expect(d._def.extendMetadata).toBeUndefined();
     expect(d._def.openapi).toBeUndefined();
   });
+
+  it("allows 'same' effectType when the input and output are equal", () => {
+    z.string()
+      .transform((string) => string.toUpperCase())
+      .openapi({ effectType: 'same' });
+
+    z.string()
+      .transform((string) => string.length)
+      // @ts-expect-error - This is to test the effectType
+      .openapi({ effectType: 'same' });
+  });
 });

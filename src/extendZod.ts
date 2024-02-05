@@ -34,7 +34,13 @@ interface ZodOpenApiMetadata<
   /**
    * Use this field to set the created type of an effect.
    */
-  effectType?: CreationType;
+  effectType?:
+    | CreationType
+    | (z.input<T> extends z.output<T>
+        ? z.output<T> extends z.input<T>
+          ? 'same'
+          : never
+        : never);
   param?: Partial<oas31.ParameterObject> & {
     example?: TInferred;
     examples?: Record<

@@ -82,6 +82,24 @@ describe('createPipelineSchema', () => {
 
       expect(result).toEqual(expected);
     });
+
+    it('renders the input schema if the effectType is same', () => {
+      const schema = z
+        .string()
+        .pipe(z.string())
+        .openapi({ effectType: 'same' });
+
+      const state = createInputState();
+      const exepctedResult: Schema = {
+        type: 'schema',
+        schema: {
+          type: 'string',
+        },
+      };
+
+      const result = createPipelineSchema(schema, state);
+      expect(result).toEqual(exepctedResult);
+    });
   });
 
   describe('output', () => {
@@ -146,6 +164,24 @@ describe('createPipelineSchema', () => {
       const result = createPipelineSchema(schema, createOutputState());
 
       expect(result).toEqual(expected);
+    });
+
+    it('renders the input schema if the effectType is same', () => {
+      const schema = z
+        .string()
+        .pipe(z.string())
+        .openapi({ effectType: 'same' });
+
+      const state = createOutputState();
+      const exepctedResult: Schema = {
+        type: 'schema',
+        schema: {
+          type: 'string',
+        },
+      };
+
+      const result = createPipelineSchema(schema, state);
+      expect(result).toEqual(exepctedResult);
     });
   });
 });
