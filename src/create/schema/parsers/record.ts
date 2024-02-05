@@ -8,7 +8,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createRecordSchema = <
   Key extends KeySchema = ZodString,
@@ -30,7 +30,7 @@ export const createRecordSchema = <
   const maybeComponent = state.components.schemas.get(zodRecord.keySchema);
   const isComplete = maybeComponent && maybeComponent.type === 'complete';
   const maybeSchema = isComplete && maybeComponent.schemaObject;
-  const maybeEffect = (isComplete && maybeComponent.effect) || undefined;
+  const maybeEffects = (isComplete && maybeComponent.effects) || undefined;
 
   const renderedKeySchema = maybeSchema || keySchema.schema;
 
@@ -47,10 +47,10 @@ export const createRecordSchema = <
         }, {}),
         additionalProperties: false,
       },
-      effect: resolveEffect([
-        keySchema.effect,
-        additionalProperties.effect,
-        maybeEffect,
+      effects: flattenEffects([
+        keySchema.effects,
+        additionalProperties.effects,
+        maybeEffects,
       ]),
     };
   }
@@ -68,7 +68,10 @@ export const createRecordSchema = <
         propertyNames: keySchema.schema,
         additionalProperties: additionalProperties.schema,
       },
-      effect: resolveEffect([keySchema.effect, additionalProperties.effect]),
+      effects: flattenEffects([
+        keySchema.effects,
+        additionalProperties.effects,
+      ]),
     };
   }
 
@@ -78,6 +81,6 @@ export const createRecordSchema = <
       type: 'object',
       additionalProperties: additionalProperties.schema,
     },
-    effect: additionalProperties.effect,
+    effects: additionalProperties.effects,
   };
 };

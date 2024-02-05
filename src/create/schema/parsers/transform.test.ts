@@ -17,11 +17,14 @@ describe('createTransformSchema', () => {
         schema: {
           type: 'string',
         },
-        effect: {
-          type: 'input',
-          zodType: schema,
-          path: [],
-        },
+        effects: [
+          {
+            type: 'schema',
+            creationType: 'input',
+            zodType: schema,
+            path: [],
+          },
+        ],
       };
 
       const result = createTransformSchema(schema, createInputState());
@@ -38,11 +41,14 @@ describe('createTransformSchema', () => {
         schema: {
           type: 'string',
         },
-        effect: {
-          type: 'input',
-          zodType: schema,
-          path: [],
-        },
+        effects: [
+          {
+            type: 'schema',
+            creationType: 'input',
+            zodType: schema,
+            path: [],
+          },
+        ],
       };
 
       const result = createTransformSchema(schema, state);
@@ -119,7 +125,7 @@ describe('createTransformSchema', () => {
 
       const result = createTransformSchema(schema, state);
 
-      expect(result.effect?.type).toBeUndefined();
+      expect(result.effects).toBeUndefined();
     });
   });
 });
@@ -128,7 +134,7 @@ describe('throwTransformError', () => {
   it('throws an transform error', () => {
     expect(() =>
       throwTransformError({
-        type: 'input',
+        creationType: 'input',
         zodType: z.string().openapi({ description: 'a' }),
         path: ['previous', 'path'],
       }),

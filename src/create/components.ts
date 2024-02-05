@@ -12,17 +12,33 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchemaObject } from './schema';
+import { type SchemaState, createSchema } from './schema';
 
 export type CreationType = 'input' | 'output';
-export type Effect = {
-  type: CreationType;
+
+type BaseEffect = {
   zodType: ZodType;
   path: string[];
+};
+export type ComponentEffect = BaseEffect & {
+  type: 'component';
+};
+
+export type SchemaEffect = BaseEffect & {
+  type: 'schema';
+  creationType: CreationType;
+};
+
+export type Effect = ComponentEffect | SchemaEffect;
+
+export type ResolvedEffect = {
+  creationType: CreationType;
+  path: string[];
+  zodType: ZodType;
   component?: {
     ref: string;
-    path: string[];
     zodType: ZodType;
+    path: string[];
   };
 };
 
@@ -34,7 +50,8 @@ export interface CompleteSchemaComponent extends BaseSchemaComponent {
     | oas30.SchemaObject
     | oas30.ReferenceObject;
   /** Set when the created schemaObject is specific to a particular effect */
-  effect?: Effect;
+  effects?: Effect[];
+  resolvedEffect?: ResolvedEffect;
 }
 
 /**
@@ -364,7 +381,7 @@ const createSchemaComponents = (
         visited: new Set(),
       };
 
-      createSchemaObject(schema, state, [`component schema index ${index}`]);
+      createSchema(schema, state, [`component schema index ${index}`]);
     }
   });
 

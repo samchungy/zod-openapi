@@ -16,7 +16,7 @@ export const enhanceWithMetadata = (
       schema: {
         allOf: [schema.schema, metadata],
       },
-      effect: schema.effect,
+      effects: schema.effects,
     };
   }
 
@@ -26,6 +26,6 @@ export const enhanceWithMetadata = (
       ...schema.schema,
       ...metadata,
     },
-    effect: schema.effect,
+    effects: schema.effects,
   };
 };

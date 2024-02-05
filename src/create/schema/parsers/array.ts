@@ -28,6 +28,6 @@ export const createArraySchema = <
       ...(minItems !== undefined && { minItems }),
       ...(maxItems !== undefined && { maxItems }),
     },
-    effect: items.effect,
+    effects: items.effects,
   };
 };

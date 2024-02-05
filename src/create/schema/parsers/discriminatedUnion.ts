@@ -14,7 +14,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createDiscriminatedUnionSchema = <
   Discriminator extends string,
@@ -40,7 +40,7 @@ export const createDiscriminatedUnionSchema = <
       oneOf: schemaObjects,
       ...(discriminator && { discriminator }),
     },
-    effect: resolveEffect(schemas.map((schema) => schema.effect)),
+    effects: flattenEffects(schemas.map((schema) => schema.effects)),
   };
 };
 

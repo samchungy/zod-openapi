@@ -6,7 +6,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createPipelineSchema = <
   A extends ZodTypeAny,
@@ -29,13 +29,16 @@ export const createPipelineSchema = <
     ]);
     return {
       ...schema,
-      effect: resolveEffect([
-        {
-          type: 'input',
-          path: [...state.path],
-          zodType: zodPipeline,
-        },
-        schema.effect,
+      effects: flattenEffects([
+        [
+          {
+            type: 'schema',
+            creationType: 'input',
+            path: [...state.path],
+            zodType: zodPipeline,
+          },
+        ],
+        schema.effects,
       ]),
     };
   }
@@ -45,13 +48,16 @@ export const createPipelineSchema = <
   ]);
   return {
     ...schema,
-    effect: resolveEffect([
-      {
-        type: 'output',
-        path: [...state.path],
-        zodType: zodPipeline,
-      },
-      schema.effect,
+    effects: flattenEffects([
+      [
+        {
+          type: 'schema',
+          creationType: 'output',
+          path: [...state.path],
+          zodType: zodPipeline,
+        },
+      ],
+      schema.effects,
     ]),
   };
 };
