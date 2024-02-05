@@ -121,6 +121,26 @@ describe('isOptionalSchema', () => {
     });
   });
 
+  it('returns true for a zod default in output state with effectType input', () => {
+    const schema = z.string().default('a').openapi({ effectType: 'input' });
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({
+      optional: true,
+    });
+  });
+
+  it('returns false for a zod default in input state with effectType output', () => {
+    const schema = z.string().default('a').openapi({ effectType: 'output' });
+
+    const result = isOptionalSchema(schema, createInputState());
+
+    expect(result).toEqual({
+      optional: false,
+    });
+  });
+
   it('returns true for an input effectType on an output state pipeline', () => {
     const schema = z
       .string()

@@ -30,6 +30,14 @@ export const isOptionalSchema = (
   }
 
   if (isZodType(zodSchema, 'ZodDefault')) {
+    if (zodSchema._def.openapi?.effectType === 'input') {
+      return { optional: true };
+    }
+
+    if (zodSchema._def.openapi?.effectType === 'output') {
+      return { optional: false };
+    }
+
     return {
       optional: state.type === 'input',
       effects: [
