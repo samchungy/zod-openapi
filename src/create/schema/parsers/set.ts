@@ -23,6 +23,6 @@ export const createSetSchema = <Value extends ZodTypeAny = ZodTypeAny>(
       ...(minItems !== undefined && { minItems }),
       ...(maxItems !== undefined && { maxItems }),
     },
-    effect: itemSchema.effect,
+    effects: itemSchema.effects,
   };
 };

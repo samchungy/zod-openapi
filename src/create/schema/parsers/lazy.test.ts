@@ -2,6 +2,7 @@ import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 
 import { extendZodWithOpenApi } from '../../../extendZod';
 import { createOutputState } from '../../../testing/state';
+import type { SchemaComponent } from '../../components';
 import { type Schema, createNewSchema, createSchemaObject } from '../../schema';
 
 import { createLazySchema } from './lazy';
@@ -45,14 +46,6 @@ describe('createLazySchema', () => {
   });
 
   it('creates an lazy schema when the schema contains a ref', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'array',
-        items: { $ref: '#/components/schemas/lazy' },
-      },
-    };
-
     type Lazy = Lazy[];
     const lazy: z.ZodType<Lazy> = z
       .lazy(() => lazy.array())
@@ -64,28 +57,26 @@ describe('createLazySchema', () => {
       ref: 'lazy',
     });
 
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/lazy' },
+      },
+      effects: [
+        {
+          type: 'component',
+          zodType: lazy,
+          path: ['lazy schema', 'array items'],
+        },
+      ],
+    };
+
     const result = createLazySchema(lazy as ZodLazy<any>, state);
     expect(result).toEqual(expected);
   });
 
   it('supports registering the base schema', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-          },
-          posts: {
-            type: 'array',
-            items: { $ref: '#/components/schemas/post' },
-          },
-        },
-        required: ['id'],
-      },
-    };
-
     const BasePost = z.object({
       id: z.string(),
       userId: z.string(),
@@ -116,6 +107,30 @@ describe('createLazySchema', () => {
       type: 'in-progress',
       ref: 'user',
     });
+
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+          posts: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/post' },
+          },
+        },
+        required: ['id'],
+      },
+      effects: [
+        {
+          type: 'component',
+          path: ['property: posts', 'optional', 'array items', 'lazy schema'],
+          zodType: PostSchema,
+        },
+      ],
+    };
 
     const result = createObjectSchema(
       UserSchema as ZodObject<any, any, any, any, any>,
@@ -215,7 +230,7 @@ describe('createLazySchema', () => {
       .object({
         id: z.string(),
         userId: UserIdSchema,
-        user: z.lazy(() => PostSchema),
+        user: z.lazy(() => PostSchema).openapi({ ref: 'user' }),
       })
       .openapi({ ref: 'post' });
 
@@ -234,16 +249,13 @@ describe('createLazySchema', () => {
         required: ['post'],
         type: 'object',
       },
-      effect: {
-        type: 'output',
-        zodType: PostSchema,
-        path: ['property: post'],
-        component: {
-          ref: 'post',
-          path: ['property: post', 'property: userId'],
-          zodType: UserIdSchema,
+      effects: [
+        {
+          type: 'component',
+          zodType: PostSchema,
+          path: ['property: post'],
         },
-      },
+      ],
     };
 
     const state = createOutputState();
@@ -251,5 +263,25 @@ describe('createLazySchema', () => {
     const result = createObjectSchema(ContainerSchema, state);
 
     expect(result).toEqual(expected);
+
+    const UserSchema = (PostSchema as ZodObject<any, any, any, any, any>).shape
+      .user;
+    const expectedUserComponent: SchemaComponent = {
+      type: 'complete',
+      ref: 'user',
+      effects: [
+        {
+          type: 'component',
+          zodType: PostSchema,
+          path: ['property: post', 'property: user', 'lazy schema'],
+        },
+      ],
+      schemaObject: {
+        $ref: '#/components/schemas/post',
+      },
+    };
+    expect(state.components.schemas.get(UserSchema)).toEqual(
+      expectedUserComponent,
+    );
   });
 });

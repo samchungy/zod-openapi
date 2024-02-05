@@ -9,7 +9,7 @@ import type {
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
-import type { Effect } from '../../components';
+import type { Effect, ResolvedEffect } from '../../components';
 import {
   type Schema,
   type SchemaState,
@@ -50,13 +50,16 @@ export const createTransformSchema = <
 
   return {
     ...schema,
-    effect: resolveEffect([
-      {
-        type: 'input',
-        zodType: zodTransform,
-        path: [...state.path],
-      },
-      schema.effect,
+    effects: flattenEffects([
+      [
+        {
+          type: 'schema',
+          creationType: 'input',
+          zodType: zodTransform,
+          path: [...state.path],
+        },
+      ],
+      schema.effects,
     ]),
   };
 };
@@ -91,9 +94,9 @@ const getZodTypeName = (zodType: ZodType): string => {
   return (zodType._def as { typeName: ZodFirstPartyTypeKind }).typeName;
 };
 
-export const throwTransformError = (effect: Effect) => {
+export const throwTransformError = (effect: ResolvedEffect) => {
   const typeName = getZodTypeName(effect.zodType);
-  const input = effect.type;
+  const input = effect.creationType;
   const opposite = input === 'input' ? 'output' : 'input';
   throw new Error(
     `The ${typeName} at ${effect.path.join(
@@ -118,26 +121,86 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
   );
 };
 
+const resolveSingleEffect = (
+  effect: Effect,
+  state: SchemaState,
+): ResolvedEffect | undefined => {
+  if (effect.type === 'schema') {
+    return {
+      creationType: effect.creationType,
+      path: effect.path,
+      zodType: effect.zodType,
+    };
+  }
+
+  if (effect.type === 'component') {
+    if (state.visited.has(effect.zodType)) {
+      return;
+    }
+    const component = state.components.schemas.get(effect.zodType);
+    if (component?.type !== 'complete') {
+      throw new Error('Something went wrong, component schema is not complete');
+    }
+
+    if (component.resolvedEffect) {
+      return {
+        creationType: component.resolvedEffect.creationType,
+        path: effect.path,
+        zodType: effect.zodType,
+        component: {
+          ref: component.ref,
+          zodType: component.resolvedEffect.zodType,
+          path: component.resolvedEffect.path,
+        },
+      };
+    }
+
+    if (!component.effects) {
+      return undefined;
+    }
+
+    state.visited.add(effect.zodType);
+    const resolved = resolveEffect(component.effects, state);
+    state.visited.delete(effect.zodType);
+
+    if (!resolved) {
+      return undefined;
+    }
+
+    component.resolvedEffect = resolved;
+
+    return resolved;
+  }
+
+  return undefined;
+};
+
 export const resolveEffect = (
-  effects: Array<Effect | undefined>,
-): Effect | undefined => {
+  effects: Effect[],
+  state: SchemaState,
+): ResolvedEffect | undefined => {
   const { input, output } = effects.reduce(
     (acc, effect) => {
-      if (effect?.type === 'input') {
-        acc.input.push(effect);
+      const resolvedSchemaEffect = resolveSingleEffect(effect, state);
+      if (resolvedSchemaEffect?.creationType === 'input') {
+        acc.input.push(resolvedSchemaEffect);
       }
-      if (effect?.type === 'output') {
-        acc.output.push(effect);
+      if (resolvedSchemaEffect?.creationType === 'output') {
+        acc.output.push(resolvedSchemaEffect);
       }
 
-      if (effect && acc.input.length > 1 && acc.output.length > 1) {
-        throwTransformError(effect);
+      if (
+        resolvedSchemaEffect &&
+        acc.input.length > 1 &&
+        acc.output.length > 1
+      ) {
+        throwTransformError(resolvedSchemaEffect);
       }
       return acc;
     },
     { input: [], output: [] } as {
-      input: Effect[];
-      output: Effect[];
+      input: ResolvedEffect[];
+      output: ResolvedEffect[];
     },
   );
 
@@ -150,4 +213,21 @@ export const resolveEffect = (
   }
 
   return undefined;
+};
+
+export const verifyEffects = (effects: Effect[], state: SchemaState) => {
+  const resolved = resolveEffect(effects, state);
+  if (resolved?.creationType && resolved.creationType !== state.type) {
+    throwTransformError(resolved);
+  }
+};
+
+export const flattenEffects = (effects: Array<Effect[] | undefined>) => {
+  const allEffects = effects.reduce<Effect[]>((acc, effect) => {
+    if (effect) {
+      return acc.concat(effect);
+    }
+    return acc;
+  }, []);
+  return allEffects.length ? allEffects : undefined;
 };

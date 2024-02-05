@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type { Schema } from '..';
 import { extendZodWithOpenApi } from '../../../extendZod';
-import { createOutputState } from '../../../testing/state';
+import { createInputState, createOutputState } from '../../../testing/state';
 
 import { createObjectSchema } from './object';
 
@@ -73,6 +73,63 @@ describe('createObjectSchema', () => {
       .catchall(z.boolean());
 
     expect(createObjectSchema(schema, createOutputState())).toEqual(expected);
+  });
+
+  it('considers ZodDefault in an input state as an effect', () => {
+    const schema = z.object({
+      a: z.string().default('a'),
+    });
+
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+      },
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'input',
+          zodType: schema.shape.a,
+          path: ['property: a'],
+        },
+      ],
+    };
+
+    const result = createObjectSchema(schema, createInputState());
+
+    expect(result).toEqual(expected);
+  });
+
+  it('considers ZodDefault in an output state as an effect', () => {
+    const schema = z.object({
+      a: z.string().default('a'),
+    });
+
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+        required: ['a'],
+      },
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'output',
+          zodType: schema.shape.a,
+          path: ['property: a'],
+        },
+      ],
+    };
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toEqual(expected);
   });
 });
 

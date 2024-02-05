@@ -7,7 +7,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createTupleSchema = <
   T extends [] | [ZodTypeAny, ...ZodTypeAny[]] = [ZodTypeAny, ...ZodTypeAny[]],
@@ -33,7 +33,7 @@ export const createTupleSchema = <
             prefixItems: prefixItems.schemas.map((item) => item.schema),
           }),
         },
-        effect: prefixItems?.effect,
+        effects: prefixItems?.effects,
       };
     }
 
@@ -48,7 +48,7 @@ export const createTupleSchema = <
           prefixItems: prefixItems.schemas.map((item) => item.schema),
         }),
       },
-      effect: resolveEffect([prefixItems?.effect, itemSchema.effect]),
+      effects: flattenEffects([prefixItems?.effects, itemSchema.effects]),
     };
   }
 
@@ -63,7 +63,7 @@ export const createTupleSchema = <
           items: { oneOf: prefixItems.schemas.map((item) => item.schema) },
         }),
       },
-      effect: prefixItems?.effect,
+      effects: prefixItems?.effects,
     };
   }
 
@@ -80,7 +80,7 @@ export const createTupleSchema = <
           ],
         },
       },
-      effect: resolveEffect([restSchema.effect, restSchema.effect]),
+      effects: flattenEffects([restSchema.effects, prefixItems.effects]),
     };
   }
 
@@ -95,14 +95,14 @@ export const createTupleSchema = <
 const mapPrefixItems = (
   items: ZodTypeAny[],
   state: SchemaState,
-): { effect?: Schema['effect']; schemas: Schema[] } | undefined => {
+): { effects?: Schema['effects']; schemas: Schema[] } | undefined => {
   if (items.length) {
     const schemas = items.map((item, index) =>
       createSchemaObject(item, state, [`tuple item ${index}`]),
     );
 
     return {
-      effect: resolveEffect(schemas.map((s) => s.effect)),
+      effects: flattenEffects(schemas.map((s) => s.effects)),
       schemas,
     };
   }

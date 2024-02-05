@@ -24,7 +24,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
         schema: {
           oneOf: mapNullOf([schemaObject.schema], state.components.openapi),
         },
-        effect: schemaObject.effect,
+        effects: schemaObject.effects,
       };
     }
 
@@ -36,7 +36,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
           oneOf: mapNullOf(oneOf, state.components.openapi),
           ...schema,
         },
-        effect: schemaObject.effect,
+        effects: schemaObject.effects,
       };
     }
 
@@ -48,7 +48,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
           anyOf: mapNullOf(anyOf, state.components.openapi),
           ...schema,
         },
-        effect: schemaObject.effect,
+        effects: schemaObject.effects,
       };
     }
 
@@ -60,7 +60,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
         type: mapNullType(type),
         ...schema,
       },
-      effect: schemaObject.effect,
+      effects: schemaObject.effects,
     };
   }
 
@@ -71,7 +71,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
         allOf: [schemaObject.schema],
         nullable: true,
       } as oas31.SchemaObject,
-      effect: schemaObject.effect,
+      effects: schemaObject.effects,
     };
   }
 
@@ -87,7 +87,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       ...(schema.enum && { enum: [...schema.enum, null] }),
     } as oas31.SchemaObject,
-    effect: schemaObject.effect,
+    effects: schemaObject.effects,
   };
 };
 

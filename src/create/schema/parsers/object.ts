@@ -10,7 +10,7 @@ import type {
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
-import { createComponentSchemaRef } from '../../components';
+import { type Effect, createComponentSchemaRef } from '../../components';
 import {
   type Schema,
   type SchemaState,
@@ -18,7 +18,7 @@ import {
 } from '../../schema';
 
 import { isOptionalSchema } from './optional';
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createObjectSchema = <
   T extends ZodRawShape,
@@ -110,11 +110,18 @@ export const createExtendedSchema = <
       allOf: [{ $ref: createComponentSchemaRef(completeComponent.ref) }],
       ...extendedSchema.schema,
     },
-    effect: resolveEffect([
-      completeComponent.type === 'complete'
-        ? completeComponent.effect
-        : undefined,
-      extendedSchema.effect,
+    effects: flattenEffects([
+      completeComponent.type === 'complete' ? completeComponent.effects : [],
+      completeComponent.type === 'in-progress'
+        ? [
+            {
+              type: 'component',
+              zodType: zodObject,
+              path: [...state.path],
+            },
+          ]
+        : [],
+      extendedSchema.effects,
     ]),
   };
 };
@@ -180,15 +187,16 @@ export const createObjectSchemaFromShape = (
     schema: {
       type: 'object',
       ...(properties && { properties: properties.properties }),
-      ...(required && { required }),
+      ...(required?.required.length && { required: required.required }),
       ...(unknownKeys === 'strict' && { additionalProperties: false }),
       ...(additionalProperties && {
         additionalProperties: additionalProperties.schema,
       }),
     },
-    effect: resolveEffect([
+    effects: flattenEffects([
       ...(properties?.effects ?? []),
-      additionalProperties?.effect,
+      additionalProperties?.effects,
+      required?.effects,
     ]),
   };
 };
@@ -196,21 +204,35 @@ export const createObjectSchemaFromShape = (
 export const mapRequired = (
   shape: ZodRawShape,
   state: SchemaState,
-): oas31.SchemaObject['required'] => {
-  const required: string[] = Object.entries(shape)
-    .filter(([_key, zodSchema]) => !isOptionalSchema(zodSchema, state))
-    .map(([key]) => key);
+): { required: string[]; effects?: Effect[] } | undefined => {
+  const { required, effects: allEffects } = Object.entries(shape).reduce<{
+    required: string[];
+    effects: Effect[][];
+  }>(
+    (acc, [key, zodSchema]) => {
+      state.path.push(`property: ${key}`);
+      const { optional, effects } = isOptionalSchema(zodSchema, state);
+      state.path.pop();
+      if (!optional) {
+        acc.required.push(key);
+      }
+      if (effects) {
+        acc.effects.push(effects);
+      }
+      return acc;
+    },
+    {
+      required: [],
+      effects: [],
+    },
+  );
 
-  if (!required.length) {
-    return undefined;
-  }
-
-  return required;
+  return { required, effects: flattenEffects(allEffects) };
 };
 
 interface PropertyMap {
   properties: NonNullable<oas31.SchemaObject['properties']>;
-  effects: Array<Schema['effect']>;
+  effects: Array<Effect[] | undefined>;
 }
 
 export const mapProperties = (
@@ -236,7 +258,7 @@ export const mapProperties = (
       ]);
 
       acc.properties[key] = property.schema;
-      acc.effects.push(property.effect);
+      acc.effects.push(property.effects);
       return acc;
     },
     {

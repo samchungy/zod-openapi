@@ -5,7 +5,7 @@ import { isAnyZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
 import type { ZodOpenApiParameters } from './document';
-import { type SchemaState, createSchemaObject } from './schema';
+import { type SchemaState, createSchema } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
 export const createComponentParamRef = (ref: string) =>
@@ -23,18 +23,15 @@ export const createBaseParameter = (
     path: [],
     visited: new Set(),
   };
-  const schemaObject = createSchemaObject(schema, state, [
-    ...subpath,
-    'schema',
-  ]);
-  const required = !isOptionalSchema(schema, state);
+  const schemaObject = createSchema(schema, state, [...subpath, 'schema']);
+  const required = !isOptionalSchema(schema, state)?.optional;
   const description =
     schema._def.openapi?.description ?? schema._def.description;
 
   return {
     ...(description && { description }),
     ...rest,
-    ...(schema && { schema: schemaObject.schema }),
+    ...(schema && { schema: schemaObject }),
     ...(required && { required }),
   };
 };

@@ -54,6 +54,23 @@ describe('enhanceWithMetadata', () => {
     expect(result).toEqual(expected);
   });
 
+  it('does not add additional descriptions with .describe() to registered schemas', () => {
+    const blaSchema = z.string().describe('bla').openapi({ ref: 'bla' });
+    const fooSchema = blaSchema.optional();
+
+    const expected: Schema = {
+      type: 'ref',
+      schema: {
+        $ref: '#/components/schemas/bla',
+      },
+      zodType: blaSchema,
+    };
+
+    const result = createSchemaObject(fooSchema, createOutputState(), []);
+
+    expect(result).toEqual(expected);
+  });
+
   it('overrides type with .openapi type metadata', () => {
     const expected: Schema = {
       type: 'schema',
@@ -93,14 +110,14 @@ describe('enhanceWithMetadata', () => {
   });
 
   it('adds allOf to $refs only if there is new metadata', () => {
+    const ref = z.string().openapi({ ref: 'og' });
     const expected: Schema = {
       type: 'ref',
       schema: {
         $ref: '#/components/schemas/og',
       },
+      zodType: ref,
     };
-
-    const ref = z.string().openapi({ ref: 'og' });
 
     const schema = ref.optional();
 
