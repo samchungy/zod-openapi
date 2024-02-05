@@ -176,7 +176,7 @@ describe('throwTransformError', () => {
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+1. Setting an \`effectType\` on the transformation to \`same\` or \`output\` eg. \`.openapi({type: 'same'})\`
 2. Wrapping the transformation in a ZodPipeline
 3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
 4. Removing the transformation
