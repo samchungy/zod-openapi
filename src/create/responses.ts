@@ -12,7 +12,7 @@ import type {
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from './document';
-import { type SchemaState, createSchemaObject } from './schema';
+import { type SchemaState, createSchema } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 import { isISpecificationExtension } from './specificationExtension';
 
@@ -84,11 +84,11 @@ export const createBaseHeader = (
     path: [],
     visited: new Set(),
   };
-  const schemaObject = createSchemaObject(schema, state, ['header']);
+  const schemaObject = createSchema(schema, state, ['header']);
   const required = !isOptionalSchema(schema, state);
   return {
     ...rest,
-    ...(schema && { schema: schemaObject.schema }),
+    ...(schema && { schema: schemaObject }),
     ...(required && { required }),
   };
 };

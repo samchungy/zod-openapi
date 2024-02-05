@@ -90,11 +90,14 @@ describe('createRecordSchema', () => {
         },
         additionalProperties: false,
       },
-      effect: {
-        type: 'output',
-        zodType: complexSchema,
-        path: ['record key'],
-      },
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'output',
+          zodType: complexSchema,
+          path: ['record key'],
+        },
+      ],
     };
 
     const result = createRecordSchema(schema, createOutputOpenapi3State());
@@ -126,11 +129,14 @@ describe('createRecordSchema', () => {
         },
         additionalProperties: false,
       },
-      effect: {
-        type: 'output',
-        zodType: complexSchema,
-        path: ['record key'],
-      },
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'output',
+          zodType: complexSchema,
+          path: ['record key'],
+        },
+      ],
     };
 
     const result = createRecordSchema(schema, createOutputOpenapi3State());
@@ -164,16 +170,19 @@ describe('createRecordSchema', () => {
         },
         additionalProperties: false,
       },
-      effect: {
-        type: 'output',
-        zodType: complexSchema,
-        path: ['record key'],
-        component: {
-          path: ['record key'],
-          ref: 'key',
+      effects: [
+        {
+          type: 'component',
           zodType: complexSchema,
+          path: ['record key'],
         },
-      },
+        {
+          type: 'schema',
+          creationType: 'output',
+          zodType: complexSchema,
+          path: ['record key'],
+        },
+      ],
     };
 
     const result = createRecordSchema(schema, createOutputOpenapi3State());
@@ -182,6 +191,28 @@ describe('createRecordSchema', () => {
   });
 
   it('supports registering key schemas in 3.1.0', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        propertyNames: {
+          $ref: '#/components/schemas/key',
+        },
+        additionalProperties: {
+          type: 'string',
+        },
+      },
+    };
+    const complexSchema = z.string().regex(/^foo/).openapi({ ref: 'key' });
+
+    const schema = z.record(complexSchema, z.string());
+
+    const result = createRecordSchema(schema, createOutputState());
+
+    expect(result).toEqual(expected);
+  });
+
+  it('supports lazy key schemas in 3.1.0', () => {
     const expected: Schema = {
       type: 'schema',
       schema: {

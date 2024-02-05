@@ -10,7 +10,7 @@ import type {
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
-import { createComponentSchemaRef } from '../../components';
+import { type Effect, createComponentSchemaRef } from '../../components';
 import {
   type Schema,
   type SchemaState,
@@ -18,7 +18,7 @@ import {
 } from '../../schema';
 
 import { isOptionalSchema } from './optional';
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createObjectSchema = <
   T extends ZodRawShape,
@@ -110,11 +110,18 @@ export const createExtendedSchema = <
       allOf: [{ $ref: createComponentSchemaRef(completeComponent.ref) }],
       ...extendedSchema.schema,
     },
-    effect: resolveEffect([
-      completeComponent.type === 'complete'
-        ? completeComponent.effect
-        : undefined,
-      extendedSchema.effect,
+    effects: flattenEffects([
+      completeComponent.type === 'complete' ? completeComponent.effects : [],
+      completeComponent.type === 'in-progress'
+        ? [
+            {
+              type: 'component',
+              zodType: zodObject,
+              path: [...state.path],
+            },
+          ]
+        : [],
+      extendedSchema.effects,
     ]),
   };
 };
@@ -186,9 +193,9 @@ export const createObjectSchemaFromShape = (
         additionalProperties: additionalProperties.schema,
       }),
     },
-    effect: resolveEffect([
+    effects: flattenEffects([
       ...(properties?.effects ?? []),
-      additionalProperties?.effect,
+      additionalProperties?.effects,
     ]),
   };
 };
@@ -210,7 +217,7 @@ export const mapRequired = (
 
 interface PropertyMap {
   properties: NonNullable<oas31.SchemaObject['properties']>;
-  effects: Array<Schema['effect']>;
+  effects: Array<Effect[] | undefined>;
 }
 
 export const mapProperties = (
@@ -236,7 +243,7 @@ export const mapProperties = (
       ]);
 
       acc.properties[key] = property.schema;
-      acc.effects.push(property.effect);
+      acc.effects.push(property.effects);
       return acc;
     },
     {

@@ -6,7 +6,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createIntersectionSchema = <
   T extends ZodTypeAny,
@@ -27,6 +27,6 @@ export const createIntersectionSchema = <
     schema: {
       allOf: [left.schema, right.schema],
     },
-    effect: resolveEffect([left.effect, right.effect]),
+    effects: flattenEffects([left.effects, right.effects]),
   };
 };

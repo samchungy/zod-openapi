@@ -17,11 +17,14 @@ describe('createPipelineSchema', () => {
         schema: {
           type: 'string',
         },
-        effect: {
-          type: 'input',
-          zodType: schema,
-          path: [],
-        },
+        effects: [
+          {
+            type: 'schema',
+            creationType: 'input',
+            zodType: schema,
+            path: [],
+          },
+        ],
       };
 
       const result = createPipelineSchema(schema, createInputState());
@@ -40,11 +43,20 @@ describe('createPipelineSchema', () => {
         schema: {
           type: 'string',
         },
-        effect: {
-          type: 'input',
-          zodType: schema,
-          path: [],
-        },
+        effects: [
+          {
+            type: 'schema',
+            creationType: 'input',
+            zodType: schema,
+            path: [],
+          },
+          {
+            type: 'schema',
+            creationType: 'input',
+            zodType: schema._def.in,
+            path: ['pipeline input'],
+          },
+        ],
       };
 
       const result = createPipelineSchema(schema, createInputState());
@@ -80,11 +92,14 @@ describe('createPipelineSchema', () => {
         schema: {
           type: 'string',
         },
-        effect: {
-          type: 'output',
-          zodType: schema,
-          path: [],
-        },
+        effects: [
+          {
+            type: 'schema',
+            creationType: 'output',
+            zodType: schema,
+            path: [],
+          },
+        ],
       };
       const result = createPipelineSchema(schema, createOutputState());
 
@@ -101,11 +116,14 @@ describe('createPipelineSchema', () => {
         schema: {
           type: 'number',
         },
-        effect: {
-          type: 'output',
-          zodType: schema,
-          path: [],
-        },
+        effects: [
+          {
+            type: 'schema',
+            creationType: 'output',
+            zodType: schema,
+            path: [],
+          },
+        ],
       };
 
       const result = createPipelineSchema(schema, createOutputState());

@@ -6,7 +6,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { resolveEffect } from './transform';
+import { flattenEffects } from './transform';
 
 export const createUnionSchema = <
   T extends readonly [ZodTypeAny, ...ZodTypeAny[]],
@@ -24,7 +24,7 @@ export const createUnionSchema = <
       schema: {
         oneOf: schemas.map((s) => s.schema),
       },
-      effect: resolveEffect(schemas.map((s) => s.effect)),
+      effects: flattenEffects(schemas.map((s) => s.effects)),
     };
   }
 
@@ -33,6 +33,6 @@ export const createUnionSchema = <
     schema: {
       anyOf: schemas.map((s) => s.schema),
     },
-    effect: resolveEffect(schemas.map((s) => s.effect)),
+    effects: flattenEffects(schemas.map((s) => s.effects)),
   };
 };

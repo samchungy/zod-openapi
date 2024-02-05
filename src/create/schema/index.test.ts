@@ -4,44 +4,32 @@ import { extendZodWithOpenApi } from '../../extendZod';
 import { createInputState, createOutputState } from '../../testing/state';
 import { getDefaultComponents } from '../components';
 
-import { type Schema, type SchemaState, createSchemaObject } from '.';
+import { type Schema, type SchemaState, createSchema } from '.';
 
 extendZodWithOpenApi(z);
 
 const zodArray = z.array(z.string());
-const expectedZodArray: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'array',
-    items: {
-      type: 'string',
-    },
+const expectedZodArray: Schema['schema'] = {
+  type: 'array',
+  items: {
+    type: 'string',
   },
 };
 
 const zodBoolean = z.boolean();
-const expectedZodBoolean: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'boolean',
-  },
+const expectedZodBoolean: Schema['schema'] = {
+  type: 'boolean',
 };
 
 const zodDate = z.date();
-const expectedZodDate: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodDate: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodDefault = z.string().default('a');
-const expectedZodDefault: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-    default: 'a',
-  },
+const expectedZodDefault: Schema['schema'] = {
+  type: 'string',
+  default: 'a',
 };
 
 const zodDiscriminatedUnion = z.discriminatedUnion('type', [
@@ -52,74 +40,58 @@ const zodDiscriminatedUnion = z.discriminatedUnion('type', [
     type: z.literal('b'),
   }),
 ]);
-const expectedZodDiscriminatedUnion: Schema = {
-  type: 'schema',
-  schema: {
-    oneOf: [
-      {
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            enum: ['a'],
-          },
+const expectedZodDiscriminatedUnion: Schema['schema'] = {
+  oneOf: [
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: ['a'],
         },
-        required: ['type'],
       },
-      {
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            enum: ['b'],
-          },
+      required: ['type'],
+    },
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: ['b'],
         },
-        required: ['type'],
       },
-    ],
-  },
+      required: ['type'],
+    },
+  ],
 };
 
 const zodEnum = z.enum(['a', 'b']);
-const expectedZodEnum: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-    enum: ['a', 'b'],
-  },
+const expectedZodEnum: Schema['schema'] = {
+  type: 'string',
+  enum: ['a', 'b'],
 };
 
 const zodIntersection = z.intersection(z.string(), z.number());
-const expectedZodIntersection: Schema = {
-  type: 'schema',
-  schema: {
-    allOf: [
-      {
-        type: 'string',
-      },
-      {
-        type: 'number',
-      },
-    ],
-  },
+const expectedZodIntersection: Schema['schema'] = {
+  allOf: [
+    {
+      type: 'string',
+    },
+    {
+      type: 'number',
+    },
+  ],
 };
 
 const zodLiteral = z.literal('a');
-const expectedZodLiteral: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-    enum: ['a'],
-  },
+const expectedZodLiteral: Schema['schema'] = {
+  type: 'string',
+  enum: ['a'],
 };
 
 const zodMetadata = z.string().openapi({ ref: 'a' });
-const expectedZodMetadata: Schema = {
-  type: 'ref',
-  schema: {
-    $ref: '#/components/schemas/a',
-  },
-  zodType: zodMetadata,
+const expectedZodMetadata: Schema['schema'] = {
+  $ref: '#/components/schemas/a',
 };
 
 enum Direction {
@@ -129,36 +101,24 @@ enum Direction {
   Right = 'Right',
 }
 const zodNativeEnum = z.nativeEnum(Direction);
-const expectedZodNativeEnum: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-    enum: ['Up', 'Down', 'Left', 'Right'],
-  },
+const expectedZodNativeEnum: Schema['schema'] = {
+  type: 'string',
+  enum: ['Up', 'Down', 'Left', 'Right'],
 };
 
 const zodNull = z.null();
-const expectedZodNull: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'null',
-  },
+const expectedZodNull: Schema['schema'] = {
+  type: 'null',
 };
 
 const zodNullable = z.string().nullable();
-const expectedZodNullable: Schema = {
-  type: 'schema',
-  schema: {
-    type: ['string', 'null'],
-  },
+const expectedZodNullable: Schema['schema'] = {
+  type: ['string', 'null'],
 };
 
 const zodNumber = z.number();
-const expectedZodNumber: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'number',
-  },
+const expectedZodNumber: Schema['schema'] = {
+  type: 'number',
 };
 
 const zodObject = z.object({
@@ -166,182 +126,118 @@ const zodObject = z.object({
   b: z.string().optional(),
   c: z.string().default('test-default'),
 });
-const expectedZodObjectInput: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'object',
-    properties: {
-      a: { type: 'string' },
-      b: { type: 'string' },
-      c: { type: 'string', default: 'test-default' },
-    },
-    required: ['a'],
+const expectedZodObjectInput: Schema['schema'] = {
+  type: 'object',
+  properties: {
+    a: { type: 'string' },
+    b: { type: 'string' },
+    c: { type: 'string', default: 'test-default' },
   },
+  required: ['a'],
 };
-const expectedZodObjectOutput: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'object',
-    properties: {
-      a: { type: 'string' },
-      b: { type: 'string' },
-      c: { type: 'string', default: 'test-default' },
-    },
-    required: ['a', 'c'],
+const expectedZodObjectOutput: Schema['schema'] = {
+  type: 'object',
+  properties: {
+    a: { type: 'string' },
+    b: { type: 'string' },
+    c: { type: 'string', default: 'test-default' },
   },
+  required: ['a', 'c'],
 };
 
 const zodOptional = z.string().optional();
-const expectedZodOptional: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodOptional: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodRecord = z.record(z.string());
-const expectedZodRecord: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'object',
-    additionalProperties: {
-      type: 'string',
-    },
+const expectedZodRecord: Schema['schema'] = {
+  type: 'object',
+  additionalProperties: {
+    type: 'string',
   },
 };
 
 const zodString = z.string();
-const expectedZodString: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodString: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodTuple = z.tuple([z.string(), z.number()]);
-const expectedZodTuple: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'array',
-    prefixItems: [
-      {
-        type: 'string',
-      },
-      {
-        type: 'number',
-      },
-    ],
-    minItems: 2,
-    maxItems: 2,
-  },
+const expectedZodTuple: Schema['schema'] = {
+  type: 'array',
+  prefixItems: [
+    {
+      type: 'string',
+    },
+    {
+      type: 'number',
+    },
+  ],
+  minItems: 2,
+  maxItems: 2,
 };
 
 const zodUnion = z.union([z.string(), z.number()]);
-const expectedZodUnion: Schema = {
-  type: 'schema',
-  schema: {
-    anyOf: [
-      {
-        type: 'string',
-      },
-      {
-        type: 'number',
-      },
-    ],
-  },
+const expectedZodUnion: Schema['schema'] = {
+  anyOf: [
+    {
+      type: 'string',
+    },
+    {
+      type: 'number',
+    },
+  ],
 };
 
 const zodCatch = z.string().catch('bob');
-const expectedZodCatch: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodCatch: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodPipeline = z
   .string()
   .transform((arg) => arg.length)
   .pipe(z.number());
-const expectedZodPipelineOutput: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'number',
-  },
-  effect: {
-    type: 'output',
-    zodType: zodPipeline,
-    path: ['previous'],
-  },
+const expectedZodPipelineOutput: Schema['schema'] = {
+  type: 'number',
 };
-const expectedZodPipelineInput: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
-  effect: {
-    type: 'input',
-    zodType: zodPipeline,
-    path: ['previous'],
-  },
+const expectedZodPipelineInput: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodTransform = z.string().transform((str) => str.length);
-const expectedZodTransform: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
-  effect: {
-    type: 'input',
-    zodType: zodTransform,
-    path: ['previous'],
-  },
+const expectedZodTransform: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodPreprocess = z.preprocess(
   (arg) => (typeof arg === 'string' ? arg.split(',') : arg),
   z.string(),
 );
-const expectedZodPreprocess: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodPreprocess: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodRefine = z.string().refine((arg) => typeof arg === 'string');
-const expectedZodRefine: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodRefine: Schema['schema'] = {
+  type: 'string',
 };
 
 const zodUnknown = z.unknown();
-const expectedManualType: Schema = {
-  type: 'schema',
-  schema: {},
-};
+const expectedManualType: Schema['schema'] = {};
 
 const zodOverride = z.string().openapi({ type: 'number' });
-const expectedZodOverride: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'number',
-  },
+const expectedZodOverride: Schema['schema'] = {
+  type: 'number',
 };
 
 type Lazy = Lazy[];
 const zodLazy: z.ZodType<Lazy> = z
   .lazy(() => zodLazy.array())
   .openapi({ ref: 'lazy' });
-const expectedZodLazy: Schema = {
-  type: 'ref',
-  schema: {
-    $ref: '#/components/schemas/lazy',
-  },
-  zodType: zodLazy,
+const expectedZodLazy: Schema['schema'] = {
+  $ref: '#/components/schemas/lazy',
 };
 
 const BasePost = z.object({
@@ -369,49 +265,42 @@ const zodLazyComplex: ZodType<User> = BaseUser.extend({
   posts: z.array(z.lazy(() => PostSchema)).optional(),
 }).openapi({ ref: 'user' });
 
-const expectedZodLazyComplex: Schema = {
-  type: 'ref',
-  schema: {
-    $ref: '#/components/schemas/user',
-  },
-  zodType: zodLazyComplex,
+const expectedZodLazyComplex: Schema['schema'] = {
+  $ref: '#/components/schemas/user',
 };
 
 const zodBranded = z.object({ name: z.string() }).brand<'Cat'>();
-const expectedZodBranded: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'object',
-    properties: {
-      name: {
-        type: 'string',
-      },
+const expectedZodBranded: Schema['schema'] = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
     },
-    required: ['name'],
   },
+  required: ['name'],
 };
 
 const zodSet = z.set(z.string());
-const expectedZodSet: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'array',
-    items: {
-      type: 'string',
-    },
-    uniqueItems: true,
+const expectedZodSet: Schema['schema'] = {
+  type: 'array',
+  items: {
+    type: 'string',
   },
+  uniqueItems: true,
 };
 
 const zodReadonly = z.string().readonly();
-const expectedZodReadonly: Schema = {
-  type: 'schema',
-  schema: {
-    type: 'string',
-  },
+const expectedZodReadonly: Schema['schema'] = {
+  type: 'string',
 };
 
-describe('createSchemaObject', () => {
+it('creates an output schema for zodType', () => {
+  expect(
+    createSchema(zodLazyComplex, createOutputState(), ['previous']),
+  ).toEqual(expectedZodLazyComplex);
+});
+
+describe('createSchema', () => {
   it.each`
     zodType                      | schema                   | expected
     ${'ZodArray'}                | ${zodArray}              | ${expectedZodArray}
@@ -445,9 +334,9 @@ describe('createSchemaObject', () => {
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
     ${'ZodReadonly'}             | ${zodReadonly}           | ${expectedZodReadonly}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
-    expect(
-      createSchemaObject(schema, createOutputState(), ['previous']),
-    ).toEqual(expected);
+    expect(createSchema(schema, createOutputState(), ['previous'])).toEqual(
+      expected,
+    );
   });
 
   it.each`
@@ -483,9 +372,9 @@ describe('createSchemaObject', () => {
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
     ${'ZodReadonly'}             | ${zodReadonly}           | ${expectedZodReadonly}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
-    expect(
-      createSchemaObject(schema, createInputState(), ['previous']),
-    ).toEqual(expected);
+    expect(createSchema(schema, createInputState(), ['previous'])).toEqual(
+      expected,
+    );
   });
 
   it('throws an error when an ZodEffect input component is referenced in an output', () => {
@@ -499,7 +388,7 @@ describe('createSchemaObject', () => {
       path: [],
       visited: new Set(),
     };
-    createSchemaObject(inputSchema, state, ['previous']);
+    createSchema(inputSchema, state, ['previous']);
 
     const outputState: SchemaState = {
       components,
@@ -508,19 +397,19 @@ describe('createSchemaObject', () => {
       visited: new Set(),
     };
 
-    const outputSchema = z.object({ a: inputSchema });
-    expect(() => createSchemaObject(outputSchema, outputState, ['previous']))
+    const outputSchema = z.object({ b: inputSchema });
+    expect(() => createSchema(outputSchema, outputState, ['previous']))
       .toThrowErrorMatchingInlineSnapshot(`
-"The ZodObject at previous > property: a is used within a registered compoment schema (a) and contains an input transformation (ZodEffects - transform) defined at previous > property: a which is also used in an output schema.
+            "The ZodObject at previous > property: b is used within a registered compoment schema (a) and contains an input transformation (ZodEffects - transform) defined at previous > property: a which is also used in an output schema.
 
-This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+            This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
-2. Wrapping the transformation in a ZodPipeline
-3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
-4. Removing the transformation
-5. Deregistering the component containing the transformation"
-`);
+            1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+            2. Wrapping the transformation in a ZodPipeline
+            3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+            4. Removing the transformation
+            5. Deregistering the component containing the transformation"
+            `);
   });
 
   it('throws an error when a registered transform is generated with different types', () => {
@@ -537,7 +426,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       path: [],
       visited: new Set(),
     };
-    createSchemaObject(inputSchema, inputState, ['previous', 'other path']);
+    createSchema(inputSchema, inputState, ['previous', 'other path']);
 
     const outputSchema = z.object({
       a: inputSchema,
@@ -550,19 +439,18 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       visited: new Set(),
     };
 
-    expect(() =>
-      createSchemaObject(outputSchema, outputState, ['previous', 'path']),
-    ).toThrowErrorMatchingInlineSnapshot(`
-"The ZodEffects - transform at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation (ZodEffects - transform) defined at previous > other path which is also used in an output schema.
+    expect(() => createSchema(outputSchema, outputState, ['previous', 'path']))
+      .toThrowErrorMatchingInlineSnapshot(`
+            "The ZodEffects - transform at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation (ZodEffects - transform) defined at previous > other path which is also used in an output schema.
 
-This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+            This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
-2. Wrapping the transformation in a ZodPipeline
-3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
-4. Removing the transformation
-5. Deregistering the component containing the transformation"
-`);
+            1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+            2. Wrapping the transformation in a ZodPipeline
+            3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+            4. Removing the transformation
+            5. Deregistering the component containing the transformation"
+            `);
   });
 
   it('does not throw an error when a transform is generated with different types', () => {
@@ -579,7 +467,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       path: [],
       visited: new Set(),
     };
-    createSchemaObject(inputSchema, inputState, ['previous', 'other path']);
+    createSchema(inputSchema, inputState, ['previous', 'other path']);
 
     const outputSchema = z.object({
       a: inputSchema,
@@ -592,11 +480,11 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       visited: new Set(),
     };
 
-    const result = createSchemaObject(outputSchema, outputState, [
+    const result = createSchema(outputSchema, outputState, [
       'previous',
       'path',
     ]);
-    expect(result.schema).toEqual({
+    expect(result).toEqual({
       properties: {
         a: {
           type: 'string',
@@ -621,21 +509,10 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       path: [],
       visited: new Set(),
     };
-    const result1 = createSchemaObject(inputSchema, inputState, [
-      'previous',
-      'path',
-    ]);
+    const result1 = createSchema(inputSchema, inputState, ['previous', 'path']);
 
-    const expectedResult1: Schema = {
-      schema: {
-        type: 'string',
-      },
-      type: 'schema',
-      effect: {
-        type: 'input',
-        zodType: inputSchema,
-        path: ['previous', 'path'],
-      },
+    const expectedResult1: Schema['schema'] = {
+      type: 'string',
     };
     expect(result1).toStrictEqual(expectedResult1);
 
@@ -650,27 +527,19 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       visited: new Set(),
     };
 
-    const expectedResult2 = {
-      type: 'schema',
-      schema: {
-        type: 'object',
-        properties: {
-          a: {
-            type: 'number',
-          },
-          b: {
-            type: 'string',
-          },
+    const expectedResult2: Schema['schema'] = {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'number',
         },
-        required: ['a', 'b'],
+        b: {
+          type: 'string',
+        },
       },
-      effect: {
-        type: 'output',
-        zodType: inputSchema,
-        path: ['previous', 'path', 'property: a'],
-      },
+      required: ['a', 'b'],
     };
-    const result2 = createSchemaObject(outputSchema, outputState, [
+    const result2 = createSchema(outputSchema, outputState, [
       'previous',
       'path',
     ]);
@@ -689,7 +558,7 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       visited: new Set(),
     };
 
-    createSchemaObject(inputSchema, inputState, ['previous', 'other path']);
+    createSchema(inputSchema, inputState, ['previous', 'other path']);
 
     const outputSchema = z.object({
       a: inputSchema,
@@ -702,14 +571,54 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
       visited: new Set(),
     };
 
-    expect(() =>
-      createSchemaObject(outputSchema, outputState, ['previous', 'path']),
-    ).toThrowErrorMatchingInlineSnapshot(`
-"The ZodPipeline at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation (ZodPipeline) defined at previous > other path which is also used in an output schema.
+    expect(() => createSchema(outputSchema, outputState, ['previous', 'path']))
+      .toThrowErrorMatchingInlineSnapshot(`
+            "The ZodPipeline at previous > path > property: a is used within a registered compoment schema (input) and contains an input transformation (ZodPipeline) defined at previous > other path which is also used in an output schema.
+
+            This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
+
+            1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+            2. Wrapping the transformation in a ZodPipeline
+            3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
+            4. Removing the transformation
+            5. Deregistering the component containing the transformation"
+            `);
+  });
+
+  it('throws an error when a lazy schema which contains an effect is used in both an input and output', () => {
+    type Post2 = {
+      id: string;
+      userId: string;
+      user: Post;
+    };
+
+    const UserIdSchema = z.string().pipe(z.string());
+
+    const PostSchema2: ZodType<Post2> = z
+      .object({
+        id: z.string(),
+        userId: UserIdSchema,
+        user: z.lazy(() => PostSchema2).openapi({ ref: 'user' }),
+      })
+      .openapi({ ref: 'post' });
+
+    const ContainerSchema = z.object({
+      post: PostSchema2,
+    });
+
+    const state = createOutputState();
+
+    createSchema(ContainerSchema, state, ['previous']);
+
+    const inputState: SchemaState = { ...state, type: 'input' };
+
+    expect(() => createSchema(ContainerSchema, inputState, ['previous']))
+      .toThrowErrorMatchingInlineSnapshot(`
+"The ZodObject at previous > property: post is used within a registered compoment schema (post) and contains an output transformation (ZodPipeline) defined at previous > property: post > property: userId which is also used in an input schema.
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`output\` eg. \`.openapi({type: 'output'})\`
+1. Setting an \`effectType\` on the transformation to \`input\` eg. \`.openapi({type: 'input'})\`
 2. Wrapping the transformation in a ZodPipeline
 3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
 4. Removing the transformation
