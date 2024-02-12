@@ -53,7 +53,7 @@
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.1.0",
     "openapi3-ts": "4.2.1",
-    "skuba": "7.3.1",
+    "skuba": "7.4.1",
     "yaml": "2.3.4",
     "zod": "3.22.4"
   },
