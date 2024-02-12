@@ -12,6 +12,9 @@ import type { oas30, oas31 } from './openapi3-ts/dist';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
+/**
+ * zod-openapi metadata
+ */
 interface ZodOpenApiMetadata<
   T extends ZodTypeAny,
   TInferred = z.input<T> | z.output<T>,
@@ -20,19 +23,19 @@ interface ZodOpenApiMetadata<
   examples?: [TInferred, ...TInferred[]];
   default?: T extends ZodDate ? string : TInferred;
   /**
-   * Use this field to set the output of a ZodUnion to be `oneOf` instead of `allOf`
+   * Used to set the output of a ZodUnion to be `oneOf` instead of `allOf`
    */
   unionOneOf?: boolean;
   /**
-   * Use this field to output this Zod Schema in the components schemas section. Any usage of this Zod Schema will then be transformed into a $ref.
+   * Used to output this Zod Schema in the components schemas section. Any usage of this Zod Schema will then be transformed into a $ref.
    */
   ref?: string;
   /**
-   * Use this field when you are manually adding a Zod Schema to the components section. This controls whether this should be rendered as request (`input`) or response (`output`). Defaults to `output`
+   * Used when you are manually adding a Zod Schema to the components section. This controls whether this should be rendered as request (`input`) or response (`output`). Defaults to `output`
    */
   refType?: CreationType;
   /**
-   * Use this field to set the created type of an effect.
+   * Used to set the created type of an effect.
    */
   effectType?:
     | CreationType
@@ -41,6 +44,9 @@ interface ZodOpenApiMetadata<
           ? 'same'
           : never
         : never);
+  /**
+   * Used to set metadata for a parameter, request header or cookie
+   */
   param?: Partial<oas31.ParameterObject> & {
     example?: TInferred;
     examples?: Record<
@@ -48,16 +54,23 @@ interface ZodOpenApiMetadata<
       (oas31.ExampleObject & { value: TInferred }) | oas31.ReferenceObject
     >;
     /**
-     * Use this field to output this Zod Schema in the components parameters section. Any usage of this Zod Schema will then be transformed into a $ref.
+     * Used to output this Zod Schema in the components parameters section. Any usage of this Zod Schema will then be transformed into a $ref.
      */
     ref?: string;
   };
+  /**
+   * Used to set data for a response header
+   */
   header?: Partial<oas31.HeaderObject & oas30.HeaderObject> & {
     /**
-     * Use this field to output this Zod Schema in the components headers section. Any usage of this Zod Schema will then be transformed into a $ref.
+     * Used to output this Zod Schema in the components headers section. Any usage of this Zod Schema will then be transformed into a $ref.
      */
     ref?: string;
   };
+  /**
+   * Used to override the generated type. If this is provided no metadata will be generated.
+   */
+  type?: SchemaObject['type'];
 }
 
 interface ZodOpenApiExtendMetadata {
@@ -68,10 +81,16 @@ interface ZodOpenApiExtendMetadata {
 declare module 'zod' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ZodType<Output, Def extends ZodTypeDef, Input = Output> {
+    /**
+     * Add OpenAPI metadata to a Zod Type
+     */
     openapi<T extends ZodTypeAny>(this: T, metadata: ZodOpenApiMetadata<T>): T;
   }
 
   interface ZodTypeDef {
+    /**
+     * OpenAPI metadata
+     */
     openapi?: ZodOpenApiMetadata<ZodTypeAny>;
   }
 
