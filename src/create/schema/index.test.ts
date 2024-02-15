@@ -404,11 +404,11 @@ describe('createSchema', () => {
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`same\` or \`output\` eg. \`.openapi({type: 'same'})\`
+1. Setting an \`effectType\` on one of the transformations to \`same\` (Not applicable for ZodDefault), \`input\` or \`output\` eg. \`.openapi({type: 'same'})\`
 2. Wrapping the transformation in a ZodPipeline
 3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
 4. Removing the transformation
-5. Deregistering the component containing the transformation"
+5. Deregister the component containing the transformation"
 `);
   });
 
@@ -445,11 +445,11 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`same\` or \`output\` eg. \`.openapi({type: 'same'})\`
+1. Setting an \`effectType\` on one of the transformations to \`same\` (Not applicable for ZodDefault), \`input\` or \`output\` eg. \`.openapi({type: 'same'})\`
 2. Wrapping the transformation in a ZodPipeline
 3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
 4. Removing the transformation
-5. Deregistering the component containing the transformation"
+5. Deregister the component containing the transformation"
 `);
   });
 
@@ -577,11 +577,11 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`same\` or \`output\` eg. \`.openapi({type: 'same'})\`
+1. Setting an \`effectType\` on one of the transformations to \`same\` (Not applicable for ZodDefault), \`input\` or \`output\` eg. \`.openapi({type: 'same'})\`
 2. Wrapping the transformation in a ZodPipeline
 3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
 4. Removing the transformation
-5. Deregistering the component containing the transformation"
+5. Deregister the component containing the transformation"
 `);
   });
 
@@ -618,11 +618,11 @@ This may cause the schema to render incorrectly and is most likely a mistake. Yo
 
 This may cause the schema to render incorrectly and is most likely a mistake. You can resolve this by:
 
-1. Setting an \`effectType\` on the transformation to \`same\` or \`input\` eg. \`.openapi({type: 'same'})\`
+1. Setting an \`effectType\` on one of the transformations to \`same\` (Not applicable for ZodDefault), \`input\` or \`output\` eg. \`.openapi({type: 'same'})\`
 2. Wrapping the transformation in a ZodPipeline
 3. Assigning a manual type to the transformation eg. \`.openapi({type: 'string'})\`
 4. Removing the transformation
-5. Deregistering the component containing the transformation"
+5. Deregister the component containing the transformation"
 `);
   });
 });
