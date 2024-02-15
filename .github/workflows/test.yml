@@ -23,13 +23,13 @@ jobs:
           node-version: 20.x
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Test
-        run: yarn test:ci
+        run: pnpm test:ci
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
 
       - name: Build
-        run: yarn build
+        run: pnpm build

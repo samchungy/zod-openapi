@@ -1,5 +1,6 @@
-* @seek-oss/skuba-maintainers
+- @seek-oss/skuba-maintainers
 
 # Configured by Renovate
+
 package.json
-yarn.lock
+pnpm-lock.yaml
