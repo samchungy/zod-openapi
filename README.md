@@ -17,12 +17,12 @@ A Typescript library to use <a href="https://github.com/colinhacks/zod">Zod</a> 
 
 ## Install
 
-Install via `npm` or `yarn`:
+Install via `npm` or `pnpm`:
 
 ```bash
 npm install zod zod-openapi
 ## or
-yarn add zod zod-openapi
+pnpm add zod zod-openapi
 ```
 
 ## Usage
@@ -578,27 +578,27 @@ See the library in use in the [examples](./examples/) folder.
 ### Prerequisites
 
 - Node.js LTS
-- Yarn 1.x
+- pnpm
 
 ```shell
-yarn
-yarn build
+pnpm
+pnpm build
 ```
 
 ### Test
 
 ```shell
-yarn test
+pnpm test
 ```
 
 ### Lint
 
 ```shell
 # Fix issues
-yarn format
+pnpm format
 
 # Check for issues
-yarn lint
+pnpm lint
 ```
 
 ### Release

@@ -26,8 +26,11 @@ jobs:
           node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Set up pnpm
+        run: corepack enable pnpm
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Create Beta Branch
         run: |
@@ -57,6 +60,6 @@ jobs:
           DESTINATION_BRANCH: beta
 
       - name: Publish to npm
-        run: yarn build && npm publish --provenance --tag beta
+        run: pnpm build && npm publish --provenance --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

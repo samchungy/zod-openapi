@@ -12,7 +12,6 @@ node_modules*/
 /tmp*/
 
 .DS_Store
-.npmrc
 npm-debug.log
 yarn-error.log
 # end managed by skuba

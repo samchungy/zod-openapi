@@ -37,12 +37,12 @@
     "lib*/**/*.json"
   ],
   "scripts": {
-    "build": "yarn copy:types && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-types --project tsconfig.build.json",
+    "build": "pnpm copy:types && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-types --project tsconfig.build.json",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
     "lint": "skuba lint",
-    "prepare": "yarn build",
+    "prepare": "pnpm build",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
     "test:watch": "skuba test --watch"
@@ -53,7 +53,7 @@
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.1.0",
     "openapi3-ts": "4.2.1",
-    "skuba": "7.3.1",
+    "skuba": "7.4.1",
     "yaml": "2.3.4",
     "zod": "3.22.4"
   },
@@ -71,6 +71,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "6.0.0"
+    "version": "7.4.1"
   }
 }

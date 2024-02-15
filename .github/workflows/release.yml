@@ -27,8 +27,11 @@ jobs:
           node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Set up pnpm
+        run: corepack enable pnpm
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Create Release Branch
         run: |
@@ -64,6 +67,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm
-        run: yarn build && npm publish --provenance
+        run: pnpm build && npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

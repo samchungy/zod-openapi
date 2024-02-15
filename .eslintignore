@@ -3,6 +3,7 @@
 .vscode/*
 
 .cdk.staging/
+.pnpm-store/
 .serverless/
 cdk.out/
 node_modules*/
