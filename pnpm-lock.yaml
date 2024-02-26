@@ -18,8 +18,8 @@ devDependencies:
     specifier: 4.2.1
     version: 4.2.1
   skuba:
-    specifier: 7.4.1
-    version: 7.4.1(@babel/core@7.22.20)
+    specifier: 7.5.0
+    version: 7.5.0(@babel/core@7.22.20)
   yaml:
     specifier: 2.3.4
     version: 2.3.4
@@ -4361,6 +4361,17 @@ packages:
       micromatch: 4.0.5
     dev: true
 
+  /fast-glob@3.3.2:
+    resolution: {integrity: sha512-oX2ruAFQwf/Orj8m737Y5adxDQO0LAB7/S5MnxCdTNDd4p6BsyIVsv9JQsATbTSq8KHRpLwIHbVlUNatxd+1Ow==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.5
+    dev: true
+
   /fast-json-stable-stringify@2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
     dev: true
@@ -4385,7 +4396,7 @@ packages:
       bser: 2.1.1
     dev: true
 
-  /fdir@6.0.1(picomatch@3.0.1):
+  /fdir@6.0.1(picomatch@4.0.1):
     resolution: {integrity: sha512-bdrUUb0eYQrPRlaAtlSRoLs7sp6yKEwbMQuUgwvi/14TnaqhM/deSZUrC5ic+yjm5nEPPWE61oWpTTxQFQMmLA==}
     peerDependencies:
       picomatch: 2.x
@@ -4393,7 +4404,7 @@ packages:
       picomatch:
         optional: true
     dependencies:
-      picomatch: 3.0.1
+      picomatch: 4.0.1
     dev: true
 
   /figures@2.0.0:
@@ -4740,7 +4751,7 @@ packages:
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dependencies:
       dir-glob: 3.0.1
-      fast-glob: 3.3.1
+      fast-glob: 3.3.2
       ignore: 5.2.4
       merge2: 1.4.1
       slash: 4.0.0
@@ -6971,9 +6982,9 @@ packages:
     engines: {node: '>=8.6'}
     dev: true
 
-  /picomatch@3.0.1:
-    resolution: {integrity: sha512-I3EurrIQMlRc9IaAZnqRR044Phh2DXY+55o7uJ0V+hYZAcQYSuFWsc9q5PvyDHUSCe1Qxn/iBz+78s86zWnGag==}
-    engines: {node: '>=10'}
+  /picomatch@4.0.1:
+    resolution: {integrity: sha512-xUXwsxNjwTQ8K3GnT4pCJm+xq3RUPQbmkYJTP5aFIfNIvbcc/4MUxgBaaRSZJ6yGJZiGSyYlM6MzwTsRk8SYCg==}
+    engines: {node: '>=12'}
     dev: true
 
   /pify@3.0.0:
@@ -7629,6 +7640,10 @@ packages:
       object-inspect: 1.12.3
     dev: true
 
+  /siginfo@2.0.0:
+    resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
+    dev: true
+
   /signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
     dev: true
@@ -7687,8 +7702,8 @@ packages:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
     dev: true
 
-  /skuba@7.4.1(@babel/core@7.22.20):
-    resolution: {integrity: sha512-+Flhf18ZBiLdylnt35zNi1Bc4pTXOTRUvp7SAY4u/53Sq6wSz20pz/r1KeVxo9pDPGKVIZeaSnNk73sf2Ld1Pw==}
+  /skuba@7.5.0(@babel/core@7.22.20):
+    resolution: {integrity: sha512-RCHmGnYlsbo9NhvT4FgKNCSTQpUClmFJD4t7ITyaIiDU9Nm+bZLCSgofOSnPa9dMxbxWgYTUFiT/VAHKogS9qA==}
     engines: {node: '>=18.12'}
     hasBin: true
     peerDependencies:
@@ -7715,7 +7730,8 @@ packages:
       eslint: 8.36.0
       eslint-config-skuba: 3.1.0(eslint@8.36.0)(jest@29.5.0)(typescript@5.3.3)
       execa: 5.1.1
-      fdir: 6.0.1(picomatch@3.0.1)
+      fast-glob: 3.3.2
+      fdir: 6.0.1(picomatch@4.0.1)
       fs-extra: 11.1.1
       function-arguments: 1.0.9
       get-port: 5.1.1
@@ -7731,7 +7747,7 @@ packages:
       normalize-package-data: 6.0.0
       npm-run-path: 4.0.1
       npm-which: 3.0.1
-      picomatch: 3.0.1
+      picomatch: 4.0.1
       prettier: 3.2.5
       prettier-plugin-packagejson: 2.4.10(prettier@3.2.5)
       read-pkg-up: 7.0.1
@@ -7747,6 +7763,7 @@ packages:
       tsconfig-seek: 2.0.0
       typescript: 5.3.3
       validate-npm-package-name: 5.0.0
+      why-is-node-running: 2.2.2
       zod: 3.22.4
     transitivePeerDependencies:
       - '@babel/core'
@@ -7913,6 +7930,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       escape-string-regexp: 2.0.0
+    dev: true
+
+  /stackback@0.0.2:
+    resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
     dev: true
 
   /stickyfill@1.1.1:
@@ -8675,6 +8696,15 @@ packages:
     hasBin: true
     dependencies:
       isexe: 2.0.0
+    dev: true
+
+  /why-is-node-running@2.2.2:
+    resolution: {integrity: sha512-6tSwToZxTOcotxHeA+qGCq1mVzKR3CwcJGmVcY+QE8SHy6TnpFnh8PAvPNHYr7EcuVeG0QSMxtYCuO1ta/G/oA==}
+    engines: {node: '>=8'}
+    hasBin: true
+    dependencies:
+      siginfo: 2.0.0
+      stackback: 0.0.2
     dev: true
 
   /word-wrap@1.2.3:
