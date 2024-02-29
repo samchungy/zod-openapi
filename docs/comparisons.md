@@ -8,11 +8,13 @@ zod-openapi was created while trying to add a feature to support auto registerin
 
 3. When you register a schema using the registry you need to use the outputted type from the `.register()` call. You do not need to do such a thing with this library.
 
-4. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
+4. Input/Output schema generation inconsistency. zod-to-openapi will generate incorrect documentation for types involving ZodTransform/ZodDefault and ZodPipeline.
 
-5. No input/output validation with components. What happens when you register a component with a transform which technically comprises of two types in a request and a response? At the moment the zod-to-openapi library will allow you to create invalid schema.
+5. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
 
-6. No lazy/recursive schema support.
+6. No input/output validation with components. What happens when you register a component with a transform which technically comprises of two types in a request and a response? At the moment the zod-to-openapi library will allow you to create invalid schema.
+
+7. No lazy/recursive schema support.
 
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
 
