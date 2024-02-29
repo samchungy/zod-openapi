@@ -17,12 +17,14 @@ A Typescript library to use <a href="https://github.com/colinhacks/zod">Zod</a> 
 
 ## Install
 
-Install via `npm` or `pnpm`:
+Install via `npm`, `yarn` or `pnpm`:
 
 ```bash
 npm install zod zod-openapi
 ## or
-pnpm add zod zod-openapi
+yarn add zod zod-openapi
+## or
+pnpm install zod zod-openapi
 ```
 
 ## Usage
