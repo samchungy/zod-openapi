@@ -1,10 +1,10 @@
 import type { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
 import type { oas30, oas31 } from '../openapi3-ts/dist';
-import { isAnyZodType } from '../zodType';
+import { isAnyZodType, isZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
-import type { ZodOpenApiParameters } from './document';
+import type { ZodObjectType, ZodOpenApiParameters } from './document';
 import { type SchemaState, createSchema } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
@@ -101,17 +101,18 @@ export const createParamOrRef = (
 
 const createParameters = (
   type: keyof ZodOpenApiParameters,
-  zodObject: AnyZodObject | undefined,
+  zodObjectType: ZodObjectType | undefined,
   components: ComponentsObject,
   subpath: string[],
 ): Array<oas31.ParameterObject | oas31.ReferenceObject> => {
-  if (!zodObject) {
+  if (!zodObjectType) {
     return [];
   }
 
-  return Object.entries(zodObject.shape as ZodRawShape).map(
-    ([key, zodSchema]: [string, ZodType]) =>
-      createParamOrRef(zodSchema, components, [...subpath, key], type, key),
+  const zodObject = getZodObject(zodObjectType, 'input').shape as ZodRawShape;
+
+  return Object.entries(zodObject).map(([key, zodSchema]: [string, ZodType]) =>
+    createParamOrRef(zodSchema, components, [...subpath, key], type, key),
   );
 };
 
@@ -199,4 +200,37 @@ export const createParametersObject = (
   ];
 
   return combinedParameters.length ? combinedParameters : undefined;
+};
+
+export const getZodObject = (
+  schema: ZodObjectType,
+  type: 'input' | 'output',
+): AnyZodObject => {
+  if (isZodType(schema, 'ZodObject')) {
+    return schema;
+  }
+  if (isZodType(schema, 'ZodLazy')) {
+    return getZodObject(schema.schema as ZodObjectType, type);
+  }
+  if (isZodType(schema, 'ZodEffects')) {
+    return getZodObject(schema.innerType() as ZodObjectType, type);
+  }
+  if (isZodType(schema, 'ZodBranded')) {
+    return getZodObject(schema.unwrap() as ZodObjectType, type);
+  }
+  if (isZodType(schema, 'ZodPipeline')) {
+    if (type === 'input') {
+      return getZodObject(schema._def.in as ZodObjectType, type);
+    }
+    return getZodObject(schema._def.out as ZodObjectType, type);
+  }
+
+  if (
+    isZodType(schema, 'ZodEffects') &&
+    schema._def.effect.type === 'transform'
+  ) {
+    return getZodObject(schema._def.schema as ZodObjectType, type);
+  }
+
+  throw new Error('failed to find ZodObject in schema');
 };
