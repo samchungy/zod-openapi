@@ -88,7 +88,7 @@ export interface OperationObject extends ISpecificationExtension {
     operationId?: string;
     parameters?: (ParameterObject | ReferenceObject)[];
     requestBody?: RequestBodyObject | ReferenceObject;
-    responses: ResponsesObject;
+    responses?: ResponsesObject;
     callbacks?: CallbacksObject;
     deprecated?: boolean;
     security?: SecurityRequirementObject[];
