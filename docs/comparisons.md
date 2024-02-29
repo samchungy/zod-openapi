@@ -2,20 +2,26 @@
 
 zod-openapi was created while trying to add a feature to support auto registering schemas to ### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi). This proved to be extra challenging given the overall structure of the library so I decided re-write the whole thing. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
 
-1. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
+1. __**Inaccurate**__ schema generation. This is because the library is written without considering that Zod Types can produce different schemas depending on if they are an `input` or `output` type. This means that when you use a `ZodTransform`, `ZodPipeline` or `ZodDefault` it may generate incorrect documentation.
 
-2. No auto registering schema. Most users do not want to think about this so having to import and call `.register()` is a nuisance.
+2. No input/output validation on components. Registered schema for inputs and outputs should __NOT__ be used if they contain a ZodEffect such as `ZodTransform`, `ZodPipeline` or `ZodDefault` in both a request and response schema. This is because they will be inaccurate for reasons stated above.
 
-3. When you register a schema using the registry you need to use the outputted type from the `.register()` call. You do not need to do such a thing with this library.
+3. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes? We solve this by introducing `effectType`.
 
-4. Input/Output schema generation inconsistency. zod-to-openapi will generate incorrect documentation for types involving ZodTransform/ZodDefault and ZodPipeline.
+4. No lazy/recursive schema support.
 
-5. No transform support or safety. You can use a `type` to override the transform type but what happens when that transform logic changes?
+5. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
 
-6. No input/output validation with components. What happens when you register a component with a transform which technically comprises of two types in a request and a response? At the moment the zod-to-openapi library will allow you to create invalid schema.
+6. Previosuly, zod-to-openapi did not support auto-registering schema, however, more recently they added a solution which is less clear.
 
-7. No lazy/recursive schema support.
-
+    ```ts
+    z.string().openapi('foo')
+    z.string().openapi('foo', { description: 'foo' });
+    // vs
+    
+    z.string().openapi({ ref: 'foo' });
+    z.string().openapi({ description: 'foo', ref: 'foo' });
+    ```
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
 
 #### Migration
