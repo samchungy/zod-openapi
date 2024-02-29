@@ -10,9 +10,11 @@ zod-openapi was created while trying to add a feature to support auto registerin
 
 4. No lazy/recursive schema support.
 
-5. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
+5. Wider and richer generation of OpenAPI types for Zod Types.
 
-6. Previosuly, zod-to-openapi did not support auto-registering schema, however, more recently they added a solution which is less clear.
+6. The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
+
+7. Previosuly, zod-to-openapi did not support auto-registering schema, however, more recently they added a solution which is less clear.
 
     ```ts
     z.string().openapi('foo')
