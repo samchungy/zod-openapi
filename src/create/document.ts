@@ -1,4 +1,4 @@
-import type { AnyZodObject, ZodType } from 'zod';
+import type { AnyZodObject, ZodType, ZodTypeDef } from 'zod';
 
 import type { OpenApiVersion } from '../openapi';
 import type { oas30, oas31 } from '../openapi3-ts/dist';
@@ -46,7 +46,8 @@ export interface ZodOpenApiResponsesObject
 }
 
 export type ZodOpenApiParameters = {
-  [type in oas31.ParameterLocation & oas30.ParameterLocation]?: AnyZodObject;
+  [type in oas31.ParameterLocation &
+    oas30.ParameterLocation]?: ZodObjectInputType;
 };
 
 export interface ZodOpenApiOperationObject
@@ -131,6 +132,12 @@ export interface ZodOpenApiObject
   webhooks?: ZodOpenApiPathsObject;
   components?: ZodOpenApiComponentsObject;
 }
+
+export type ZodObjectInputType<
+  Output = unknown,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Record<string, unknown>,
+> = ZodType<Output, Def, Input>;
 
 export const createDocument = (
   zodOpenApiObject: ZodOpenApiObject,
