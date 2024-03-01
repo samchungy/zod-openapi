@@ -4,7 +4,7 @@ import type { oas30, oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType, isZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
-import type { ZodObjectType, ZodOpenApiParameters } from './document';
+import type { ZodObjectInputType, ZodOpenApiParameters } from './document';
 import { type SchemaState, createSchema } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
@@ -101,7 +101,7 @@ export const createParamOrRef = (
 
 const createParameters = (
   type: keyof ZodOpenApiParameters,
-  zodObjectType: ZodObjectType | undefined,
+  zodObjectType: ZodObjectInputType | undefined,
   components: ComponentsObject,
   subpath: string[],
 ): Array<oas31.ParameterObject | oas31.ReferenceObject> => {
@@ -203,33 +203,26 @@ export const createParametersObject = (
 };
 
 export const getZodObject = (
-  schema: ZodObjectType,
+  schema: ZodObjectInputType,
   type: 'input' | 'output',
 ): AnyZodObject => {
   if (isZodType(schema, 'ZodObject')) {
     return schema;
   }
   if (isZodType(schema, 'ZodLazy')) {
-    return getZodObject(schema.schema as ZodObjectType, type);
+    return getZodObject(schema.schema as ZodObjectInputType, type);
   }
   if (isZodType(schema, 'ZodEffects')) {
-    return getZodObject(schema.innerType() as ZodObjectType, type);
+    return getZodObject(schema.innerType() as ZodObjectInputType, type);
   }
   if (isZodType(schema, 'ZodBranded')) {
-    return getZodObject(schema.unwrap() as ZodObjectType, type);
+    return getZodObject(schema.unwrap() as ZodObjectInputType, type);
   }
   if (isZodType(schema, 'ZodPipeline')) {
     if (type === 'input') {
-      return getZodObject(schema._def.in as ZodObjectType, type);
+      return getZodObject(schema._def.in as ZodObjectInputType, type);
     }
-    return getZodObject(schema._def.out as ZodObjectType, type);
-  }
-
-  if (
-    isZodType(schema, 'ZodEffects') &&
-    schema._def.effect.type === 'transform'
-  ) {
-    return getZodObject(schema._def.schema as ZodObjectType, type);
+    return getZodObject(schema._def.out as ZodObjectInputType, type);
   }
 
   throw new Error('failed to find ZodObject in schema');

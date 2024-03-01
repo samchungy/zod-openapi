@@ -46,7 +46,8 @@ export interface ZodOpenApiResponsesObject
 }
 
 export type ZodOpenApiParameters = {
-  [type in oas31.ParameterLocation & oas30.ParameterLocation]?: ZodObjectType;
+  [type in oas31.ParameterLocation &
+    oas30.ParameterLocation]?: ZodObjectInputType;
 };
 
 export interface ZodOpenApiOperationObject
@@ -132,8 +133,8 @@ export interface ZodOpenApiObject
   components?: ZodOpenApiComponentsObject;
 }
 
-export type ZodObjectType<
-  Output = Record<string, unknown>,
+export type ZodObjectInputType<
+  Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
   Input = Record<string, unknown>,
 > = ZodType<Output, Def, Input>;
