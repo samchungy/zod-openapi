@@ -518,6 +518,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `pre-process` support. We assume that the input type is the same as the output type. Otherwise pipe and transform can be used instead.
   - `refine` full support
 - ZodEnum
+- ZodIntersection
 - ZodLazy
   - The recursive schema within the ZodLazy or the ZodLazy _**must**_ be registered as a component. See [Creating Components](#creating-components) for more information.
 - ZodLiteral
