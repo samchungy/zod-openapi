@@ -18,8 +18,8 @@ devDependencies:
     specifier: 4.2.2
     version: 4.2.2
   skuba:
-    specifier: 7.5.0
-    version: 7.5.0(@babel/core@7.22.20)
+    specifier: 7.5.1
+    version: 7.5.1(@babel/core@7.22.20)
   yaml:
     specifier: 2.4.1
     version: 2.4.1
@@ -2084,6 +2084,14 @@ packages:
       universal-user-agent: 6.0.0
     dev: true
 
+  /@octokit/endpoint@10.0.0:
+    resolution: {integrity: sha512-emBcNDxBdC1y3+knJonS5zhUB/CG6TihubxM2U1/pG/Z1y3a4oV0Gzz3lmkCvWWQI6h3tqBAX9MgCBFp+M68Jw==}
+    engines: {node: '>= 18'}
+    dependencies:
+      '@octokit/types': 12.3.0
+      universal-user-agent: 7.0.2
+    dev: true
+
   /@octokit/endpoint@9.0.0:
     resolution: {integrity: sha512-szrQhiqJ88gghWY2Htt8MqUDO6++E/EIXqJ2ZEp5ma3uGS46o7LZAzSLt49myB7rT+Hfw5Y6gO3LmOxGzHijAQ==}
     engines: {node: '>= 18'}
@@ -2093,8 +2101,8 @@ packages:
       universal-user-agent: 6.0.0
     dev: true
 
-  /@octokit/graphql-schema@14.5.0:
-    resolution: {integrity: sha512-LC0X5UGDtEmYZfxcyQTcxa13A+OwKk5Vj0ri68ldGZDuq9OfLCwJ0qNJxaEqnh74DP/MwuEDsZ7xoTy5aI6Ayg==}
+  /@octokit/graphql-schema@15.3.0:
+    resolution: {integrity: sha512-yGj0haNZY1/4DZO72KpJdOzvKQFYPUkD5d6PdntPSbekABUoOdStAtEsOtuwZz52cPrbQEEoZ0wN7aemA1y8PA==}
     dependencies:
       graphql: 16.6.0
       graphql-tag: 2.12.6(graphql@16.6.0)
@@ -2107,6 +2115,15 @@ packages:
       '@octokit/request': 8.1.1
       '@octokit/types': 11.1.0
       universal-user-agent: 6.0.0
+    dev: true
+
+  /@octokit/graphql@8.0.1:
+    resolution: {integrity: sha512-lLDb6LhC1gBj2CxEDa5Xk10+H/boonhs+3Mi6jpRyetskDKNHe6crMeKmUE2efoLofMP8ruannLlCUgpTFmVzQ==}
+    engines: {node: '>= 18'}
+    dependencies:
+      '@octokit/request': 9.0.1
+      '@octokit/types': 12.3.0
+      universal-user-agent: 7.0.2
     dev: true
 
   /@octokit/openapi-types@18.0.0:
@@ -2178,6 +2195,13 @@ packages:
       once: 1.4.0
     dev: true
 
+  /@octokit/request-error@6.0.2:
+    resolution: {integrity: sha512-WtRVpoHcNXs84+s9s/wqfHaxM68NGMg8Av7h59B50OVO0PwwMx+2GgQ/OliUd0iQBSNWgR6N8afi/KjSHbXHWw==}
+    engines: {node: '>= 18'}
+    dependencies:
+      '@octokit/types': 12.3.0
+    dev: true
+
   /@octokit/request@8.1.1:
     resolution: {integrity: sha512-8N+tdUz4aCqQmXl8FpHYfKG9GelDFd7XGVzyN8rc6WxVlYcfpHECnuRkgquzz+WzvHTK62co5di8gSXnzASZPQ==}
     engines: {node: '>= 18'}
@@ -2187,6 +2211,16 @@ packages:
       '@octokit/types': 11.1.0
       is-plain-object: 5.0.0
       universal-user-agent: 6.0.0
+    dev: true
+
+  /@octokit/request@9.0.1:
+    resolution: {integrity: sha512-kL+cAcbSl3dctYLuJmLfx6Iku2MXXy0jszhaEIjQNaCp4zjHXrhVAHeuaRdNvJjW9qjl3u1MJ72+OuBP0YW/pg==}
+    engines: {node: '>= 18'}
+    dependencies:
+      '@octokit/endpoint': 10.0.0
+      '@octokit/request-error': 6.0.2
+      '@octokit/types': 12.3.0
+      universal-user-agent: 7.0.2
     dev: true
 
   /@octokit/rest@20.0.1:
@@ -4350,17 +4384,6 @@ packages:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
     dev: true
 
-  /fast-glob@3.3.1:
-    resolution: {integrity: sha512-kNFPyjhh5cKjrUltxs+wFx+ZkbRaxxmZ+X0ZU31SOsxCEtP9VPgtq2teZw1DebupL5GmDaNQ6yKMMVcM41iqDg==}
-    engines: {node: '>=8.6.0'}
-    dependencies:
-      '@nodelib/fs.stat': 2.0.5
-      '@nodelib/fs.walk': 1.2.8
-      glob-parent: 5.1.2
-      merge2: 1.4.1
-      micromatch: 4.0.5
-    dev: true
-
   /fast-glob@3.3.2:
     resolution: {integrity: sha512-oX2ruAFQwf/Orj8m737Y5adxDQO0LAB7/S5MnxCdTNDd4p6BsyIVsv9JQsATbTSq8KHRpLwIHbVlUNatxd+1Ow==}
     engines: {node: '>=8.6.0'}
@@ -4394,17 +4417,6 @@ packages:
     resolution: {integrity: sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==}
     dependencies:
       bser: 2.1.1
-    dev: true
-
-  /fdir@6.0.1(picomatch@4.0.1):
-    resolution: {integrity: sha512-bdrUUb0eYQrPRlaAtlSRoLs7sp6yKEwbMQuUgwvi/14TnaqhM/deSZUrC5ic+yjm5nEPPWE61oWpTTxQFQMmLA==}
-    peerDependencies:
-      picomatch: 2.x
-    peerDependenciesMeta:
-      picomatch:
-        optional: true
-    dependencies:
-      picomatch: 4.0.1
     dev: true
 
   /figures@2.0.0:
@@ -4740,7 +4752,7 @@ packages:
     dependencies:
       array-union: 2.1.0
       dir-glob: 3.0.1
-      fast-glob: 3.3.1
+      fast-glob: 3.3.2
       ignore: 5.2.4
       merge2: 1.4.1
       slash: 3.0.0
@@ -7640,10 +7652,6 @@ packages:
       object-inspect: 1.12.3
     dev: true
 
-  /siginfo@2.0.0:
-    resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
-    dev: true
-
   /signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
     dev: true
@@ -7702,8 +7710,8 @@ packages:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
     dev: true
 
-  /skuba@7.5.0(@babel/core@7.22.20):
-    resolution: {integrity: sha512-RCHmGnYlsbo9NhvT4FgKNCSTQpUClmFJD4t7ITyaIiDU9Nm+bZLCSgofOSnPa9dMxbxWgYTUFiT/VAHKogS9qA==}
+  /skuba@7.5.1(@babel/core@7.22.20):
+    resolution: {integrity: sha512-rlEs3X+6kMbLyT3KQEhVIpdvJynuvjfNfseiAiWEdjqjmi6a6PIFpLnXviTdT2yYX2F6celmOfk42kQp3a5mIg==}
     engines: {node: '>=18.12'}
     hasBin: true
     peerDependencies:
@@ -7714,8 +7722,8 @@ packages:
     dependencies:
       '@esbuild-plugins/tsconfig-paths': 0.1.2(esbuild@0.20.0)(typescript@5.3.3)
       '@jest/types': 29.5.0
-      '@octokit/graphql': 7.0.1
-      '@octokit/graphql-schema': 14.5.0
+      '@octokit/graphql': 8.0.1
+      '@octokit/graphql-schema': 15.3.0
       '@octokit/rest': 20.0.1
       '@octokit/types': 12.3.0
       '@types/jest': 29.5.0
@@ -7731,7 +7739,6 @@ packages:
       eslint-config-skuba: 3.1.0(eslint@8.36.0)(jest@29.5.0)(typescript@5.3.3)
       execa: 5.1.1
       fast-glob: 3.3.2
-      fdir: 6.0.1(picomatch@4.0.1)
       fs-extra: 11.1.1
       function-arguments: 1.0.9
       get-port: 5.1.1
@@ -7763,7 +7770,6 @@ packages:
       tsconfig-seek: 2.0.0
       typescript: 5.3.3
       validate-npm-package-name: 5.0.0
-      why-is-node-running: 2.2.2
       zod: 3.22.4
     transitivePeerDependencies:
       - '@babel/core'
@@ -7930,10 +7936,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       escape-string-regexp: 2.0.0
-    dev: true
-
-  /stackback@0.0.2:
-    resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
     dev: true
 
   /stickyfill@1.1.1:
@@ -8582,6 +8584,10 @@ packages:
     resolution: {integrity: sha512-isyNax3wXoKaulPDZWHQqbmIx1k2tb9fb3GGDBRxCscfYV2Ch7WxPArBsFEG8s/safwXTT7H4QGhaIkTp9447w==}
     dev: true
 
+  /universal-user-agent@7.0.2:
+    resolution: {integrity: sha512-0JCqzSKnStlRRQfCdowvqy3cy0Dvtlb8xecj/H8JFZuCze4rwjPZQOgvFvn0Ws/usCHQFGpyr+pB9adaGwXn4Q==}
+    dev: true
+
   /universalify@2.0.0:
     resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}
     engines: {node: '>= 10.0.0'}
@@ -8696,15 +8702,6 @@ packages:
     hasBin: true
     dependencies:
       isexe: 2.0.0
-    dev: true
-
-  /why-is-node-running@2.2.2:
-    resolution: {integrity: sha512-6tSwToZxTOcotxHeA+qGCq1mVzKR3CwcJGmVcY+QE8SHy6TnpFnh8PAvPNHYr7EcuVeG0QSMxtYCuO1ta/G/oA==}
-    engines: {node: '>=8'}
-    hasBin: true
-    dependencies:
-      siginfo: 2.0.0
-      stackback: 0.0.2
     dev: true
 
   /word-wrap@1.2.3:
