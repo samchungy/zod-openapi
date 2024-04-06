@@ -15,9 +15,8 @@ describe('createNullSchema', () => {
         type: 'null',
       },
     };
-    const schema = z.null();
 
-    const result = createNullSchema(schema);
+    const result = createNullSchema();
 
     expect(result).toEqual(expected);
   });

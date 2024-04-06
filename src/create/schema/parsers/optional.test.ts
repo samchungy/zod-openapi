@@ -166,4 +166,28 @@ describe('isOptionalSchema', () => {
 
     expect(result).toEqual({ optional: false });
   });
+
+  it('returns true for zod undefined', () => {
+    const schema = z.undefined();
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns true for zod never', () => {
+    const schema = z.never();
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns true for zod literal undefined', () => {
+    const schema = z.literal(undefined);
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
 });

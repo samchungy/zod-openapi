@@ -24,7 +24,8 @@ export const isOptionalSchema = (
   if (
     isZodType(zodSchema, 'ZodOptional') ||
     isZodType(zodSchema, 'ZodNever') ||
-    isZodType(zodSchema, 'ZodUndefined')
+    isZodType(zodSchema, 'ZodUndefined') ||
+    (isZodType(zodSchema, 'ZodLiteral') && zodSchema._def.value === undefined)
   ) {
     return { optional: true };
   }

@@ -62,7 +62,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodLiteral')) {
-    return createLiteralSchema(zodSchema);
+    return createLiteralSchema(zodSchema, state);
   }
 
   if (isZodType(zodSchema, 'ZodNativeEnum')) {
@@ -86,7 +86,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodNull')) {
-    return createNullSchema(zodSchema);
+    return createNullSchema();
   }
 
   if (isZodType(zodSchema, 'ZodNullable')) {

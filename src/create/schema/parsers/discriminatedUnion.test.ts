@@ -20,7 +20,7 @@ describe('createDiscriminatedUnionSchema', () => {
             properties: {
               type: {
                 type: 'string',
-                enum: ['a'],
+                const: 'a',
               },
             },
             required: ['type'],
@@ -30,7 +30,7 @@ describe('createDiscriminatedUnionSchema', () => {
             properties: {
               type: {
                 type: 'string',
-                enum: ['b'],
+                const: 'b',
               },
             },
             required: ['type'],
