@@ -232,6 +232,7 @@ export interface SchemaObject extends ISpecificationExtension {
     title?: string;
     multipleOf?: number;
     maximum?: number;
+    const?: any;
     exclusiveMaximum?: number;
     minimum?: number;
     exclusiveMinimum?: number;
