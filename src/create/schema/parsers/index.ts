@@ -86,7 +86,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodNull')) {
-    return createNullSchema(zodSchema);
+    return createNullSchema();
   }
 
   if (isZodType(zodSchema, 'ZodNullable')) {

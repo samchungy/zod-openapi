@@ -4,16 +4,22 @@ import type { Schema, SchemaState } from '..';
 import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
 
+import { createNullSchema } from './null';
+
 export const createLiteralSchema = (
   zodLiteral: ZodLiteral<unknown>,
   state: SchemaState,
 ): Schema => {
+  if (zodLiteral.value === null) {
+    return createNullSchema();
+  }
+
   if (satisfiesVersion(state.components.openapi, '3.1.0')) {
     return {
       type: 'schema',
       schema: {
-        type: resolveLiteralType(zodLiteral.value),
-        const: zodLiteral._def.value,
+        type: typeof zodLiteral.value as oas31.SchemaObject['type'],
+        const: zodLiteral.value,
       },
     };
   }
@@ -21,18 +27,8 @@ export const createLiteralSchema = (
   return {
     type: 'schema',
     schema: {
-      type: resolveLiteralType(zodLiteral.value),
-      enum: [zodLiteral._def.value],
+      type: typeof zodLiteral.value as oas31.SchemaObject['type'],
+      enum: [zodLiteral.value],
     },
   };
-};
-
-export const resolveLiteralType = (
-  value: unknown,
-): oas31.SchemaObject['type'] => {
-  if (value === null) {
-    return 'null';
-  }
-
-  return typeof value as oas31.SchemaObject['type'],
 };

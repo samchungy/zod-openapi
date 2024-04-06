@@ -47,7 +47,7 @@ const expectedZodDiscriminatedUnion: Schema['schema'] = {
       properties: {
         type: {
           type: 'string',
-          enum: ['a'],
+          const: 'a',
         },
       },
       required: ['type'],
@@ -57,7 +57,7 @@ const expectedZodDiscriminatedUnion: Schema['schema'] = {
       properties: {
         type: {
           type: 'string',
-          enum: ['b'],
+          const: 'b',
         },
       },
       required: ['type'],
@@ -86,7 +86,7 @@ const expectedZodIntersection: Schema['schema'] = {
 const zodLiteral = z.literal('a');
 const expectedZodLiteral: Schema['schema'] = {
   type: 'string',
-  enum: ['a'],
+  const: 'a',
 };
 
 const zodMetadata = z.string().openapi({ ref: 'a' });
