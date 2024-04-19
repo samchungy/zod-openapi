@@ -1,11 +1,4 @@
-import type {
-  UnknownKeysParam,
-  ZodDate,
-  ZodObject,
-  ZodRawShape,
-  ZodTypeAny,
-  z,
-} from 'zod';
+import type { ZodDate, ZodObject, ZodRawShape, ZodTypeAny, z } from 'zod';
 
 import type { CreationType } from './create/components';
 import type { oas30, oas31 } from './openapi3-ts/dist';
@@ -79,8 +72,7 @@ interface ZodOpenApiExtendMetadata {
 }
 
 declare module 'zod' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ZodType<Output, Def extends ZodTypeDef, Input = Output> {
+  interface ZodType {
     /**
      * Add OpenAPI metadata to a Zod Type
      */
@@ -94,14 +86,7 @@ declare module 'zod' {
     openapi?: ZodOpenApiMetadata<ZodTypeAny>;
   }
 
-  export interface ZodObjectDef<
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    T extends ZodRawShape = ZodRawShape,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnknownKeys extends UnknownKeysParam = UnknownKeysParam,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Catchall extends ZodTypeAny = ZodTypeAny,
-  > extends ZodTypeDef {
+  export interface ZodObjectDef {
     extendMetadata?: ZodOpenApiExtendMetadata;
   }
 }
