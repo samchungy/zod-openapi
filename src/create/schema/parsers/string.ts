@@ -1,9 +1,13 @@
 import type { ZodString, ZodStringCheck } from 'zod';
 
-import type { Schema } from '..';
+import type { Schema, SchemaState } from '..';
+import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist';
 
-export const createStringSchema = (zodString: ZodString): Schema => {
+export const createStringSchema = (
+  zodString: ZodString,
+  state: SchemaState,
+): Schema => {
   const zodStringChecks = getZodStringChecks(zodString);
   const format = mapStringFormat(zodStringChecks);
   const patterns = mapPatterns(zodStringChecks);
@@ -11,6 +15,9 @@ export const createStringSchema = (zodString: ZodString): Schema => {
     zodStringChecks.length?.[0]?.value ?? zodStringChecks.min?.[0]?.value;
   const maxLength =
     zodStringChecks.length?.[0]?.value ?? zodStringChecks.max?.[0]?.value;
+  const contentEncoding = satisfiesVersion(state.components.openapi, '3.1.0')
+    ? mapContentEncoding(zodStringChecks)
+    : undefined;
 
   if (patterns.length <= 1) {
     return {
@@ -21,6 +28,7 @@ export const createStringSchema = (zodString: ZodString): Schema => {
         ...(patterns[0] && { pattern: patterns[0] }),
         ...(minLength !== undefined && { minLength }),
         ...(maxLength !== undefined && { maxLength }),
+        ...(contentEncoding && { contentEncoding }),
       },
     };
   }
@@ -35,6 +43,7 @@ export const createStringSchema = (zodString: ZodString): Schema => {
           ...(patterns[0] && { pattern: patterns[0] }),
           ...(minLength !== undefined && { minLength }),
           ...(maxLength !== undefined && { maxLength }),
+          ...(contentEncoding && { contentEncoding }),
         },
         ...patterns.slice(1).map(
           (pattern): oas31.SchemaObject => ({
@@ -150,6 +159,16 @@ const mapStringFormat = (
 
   if (zodStringChecks.url) {
     return 'uri';
+  }
+
+  return undefined;
+};
+
+const mapContentEncoding = (
+  zodStringChecks: ZodStringCheckMap,
+): string | undefined => {
+  if (zodStringChecks.base64) {
+    return 'base64';
   }
 
   return undefined;

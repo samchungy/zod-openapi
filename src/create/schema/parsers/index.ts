@@ -46,7 +46,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodString')) {
-    return createStringSchema(zodSchema);
+    return createStringSchema(zodSchema, state);
   }
 
   if (isZodType(zodSchema, 'ZodNumber')) {
