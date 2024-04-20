@@ -205,6 +205,9 @@ describe('createStringSchema', () => {
     ${z.string().email()}    | ${'email'}
     ${z.string().url()}      | ${'uri'}
     ${z.string().datetime()} | ${'date-time'}
+    ${z.string().date()}     | ${'date'}
+    ${z.string().time()}     | ${'time'}
+    ${z.string().duration()} | ${'duration'}
   `(
     'creates a string schema with $format',
     ({ zodString, format }: { zodString: ZodString; format: string }) => {

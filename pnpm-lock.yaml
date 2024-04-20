@@ -24,8 +24,8 @@ devDependencies:
     specifier: 2.4.1
     version: 2.4.1
   zod:
-    specifier: 3.22.4
-    version: 3.22.4
+    specifier: 3.23.0-beta.2
+    version: 3.23.0-beta.2
 
 packages:
 
@@ -8720,4 +8720,8 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: true
+
+  /zod@3.23.0-beta.2:
+    resolution: {integrity: sha512-u5wv4OKNPwybJMpVsBZc2LZq5DEk+64xloBnD/QwvfdLimLE0+3cqxMbOZzHwe44vseinF3DoHz7KCWV1MLfAg==}
     dev: true
