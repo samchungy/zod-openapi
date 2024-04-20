@@ -2,6 +2,10 @@ import { type ZodString, z } from 'zod';
 
 import type { Schema } from '..';
 import { extendZodWithOpenApi } from '../../../extendZod';
+import {
+  createOutputOpenapi3State,
+  createOutputState,
+} from '../../../testing/state';
 
 import { createStringSchema } from './string';
 
@@ -18,7 +22,7 @@ describe('createStringSchema', () => {
 
     const schema = z.string();
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -33,7 +37,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().regex(/^hello/);
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -48,7 +52,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().startsWith('hello');
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -63,7 +67,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().endsWith('hello');
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -78,7 +82,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().includes('hello');
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -93,7 +97,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().includes('hello', { position: 5 });
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -108,7 +112,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().includes('hello', { position: 0 });
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -146,7 +150,7 @@ describe('createStringSchema', () => {
       .regex(/^foo/)
       .regex(/foo$/);
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -162,7 +166,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().min(0).max(1);
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -178,7 +182,7 @@ describe('createStringSchema', () => {
 
     const schema = z.string().nonempty();
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -194,7 +198,7 @@ describe('createStringSchema', () => {
     };
     const schema = z.string().length(1);
 
-    const result = createStringSchema(schema);
+    const result = createStringSchema(schema, createOutputState());
 
     expect(result).toStrictEqual(expected);
   });
@@ -218,8 +222,38 @@ describe('createStringSchema', () => {
           format,
         },
       };
-      const result = createStringSchema(zodString);
+      const result = createStringSchema(zodString, createOutputState());
       expect(result).toStrictEqual(expected);
     },
   );
+
+  it('supports contentEncoding in 3.1.0', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'string',
+        contentEncoding: 'base64',
+      },
+    };
+
+    const result = createStringSchema(z.string().base64(), createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('does not support contentEncoding in 3.0.0', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'string',
+      },
+    };
+
+    const result = createStringSchema(
+      z.string().base64(),
+      createOutputOpenapi3State(),
+    );
+
+    expect(result).toStrictEqual(expected);
+  });
 });
