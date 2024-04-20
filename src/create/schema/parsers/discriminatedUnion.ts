@@ -44,26 +44,30 @@ export const createDiscriminatedUnionSchema = <
   };
 };
 
-const unwrapLiteral = (
+const unwrapLiterals = (
   zodType: ZodType | ZodTypeAny | undefined,
-): string | undefined => {
+): string[] | undefined => {
   if (isZodType(zodType, 'ZodLiteral')) {
     if (typeof zodType._def.value !== 'string') {
       return undefined;
     }
-    return zodType._def.value;
+    return [zodType._def.value];
+  }
+
+  if (isZodType(zodType, 'ZodEnum')) {
+    return zodType._def.values;
   }
 
   if (isZodType(zodType, 'ZodBranded')) {
-    return unwrapLiteral(zodType._def.type);
+    return unwrapLiterals(zodType._def.type);
   }
 
   if (isZodType(zodType, 'ZodReadonly')) {
-    return unwrapLiteral(zodType._def.innerType);
+    return unwrapLiterals(zodType._def.innerType);
   }
 
   if (isZodType(zodType, 'ZodCatch')) {
-    return unwrapLiteral(zodType._def.innerType);
+    return unwrapLiterals(zodType._def.innerType);
   }
 
   return undefined;
@@ -88,20 +92,15 @@ export const mapDiscriminator = (
 
     const value = (zodObject.shape as ZodRawShape)[discriminator];
 
-    if (isZodType(value, 'ZodEnum')) {
-      for (const enumValue of value._def.values as string[]) {
-        mapping[enumValue] = componentSchemaRef;
-      }
-      continue;
-    }
+    const literals = unwrapLiterals(value);
 
-    const literalValue = unwrapLiteral(value);
-
-    if (typeof literalValue !== 'string') {
+    if (!literals) {
       return undefined;
     }
 
-    mapping[literalValue] = componentSchemaRef;
+    for (const enumValue of literals) {
+      mapping[enumValue] = componentSchemaRef;
+    }
   }
 
   return {

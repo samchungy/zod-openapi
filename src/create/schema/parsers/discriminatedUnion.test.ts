@@ -281,6 +281,46 @@ describe('createDiscriminatedUnionSchema', () => {
     expect(result).toEqual(expected);
   });
 
+  it('handles a discriminated union with a branded enum type', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        discriminator: {
+          mapping: {
+            a: '#/components/schemas/a',
+            c: '#/components/schemas/a',
+            b: '#/components/schemas/b',
+          },
+          propertyName: 'type',
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/a',
+          },
+          {
+            $ref: '#/components/schemas/b',
+          },
+        ],
+      },
+    };
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.enum(['a', 'c']).brand(),
+        })
+        .openapi({ ref: 'a' }),
+      z
+        .object({
+          type: z.literal('b'),
+        })
+        .openapi({ ref: 'b' }),
+    ]);
+
+    const result = createDiscriminatedUnionSchema(schema, createOutputState());
+
+    expect(result).toEqual(expected);
+  });
+
   it('handles a discriminated union with a readonly type', () => {
     const expected: Schema = {
       type: 'schema',
