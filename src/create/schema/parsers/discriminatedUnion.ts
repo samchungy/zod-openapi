@@ -15,6 +15,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
+import { createNativeEnumSchema } from './nativeEnum';
 import { flattenEffects } from './transform';
 
 export const createDiscriminatedUnionSchema = <
@@ -33,6 +34,7 @@ export const createDiscriminatedUnionSchema = <
     schemaObjects,
     options,
     zodDiscriminatedUnion.discriminator,
+    state,
   );
   return {
     type: 'schema',
@@ -46,6 +48,7 @@ export const createDiscriminatedUnionSchema = <
 
 const unwrapLiterals = (
   zodType: ZodType | ZodTypeAny | undefined,
+  state: SchemaState,
 ): string[] | undefined => {
   if (isZodType(zodType, 'ZodLiteral')) {
     if (typeof zodType._def.value !== 'string') {
@@ -54,20 +57,27 @@ const unwrapLiterals = (
     return [zodType._def.value];
   }
 
+  if (isZodType(zodType, 'ZodNativeEnum')) {
+    const schema = createNativeEnumSchema(zodType, state);
+    if (schema.type === 'schema' && schema.schema.type === 'string') {
+      return schema.schema.enum;
+    }
+  }
+
   if (isZodType(zodType, 'ZodEnum')) {
     return zodType._def.values;
   }
 
   if (isZodType(zodType, 'ZodBranded')) {
-    return unwrapLiterals(zodType._def.type);
+    return unwrapLiterals(zodType._def.type, state);
   }
 
   if (isZodType(zodType, 'ZodReadonly')) {
-    return unwrapLiterals(zodType._def.innerType);
+    return unwrapLiterals(zodType._def.innerType, state);
   }
 
   if (isZodType(zodType, 'ZodCatch')) {
-    return unwrapLiterals(zodType._def.innerType);
+    return unwrapLiterals(zodType._def.innerType, state);
   }
 
   return undefined;
@@ -77,6 +87,7 @@ export const mapDiscriminator = (
   schemas: Array<oas31.SchemaObject | oas31.ReferenceObject>,
   zodObjects: AnyZodObject[],
   discriminator: unknown,
+  state: SchemaState,
 ): oas31.SchemaObject['discriminator'] => {
   if (typeof discriminator !== 'string') {
     return undefined;
@@ -92,7 +103,7 @@ export const mapDiscriminator = (
 
     const value = (zodObject.shape as ZodRawShape)[discriminator];
 
-    const literals = unwrapLiterals(value);
+    const literals = unwrapLiterals(value, state);
 
     if (!literals) {
       return undefined;
