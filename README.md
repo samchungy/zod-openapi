@@ -512,7 +512,7 @@ For example in `z.string().nullable()` will be rendered differently
   - `string` `type` mapping by default
 - ZodDefault
 - ZodDiscriminatedUnion
-  - `discriminator` mapping when all schemas in the union are [registered](#creating-components). The discriminator must be a `ZodLiteral` string value. Only `ZodLiteral` values wrapped in `ZodBranded`, `ZodReadOnly` and `ZodCatch` are supported.
+  - `discriminator` mapping when all schemas in the union are [registered](#creating-components). The discriminator must be a `ZodLiteral` or `ZodEnum` string value. Only values wrapped in `ZodBranded`, `ZodReadOnly` and `ZodCatch` are supported.
 - ZodEffects
   - `transform` support for request schemas. See [Zod Effects](#zod-effects) for how to enable response schema support
   - `pre-process` support. We assume that the input type is the same as the output type. Otherwise pipe and transform can be used instead.
