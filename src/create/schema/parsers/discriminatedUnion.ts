@@ -2,8 +2,9 @@ import type {
   AnyZodObject,
   ZodDiscriminatedUnion,
   ZodDiscriminatedUnionOption,
-  ZodLiteralDef,
   ZodRawShape,
+  ZodType,
+  ZodTypeAny,
 } from 'zod';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
@@ -32,7 +33,6 @@ export const createDiscriminatedUnionSchema = <
     schemaObjects,
     options,
     zodDiscriminatedUnion.discriminator,
-    state,
   );
   return {
     type: 'schema',
@@ -44,11 +44,35 @@ export const createDiscriminatedUnionSchema = <
   };
 };
 
+const unwrapLiteral = (
+  zodType: ZodType | ZodTypeAny | undefined,
+): string | undefined => {
+  if (isZodType(zodType, 'ZodLiteral')) {
+    if (typeof zodType._def.value !== 'string') {
+      return undefined;
+    }
+    return zodType._def.value;
+  }
+
+  if (isZodType(zodType, 'ZodBranded')) {
+    return unwrapLiteral(zodType._def.type);
+  }
+
+  if (isZodType(zodType, 'ZodReadonly')) {
+    return unwrapLiteral(zodType._def.innerType);
+  }
+
+  if (isZodType(zodType, 'ZodCatch')) {
+    return unwrapLiteral(zodType._def.innerType);
+  }
+
+  return undefined;
+};
+
 export const mapDiscriminator = (
   schemas: Array<oas31.SchemaObject | oas31.ReferenceObject>,
   zodObjects: AnyZodObject[],
   discriminator: unknown,
-  state: SchemaState,
 ): oas31.SchemaObject['discriminator'] => {
   if (typeof discriminator !== 'string') {
     return undefined;
@@ -71,14 +95,10 @@ export const mapDiscriminator = (
       continue;
     }
 
-    const literalValue = (value?._def as ZodLiteralDef<unknown>).value;
+    const literalValue = unwrapLiteral(value);
 
     if (typeof literalValue !== 'string') {
-      throw new Error(
-        `Discriminator ${discriminator} could not be found in on index ${index} of a discriminated union at ${state.path.join(
-          ' > ',
-        )}`,
-      );
+      return undefined;
     }
 
     mapping[literalValue] = componentSchemaRef;
