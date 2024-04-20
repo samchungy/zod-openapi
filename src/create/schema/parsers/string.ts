@@ -132,6 +132,18 @@ const mapStringFormat = (
     return 'date-time';
   }
 
+  if (zodStringChecks.date) {
+    return 'date';
+  }
+
+  if (zodStringChecks.time) {
+    return 'time';
+  }
+
+  if (zodStringChecks.duration) {
+    return 'duration';
+  }
+
   if (zodStringChecks.email) {
     return 'email';
   }
