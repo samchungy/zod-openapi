@@ -24,8 +24,8 @@ devDependencies:
     specifier: 2.4.1
     version: 2.4.1
   zod:
-    specifier: 3.23.0-beta.2
-    version: 3.23.0-beta.2
+    specifier: 3.23.0
+    version: 3.23.0
 
 packages:
 
@@ -7658,7 +7658,7 @@ packages:
       tsconfig-seek: 2.0.0
       typescript: 5.4.4
       validate-npm-package-name: 5.0.0
-      zod: 3.22.4
+      zod: 3.23.0
     transitivePeerDependencies:
       - '@babel/core'
       - '@swc/core'
@@ -8718,10 +8718,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-    dev: true
-
-  /zod@3.23.0-beta.2:
-    resolution: {integrity: sha512-u5wv4OKNPwybJMpVsBZc2LZq5DEk+64xloBnD/QwvfdLimLE0+3cqxMbOZzHwe44vseinF3DoHz7KCWV1MLfAg==}
+  /zod@3.23.0:
+    resolution: {integrity: sha512-OFLT+LTocvabn6q76BTwVB0hExEBS0IduTr3cqZyMqEDbOnYmcU+y0tUAYbND4uwclpBGi4I4UUBGzylWpjLGA==}
     dev: true
