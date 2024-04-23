@@ -42,7 +42,7 @@
   "types": "./lib-types/index.d.ts",
   "typesVersions": {
     "*": {
-      "*": [
+      ".": [
         "lib-types/index.d.ts"
       ],
       "extend": [
