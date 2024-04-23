@@ -1,6 +1,8 @@
 ## Comparisons
 
-zod-openapi was created while trying to add a feature to support auto registering schemas to ### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi). This proved to be extra challenging given the overall structure of the library so I decided re-write the whole thing. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
+### [@asteasolutions/zod-to-openapi](https://github.com/asteasolutions/zod-to-openapi)
+
+zod-openapi was created while trying to add a feature to support auto registering schemas to zod-to-openapi. This proved to be extra challenging given the overall structure of the library so I decided re-write the whole thing. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
 
 1.  \***\*Inaccurate\*\*** schema generation. This is because the library is written without considering that Zod Types can produce different schemas depending on if they are an `input` or `output` type. This means that when you use a `ZodTransform`, `ZodPipeline` or `ZodDefault` it may generate incorrect documentation.
 
@@ -14,7 +16,7 @@ zod-openapi was created while trying to add a feature to support auto registerin
 
 6.  The underlying structure of the library consists of tightly coupled classes which require you to create an awkward Registry class to create references. This would mean you would need to ship a registry class instance along with your types which makes sharing types difficult.
 
-7.  Previosuly, zod-to-openapi did not support auto-registering schema, however, more recently they added a solution which is less clear.
+7.  Previosuly, zod-to-openapi did not support auto-registering schema, however, more recently they added a solution which is less clear as they are using named parameters.
 
         ```ts
         z.string().openapi('foo')
@@ -24,6 +26,7 @@ zod-openapi was created while trying to add a feature to support auto registerin
         z.string().openapi({ ref: 'foo' });
         z.string().openapi({ description: 'foo', ref: 'foo' });
         ```
+8. None of the large number of [issues](https://github.com/asteasolutions/zod-to-openapi/issues), [known issues](https://github.com/asteasolutions/zod-to-openapi#known-issues), or discussion threads apply to this library.
 
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
 
