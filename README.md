@@ -44,7 +44,7 @@ z.string().openapi({ description: 'hello world!', example: 'hello world' });
 
 #### Manual Extension
 
-This is useful if you have a different instance of Zod from another library that you would like to extend.
+This is useful if you have a specific instance of Zod or a Zod instance from another library that you would like to target.
 
 ```typescript
 import { z } from 'another-lib';
