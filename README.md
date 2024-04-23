@@ -31,29 +31,28 @@ pnpm install zod zod-openapi
 
 ### Extend Zod
 
-This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s).
+This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s). You can achieve this in two differernt ways, depending on your preference.
 
 #### Subpath Import
+  
+  ```ts
+  import 'zod-openapi/extend';
+  import { z } from 'zod';
 
-```ts
-import 'zod-openapi/extend';
-import { z } from 'zod';
+  z.string().openapi({ description: 'hello world!', example: 'hello world' });
+  ```
+#### Manual Extension
+  
+  This is useful if you have a different instance of Zod from another library that you would like to extend.
 
-z.string().openapi({ description: 'hello world!', example: 'hello world' });
-```
+  ```typescript
+  import { z } from 'another-lib';
+  import { extendZodWithOpenApi } from 'zod-openapi';
 
-#### Manual Extend
+  extendZodWithOpenApi(z);
 
-This is useful if you have a different instance of Zod that you would like to extend.
-
-```typescript
-import { z } from 'another-lib';
-import { extendZodWithOpenApi } from 'zod-openapi';
-
-extendZodWithOpenApi(z);
-
-z.string().openapi({ description: 'hello world!', example: 'hello world' });
-```
+  z.string().openapi({ description: 'hello world!', example: 'hello world' });
+  ```
 
 #### `.openapi()`
 
@@ -118,82 +117,84 @@ const document = createDocument({
 });
 ```
 
-Generates the following object:
-
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "My API",
-    "version": "1.0.0"
-  },
-  "paths": {
-    "/jobs/{jobId}": {
-      "put": {
-        "parameters": [
-          {
-            "in": "path",
-            "name": "jobId",
-            "description": "A unique identifier for a job",
-            "schema": {
-              "$ref": "#/components/schemas/jobId"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
+<details>
+  <summary>Creates the following object:</summary>
+  
+  ```json
+  {
+    "openapi": "3.1.0",
+    "info": {
+      "title": "My API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/jobs/{jobId}": {
+        "put": {
+          "parameters": [
+            {
+              "in": "path",
+              "name": "jobId",
+              "description": "A unique identifier for a job",
               "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "description": "Job title",
-                    "example": "My job"
-                  }
-                },
-                "required": ["title"]
+                "$ref": "#/components/schemas/jobId"
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "200 OK",
+          ],
+          "requestBody": {
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "jobId": {
-                      "$ref": "#/components/schemas/jobId"
-                    },
                     "title": {
                       "type": "string",
                       "description": "Job title",
                       "example": "My job"
                     }
                   },
-                  "required": ["jobId", "title"]
+                  "required": ["title"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "200 OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "jobId": {
+                        "$ref": "#/components/schemas/jobId"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Job title",
+                        "example": "My job"
+                      }
+                    },
+                    "required": ["jobId", "title"]
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-  },
-  "components": {
-    "schemas": {
-      "jobId": {
-        "type": "string",
-        "description": "A unique identifier for a job",
-        "example": "12345"
+    },
+    "components": {
+      "schemas": {
+        "jobId": {
+          "type": "string",
+          "description": "A unique identifier for a job",
+          "example": "12345"
+        }
       }
     }
   }
-}
-```
+  ```
+</details>
 
 ### Request Parameters
 
@@ -328,7 +329,7 @@ Wherever `title` is used in schemas across the document, it will instead be crea
 }
 ```
 
-This can be an extremely powerful way to generate better Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
+This can be an extremely powerful way to create less repetitive Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
 
 ##### Manually Registering Schema
 
