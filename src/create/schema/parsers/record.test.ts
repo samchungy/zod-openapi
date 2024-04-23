@@ -1,15 +1,13 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createRecordSchema } from './record';
-
-extendZodWithOpenApi(z);
 
 describe('createRecordSchema', () => {
   it('creates an object schema with additional properties in 3.0.0', () => {

@@ -1,7 +1,7 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import {
   createOutputOpenapi3State,
@@ -9,8 +9,6 @@ import {
 } from '../../../testing/state';
 
 import { createNumberSchema } from './number';
-
-extendZodWithOpenApi(z);
 
 describe('createNumberSchema', () => {
   it('creates a simple number schema', () => {

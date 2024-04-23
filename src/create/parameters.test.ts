@@ -1,12 +1,10 @@
+import '../extend';
 import { z } from 'zod';
 
-import { extendZodWithOpenApi } from '../extendZod';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import { getDefaultComponents } from './components';
 import { createBaseParameter, createParametersObject } from './parameters';
-
-extendZodWithOpenApi(z);
 
 describe('createBaseParameter', () => {
   it('should create base parameters from a zod string', () => {

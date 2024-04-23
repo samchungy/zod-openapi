@@ -1,11 +1,9 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 
 import { createEnumSchema } from './enum';
-
-extendZodWithOpenApi(z);
 
 describe('createEnumSchema', () => {
   it('creates a string enum schema', () => {

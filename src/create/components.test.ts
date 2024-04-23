@@ -1,6 +1,6 @@
+import '../extend';
 import { z } from 'zod';
 
-import { extendZodWithOpenApi } from '../extendZod';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import {
@@ -23,8 +23,6 @@ import type {
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
 } from './document';
-
-extendZodWithOpenApi(z);
 
 describe('getDefaultComponents', () => {
   it('returns default components', () => {

@@ -1,7 +1,8 @@
 import { build } from 'esbuild';
 
 await build({
-  entryPoints: ['src/index.ts'],
+  entryPoints: ['src/index.ts', 'src/extend.ts'],
+  packages: 'external',
   bundle: true,
   platform: 'node',
   format: 'esm',

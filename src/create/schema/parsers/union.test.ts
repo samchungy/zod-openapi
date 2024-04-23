@@ -1,12 +1,10 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createOutputState } from '../../../testing/state';
 
 import { createUnionSchema } from './union';
-
-extendZodWithOpenApi(z);
 
 describe('createUnionSchema', () => {
   it('creates an anyOf schema for a union', () => {

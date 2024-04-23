@@ -1,14 +1,12 @@
+import '../../../extend';
 import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createOutputState } from '../../../testing/state';
 import type { SchemaComponent } from '../../components';
 import { type Schema, createNewSchema, createSchemaObject } from '../../schema';
 
 import { createLazySchema } from './lazy';
 import { createObjectSchema } from './object';
-
-extendZodWithOpenApi(z);
 
 describe('createLazySchema', () => {
   it('throws an error when a lazy schema has no ref', () => {

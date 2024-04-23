@@ -1,12 +1,10 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createOutputState } from '../../../testing/state';
 
 import { createManualTypeSchema } from './manual';
-
-extendZodWithOpenApi(z);
 
 describe('createManualTypeSchema', () => {
   it('creates a simple string schema for an optional string', () => {

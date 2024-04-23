@@ -1,12 +1,10 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createInputState, createOutputState } from '../../../testing/state';
 
 import { createTransformSchema, throwTransformError } from './transform';
-
-extendZodWithOpenApi(z);
 
 describe('createTransformSchema', () => {
   describe('input', () => {

@@ -1,11 +1,9 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 
 import { createDateSchema } from './date';
-
-extendZodWithOpenApi(z);
 
 describe('createDateSchema', () => {
   it('creates a string schema', () => {

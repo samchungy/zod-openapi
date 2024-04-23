@@ -1,11 +1,9 @@
+import '../../extend';
 import { z } from 'zod';
 
-import { extendZodWithOpenApi } from '../../extendZod';
 import { createOutputState } from '../../testing/state';
 
 import { type Schema, createSchemaObject } from './index';
-
-extendZodWithOpenApi(z);
 
 describe('enhanceWithMetadata', () => {
   it('adds .openapi metadata', () => {

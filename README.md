@@ -29,12 +29,25 @@ pnpm install zod zod-openapi
 
 ## Usage
 
-### `extendZodWithOpenApi`
+### Extend Zod
 
 This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s).
 
-```typescript
+#### Automatic
+
+```ts
+import 'zod-openapi/extend';
 import { z } from 'zod';
+
+z.string().openapi({ description: 'hello world!', example: 'hello world' });
+```
+
+#### Manual
+
+This is useful if you have a different instance of Zod that you would like to extend.
+
+```typescript
+import { z } from 'another-lib';
 import { extendZodWithOpenApi } from 'zod-openapi';
 
 extendZodWithOpenApi(z);
@@ -64,8 +77,6 @@ Creates an OpenAPI documentation object
 ```typescript
 import { z } from 'zod';
 import { createDocument, extendZodWithOpenApi } from 'zod-openapi';
-
-extendZodWithOpenApi(z);
 
 const jobId = z.string().openapi({
   description: 'Job ID',
