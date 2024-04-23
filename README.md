@@ -79,8 +79,9 @@ import { z } from 'zod';
 import { createDocument, extendZodWithOpenApi } from 'zod-openapi';
 
 const jobId = z.string().openapi({
-  description: 'Job ID',
+  description: 'A unique identifier for a job',
   example: '12345',
+  ref: 'jobId',
 });
 
 const title = z.string().openapi({
@@ -133,10 +134,9 @@ Generates the following object:
           {
             "in": "path",
             "name": "jobId",
+            "description": "A unique identifier for a job",
             "schema": {
-              "type": "string",
-              "description": "Job ID",
-              "example": "12345"
+              "$ref": "#/components/schemas/jobId"
             }
           }
         ],
@@ -166,9 +166,7 @@ Generates the following object:
                   "type": "object",
                   "properties": {
                     "jobId": {
-                      "type": "string",
-                      "description": "Job ID",
-                      "example": "12345"
+                      "$ref": "#/components/schemas/jobId"
                     },
                     "title": {
                       "type": "string",
@@ -182,6 +180,15 @@ Generates the following object:
             }
           }
         }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "jobId": {
+        "type": "string",
+        "description": "A unique identifier for a job",
+        "example": "12345"
       }
     }
   }
