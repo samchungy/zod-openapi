@@ -43,7 +43,9 @@
   "typesVersions": {
     "*": {
       "*": [
-        "lib-types/index.d.ts",
+        "lib-types/index.d.ts"
+      ],
+      "extend": [
         "lib-types/extend.d.ts"
       ]
     }
