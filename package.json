@@ -40,6 +40,14 @@
   "main": "./lib-commonjs/index.js",
   "module": "./lib-esm/index.mjs",
   "types": "./lib-types/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "lib-types/index.d.ts",
+        "lib-types/extend.d.ts"
+      ]
+    }
+  },
   "files": [
     "lib*/**/*.d.ts",
     "lib*/**/*.{js,mjs}{,.map}",

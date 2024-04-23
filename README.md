@@ -33,8 +33,6 @@ pnpm install zod zod-openapi
 
 This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s).
 
-#### Automatic
-
 ```ts
 import 'zod-openapi/extend';
 import { z } from 'zod';
