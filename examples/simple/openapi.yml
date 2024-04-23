@@ -20,6 +20,7 @@ paths:
       parameters:
         - in: query
           name: id
+          description: A unique identifier for a job
           schema:
             $ref: "#/components/schemas/jobId"
           required: true
@@ -80,13 +81,13 @@ components:
       bearerFormat: JWT
       description: An s2s token issued by an allow listed consumer
   schemas:
-    jobTitle:
-      type: string
-      minLength: 1
-      description: A name that describes the job
-      example: Mid level developer
     jobId:
       type: string
       format: uuid
       description: A unique identifier for a job
       example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
+    jobTitle:
+      type: string
+      minLength: 1
+      description: A name that describes the job
+      example: Mid level developer
