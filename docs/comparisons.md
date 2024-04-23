@@ -19,13 +19,14 @@ zod-openapi was created while trying to add a feature to support auto registerin
 7.  Previosuly, zod-to-openapi did not support auto-registering schema, however, more recently they added a solution which is less clear as they are using named parameters.
 
 ```ts
-z.string().openapi('foo')
+z.string().openapi('foo');
 z.string().openapi('foo', { description: 'foo' });
 // vs
 
 z.string().openapi({ ref: 'foo' });
 z.string().openapi({ description: 'foo', ref: 'foo' });
 ```
+
 8. None of the large number of [issues](https://github.com/asteasolutions/zod-to-openapi/issues), [known issues](https://github.com/asteasolutions/zod-to-openapi#known-issues), or discussion threads apply to this library.
 
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and as frictionless as possible.
