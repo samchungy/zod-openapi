@@ -1,11 +1,6 @@
-import { z } from 'zod';
-
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 
 import { createNullSchema } from './null';
-
-extendZodWithOpenApi(z);
 
 describe('createNullSchema', () => {
   it('creates a null schema', () => {

@@ -1,15 +1,13 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createTupleSchema } from './tuple';
-
-extendZodWithOpenApi(z);
 
 describe('createTupleSchema', () => {
   it('creates an array schema', () => {

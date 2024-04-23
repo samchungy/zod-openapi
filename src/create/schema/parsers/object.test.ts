@@ -1,12 +1,10 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createInputState, createOutputState } from '../../../testing/state';
 
 import { createObjectSchema } from './object';
-
-extendZodWithOpenApi(z);
 
 describe('createObjectSchema', () => {
   it('creates a simple object with required and optionals', () => {

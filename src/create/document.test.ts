@@ -1,10 +1,7 @@
+import '../extend';
 import { type ZodType, z } from 'zod';
 
-import { extendZodWithOpenApi } from '../extendZod';
-
 import { type ZodOpenApiObject, createDocument } from './document';
-
-extendZodWithOpenApi(z);
 
 const schema = z.object({
   a: z.string(),

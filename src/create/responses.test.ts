@@ -1,12 +1,10 @@
+import '../extend';
 import { z } from 'zod';
 
-import { extendZodWithOpenApi } from '../extendZod';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import { getDefaultComponents } from './components';
 import { createResponses } from './responses';
-
-extendZodWithOpenApi(z);
 
 describe('createResponses', () => {
   it('creates a response', () => {

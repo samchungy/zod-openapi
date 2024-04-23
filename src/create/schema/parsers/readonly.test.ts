@@ -1,12 +1,10 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createOutputState } from '../../../testing/state';
 
 import { createReadonlySchema } from './readonly';
-
-extendZodWithOpenApi(z);
 
 describe('createReadonlySchema', () => {
   it('creates a simple string schema for a readonly string', () => {

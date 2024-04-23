@@ -1,11 +1,9 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 
 import { createBooleanSchema } from './boolean';
-
-extendZodWithOpenApi(z);
 
 describe('createBooleanSchema', () => {
   it('creates a boolean schema', () => {

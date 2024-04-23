@@ -1,15 +1,13 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createLiteralSchema } from './literal';
-
-extendZodWithOpenApi(z);
 
 describe('createLiteralSchema', () => {
   describe('OpenAPI 3.1.0', () => {

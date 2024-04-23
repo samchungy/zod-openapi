@@ -1,13 +1,11 @@
+import '../extend';
 import { z } from 'zod';
 
-import { extendZodWithOpenApi } from '../extendZod';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import { getDefaultComponents } from './components';
 import type { ZodOpenApiPathsObject } from './document';
 import { createPaths } from './paths';
-
-extendZodWithOpenApi(z);
 
 describe('createPaths', () => {
   it('should create a paths object', () => {

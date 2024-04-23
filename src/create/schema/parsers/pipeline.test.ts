@@ -1,12 +1,10 @@
+import '../../../extend';
 import { z } from 'zod';
 
 import type { Schema } from '..';
-import { extendZodWithOpenApi } from '../../../extendZod';
 import { createInputState, createOutputState } from '../../../testing/state';
 
 import { createPipelineSchema } from './pipeline';
-
-extendZodWithOpenApi(z);
 
 describe('createPipelineSchema', () => {
   describe('input', () => {

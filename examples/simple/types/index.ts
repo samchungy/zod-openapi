@@ -1,9 +1,4 @@
-import { z } from 'zod';
-
-import { extendZodWithOpenApi } from '../../../src';
-
-extendZodWithOpenApi(z);
-
+import '../../../src/extend';
 export * from './common';
 export * from './getJob';
 export * from './createJob';
