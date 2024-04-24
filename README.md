@@ -47,7 +47,7 @@ z.string().openapi({ description: 'hello world!', example: 'hello world' });
 This is useful if you have a specific instance of Zod or a Zod instance from another library that you would like to target.
 
 ```typescript
-import { z } from 'another-lib';
+import { z } from 'zod';
 import { extendZodWithOpenApi } from 'zod-openapi';
 
 extendZodWithOpenApi(z);
