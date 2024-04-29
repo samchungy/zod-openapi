@@ -21,8 +21,8 @@ devDependencies:
     specifier: 8.0.1
     version: 8.0.1(@babel/core@7.22.20)
   yaml:
-    specifier: 2.4.1
-    version: 2.4.1
+    specifier: 2.4.2
+    version: 2.4.2
   zod:
     specifier: 3.23.4
     version: 3.23.4
@@ -6680,7 +6680,7 @@ packages:
   /openapi3-ts@4.3.1:
     resolution: {integrity: sha512-ha/kTOLhMQL7MvS9Abu/cpCXx5qwHQ++88YkUzn1CGfmM8JvCOG/4ZE6tRsexgXRFaoJrcwLyf81H2Y/CXALtA==}
     dependencies:
-      yaml: 2.4.1
+      yaml: 2.4.2
     dev: true
 
   /optionator@0.9.3:
@@ -8653,7 +8653,7 @@ packages:
     dependencies:
       eslint-visitor-keys: 3.4.3
       lodash: 4.17.21
-      yaml: 2.4.1
+      yaml: 2.4.2
     dev: true
 
   /yaml@1.10.2:
@@ -8661,8 +8661,8 @@ packages:
     engines: {node: '>= 6'}
     dev: true
 
-  /yaml@2.4.1:
-    resolution: {integrity: sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==}
+  /yaml@2.4.2:
+    resolution: {integrity: sha512-B3VqDZ+JAg1nZpaEmWtTXUlBneoGx6CPM9b0TENK6aoSu5t73dItudwdgmi6tHlIZZId4dZ9skcAQ2UbcyAeVA==}
     engines: {node: '>= 14'}
     hasBin: true
     dev: true
