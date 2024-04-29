@@ -75,8 +75,9 @@ Use the `.openapi()` method to add metadata to a specific Zod type. The `.openap
 Creates an OpenAPI documentation object
 
 ```typescript
+import 'zod-openapi/extend';
 import { z } from 'zod';
-import { createDocument, extendZodWithOpenApi } from 'zod-openapi';
+import { createDocument } from 'zod-openapi';
 
 const jobId = z.string().openapi({
   description: 'A unique identifier for a job',
