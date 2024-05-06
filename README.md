@@ -530,7 +530,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodBranded
 - ZodCatch
 - ZodDate
-  - `string` `type` mapping by default
+  - `type` is mapped as `string` by default
 - ZodDefault
 - ZodDiscriminatedUnion
   - `discriminator` mapping when all schemas in the union are [registered](#creating-components). The discriminator must be a `ZodLiteral`, `ZodEnum` or `ZodNativeEnum` with string values. Only values wrapped in `ZodBranded`, `ZodReadOnly` and `ZodCatch` are supported.
