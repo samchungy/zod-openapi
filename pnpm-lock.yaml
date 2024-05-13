@@ -6,8 +6,8 @@ settings:
 
 devDependencies:
   '@redocly/cli':
-    specifier: 1.12.0
-    version: 1.12.0
+    specifier: 1.12.2
+    version: 1.12.2
   '@types/node':
     specifier: ^20.3.0
     version: 20.4.4
@@ -2314,12 +2314,12 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-  /@redocly/cli@1.12.0:
-    resolution: {integrity: sha512-k45WELRAvE0UbYPhEhUPq/T4WOCDx4zoCT3tLokCdnCyeUHgaDzNAzPM2qe5Y8m8k5FUYlNoPdND4PlvUhg9Wg==}
+  /@redocly/cli@1.12.2:
+    resolution: {integrity: sha512-oFSI77DAcdnILwkXmpUeY0B1Kg47MVn7HVSV92F9SLZewh2Z4AN99/VSGoFk1LvImTLWJCbhF/bsQbvG2sw3Jw==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
     hasBin: true
     dependencies:
-      '@redocly/openapi-core': 1.12.0
+      '@redocly/openapi-core': 1.12.2
       abort-controller: 3.0.0
       chokidar: 3.5.3
       colorette: 1.4.0
@@ -2346,16 +2346,16 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@redocly/config@0.2.0:
-    resolution: {integrity: sha512-r0TqTPVXrxdvhpbOntWnJofOx0rC7u+A+tfC0KFwMtw38QCNb3pwodVjeLa7MT5Uu+fcPxfO119yLBj0QHvBuQ==}
+  /@redocly/config@0.5.0:
+    resolution: {integrity: sha512-oA1ezWPT2tSV9CLk0FtZlViaFKtp+id3iAVeKBme1DdP4xUCdxEdP8umB21iLKdc6leRd5uGa+T5Ox4nHBAXWg==}
     dev: true
 
-  /@redocly/openapi-core@1.12.0:
-    resolution: {integrity: sha512-2Jfxv3iIk1JUwLSnLyewJ8GAsoxubROVieg13Sjo79TjuWaUBuI49j8GZqC08ljENqyEIp0JHReDjhKs4Snrhg==}
+  /@redocly/openapi-core@1.12.2:
+    resolution: {integrity: sha512-dImBZaKws54a4/QdoAVsLDm4/gfVnzAVD68pSGFPMTLNM2AZINvevfUfOrbUNTXwHvG2UJkthUxDGQZLsp3Vaw==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
     dependencies:
       '@redocly/ajv': 8.11.0
-      '@redocly/config': 0.2.0
+      '@redocly/config': 0.5.0
       colorette: 1.4.0
       js-levenshtein: 1.1.6
       js-yaml: 4.1.0
@@ -7163,7 +7163,7 @@ packages:
       react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0
       styled-components: ^4.1.1 || ^5.1.1 || ^6.0.5
     dependencies:
-      '@redocly/openapi-core': 1.12.0
+      '@redocly/openapi-core': 1.12.2
       classnames: 2.3.2
       core-js: 3.32.2
       decko: 1.2.0
