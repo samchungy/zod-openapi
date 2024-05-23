@@ -4,7 +4,7 @@
 
 zod-openapi was created while trying to add a feature to support auto registering schemas to zod-to-openapi. This proved to be extra challenging given the overall structure of the library so I decided re-write the whole thing. I was a big contributor to this library and love everything it's done, however I could not go past a few issues.
 
-1.  \***\*Inaccurate\*\*** schema generation. This is because the library is written without considering that Zod Types can produce different schemas depending on if they are an `input` or `output` type. This means that when you use a `ZodTransform`, `ZodPipeline` or `ZodDefault` it may generate incorrect documentation.
+1.  \***\*Inaccurate\*\*** schema generation. This is because the library is written without considering that Zod Types can produce different schemas depending on if they are an `input` or `output` type. This means that when you use a `ZodTransform`, `ZodPipeline` or `ZodDefault` it may generate incorrect documentation depending on if you are creating schema for a request ot a response.
 
 2.  No input/output validation on components. Registered schema for inputs and outputs should **NOT** be used if they contain a ZodEffect such as `ZodTransform`, `ZodPipeline` or `ZodDefault` in both a request and response schema. This is because they will be inaccurate for reasons stated above.
 
