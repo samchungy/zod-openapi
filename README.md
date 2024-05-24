@@ -560,7 +560,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodReadonly
 - ZodRecord
 - ZodSet
-  - Treated as an array with `uniqueItems` (you may need to add a pre-process)
+  - Treated as an array with `uniqueItems` (you may need to add a pre-process to convert it to a set)
 - ZodString
   - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`, `.date()`, `.time()`, `.duration()`
   - `minLength`/`maxLength` mapping for `.length()`, `.min()`, `.max()`
