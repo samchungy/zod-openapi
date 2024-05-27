@@ -6,8 +6,8 @@ settings:
 
 devDependencies:
   '@redocly/cli':
-    specifier: 1.12.2
-    version: 1.12.2
+    specifier: 1.13.0
+    version: 1.13.0
   '@types/node':
     specifier: ^20.3.0
     version: 20.4.4
@@ -2314,12 +2314,12 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-  /@redocly/cli@1.12.2:
-    resolution: {integrity: sha512-oFSI77DAcdnILwkXmpUeY0B1Kg47MVn7HVSV92F9SLZewh2Z4AN99/VSGoFk1LvImTLWJCbhF/bsQbvG2sw3Jw==}
+  /@redocly/cli@1.13.0:
+    resolution: {integrity: sha512-2oC8SN+hGtfrFBX2LadFOAzA1ika+2IDmAg9pRl8+yualfmEdxiOuP8rltKeDZ1Uj3NGXyR42g7+CvMj55pKkw==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
     hasBin: true
     dependencies:
-      '@redocly/openapi-core': 1.12.2
+      '@redocly/openapi-core': 1.13.0
       abort-controller: 3.0.0
       chokidar: 3.5.3
       colorette: 1.4.0
@@ -2350,8 +2350,8 @@ packages:
     resolution: {integrity: sha512-oA1ezWPT2tSV9CLk0FtZlViaFKtp+id3iAVeKBme1DdP4xUCdxEdP8umB21iLKdc6leRd5uGa+T5Ox4nHBAXWg==}
     dev: true
 
-  /@redocly/openapi-core@1.12.2:
-    resolution: {integrity: sha512-dImBZaKws54a4/QdoAVsLDm4/gfVnzAVD68pSGFPMTLNM2AZINvevfUfOrbUNTXwHvG2UJkthUxDGQZLsp3Vaw==}
+  /@redocly/openapi-core@1.13.0:
+    resolution: {integrity: sha512-lPvVE4+QjWMXCEIui994pYBZGqvEsodaCJPCJLkx6RK3OL/6Ss8wN17YTDmF49tzw3xgA8t4+x7TqelUSRcZUQ==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
     dependencies:
       '@redocly/ajv': 8.11.0
@@ -4717,6 +4717,7 @@ packages:
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
@@ -5002,6 +5003,7 @@ packages:
 
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
     dependencies:
       once: 1.4.0
       wrappy: 1.0.2
@@ -7163,7 +7165,7 @@ packages:
       react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0
       styled-components: ^4.1.1 || ^5.1.1 || ^6.0.5
     dependencies:
-      '@redocly/openapi-core': 1.12.2
+      '@redocly/openapi-core': 1.13.0
       classnames: 2.3.2
       core-js: 3.32.2
       decko: 1.2.0
