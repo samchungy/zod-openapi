@@ -12,7 +12,7 @@ importers:
         specifier: 1.14.0
         version: 1.14.0(encoding@0.1.13)
       '@types/node':
-        specifier: ^20.12.13
+        specifier: ^20.3.0
         version: 20.12.13
       eslint-plugin-zod-openapi:
         specifier: ^0.1.0
