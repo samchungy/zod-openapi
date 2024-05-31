@@ -1,7 +1,11 @@
 import '../extend';
 import { type ZodType, z } from 'zod';
 
-import { type ZodOpenApiObject, createDocument } from './document';
+import {
+  type ZodOpenApiCallbackObject,
+  type ZodOpenApiObject,
+  createDocument,
+} from './document';
 
 const schema = z.object({
   a: z.string(),
@@ -79,6 +83,31 @@ const registeredZodOpenApiObject: ZodOpenApiObject = {
             }),
           },
         },
+        callbacks: {
+          onData: {
+            '{$request.query.callbackUrl}/data': {
+              post: {
+                requestBody: {
+                  content: {
+                    'application/json': {
+                      schema: registered,
+                    },
+                  },
+                },
+                responses: {
+                  '202': {
+                    description: '200 OK',
+                    content: {
+                      'application/json': {
+                        schema: registered,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
   },
@@ -117,6 +146,26 @@ const PostSchema: ZodType<Post> = BasePost.extend({
 const zodLazyComplex: ZodType<User> = BaseUser.extend({
   posts: z.array(z.lazy(() => PostSchema)).optional(),
 }).openapi({ ref: 'user' });
+
+const registeredCallback: ZodOpenApiCallbackObject = {
+  ref: 'callback',
+  '{$request.query.callbackUrl}/data': {
+    post: {
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: z.object({ a: z.string() }),
+          },
+        },
+      },
+      responses: {
+        '202': {
+          description: '202 OK',
+        },
+      },
+    },
+  },
+};
 
 const complex = z.object({
   a: z.string().openapi({ ref: 'a' }),
@@ -162,6 +211,9 @@ const complexZodOpenApiObject: ZodOpenApiObject = {
               'my-header': z.string().openapi({ header: { ref: 'my-header' } }),
             }),
           },
+        },
+        callbacks: {
+          onData: registeredCallback,
         },
       },
     },
@@ -280,6 +332,51 @@ describe('createDocument', () => {
         "paths": {
           "/jobs": {
             "get": {
+              "callbacks": {
+                "onData": {
+                  "{$request.query.callbackUrl}/data": {
+                    "post": {
+                      "requestBody": {
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "properties": {
+                                "a": {
+                                  "$ref": "#/components/schemas/a",
+                                },
+                              },
+                              "required": [
+                                "a",
+                              ],
+                              "type": "object",
+                            },
+                          },
+                        },
+                      },
+                      "responses": {
+                        "202": {
+                          "content": {
+                            "application/json": {
+                              "schema": {
+                                "properties": {
+                                  "a": {
+                                    "$ref": "#/components/schemas/a",
+                                  },
+                                },
+                                "required": [
+                                  "a",
+                                ],
+                                "type": "object",
+                              },
+                            },
+                          },
+                          "description": "200 OK",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
               "parameters": [
                 {
                   "$ref": "#/components/parameters/b",
@@ -340,6 +437,36 @@ describe('createDocument', () => {
     expect(document).toMatchInlineSnapshot(`
 {
   "components": {
+    "callbacks": {
+      "callback": {
+        "{$request.query.callbackUrl}/data": {
+          "post": {
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "a": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "a",
+                    ],
+                    "type": "object",
+                  },
+                },
+              },
+            },
+            "responses": {
+              "202": {
+                "description": "202 OK",
+              },
+            },
+          },
+        },
+      },
+    },
     "headers": {
       "my-header": {
         "required": true,
@@ -470,6 +597,11 @@ describe('createDocument', () => {
   "paths": {
     "/jobs": {
       "get": {
+        "callbacks": {
+          "onData": {
+            "$ref": "#/components/callbacks/callback",
+          },
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/b",
@@ -639,304 +771,339 @@ describe('createDocument', () => {
     });
 
     expect(document).toMatchInlineSnapshot(`
-      {
-        "components": {
-          "headers": {
-            "my-header": {
-              "required": true,
-              "schema": {
-                "type": "string",
-              },
-            },
-          },
-          "parameters": {
-            "b": {
-              "in": "path",
-              "name": "b",
-              "required": true,
-              "schema": {
-                "type": "string",
-              },
-            },
-          },
-          "schemas": {
-            "a": {
-              "type": "string",
-            },
-            "b": {
-              "properties": {
-                "a": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "a",
-              ],
-              "type": "object",
-            },
-            "c": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/b",
-                },
-              ],
-              "properties": {
-                "d": {
-                  "nullable": true,
-                  "type": "string",
-                },
-              },
-              "required": [
-                "d",
-              ],
-              "type": "object",
-            },
-            "lazy": {
-              "items": {
-                "$ref": "#/components/schemas/lazy",
-              },
-              "type": "array",
-            },
-            "manual": {
-              "type": "boolean",
-            },
-            "post": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "user": {
-                  "$ref": "#/components/schemas/user",
-                },
-                "userId": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "id",
-                "userId",
-              ],
-              "type": "object",
-            },
-            "union-a": {
-              "properties": {
-                "type": {
-                  "enum": [
-                    "a",
-                  ],
-                  "type": "string",
-                },
-              },
-              "required": [
-                "type",
-              ],
-              "type": "object",
-            },
-            "union-b": {
-              "properties": {
-                "type": {
-                  "enum": [
-                    "b",
-                  ],
-                  "type": "string",
-                },
-              },
-              "required": [
-                "type",
-              ],
-              "type": "object",
-            },
-            "user": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "posts": {
-                  "items": {
-                    "$ref": "#/components/schemas/post",
-                  },
-                  "type": "array",
-                },
-              },
-              "required": [
-                "id",
-              ],
-              "type": "object",
-            },
-          },
-        },
-        "info": {
-          "title": "My API",
-          "version": "1.0.0",
-        },
-        "openapi": "3.0.0",
-        "paths": {
-          "/jobs": {
-            "get": {
-              "parameters": [
-                {
-                  "$ref": "#/components/parameters/b",
-                },
-              ],
-              "requestBody": {
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "properties": {
-                        "a": {
-                          "$ref": "#/components/schemas/a",
-                        },
-                        "b": {
-                          "$ref": "#/components/schemas/b",
-                        },
-                        "c": {
-                          "$ref": "#/components/schemas/b",
-                        },
-                        "d": {
-                          "$ref": "#/components/schemas/c",
-                        },
-                        "e": {
-                          "discriminator": {
-                            "mapping": {
-                              "a": "#/components/schemas/union-a",
-                              "b": "#/components/schemas/union-b",
-                            },
-                            "propertyName": "type",
-                          },
-                          "oneOf": [
-                            {
-                              "$ref": "#/components/schemas/union-a",
-                            },
-                            {
-                              "$ref": "#/components/schemas/union-b",
-                            },
-                          ],
-                        },
-                        "f": {
-                          "items": {
-                            "oneOf": [
-                              {
-                                "type": "string",
-                              },
-                              {
-                                "type": "number",
-                              },
-                              {
-                                "$ref": "#/components/schemas/manual",
-                              },
-                            ],
-                          },
-                          "maxItems": 3,
-                          "minItems": 3,
-                          "type": "array",
-                        },
-                        "g": {
-                          "$ref": "#/components/schemas/lazy",
-                        },
-                        "h": {
-                          "$ref": "#/components/schemas/user",
-                        },
+{
+  "components": {
+    "callbacks": {
+      "callback": {
+        "{$request.query.callbackUrl}/data": {
+          "post": {
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "a": {
+                        "type": "string",
                       },
-                      "required": [
-                        "a",
-                        "b",
-                        "d",
-                        "e",
-                        "f",
-                        "g",
-                        "h",
+                    },
+                    "required": [
+                      "a",
+                    ],
+                    "type": "object",
+                  },
+                },
+              },
+            },
+            "responses": {
+              "202": {
+                "description": "202 OK",
+              },
+            },
+          },
+        },
+      },
+    },
+    "headers": {
+      "my-header": {
+        "required": true,
+        "schema": {
+          "type": "string",
+        },
+      },
+    },
+    "parameters": {
+      "b": {
+        "in": "path",
+        "name": "b",
+        "required": true,
+        "schema": {
+          "type": "string",
+        },
+      },
+    },
+    "schemas": {
+      "a": {
+        "type": "string",
+      },
+      "b": {
+        "properties": {
+          "a": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "a",
+        ],
+        "type": "object",
+      },
+      "c": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/b",
+          },
+        ],
+        "properties": {
+          "d": {
+            "nullable": true,
+            "type": "string",
+          },
+        },
+        "required": [
+          "d",
+        ],
+        "type": "object",
+      },
+      "lazy": {
+        "items": {
+          "$ref": "#/components/schemas/lazy",
+        },
+        "type": "array",
+      },
+      "manual": {
+        "type": "boolean",
+      },
+      "post": {
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/user",
+          },
+          "userId": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "userId",
+        ],
+        "type": "object",
+      },
+      "union-a": {
+        "properties": {
+          "type": {
+            "enum": [
+              "a",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+        ],
+        "type": "object",
+      },
+      "union-b": {
+        "properties": {
+          "type": {
+            "enum": [
+              "b",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+        ],
+        "type": "object",
+      },
+      "user": {
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "posts": {
+            "items": {
+              "$ref": "#/components/schemas/post",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "id",
+        ],
+        "type": "object",
+      },
+    },
+  },
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/jobs": {
+      "get": {
+        "callbacks": {
+          "onData": {
+            "$ref": "#/components/callbacks/callback",
+          },
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/b",
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "a": {
+                    "$ref": "#/components/schemas/a",
+                  },
+                  "b": {
+                    "$ref": "#/components/schemas/b",
+                  },
+                  "c": {
+                    "$ref": "#/components/schemas/b",
+                  },
+                  "d": {
+                    "$ref": "#/components/schemas/c",
+                  },
+                  "e": {
+                    "discriminator": {
+                      "mapping": {
+                        "a": "#/components/schemas/union-a",
+                        "b": "#/components/schemas/union-b",
+                      },
+                      "propertyName": "type",
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/union-a",
+                      },
+                      {
+                        "$ref": "#/components/schemas/union-b",
+                      },
+                    ],
+                  },
+                  "f": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                        },
+                        {
+                          "type": "number",
+                        },
+                        {
+                          "$ref": "#/components/schemas/manual",
+                        },
                       ],
-                      "type": "object",
                     },
+                    "maxItems": 3,
+                    "minItems": 3,
+                    "type": "array",
+                  },
+                  "g": {
+                    "$ref": "#/components/schemas/lazy",
+                  },
+                  "h": {
+                    "$ref": "#/components/schemas/user",
                   },
                 },
-              },
-              "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "properties": {
-                          "a": {
-                            "$ref": "#/components/schemas/a",
-                          },
-                          "b": {
-                            "$ref": "#/components/schemas/b",
-                          },
-                          "c": {
-                            "$ref": "#/components/schemas/b",
-                          },
-                          "d": {
-                            "$ref": "#/components/schemas/c",
-                          },
-                          "e": {
-                            "discriminator": {
-                              "mapping": {
-                                "a": "#/components/schemas/union-a",
-                                "b": "#/components/schemas/union-b",
-                              },
-                              "propertyName": "type",
-                            },
-                            "oneOf": [
-                              {
-                                "$ref": "#/components/schemas/union-a",
-                              },
-                              {
-                                "$ref": "#/components/schemas/union-b",
-                              },
-                            ],
-                          },
-                          "f": {
-                            "items": {
-                              "oneOf": [
-                                {
-                                  "type": "string",
-                                },
-                                {
-                                  "type": "number",
-                                },
-                                {
-                                  "$ref": "#/components/schemas/manual",
-                                },
-                              ],
-                            },
-                            "maxItems": 3,
-                            "minItems": 3,
-                            "type": "array",
-                          },
-                          "g": {
-                            "$ref": "#/components/schemas/lazy",
-                          },
-                          "h": {
-                            "$ref": "#/components/schemas/user",
-                          },
-                        },
-                        "required": [
-                          "a",
-                          "b",
-                          "d",
-                          "e",
-                          "f",
-                          "g",
-                          "h",
-                        ],
-                        "type": "object",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
-                  "headers": {
-                    "my-header": {
-                      "$ref": "#/components/headers/my-header",
-                    },
-                  },
-                },
+                "required": [
+                  "a",
+                  "b",
+                  "d",
+                  "e",
+                  "f",
+                  "g",
+                  "h",
+                ],
+                "type": "object",
               },
             },
           },
         },
-      }
-    `);
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "a": {
+                      "$ref": "#/components/schemas/a",
+                    },
+                    "b": {
+                      "$ref": "#/components/schemas/b",
+                    },
+                    "c": {
+                      "$ref": "#/components/schemas/b",
+                    },
+                    "d": {
+                      "$ref": "#/components/schemas/c",
+                    },
+                    "e": {
+                      "discriminator": {
+                        "mapping": {
+                          "a": "#/components/schemas/union-a",
+                          "b": "#/components/schemas/union-b",
+                        },
+                        "propertyName": "type",
+                      },
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/union-a",
+                        },
+                        {
+                          "$ref": "#/components/schemas/union-b",
+                        },
+                      ],
+                    },
+                    "f": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                          },
+                          {
+                            "type": "number",
+                          },
+                          {
+                            "$ref": "#/components/schemas/manual",
+                          },
+                        ],
+                      },
+                      "maxItems": 3,
+                      "minItems": 3,
+                      "type": "array",
+                    },
+                    "g": {
+                      "$ref": "#/components/schemas/lazy",
+                    },
+                    "h": {
+                      "$ref": "#/components/schemas/user",
+                    },
+                  },
+                  "required": [
+                    "a",
+                    "b",
+                    "d",
+                    "e",
+                    "f",
+                    "g",
+                    "h",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "200 OK",
+            "headers": {
+              "my-header": {
+                "$ref": "#/components/headers/my-header",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`);
   });
 
   it('Supports circular schemas declared in components.schemas', () => {

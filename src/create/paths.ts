@@ -1,5 +1,6 @@
 import type { oas31 } from '../openapi3-ts/dist';
 
+import { createCallbacks } from './callbacks';
 import {
   type ComponentsObject,
   createComponentRequestBodyRef,
@@ -82,18 +83,25 @@ const createOperation = (
     [...subpath, 'responses'],
   );
 
+  const maybeCallbacks = createCallbacks(
+    operationObject.callbacks,
+    components,
+    [...subpath, 'callbacks'],
+  );
+
   return {
     ...rest,
     ...(maybeParameters && { parameters: maybeParameters }),
     ...(maybeRequestBody && { requestBody: maybeRequestBody }),
     ...(maybeResponses && { responses: maybeResponses }),
+    ...(maybeCallbacks && { callbacks: maybeCallbacks }),
   };
 };
 
-const createPathItem = (
+export const createPathItem = (
   pathObject: ZodOpenApiPathItemObject,
   components: ComponentsObject,
-  path: string,
+  path: string[],
 ): oas31.PathItemObject =>
   Object.entries(pathObject).reduce<oas31.PathItemObject>(
     (acc, [key, value]) => {
@@ -114,7 +122,7 @@ const createPathItem = (
         acc[key] = createOperation(
           value as ZodOpenApiOperationObject,
           components,
-          [path, key],
+          [...path, key],
         );
         return acc;
       }
@@ -140,7 +148,7 @@ export const createPaths = (
         acc[path] = pathItemObject;
         return acc;
       }
-      acc[path] = createPathItem(pathItemObject, components, path);
+      acc[path] = createPathItem(pathItemObject, components, [path]);
       return acc;
     },
     {},
