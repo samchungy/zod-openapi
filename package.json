@@ -70,7 +70,7 @@
     "@redocly/cli": "1.14.0",
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.1.0",
-    "openapi3-ts": "4.3.1",
+    "openapi3-ts": "4.3.2",
     "skuba": "8.0.1",
     "yaml": "2.4.2",
     "zod": "3.23.8"
