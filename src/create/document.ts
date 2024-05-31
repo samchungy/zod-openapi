@@ -56,7 +56,6 @@ export interface ZodOpenApiCallbacksObject
   [name: string]: ZodOpenApiCallbackObject;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface ZodOpenApiCallbackObject
   extends oas31.ISpecificationExtension {
   /** Use this field to auto register this callback object as a component */
