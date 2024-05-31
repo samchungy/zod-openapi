@@ -50,10 +50,23 @@ export type ZodOpenApiParameters = {
     oas30.ParameterLocation]?: ZodObjectInputType;
 };
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+export interface ZodOpenApiCallbacksObject
+  extends oas31.ISpecificationExtension {
+  [name: string]: ZodOpenApiCallbackObject;
+}
+
+export interface ZodOpenApiCallbackObject
+  extends oas31.ISpecificationExtension {
+  /** Use this field to auto register this callback object as a component */
+  ref?: string;
+  [name: string]: ZodOpenApiPathItemObject | string | undefined;
+}
+
 export interface ZodOpenApiOperationObject
   extends Omit<
     oas31.OperationObject & oas30.OperationObject,
-    'requestBody' | 'responses' | 'parameters'
+    'requestBody' | 'responses' | 'parameters' | 'callbacks'
   > {
   parameters?: Array<
     | ZodType
@@ -65,6 +78,7 @@ export interface ZodOpenApiOperationObject
   requestBody?: ZodOpenApiRequestBodyObject;
   requestParams?: ZodOpenApiParameters;
   responses: ZodOpenApiResponsesObject;
+  callbacks?: ZodOpenApiCallbacksObject;
 }
 
 export interface ZodOpenApiPathItemObject
@@ -118,6 +132,7 @@ export interface ZodOpenApiComponentsObject
     | oas30.ReferenceObject
   >;
   responses?: Record<string, ZodOpenApiResponseObject>;
+  callbacks?: Record<string, ZodOpenApiCallbackObject>;
 }
 
 export type ZodOpenApiVersion = OpenApiVersion;

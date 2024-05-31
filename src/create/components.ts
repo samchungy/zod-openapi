@@ -3,7 +3,9 @@ import type { ZodType } from 'zod';
 import type { oas30, oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType } from '../zodType';
 
+import { createCallback } from './callbacks';
 import type {
+  ZodOpenApiCallbackObject,
   ZodOpenApiComponentsObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
@@ -174,12 +176,38 @@ export type RequestBodyComponentMap = Map<
   RequestBodyComponent
 >;
 
+export interface BaseCallbackComponent {
+  ref: string;
+}
+
+export interface CompleteCallbackComponent extends BaseCallbackComponent {
+  type: 'complete';
+  callbackObject:
+    | ZodOpenApiCallbackObject
+    | oas31.CallbackObject
+    | oas30.CallbackObject;
+}
+
+export interface PartialCallbackComponent extends BaseCallbackComponent {
+  type: 'manual';
+}
+
+export type CallbackComponent =
+  | CompleteCallbackComponent
+  | PartialCallbackComponent;
+
+export type CallbackComponentMap = Map<
+  ZodOpenApiCallbackObject,
+  CallbackComponent
+>;
+
 export interface ComponentsObject {
   schemas: SchemaComponentMap;
   parameters: ParameterComponentMap;
   headers: HeaderComponentMap;
   requestBodies: RequestBodyComponentMap;
   responses: ResponseComponentMap;
+  callbacks: CallbackComponentMap;
   openapi: ZodOpenApiVersion;
 }
 
@@ -193,6 +221,7 @@ export const getDefaultComponents = (
     headers: new Map(),
     requestBodies: new Map(),
     responses: new Map(),
+    callbacks: new Map(),
     openapi,
   };
   if (!componentsObject) {
@@ -204,6 +233,7 @@ export const getDefaultComponents = (
   getRequestBodies(componentsObject.requestBodies, defaultComponents);
   getHeaders(componentsObject.headers, defaultComponents);
   getResponses(componentsObject.responses, defaultComponents);
+  getCallbacks(componentsObject.callbacks, defaultComponents);
 
   return defaultComponents;
 };
@@ -332,6 +362,28 @@ const getRequestBodies = (
   });
 };
 
+const getCallbacks = (
+  callbacks: ZodOpenApiComponentsObject['callbacks'],
+  components: ComponentsObject,
+): void => {
+  if (!callbacks) {
+    return;
+  }
+
+  Object.entries(callbacks).forEach(([key, callback]) => {
+    if (components.callbacks.has(callback)) {
+      throw new Error(
+        `Callback ${JSON.stringify(callback)} is already registered`,
+      );
+    }
+    const ref = callback?.ref ?? key;
+    components.callbacks.set(callback, {
+      type: 'manual',
+      ref,
+    });
+  });
+};
+
 export const createComponentSchemaRef = (schemaRef: string) =>
   `#/components/schemas/${schemaRef}`;
 
@@ -340,6 +392,9 @@ export const createComponentResponseRef = (responseRef: string) =>
 
 export const createComponentRequestBodyRef = (requestBodyRef: string) =>
   `#/components/requestBodies/${requestBodyRef}`;
+
+export const createComponentCallbackRef = (callbackRef: string) =>
+  `#/components/callbacks/${callbackRef}`;
 
 export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject,
@@ -353,6 +408,7 @@ export const createComponents = (
   const combinedHeaders = createHeaderComponents(componentsObject, components);
   const combinedResponses = createResponseComponents(components);
   const combinedRequestBodies = createRequestBodiesComponents(components);
+  const combinedCallbacks = createCallbackComponents(components);
 
   const { schemas, parameters, headers, responses, requestBodies, ...rest } =
     componentsObject;
@@ -364,6 +420,7 @@ export const createComponents = (
     ...(combinedRequestBodies && { requestBodies: combinedRequestBodies }),
     ...(combinedHeaders && { headers: combinedHeaders }),
     ...(combinedResponses && { responses: combinedResponses }),
+    ...(combinedCallbacks && { callbacks: combinedCallbacks }),
   };
   return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
@@ -552,6 +609,31 @@ const createRequestBodiesComponents = (
       }
       acc[component.ref] =
         component.requestBodyObject as oas31.RequestBodyObject;
+    }
+
+    return acc;
+  }, {});
+
+  return Object.keys(finalComponents).length ? finalComponents : undefined;
+};
+
+const createCallbackComponents = (
+  components: ComponentsObject,
+): oas31.ComponentsObject['callbacks'] => {
+  Array.from(components.callbacks).forEach(([schema, component], index) => {
+    if (component.type === 'manual') {
+      createCallback(schema, components, [`component callback ${index}`]);
+    }
+  });
+
+  const finalComponents = Array.from(components.callbacks).reduce<
+    NonNullable<oas31.ComponentsObject['callbacks']>
+  >((acc, [_zodType, component]) => {
+    if (component.type === 'complete') {
+      if (acc[component.ref]) {
+        throw new Error(`Callback "${component.ref}" is already registered`);
+      }
+      acc[component.ref] = component.callbackObject as oas31.CallbackObject;
     }
 
     return acc;

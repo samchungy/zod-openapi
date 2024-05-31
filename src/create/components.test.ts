@@ -4,6 +4,8 @@ import { z } from 'zod';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import {
+  type CallbackComponent,
+  type CallbackComponentMap,
   type ComponentsObject,
   type HeaderComponent,
   type HeaderComponentMap,
@@ -20,6 +22,7 @@ import {
   getDefaultComponents,
 } from './components';
 import type {
+  ZodOpenApiCallbackObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
 } from './document';
@@ -28,6 +31,7 @@ describe('getDefaultComponents', () => {
   it('returns default components', () => {
     const result = getDefaultComponents();
     const expected: ComponentsObject = {
+      callbacks: expect.any(Map),
       responses: expect.any(Map),
       parameters: expect.any(Map),
       schemas: expect.any(Map),
@@ -57,6 +61,24 @@ describe('getDefaultComponents', () => {
         },
       },
     };
+    const fCallbacks: ZodOpenApiCallbackObject = {
+      '{$request.query.callbackUrl}/data': {
+        post: {
+          requestBody: {
+            content: {
+              'application/json': {
+                schema: z.object({ a: z.string() }),
+              },
+            },
+          },
+          responses: {
+            '202': {
+              description: '202 OK',
+            },
+          },
+        },
+      },
+    };
     const result = getDefaultComponents({
       parameters: {
         a: {
@@ -83,8 +105,12 @@ describe('getDefaultComponents', () => {
       requestBodies: {
         e: eRequestBody,
       },
+      callbacks: {
+        f: fCallbacks,
+      },
     });
     const expected: ComponentsObject = {
+      callbacks: expect.any(Map),
       requestBodies: expect.any(Map),
       responses: expect.any(Map),
       parameters: expect.any(Map),
@@ -114,6 +140,10 @@ describe('getDefaultComponents', () => {
       ref: 'e',
       type: 'manual',
     };
+    const expectedCallbacks: CallbackComponent = {
+      ref: 'f',
+      type: 'manual',
+    };
 
     expect(result).toStrictEqual(expected);
     expect(result.schemas.get(aSchema)).toStrictEqual(expectedSchema);
@@ -123,10 +153,12 @@ describe('getDefaultComponents', () => {
     expect(result.requestBodies.get(eRequestBody)).toStrictEqual(
       expectedRequestBodies,
     );
+    expect(result.callbacks.get(fCallbacks)).toStrictEqual(expectedCallbacks);
   });
 
   it('allows registering schemas in any order', () => {
     const expected: ComponentsObject = {
+      callbacks: expect.any(Map),
       requestBodies: expect.any(Map),
       responses: expect.any(Map),
       headers: expect.any(Map),
@@ -163,6 +195,7 @@ describe('createComponents', () => {
     const componentsObject = createComponents(
       {},
       {
+        callbacks: expect.any(Map),
         requestBodies: new Map(),
         parameters: new Map(),
         schemas: new Map(),
@@ -228,6 +261,34 @@ describe('createComponents', () => {
                   },
                 },
                 required: ['a'],
+              },
+            },
+          },
+        },
+      },
+      callbacks: {
+        a: {
+          '{$request.query.callbackUrl}/data': {
+            post: {
+              requestBody: {
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        a: {
+                          type: 'string',
+                        },
+                      },
+                      required: ['a'],
+                    },
+                  },
+                },
+              },
+              responses: {
+                '202': {
+                  description: '202 OK',
+                },
               },
             },
           },
@@ -326,9 +387,62 @@ describe('createComponents', () => {
         },
       },
     );
+    const callbackMap: CallbackComponentMap = new Map();
+    callbackMap.set(
+      {
+        '{$request.query.callbackUrl}/data': {
+          post: {
+            requestBody: {
+              content: {
+                'application/json': {
+                  schema: z.object({ a: z.string() }),
+                },
+              },
+            },
+            responses: {
+              '202': {
+                description: '202 OK',
+              },
+            },
+          },
+        },
+      },
+      {
+        type: 'complete',
+        ref: 'a',
+        callbackObject: {
+          '{$request.query.callbackUrl}/data': {
+            post: {
+              requestBody: {
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        a: {
+                          type: 'string',
+                        },
+                      },
+                      required: ['a'],
+                    },
+                  },
+                },
+              },
+              responses: {
+                '202': {
+                  description: '202 OK',
+                },
+              },
+            },
+          },
+        },
+      },
+    );
+
     const componentsObject = createComponents(
       {},
       {
+        callbacks: callbackMap,
         parameters: paramMap,
         schemas: schemaMap,
         headers: headerMap,
@@ -411,6 +525,7 @@ describe('createComponents', () => {
         },
       },
       {
+        callbacks: expect.any(Map),
         parameters: paramMap,
         schemas: schemaMap,
         headers: headerMap,
@@ -480,6 +595,7 @@ describe('createComponents', () => {
         },
       },
       {
+        callbacks: new Map(),
         parameters: paramMap,
         schemas: schemaMap,
         headers: headerMap,
