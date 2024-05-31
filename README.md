@@ -65,7 +65,7 @@ Use the `.openapi()` method to add metadata to a specific Zod type. The `.openap
 |  `effectType`   |                             Use to override the creation type for a [Zod Effect](#zod-effects)                              |
 |    `header`     |                              Use to provide metadata for [response headers](#response-headers)                              |
 |     `param`     |                                Use to provide metadata for [request parameters](#parameters)                                |
-|      `ref`      |                                 Use this to [auto register a schema](#creating-components)                                  |
+|      `ref`      |                     Use this to [auto register a schema as a re-usable component](#creating-components)                     |
 |    `refType`    |                 Use this to set the creation type for a component which is not referenced in the document.                  |
 |     `type`      |                 Use this to override the generated type. If this is provided no metadata will be generated.                 |
 |  `unionOneOf`   |                           Set to `true` to force a ZodUnion to output `oneOf` instead of `allOf`                            |
@@ -288,6 +288,42 @@ createDocument({
 });
 ```
 
+### Callbacks
+
+```typescript
+createDocument({
+  paths: {
+    '/jobs': {
+      get: {
+        callbacks: {
+          onData: {
+            '{$request.query.callbackUrl}/data': {
+              post: {
+                requestBody: {
+                  content: {
+                    'application/json': { schema: z.object({ a: z.string() }) },
+                  },
+                },
+                responses: {
+                  200: {
+                    description: '200 OK',
+                    content: {
+                      'application/json': {
+                        schema: z.object({ a: z.string() }),
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+});
+```
+
 ### Creating Components
 
 OpenAPI allows you to define reusable [components](https://swagger.io/docs/specification/components/) and this library allows you to replicate that in two separate ways.
@@ -479,6 +515,53 @@ createDocument({
   components: {
     responses: {
       'some-response': response,
+    },
+  },
+});
+```
+
+#### Callbacks
+
+Callbacks can also be registered
+
+```typescript
+const callback: ZodOpenApiCallbackObject = {
+  ref: 'some-callback'
+  post: {
+    responses: {
+      200: {
+        description: '200 OK',
+        content: {
+          'application/json': {
+            schema: z.object({ a: z.string() }),
+          },
+        },
+      },
+    },
+  },
+};
+
+//or
+
+const callback: ZodOpenApiCallbackObject = {
+  post: {
+    responses: {
+      200: {
+        description: '200 OK',
+        content: {
+          'application/json': {
+            schema: z.object({ a: z.string() }),
+          },
+        },
+      },
+    },
+  },
+};
+
+createDocument({
+  components: {
+    callbacks: {
+      'some-callback': callback,
     },
   },
 });
