@@ -67,7 +67,7 @@
     "test:watch": "skuba test --watch"
   },
   "devDependencies": {
-    "@redocly/cli": "1.12.2",
+    "@redocly/cli": "1.14.0",
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.1.0",
     "openapi3-ts": "4.3.1",
@@ -78,6 +78,7 @@
   "peerDependencies": {
     "zod": "^3.21.4"
   },
+  "packageManager": "pnpm@9.0.5",
   "engines": {
     "node": ">=16.11"
   },
