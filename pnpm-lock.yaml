@@ -15,8 +15,8 @@ importers:
         specifier: ^20.3.0
         version: 20.12.13
       eslint-plugin-zod-openapi:
-        specifier: ^0.1.0
-        version: 0.1.0(eslint@8.57.0)(typescript@5.4.5)
+        specifier: ^0.2.0
+        version: 0.2.0(eslint@8.57.0)(typescript@5.4.5)
       openapi3-ts:
         specifier: 4.3.2
         version: 4.3.2
@@ -1729,8 +1729,9 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-plugin-zod-openapi@0.1.0:
-    resolution: {integrity: sha512-vP5sV0HmwpxcH5TA69pJbVCLPsLpKTtOiPJ68Fejfi3EVrmmI9Y+l8Ao61ujDwjLMKQxN/ycdGWXxMm1lQQK6w==}
+  eslint-plugin-zod-openapi@0.2.0:
+    resolution: {integrity: sha512-Gnnhfu9dGK8KueowyaTizA+nFrt56cWPxVmxZD7SjTMr/vCkuiShBEbik9A4Tgbg9fgefqWzCkLx5o7DYn3asQ==}
+    engines: {node: '>=16.11'}
 
   eslint-scope@5.1.1:
     resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
@@ -6395,9 +6396,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-zod-openapi@0.1.0(eslint@8.57.0)(typescript@5.4.5):
+  eslint-plugin-zod-openapi@0.2.0(eslint@8.57.0)(typescript@5.4.5):
     dependencies:
-      '@typescript-eslint/utils': 5.62.0(eslint@8.57.0)(typescript@5.4.5)
+      '@typescript-eslint/utils': 7.11.0(eslint@8.57.0)(typescript@5.4.5)
     transitivePeerDependencies:
       - eslint
       - supports-color
