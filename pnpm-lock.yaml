@@ -24,8 +24,8 @@ importers:
         specifier: 8.0.1
         version: 8.0.1(@babel/core@7.24.6)(@jest/transform@29.7.0)(babel-jest@29.7.0(@babel/core@7.24.6))
       yaml:
-        specifier: 2.4.2
-        version: 2.4.2
+        specifier: 2.4.3
+        version: 2.4.3
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -4268,8 +4268,8 @@ packages:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
 
-  yaml@2.4.2:
-    resolution: {integrity: sha512-B3VqDZ+JAg1nZpaEmWtTXUlBneoGx6CPM9b0TENK6aoSu5t73dItudwdgmi6tHlIZZId4dZ9skcAQ2UbcyAeVA==}
+  yaml@2.4.3:
+    resolution: {integrity: sha512-sntgmxj8o7DE7g/Qi60cqpLBA3HG3STcDA0kO+WfB05jEKhZMbY7umNm2rBpQvsmZ16/lPXCJGW2672dgOUkrg==}
     engines: {node: '>= 14'}
     hasBin: true
 
@@ -7981,7 +7981,7 @@ snapshots:
 
   openapi3-ts@4.3.2:
     dependencies:
-      yaml: 2.4.2
+      yaml: 2.4.3
 
   optionator@0.9.4:
     dependencies:
@@ -9279,11 +9279,11 @@ snapshots:
     dependencies:
       eslint-visitor-keys: 3.4.3
       lodash: 4.17.21
-      yaml: 2.4.2
+      yaml: 2.4.3
 
   yaml@1.10.2: {}
 
-  yaml@2.4.2: {}
+  yaml@2.4.3: {}
 
   yargs-parser@20.2.9: {}
 
