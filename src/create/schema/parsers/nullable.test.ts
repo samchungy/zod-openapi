@@ -6,10 +6,9 @@ import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createNullableSchema } from './nullable';
-
-import type { Schema } from '.index';
 
 describe('createNullableSchema', () => {
   describe('openapi 3.0.0', () => {

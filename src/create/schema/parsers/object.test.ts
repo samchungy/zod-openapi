@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createInputState, createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createObjectSchema } from './object';
-
-import type { Schema } from '.index';
 
 describe('createObjectSchema', () => {
   it('creates a simple object with required and optionals', () => {

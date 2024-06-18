@@ -1,6 +1,6 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
-import type { Schema, SchemaState } from '../../schema/index';
+import type { Schema, SchemaState } from '../schema';
 
 export const createManualTypeSchema = <
   Output = unknown,

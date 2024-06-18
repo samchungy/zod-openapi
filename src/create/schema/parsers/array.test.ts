@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createArraySchema } from './array';
-
-import type { Schema } from '.index';
 
 describe('createArraySchema', () => {
   it('creates simple arrays', () => {

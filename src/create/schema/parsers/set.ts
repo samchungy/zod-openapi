@@ -1,10 +1,6 @@
 import type { ZodSet, ZodTypeAny } from 'zod';
 
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 export const createSetSchema = <Value extends ZodTypeAny = ZodTypeAny>(
   zodSet: ZodSet<Value>,

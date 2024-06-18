@@ -2,11 +2,7 @@ import type { KeySchema, ZodRecord, ZodString, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist/index';
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 import { flattenEffects } from './transform';
 

@@ -2,7 +2,7 @@ import type { ZodLiteral } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
 import type { oas31 } from '../../../openapi3-ts/dist/index';
-import type { Schema, SchemaState } from '../index';
+import type { Schema, SchemaState } from '../schema';
 
 import { createNullSchema } from './null';
 

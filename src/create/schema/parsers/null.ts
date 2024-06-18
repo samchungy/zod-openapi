@@ -1,4 +1,4 @@
-import type { Schema } from '../index';
+import type { Schema } from '../schema';
 
 export const createNullSchema = (): Schema => ({
   type: 'schema',

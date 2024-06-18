@@ -9,11 +9,7 @@ import type {
 
 import type { oas31 } from '../../../openapi3-ts/dist/index';
 import { isZodType } from '../../../zodType';
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 import { createNativeEnumSchema } from './nativeEnum';
 import { flattenEffects } from './transform';

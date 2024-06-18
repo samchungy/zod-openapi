@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createInputState, createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createPipelineSchema } from './pipeline';
-
-import type { Schema } from '.index';
 
 describe('createPipelineSchema', () => {
   describe('input', () => {

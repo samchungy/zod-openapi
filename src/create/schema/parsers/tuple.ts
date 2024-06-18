@@ -1,11 +1,7 @@
 import type { ZodTuple, ZodTypeAny } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 import { flattenEffects } from './transform';
 

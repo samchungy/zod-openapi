@@ -6,10 +6,9 @@ import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createNumberSchema } from './number';
-
-import type { Schema } from '.index';
 
 describe('createNumberSchema', () => {
   it('creates a simple number schema', () => {

@@ -14,7 +14,7 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchema } from './schema/index';
+import { type SchemaState, createSchema } from './schema/schema';
 
 export type CreationType = 'input' | 'output';
 

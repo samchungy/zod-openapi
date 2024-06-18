@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { Schema } from '..';
+import type { Schema } from '../schema';
 
 import { createUnknownSchema } from './unknown';
 

@@ -1,4 +1,4 @@
-import type { Schema } from '..';
+import type { Schema } from '../schema';
 
 import { createNullSchema } from './null';
 

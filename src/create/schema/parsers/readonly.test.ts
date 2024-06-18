@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createReadonlySchema } from './readonly';
-
-import type { Schema } from '.index';
 
 describe('createReadonlySchema', () => {
   it('creates a simple string schema for a readonly string', () => {

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { createOutputState } from '../../testing/state';
 
-import { type Schema, createSchemaObject } from './index';
+import { type Schema, createSchemaObject } from './schema';
 
 describe('enhanceWithMetadata', () => {
   it('adds .openapi metadata', () => {

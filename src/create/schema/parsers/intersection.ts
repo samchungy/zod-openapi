@@ -1,10 +1,6 @@
 import type { ZodIntersection, ZodTypeAny } from 'zod';
 
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 import { flattenEffects } from './transform';
 

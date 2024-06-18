@@ -10,7 +10,7 @@ import {
 } from '../components';
 
 import { enhanceWithMetadata } from './metadata';
-import { createSchemaSwitch } from './parsers';
+import { createSchemaSwitch } from './parsers/parsers';
 import { verifyEffects } from './parsers/transform';
 
 export type LazyMap = Map<ZodType, true>;

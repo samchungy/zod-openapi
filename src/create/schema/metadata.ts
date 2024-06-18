@@ -1,6 +1,6 @@
 import type { oas31 } from '../../openapi3-ts/dist/index';
 
-import type { Schema } from './index';
+import type { Schema } from './schema';
 
 export const enhanceWithMetadata = (
   schema: Schema,

@@ -1,7 +1,7 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '../index';
+import type { Schema } from '../schema';
 
 import { createEnumSchema } from './enum';
 

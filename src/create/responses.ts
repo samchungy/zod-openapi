@@ -12,7 +12,7 @@ import type {
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from './document';
-import { type SchemaState, createSchema } from './schema/index';
+import { type SchemaState, createSchema } from './schema/schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 import { isISpecificationExtension } from './specificationExtension';
 

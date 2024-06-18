@@ -5,10 +5,9 @@ import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createTupleSchema } from './tuple';
-
-import type { Schema } from '.index';
 
 describe('createTupleSchema', () => {
   it('creates an array schema', () => {

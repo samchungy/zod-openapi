@@ -1,10 +1,6 @@
 import type { ZodEffects, ZodTypeAny, input, output } from 'zod';
 
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 export const createRefineSchema = <
   T extends ZodTypeAny,

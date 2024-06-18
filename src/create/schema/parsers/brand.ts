@@ -1,10 +1,6 @@
 import type { ZodBranded, ZodTypeAny } from 'zod';
 
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 export const createBrandedSchema = <
   T extends ZodTypeAny,
   B extends string | number | symbol,

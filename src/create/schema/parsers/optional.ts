@@ -2,11 +2,7 @@ import type { ZodOptional, ZodType, ZodTypeAny } from 'zod';
 
 import { isZodType } from '../../../zodType';
 import type { Effect } from '../../components';
-import {
-  type Schema,
-  type SchemaState,
-  createSchemaObject,
-} from '../../schema/index';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 import { flattenEffects } from './transform';
 

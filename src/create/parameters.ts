@@ -5,7 +5,7 @@ import { isAnyZodType, isZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
 import type { ZodObjectInputType, ZodOpenApiParameters } from './document';
-import { type SchemaState, createSchema } from './schema/index';
+import { type SchemaState, createSchema } from './schema/schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
 export const createComponentParamRef = (ref: string) =>
