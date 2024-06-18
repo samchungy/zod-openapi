@@ -1,4 +1,4 @@
-import '../../extend';
+import '../../entries/extend';
 import { type ZodType, z } from 'zod';
 
 import { createInputState, createOutputState } from '../../testing/state';
