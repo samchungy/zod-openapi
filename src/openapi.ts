@@ -1,4 +1,4 @@
-import type { oas31 } from './openapi3-ts/dist';
+import type { oas31 } from './openapi3-ts/dist/index';
 
 export const openApiVersions = [
   '3.0.0',

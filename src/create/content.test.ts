@@ -1,7 +1,7 @@
 import '../extend';
 import { z } from 'zod';
 
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist/index';
 
 import { getDefaultComponents } from './components';
 import { createContent } from './content';

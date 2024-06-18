@@ -1,10 +1,11 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createOutputState } from '../../../testing/state';
 
 import { createPreprocessSchema } from './preprocess';
+
+import type { Schema } from '.index';
 
 describe('createPreprocessSchema', () => {
   it('returns a schema with preprocess', () => {

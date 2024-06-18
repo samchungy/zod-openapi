@@ -1,14 +1,15 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { oas31 } from '../../../openapi3-ts/dist/index';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createNumberSchema } from './number';
+
+import type { Schema } from '.index';
 
 describe('createNumberSchema', () => {
   it('creates a simple number schema', () => {

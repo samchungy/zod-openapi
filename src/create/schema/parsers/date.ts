@@ -1,6 +1,6 @@
 import type { ZodDate } from 'zod';
 
-import type { Schema } from '..';
+import type { Schema } from '../index';
 
 export const createDateSchema = (_zodDate: ZodDate): Schema => ({
   type: 'schema',

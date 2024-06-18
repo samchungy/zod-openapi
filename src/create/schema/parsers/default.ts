@@ -4,7 +4,7 @@ import {
   type Schema,
   type SchemaState,
   createSchemaObject,
-} from '../../schema';
+} from '../../schema/index';
 import { enhanceWithMetadata } from '../metadata';
 
 export const createDefaultSchema = <T extends ZodTypeAny>(

@@ -28,35 +28,23 @@
   "exports": {
     ".": {
       "import": "./lib-esm/index.mjs",
-      "require": "./lib-commonjs/index.js",
-      "types": "./lib-types/index.d.ts"
+      "require": "./lib-commonjs/index.js"
     },
     "./extend": {
       "import": "./lib-esm/extend.mjs",
-      "require": "./lib-commonjs/extend.js",
-      "types": "./lib-types/extend.d.ts"
+      "require": "./lib-commonjs/extend.js"
     }
   },
   "main": "./lib-commonjs/index.js",
   "module": "./lib-esm/index.mjs",
-  "types": "./lib-types/index.d.ts",
-  "typesVersions": {
-    "*": {
-      ".": [
-        "lib-types/index.d.ts"
-      ],
-      "extend": [
-        "lib-types/extend.d.ts"
-      ]
-    }
-  },
+  "types": "./lib-commonjs/index.d.ts",
   "files": [
-    "lib*/**/*.d.ts",
+    "lib*/**/*.d.{ts,mts}",
     "lib*/**/*.{js,mjs}{,.map}",
     "lib*/**/*.json"
   ],
   "scripts": {
-    "build": "pnpm copy:types && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-types --project tsconfig.build.json",
+    "build": "pnpm copy:types && skuba format && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-commonjs --project tsconfig.build.json && tsc --allowJS false --module es2015 --declaration --emitDeclarationOnly --outDir lib-esm --project tsconfig.build.json && skuba node scripts/fixTypes.ts",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
@@ -67,9 +55,11 @@
     "test:watch": "skuba test --watch"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.15.3",
     "@redocly/cli": "1.15.0",
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.2.0",
+    "fast-glob": "3.3.2",
     "openapi3-ts": "4.3.2",
     "skuba": "8.0.1",
     "yaml": "2.4.5",

@@ -1,6 +1,6 @@
 import type { ZodAny, ZodUnknown } from 'zod';
 
-import type { Schema } from '..';
+import type { Schema } from '../index';
 
 export const createUnknownSchema = (
   _zodUnknown: ZodUnknown | ZodAny,

@@ -1,10 +1,11 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createOutputState } from '../../../testing/state';
 
 import { createDefaultSchema } from './default';
+
+import type { Schema } from '.index';
 
 describe('createDefaultSchema', () => {
   it('creates a default string schema', () => {

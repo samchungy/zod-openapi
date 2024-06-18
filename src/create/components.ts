@@ -1,6 +1,6 @@
 import type { ZodType } from 'zod';
 
-import type { oas30, oas31 } from '../openapi3-ts/dist';
+import type { oas30, oas31 } from '../openapi3-ts/dist/index';
 import { isAnyZodType } from '../zodType';
 
 import { createCallback } from './callbacks';
@@ -14,7 +14,7 @@ import type {
 import { createParamOrRef } from './parameters';
 import { createRequestBody } from './paths';
 import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchema } from './schema';
+import { type SchemaState, createSchema } from './schema/index';
 
 export type CreationType = 'input' | 'output';
 

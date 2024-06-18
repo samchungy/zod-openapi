@@ -6,7 +6,7 @@ import {
   type Schema,
   type SchemaState,
   createSchemaObject,
-} from '../../schema';
+} from '../../schema/index';
 
 import { flattenEffects } from './transform';
 

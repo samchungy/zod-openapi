@@ -1,14 +1,15 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
-import type { oas30, oas31 } from '../../../openapi3-ts/dist';
+import type { oas30, oas31 } from '../../../openapi3-ts/dist/index';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createNullableSchema } from './nullable';
+
+import type { Schema } from '.index';
 
 describe('createNullableSchema', () => {
   describe('openapi 3.0.0', () => {

@@ -1,7 +1,7 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
 import { isZodType } from '../../../zodType';
-import type { Schema, SchemaState } from '../../schema';
+import type { Schema, SchemaState } from '../../schema/index';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';

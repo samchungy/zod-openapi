@@ -1,8 +1,8 @@
 import type { ZodLiteral } from 'zod';
 
-import type { Schema, SchemaState } from '..';
 import { satisfiesVersion } from '../../../openapi';
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { oas31 } from '../../../openapi3-ts/dist/index';
+import type { Schema, SchemaState } from '../index';
 
 import { createNullSchema } from './null';
 

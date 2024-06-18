@@ -1,10 +1,11 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createInputState, createOutputState } from '../../../testing/state';
 
 import { createTransformSchema, throwTransformError } from './transform';
+
+import type { Schema } from '.index';
 
 describe('createTransformSchema', () => {
   describe('input', () => {

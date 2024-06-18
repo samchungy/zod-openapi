@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createOutputState } from '../../../testing/state';
 
 import { createBrandedSchema } from './brand';
+
+import type { Schema } from '.index';
 
 describe('createBrandedSchema', () => {
   it('supports branded schema', () => {

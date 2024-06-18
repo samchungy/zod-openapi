@@ -1,7 +1,7 @@
 import type { EnumLike, ZodNativeEnum } from 'zod';
 
 import { satisfiesVersion } from '../../../openapi';
-import type { Schema, SchemaState } from '../../schema';
+import type { Schema, SchemaState } from '../../schema/index';
 
 export const createNativeEnumSchema = <T extends EnumLike>(
   zodEnum: ZodNativeEnum<T>,

@@ -4,7 +4,7 @@ import {
   type Schema,
   type SchemaState,
   createSchemaObject,
-} from '../../schema';
+} from '../../schema/index';
 
 export const createLazySchema = <T extends ZodTypeAny>(
   zodLazy: ZodLazy<T>,

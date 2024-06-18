@@ -1,13 +1,14 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createNativeEnumSchema } from './nativeEnum';
+
+import type { Schema } from '.index';
 
 describe('createNativeEnumSchema', () => {
   it('creates a string schema from a string enum', () => {

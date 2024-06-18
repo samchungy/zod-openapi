@@ -2,11 +2,12 @@ import '../../../extend';
 
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createOutputState } from '../../../testing/state';
 import type { ZodOpenApiComponentsObject } from '../../document';
 
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
+
+import type { Schema } from '.index';
 
 describe('createDiscriminatedUnionSchema', () => {
   it('creates a oneOf schema', () => {

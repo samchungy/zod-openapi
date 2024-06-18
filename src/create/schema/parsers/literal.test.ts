@@ -1,13 +1,14 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
 
 import { createLiteralSchema } from './literal';
+
+import type { Schema } from '.index';
 
 describe('createLiteralSchema', () => {
   describe('OpenAPI 3.1.0', () => {

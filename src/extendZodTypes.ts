@@ -1,7 +1,7 @@
 import type { ZodDate, ZodObject, ZodTypeAny, z } from 'zod';
 
 import type { CreationType } from './create/components';
-import type { oas30, oas31 } from './openapi3-ts/dist';
+import type { oas30, oas31 } from './openapi3-ts/dist/index';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 

@@ -1,10 +1,11 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createOutputState } from '../../../testing/state';
 
 import { createManualTypeSchema } from './manual';
+
+import type { Schema } from '.index';
 
 describe('createManualTypeSchema', () => {
   it('creates a simple string schema for an optional string', () => {

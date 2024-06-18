@@ -3,7 +3,11 @@ import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
 
 import { createOutputState } from '../../../testing/state';
 import type { SchemaComponent } from '../../components';
-import { type Schema, createNewSchema, createSchemaObject } from '../../schema';
+import {
+  type Schema,
+  createNewSchema,
+  createSchemaObject,
+} from '../../schema/index';
 
 import { createLazySchema } from './lazy';
 import { createObjectSchema } from './object';

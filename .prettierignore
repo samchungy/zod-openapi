@@ -9,4 +9,3 @@ pnpm-lock.yaml
 
 examples/**/*.yml
 examples/**/*.html
-src/openapi3-ts/*

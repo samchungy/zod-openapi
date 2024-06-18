@@ -4,7 +4,7 @@ import {
   type Schema,
   type SchemaState,
   createSchemaObject,
-} from '../../schema';
+} from '../../schema/index';
 
 export const createCatchSchema = <T extends ZodTypeAny>(
   zodCatch: ZodCatch<T>,

@@ -1,10 +1,9 @@
 import '../../extend';
+import { type Schema, type SchemaState, createSchema } from 'index';
 import { type ZodType, z } from 'zod';
 
 import { createInputState, createOutputState } from '../../testing/state';
 import { getDefaultComponents } from '../components';
-
-import { type Schema, type SchemaState, createSchema } from '.';
 
 const zodArray = z.array(z.string());
 const expectedZodArray: Schema['schema'] = {

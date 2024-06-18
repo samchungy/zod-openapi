@@ -1,11 +1,11 @@
 import type { AnyZodObject, ZodRawShape, ZodType } from 'zod';
 
-import type { oas30, oas31 } from '../openapi3-ts/dist';
+import type { oas30, oas31 } from '../openapi3-ts/dist/index';
 import { isAnyZodType, isZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
 import type { ZodObjectInputType, ZodOpenApiParameters } from './document';
-import { type SchemaState, createSchema } from './schema';
+import { type SchemaState, createSchema } from './schema/index';
 import { isOptionalSchema } from './schema/parsers/optional';
 
 export const createComponentParamRef = (ref: string) =>

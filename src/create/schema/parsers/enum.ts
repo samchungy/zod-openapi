@@ -1,6 +1,6 @@
 import type { ZodEnum } from 'zod';
 
-import type { Schema } from '..';
+import type { Schema } from '../index';
 
 export const createEnumSchema = <T extends [string, ...string[]]>(
   zodEnum: ZodEnum<T>,

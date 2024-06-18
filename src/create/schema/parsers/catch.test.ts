@@ -1,10 +1,11 @@
 import '../../../extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
 import { createOutputState } from '../../../testing/state';
 
 import { createCatchSchema } from './catch';
+
+import type { Schema } from '.index';
 
 describe('createCatchSchema', () => {
   it('creates a simple string schema for a string with a catch', () => {

@@ -8,14 +8,14 @@ import type {
   objectOutputType,
 } from 'zod';
 
-import type { oas31 } from '../../../openapi3-ts/dist';
+import type { oas31 } from '../../../openapi3-ts/dist/index';
 import { isZodType } from '../../../zodType';
 import { type Effect, createComponentSchemaRef } from '../../components';
 import {
   type Schema,
   type SchemaState,
   createSchemaObject,
-} from '../../schema';
+} from '../../schema/index';
 
 import { isOptionalSchema } from './optional';
 import { flattenEffects } from './transform';
