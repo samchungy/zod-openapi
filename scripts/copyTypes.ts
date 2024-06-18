@@ -1,5 +1,7 @@
+import { exec } from 'child_process';
 import { promises as fs } from 'fs';
 import { join, relative } from 'path';
+import util from 'util';
 
 import { Git } from 'skuba';
 
@@ -58,6 +60,7 @@ async function main() {
   const dest = join(dir, 'src/openapi3-ts');
   await deleteFolderRecursive(dest);
   await copyDTs(src, dest);
+  await util.promisify(exec)('pnpm skuba format');
 
   if (process.env.GITHUB_ACTIONS) {
     const files = await Git.getChangedFiles({ dir });

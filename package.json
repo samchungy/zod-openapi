@@ -44,7 +44,7 @@
     "lib*/**/*.json"
   ],
   "scripts": {
-    "build": "pnpm copy:types && skuba format && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-commonjs --project tsconfig.build.json && tsc --allowJS false --module es2015 --declaration --emitDeclarationOnly --outDir lib-esm --project tsconfig.build.json && skuba node scripts/fixTypes.ts",
+    "build": "pnpm copy:types && node esbuild.mjs && node esbuild.esm.mjs && tsc --allowJS false --declaration --emitDeclarationOnly --outDir lib-commonjs --project tsconfig.build.json && tsc --allowJS false --module es2015 --declaration --emitDeclarationOnly --outDir lib-esm --project tsconfig.build.json && skuba node scripts/fixTypes.ts",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
