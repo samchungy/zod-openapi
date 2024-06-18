@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createUnionSchema } from './union';
-
-import type { Schema } from '.index';
 
 describe('createUnionSchema', () => {
   it('creates an anyOf schema for a union', () => {

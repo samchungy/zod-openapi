@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createInputState, createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createOptionalSchema, isOptionalSchema } from './optional';
-
-import type { Schema } from '.index';
 
 describe('createOptionalSchema', () => {
   it('creates a simple string schema for an optional string', () => {

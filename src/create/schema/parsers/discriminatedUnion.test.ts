@@ -4,10 +4,9 @@ import { z } from 'zod';
 
 import { createOutputState } from '../../../testing/state';
 import type { ZodOpenApiComponentsObject } from '../../document';
+import type { Schema } from '../schema';
 
 import { createDiscriminatedUnionSchema } from './discriminatedUnion';
-
-import type { Schema } from '.index';
 
 describe('createDiscriminatedUnionSchema', () => {
   it('creates a oneOf schema', () => {

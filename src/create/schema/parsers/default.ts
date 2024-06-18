@@ -1,7 +1,7 @@
 import type { ZodDefault, ZodTypeAny } from 'zod';
 
-import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 import { enhanceWithMetadata } from '../metadata';
+import { type Schema, type SchemaState, createSchemaObject } from '../schema';
 
 export const createDefaultSchema = <T extends ZodTypeAny>(
   zodDefault: ZodDefault<T>,

@@ -5,10 +5,9 @@ import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createNativeEnumSchema } from './nativeEnum';
-
-import type { Schema } from '.index';
 
 describe('createNativeEnumSchema', () => {
   it('creates a string schema from a string enum', () => {

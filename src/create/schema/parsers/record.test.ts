@@ -5,10 +5,9 @@ import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createRecordSchema } from './record';
-
-import type { Schema } from '.index';
 
 describe('createRecordSchema', () => {
   it('creates an object schema with additional properties in 3.0.0', () => {

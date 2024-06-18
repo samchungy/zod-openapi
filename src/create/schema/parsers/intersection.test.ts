@@ -2,10 +2,9 @@ import '../../../extend';
 import { z } from 'zod';
 
 import { createOutputState } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createIntersectionSchema } from './intersection';
-
-import type { Schema } from '.index';
 
 describe('createIntersectionSchema', () => {
   it('creates an intersection schema', () => {

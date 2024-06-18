@@ -5,10 +5,9 @@ import {
   createOutputOpenapi3State,
   createOutputState,
 } from '../../../testing/state';
+import type { Schema } from '../schema';
 
 import { createStringSchema } from './string';
-
-import type { Schema } from '.index';
 
 describe('createStringSchema', () => {
   it('creates a simple string schema', () => {
