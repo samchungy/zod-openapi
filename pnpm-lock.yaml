@@ -24,8 +24,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(eslint@8.57.0)(typescript@5.4.5)
       openapi3-ts:
-        specifier: 4.3.2
-        version: 4.3.2
+        specifier: 4.3.3
+        version: 4.3.3
       skuba:
         specifier: 8.0.1
         version: 8.0.1(@babel/core@7.24.6)(@jest/transform@29.7.0)(@swc/core@1.6.1)(babel-jest@29.7.0(@babel/core@7.24.6))
@@ -4009,8 +4009,8 @@ packages:
   openapi-sampler@1.5.1:
     resolution: {integrity: sha512-tIWIrZUKNAsbqf3bd9U1oH6JEXo8LNYuDlXw26By67EygpjT+ArFnsxxyTMjFWRfbqo5ozkvgSQDK69Gd8CddA==}
 
-  openapi3-ts@4.3.2:
-    resolution: {integrity: sha512-IvKNb3hPHwfuyVJnseTsFvZ0DO2EODpitYMsLcmfVwJ2p41zAHh2VDConzLLEB5h5YFbne9vv1zZxCeUICYZ8A==}
+  openapi3-ts@4.3.3:
+    resolution: {integrity: sha512-LKkzBGJcZ6wdvkKGMoSvpK+0cbN5Xc3XuYkJskO+vjEQWJgs1kgtyUk0pjf8KwPuysv323Er62F5P17XQl96Qg==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -10056,7 +10056,7 @@ snapshots:
       '@types/json-schema': 7.0.15
       json-pointer: 0.6.2
 
-  openapi3-ts@4.3.2:
+  openapi3-ts@4.3.3:
     dependencies:
       yaml: 2.4.5
 
