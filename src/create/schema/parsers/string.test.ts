@@ -1,4 +1,4 @@
-import '../../../extend';
+import '../../../entries/extend';
 import { type ZodString, z } from 'zod';
 
 import type { Schema } from '..';
