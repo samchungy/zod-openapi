@@ -21,3 +21,8 @@ npm-debug.log
 package-lock.json
 yarn-error.log
 # end managed by skuba
+
+# managed by crackle
+/dist
+/extend
+# end managed by crackle

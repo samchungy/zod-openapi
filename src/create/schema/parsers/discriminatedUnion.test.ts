@@ -1,4 +1,4 @@
-import '../../../extend';
+import '../../../entries/extend';
 
 import { z } from 'zod';
 
