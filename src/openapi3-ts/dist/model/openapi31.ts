@@ -1,7 +1,7 @@
 import { ServerObject } from './oas-common';
 import { ISpecificationExtension } from './specification-extension';
 export * from './oas-common';
-export type { ISpecificationExtension, SpecificationExtension } from './specification-extension';
+export type { ISpecificationExtension } from './specification-extension';
 export interface OpenAPIObject extends ISpecificationExtension {
     openapi: string;
     info: InfoObject;
@@ -64,7 +64,6 @@ export interface PathsObject extends ISpecificationExtension {
     [path: string]: PathItemObject;
 }
 export type PathObject = PathsObject;
-export declare function getPath(pathsObject: PathsObject | undefined, path: string): PathItemObject | undefined;
 export interface PathItemObject extends ISpecificationExtension {
     $ref?: string;
     summary?: string;
@@ -204,7 +203,6 @@ export interface ReferenceObject {
     summary?: string;
     description?: string;
 }
-export declare function isReferenceObject(obj: any): obj is ReferenceObject;
 export type SchemaObjectType = 'integer' | 'number' | 'string' | 'boolean' | 'object' | 'null' | 'array';
 export interface SchemaObject extends ISpecificationExtension {
     discriminator?: DiscriminatorObject;
@@ -250,7 +248,6 @@ export interface SchemaObject extends ISpecificationExtension {
     contentMediaType?: string;
     contentEncoding?: string;
 }
-export declare function isSchemaObject(schema: SchemaObject | ReferenceObject): schema is SchemaObject;
 export interface SchemasObject {
     [schema: string]: SchemaObject;
 }
