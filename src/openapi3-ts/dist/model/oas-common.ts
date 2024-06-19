@@ -11,5 +11,3 @@ export interface ServerVariableObject extends ISpecificationExtension {
     default: string | boolean | number;
     description?: string;
 }
-export declare function getExtension(obj: ISpecificationExtension | undefined, extensionName: string): any;
-export declare function addExtension(obj: ISpecificationExtension | undefined, extensionName: string, extension: any): void;

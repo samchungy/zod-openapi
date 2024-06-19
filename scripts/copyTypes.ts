@@ -24,11 +24,30 @@ async function copyDTs(src: string, dest: string): Promise<void> {
 
       const contents = (await fs.readFile(destination)).toString('utf-8');
       if (contents.includes('export { Server, ServerVariable }')) {
+        const patched = contents
+          .replaceAll(/export \{ Server, ServerVariable \}.*/g, '')
+          .replaceAll(/.*\.\/dsl\/openapi-builder.*/g, '');
+        await fs.writeFile(destination, Buffer.from(patched));
+        continue;
+      }
+      if (
+        contents.includes(
+          ", SpecificationExtension } from './specification-extension';",
+        )
+      ) {
+        const patched = contents
+          .replace(', SpecificationExtension }', ' }')
+          .replaceAll(/.*export declare function.*\n/g, '');
+        await fs.writeFile(destination, Buffer.from(patched));
+        continue;
+      }
+      if (contents.includes('export declare function getExtension')) {
         const patched = contents.replaceAll(
-          'export { Server, ServerVariable }',
-          'export type { Server, ServerVariable }',
+          /.*export declare function.*\n/g,
+          '',
         );
         await fs.writeFile(destination, Buffer.from(patched));
+        continue;
       }
     }
   }

@@ -1,7 +1,7 @@
 import { ServerObject } from './oas-common';
 import { ISpecificationExtension } from './specification-extension';
 export * from './oas-common';
-export type { ISpecificationExtension, SpecificationExtension } from './specification-extension';
+export type { ISpecificationExtension } from './specification-extension';
 export interface OpenAPIObject extends ISpecificationExtension {
     openapi: string;
     info: InfoObject;
@@ -62,7 +62,6 @@ export interface PathsObject extends ISpecificationExtension {
     [path: string]: PathItemObject;
 }
 export type PathObject = PathsObject;
-export declare function getPath(pathsObject: PathsObject, path: string): PathItemObject | undefined;
 export interface PathItemObject extends ISpecificationExtension {
     $ref?: string;
     summary?: string;
@@ -200,7 +199,6 @@ export interface ExamplesObject {
 export interface ReferenceObject {
     $ref: string;
 }
-export declare function isReferenceObject(obj: any): obj is ReferenceObject;
 export type SchemaObjectType = 'integer' | 'number' | 'string' | 'boolean' | 'object' | 'null' | 'array';
 export type SchemaObjectFormat = 'int32' | 'int64' | 'float' | 'double' | 'byte' | 'binary' | 'date' | 'date-time' | 'password' | string;
 export interface SchemaObject extends ISpecificationExtension {
@@ -243,7 +241,6 @@ export interface SchemaObject extends ISpecificationExtension {
     required?: string[];
     enum?: any[];
 }
-export declare function isSchemaObject(schema: SchemaObject | ReferenceObject): schema is SchemaObject;
 export interface SchemasObject {
     [schema: string]: SchemaObject;
 }
