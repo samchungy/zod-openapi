@@ -31,7 +31,7 @@ pnpm install zod zod-openapi
 
 ### Extend Zod
 
-This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s). You can achieve this in two differernt ways, depending on your preference.
+This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s). You can achieve this in two different ways, depending on your preference.
 
 #### Subpath Import
 
