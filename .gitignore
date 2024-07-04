@@ -1,6 +1,7 @@
 # managed by skuba
 .idea/*
 .vscode/*
+!.vscode/extensions.json
 
 .cdk.staging/
 .serverless/
