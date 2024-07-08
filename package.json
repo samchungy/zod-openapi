@@ -65,7 +65,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.15.3",
     "@crackle/cli": "0.15.4",
-    "@redocly/cli": "1.16.0",
+    "@redocly/cli": "1.17.1",
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "^0.2.0",
     "openapi3-ts": "4.3.3",
