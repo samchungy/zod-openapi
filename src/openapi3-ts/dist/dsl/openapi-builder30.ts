@@ -1,3 +1,4 @@
+import * as yaml from 'yaml';
 import * as oa from '../model/openapi30';
 export declare class OpenApiBuilder {
     rootDoc: oa.OpenAPIObject;
@@ -5,7 +6,7 @@ export declare class OpenApiBuilder {
     constructor(doc?: oa.OpenAPIObject);
     getSpec(): oa.OpenAPIObject;
     getSpecAsJson(replacer?: (key: string, value: unknown) => unknown, space?: string | number): string;
-    getSpecAsYaml(): string;
+    getSpecAsYaml(replacer?: Parameters<typeof yaml.stringify>[1], options?: Parameters<typeof yaml.stringify>[2]): string;
     private static isValidOpenApiVersion;
     addOpenApiVersion(openApiVersion: string): OpenApiBuilder;
     addInfo(info: oa.InfoObject): OpenApiBuilder;
