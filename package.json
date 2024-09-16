@@ -63,7 +63,7 @@
     "test:watch": "skuba test --watch"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.16.1",
+    "@arethetypeswrong/cli": "0.16.2",
     "@crackle/cli": "0.15.5",
     "@redocly/cli": "1.23.1",
     "@types/node": "^20.3.0",
