@@ -25,6 +25,7 @@ yarn-error.log
 # end managed by skuba
 
 # managed by crackle
+/api
 /dist
 /extend
 # end managed by crackle
