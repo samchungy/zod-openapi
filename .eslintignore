@@ -15,3 +15,4 @@ node_modules*/
 # end managed by skuba
 
 src/openapi3-ts/*
+crackle.config.ts

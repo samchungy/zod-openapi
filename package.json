@@ -34,6 +34,14 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
+    "./api": {
+      "types": {
+        "import": "./dist/api.d.mts",
+        "require": "./dist/api.d.ts"
+      },
+      "import": "./dist/api.mjs",
+      "require": "./dist/api.cjs"
+    },
     "./extend": {
       "types": {
         "import": "./dist/extend.d.mts",
@@ -48,6 +56,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
+    "api",
     "dist",
     "extend"
   ],

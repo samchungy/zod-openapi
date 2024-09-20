@@ -5,6 +5,6 @@
     "removeComments": false,
     "target": "ES2022"
   },
-  "exclude": ["lib*/**/*"],
+  "exclude": ["lib*/**/*", "crackle.config.ts"],
   "extends": "skuba/config/tsconfig.json"
 }
