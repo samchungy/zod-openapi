@@ -24,7 +24,7 @@ interface ZodOpenApiMetadata<
    */
   ref?: string;
   /**
-   * Used when you are manually adding a Zod Schema to the components section. This controls whether this should be rendered as request (`input`) or response (`output`). Defaults to `output`
+   * Used when you are manually adding a Zod Schema to the components section. This controls whether this should be rendered as a request (`input`) or response (`output`). Defaults to `output`
    */
   refType?: CreationType;
   /**

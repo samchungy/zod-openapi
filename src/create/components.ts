@@ -425,7 +425,7 @@ export const createComponents = (
   return Object.keys(finalComponents).length ? finalComponents : undefined;
 };
 
-const createSchemaComponents = (
+export const createSchemaComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
 ): oas31.ComponentsObject['schemas'] => {
