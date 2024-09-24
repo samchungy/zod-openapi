@@ -15,6 +15,24 @@ describe('createSchema', () => {
     });
   });
 
+  it('should create a registered schema', () => {
+    const schema = createSchema(
+      z.string().openapi({ description: 'foo', ref: 'String' }),
+    );
+
+    expect(schema).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/String',
+      },
+      components: {
+        String: {
+          type: 'string',
+          description: 'foo',
+        },
+      },
+    });
+  });
+
   it('should create components', () => {
     const schema = createSchema(
       z.object({
