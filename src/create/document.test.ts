@@ -1116,6 +1116,7 @@ describe('createDocument', () => {
       user?: User;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const BaseUser2 = z.object({
       id: z.string(),
     });
