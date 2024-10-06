@@ -8,6 +8,7 @@ import {
   type SchemaComponent,
   createComponentSchemaRef,
 } from '../components';
+import type { CreateDocumentOptions } from '../document';
 
 import { enhanceWithMetadata } from './metadata';
 import { createSchemaSwitch } from './parsers';
@@ -20,6 +21,7 @@ export interface SchemaState {
   type: CreationType;
   path: string[];
   visited: Set<ZodType>;
+  documentOptions?: CreateDocumentOptions;
 }
 
 const isDescriptionEqual = (schema: Schema, zodSchema: ZodType): boolean =>
