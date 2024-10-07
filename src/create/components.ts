@@ -5,6 +5,7 @@ import { isAnyZodType } from '../zodType';
 
 import { createCallback } from './callbacks';
 import type {
+  CreateDocumentOptions,
   ZodOpenApiCallbackObject,
   ZodOpenApiComponentsObject,
   ZodOpenApiRequestBodyObject,
@@ -399,16 +400,35 @@ export const createComponentCallbackRef = (callbackRef: string) =>
 export const createComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject | undefined => {
-  const combinedSchemas = createSchemaComponents(componentsObject, components);
+  const combinedSchemas = createSchemaComponents(
+    componentsObject,
+    components,
+    documentOptions,
+  );
   const combinedParameters = createParamComponents(
     componentsObject,
     components,
+    documentOptions,
   );
-  const combinedHeaders = createHeaderComponents(componentsObject, components);
-  const combinedResponses = createResponseComponents(components);
-  const combinedRequestBodies = createRequestBodiesComponents(components);
-  const combinedCallbacks = createCallbackComponents(components);
+  const combinedHeaders = createHeaderComponents(
+    componentsObject,
+    components,
+    documentOptions,
+  );
+  const combinedResponses = createResponseComponents(
+    components,
+    documentOptions,
+  );
+  const combinedRequestBodies = createRequestBodiesComponents(
+    components,
+    documentOptions,
+  );
+  const combinedCallbacks = createCallbackComponents(
+    components,
+    documentOptions,
+  );
 
   const { schemas, parameters, headers, responses, requestBodies, ...rest } =
     componentsObject;
@@ -428,6 +448,7 @@ export const createComponents = (
 const createSchemaComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject['schemas'] => {
   Array.from(components.schemas).forEach(([schema, { type }], index) => {
     if (type === 'manual') {
@@ -436,6 +457,7 @@ const createSchemaComponents = (
         type: schema._def.openapi?.refType ?? 'output',
         path: [],
         visited: new Set(),
+        documentOptions,
       };
 
       createSchema(schema, state, [`component schema index ${index}`]);
@@ -479,6 +501,7 @@ const createSchemaComponents = (
 const createParamComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject['parameters'] => {
   Array.from(components.parameters).forEach(([schema, component], index) => {
     if (component.type === 'manual') {
@@ -486,6 +509,7 @@ const createParamComponents = (
         schema,
         components,
         [`component parameter index ${index}`],
+        documentOptions,
         component.in,
         component.ref,
       );
@@ -527,10 +551,11 @@ const createParamComponents = (
 const createHeaderComponents = (
   componentsObject: ZodOpenApiComponentsObject,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject['headers'] => {
   Array.from(components.headers).forEach(([schema, component]) => {
     if (component.type === 'manual') {
-      createHeaderOrRef(schema, components);
+      createHeaderOrRef(schema, components, documentOptions);
     }
   });
 
@@ -566,10 +591,16 @@ const createHeaderComponents = (
 
 const createResponseComponents = (
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject['responses'] => {
   Array.from(components.responses).forEach(([schema, component], index) => {
     if (component.type === 'manual') {
-      createResponse(schema, components, [`component response index ${index}`]);
+      createResponse(
+        schema,
+        components,
+        [`component response index ${index}`],
+        documentOptions,
+      );
     }
   });
 
@@ -591,12 +622,16 @@ const createResponseComponents = (
 
 const createRequestBodiesComponents = (
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject['requestBodies'] => {
   Array.from(components.requestBodies).forEach(([schema, component], index) => {
     if (component.type === 'manual') {
-      createRequestBody(schema, components, [
-        `component request body ${index}`,
-      ]);
+      createRequestBody(
+        schema,
+        components,
+        [`component request body ${index}`],
+        documentOptions,
+      );
     }
   });
 
@@ -619,10 +654,16 @@ const createRequestBodiesComponents = (
 
 const createCallbackComponents = (
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ComponentsObject['callbacks'] => {
   Array.from(components.callbacks).forEach(([schema, component], index) => {
     if (component.type === 'manual') {
-      createCallback(schema, components, [`component callback ${index}`]);
+      createCallback(
+        schema,
+        components,
+        [`component callback ${index}`],
+        documentOptions,
+      );
     }
   });
 

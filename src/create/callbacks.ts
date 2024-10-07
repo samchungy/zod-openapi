@@ -4,7 +4,10 @@ import {
   type ComponentsObject,
   createComponentCallbackRef,
 } from './components';
-import type { ZodOpenApiCallbackObject } from './document';
+import type {
+  CreateDocumentOptions,
+  ZodOpenApiCallbackObject,
+} from './document';
 import { createPathItem } from './paths';
 import { isISpecificationExtension } from './specificationExtension';
 
@@ -12,6 +15,7 @@ export const createCallback = (
   callbackObject: ZodOpenApiCallbackObject,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.CallbackObject => {
   const { ref, ...callbacks } = callbackObject;
 
@@ -24,11 +28,13 @@ export const createCallback = (
       return acc;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    acc[callbackName] = createPathItem(pathItemObject, components, [
-      ...subpath,
-      callbackName,
-    ]);
+    acc[callbackName] = createPathItem(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      pathItemObject,
+      components,
+      [...subpath, callbackName],
+      documentOptions,
+    );
     return acc;
   }, {});
 
@@ -50,6 +56,7 @@ export const createCallbacks = (
   callbacksObject: oas31.CallbackObject | undefined,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.CallbackObject | undefined => {
   if (!callbacksObject) {
     return undefined;
@@ -61,11 +68,14 @@ export const createCallbacks = (
         acc[callbackName] = callbackObject;
         return acc;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      acc[callbackName] = createCallback(callbackObject, components, [
-        ...subpath,
-        callbackName,
-      ]);
+
+      acc[callbackName] = createCallback(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        callbackObject,
+        components,
+        [...subpath, callbackName],
+        documentOptions,
+      );
       return acc;
     },
     {},

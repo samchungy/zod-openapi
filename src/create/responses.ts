@@ -9,6 +9,7 @@ import {
 } from './components';
 import { createContent } from './content';
 import type {
+  CreateDocumentOptions,
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from './document';
@@ -23,6 +24,7 @@ export const createResponseHeaders = (
     | AnyZodObject
     | undefined,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ResponseObject['headers'] => {
   if (!responseHeaders) {
     return undefined;
@@ -32,7 +34,7 @@ export const createResponseHeaders = (
     return Object.entries(responseHeaders.shape as ZodRawShape).reduce<
       NonNullable<oas31.ResponseObject['headers']>
     >((acc, [key, zodSchema]: [string, ZodType]) => {
-      acc[key] = createHeaderOrRef(zodSchema, components);
+      acc[key] = createHeaderOrRef(zodSchema, components, documentOptions);
       return acc;
     }, {});
   }
@@ -43,6 +45,7 @@ export const createResponseHeaders = (
 export const createHeaderOrRef = (
   schema: ZodType,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.BaseParameterObject | oas31.ReferenceObject => {
   const component = components.headers.get(schema);
   if (component && component.type === 'complete') {
@@ -52,7 +55,7 @@ export const createHeaderOrRef = (
   }
 
   // Optional Objects can return a reference object
-  const baseHeader = createBaseHeader(schema, components);
+  const baseHeader = createBaseHeader(schema, components, documentOptions);
   if ('$ref' in baseHeader) {
     throw new Error('Unexpected Error: received a reference object');
   }
@@ -76,6 +79,7 @@ export const createHeaderOrRef = (
 export const createBaseHeader = (
   schema: ZodType,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.header ?? {};
   const state: SchemaState = {
@@ -83,6 +87,7 @@ export const createBaseHeader = (
     type: 'output',
     path: [],
     visited: new Set(),
+    documentOptions,
   };
   const schemaObject = createSchema(schema, state, ['header']);
   const required = !isOptionalSchema(schema, state)?.optional;
@@ -100,6 +105,7 @@ export const createResponse = (
   responseObject: ZodOpenApiResponseObject | oas31.ReferenceObject,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ResponseObject | oas31.ReferenceObject => {
   if ('$ref' in responseObject) {
     return responseObject;
@@ -112,16 +118,23 @@ export const createResponse = (
 
   const { content, headers, ref, ...rest } = responseObject;
 
-  const maybeHeaders = createResponseHeaders(headers, components);
+  const maybeHeaders = createResponseHeaders(
+    headers,
+    components,
+    documentOptions,
+  );
 
   const response: oas31.ResponseObject = {
     ...rest,
     ...(maybeHeaders && { headers: maybeHeaders }),
     ...(content && {
-      content: createContent(content, components, 'output', [
-        ...subpath,
-        'content',
-      ]),
+      content: createContent(
+        content,
+        components,
+        'output',
+        [...subpath, 'content'],
+        documentOptions,
+      ),
     }),
   };
 
@@ -145,6 +158,7 @@ export const createResponses = (
   responsesObject: ZodOpenApiResponsesObject,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ResponsesObject =>
   Object.entries(responsesObject).reduce<oas31.ResponsesObject>(
     (
@@ -158,10 +172,12 @@ export const createResponses = (
         acc[statusCode] = responseObject;
         return acc;
       }
-      acc[statusCode] = createResponse(responseObject, components, [
-        ...subpath,
-        statusCode,
-      ]);
+      acc[statusCode] = createResponse(
+        responseObject,
+        components,
+        [...subpath, statusCode],
+        documentOptions,
+      );
       return acc;
     },
     {},

@@ -198,6 +198,14 @@ const document = createDocument({
   ```
 </details>
 
+`createDocument` takes an optional `CreateDocumentOptions` argument which can be used to modify how the document is created.
+
+```typescript
+const document = createDocument(details, {
+  defaultDateSchema: { type: 'string', format: 'date-time' }, // defaults to { type: 'string' }
+});
+```
+
 ### Request Parameters
 
 Query, Path, Header & Cookie parameters can be created using the `requestParams` key under the `method` key as follows:

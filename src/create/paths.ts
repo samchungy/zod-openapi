@@ -7,6 +7,7 @@ import {
 } from './components';
 import { createContent } from './content';
 import type {
+  CreateDocumentOptions,
   ZodOpenApiOperationObject,
   ZodOpenApiPathItemObject,
   ZodOpenApiPathsObject,
@@ -20,6 +21,7 @@ export const createRequestBody = (
   requestBodyObject: ZodOpenApiRequestBodyObject | undefined,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ReferenceObject | oas31.RequestBodyObject | undefined => {
   if (!requestBodyObject) {
     return undefined;
@@ -36,10 +38,13 @@ export const createRequestBody = (
 
   const requestBody: oas31.RequestBodyObject = {
     ...requestBodyObject,
-    content: createContent(requestBodyObject.content, components, 'input', [
-      ...subpath,
-      'content',
-    ]),
+    content: createContent(
+      requestBodyObject.content,
+      components,
+      'input',
+      [...subpath, 'content'],
+      documentOptions,
+    ),
   };
 
   if (ref) {
@@ -60,6 +65,7 @@ const createOperation = (
   operationObject: ZodOpenApiOperationObject,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.OperationObject | undefined => {
   const { parameters, requestParams, requestBody, responses, ...rest } =
     operationObject;
@@ -69,24 +75,28 @@ const createOperation = (
     requestParams,
     components,
     [...subpath, 'parameters'],
+    documentOptions,
   );
 
   const maybeRequestBody = createRequestBody(
     operationObject.requestBody,
     components,
     [...subpath, 'request body'],
+    documentOptions,
   );
 
   const maybeResponses = createResponses(
     operationObject.responses,
     components,
     [...subpath, 'responses'],
+    documentOptions,
   );
 
   const maybeCallbacks = createCallbacks(
     operationObject.callbacks,
     components,
     [...subpath, 'callbacks'],
+    documentOptions,
   );
 
   return {
@@ -102,6 +112,7 @@ export const createPathItem = (
   pathObject: ZodOpenApiPathItemObject,
   components: ComponentsObject,
   path: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.PathItemObject =>
   Object.entries(pathObject).reduce<oas31.PathItemObject>(
     (acc, [key, value]) => {
@@ -123,6 +134,7 @@ export const createPathItem = (
           value as ZodOpenApiOperationObject,
           components,
           [...path, key],
+          documentOptions,
         );
         return acc;
       }
@@ -137,6 +149,7 @@ export const createPathItem = (
 export const createPaths = (
   pathsObject: ZodOpenApiPathsObject | undefined,
   components: ComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.PathsObject | undefined => {
   if (!pathsObject) {
     return undefined;
@@ -148,7 +161,12 @@ export const createPaths = (
         acc[path] = pathItemObject;
         return acc;
       }
-      acc[path] = createPathItem(pathItemObject, components, [path]);
+      acc[path] = createPathItem(
+        pathItemObject,
+        components,
+        [path],
+        documentOptions,
+      );
       return acc;
     },
     {},

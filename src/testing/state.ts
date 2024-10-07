@@ -1,14 +1,19 @@
 import { getDefaultComponents } from '../create/components';
-import type { ZodOpenApiComponentsObject } from '../create/document';
+import type {
+  CreateDocumentOptions,
+  ZodOpenApiComponentsObject,
+} from '../create/document';
 import type { SchemaState } from '../create/schema';
 
 export const createOutputState = (
   componentsObject?: ZodOpenApiComponentsObject,
+  documentOptions?: CreateDocumentOptions,
 ): SchemaState => ({
   components: getDefaultComponents(componentsObject),
   type: 'output',
   path: [],
   visited: new Set(),
+  documentOptions,
 });
 
 export const createInputState = (
