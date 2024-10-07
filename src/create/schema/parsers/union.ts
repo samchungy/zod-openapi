@@ -18,7 +18,7 @@ export const createUnionSchema = <
     createSchemaObject(option, state, [`union option ${index}`]),
   );
 
-  if (zodUnion._def.openapi?.unionOneOf) {
+  if (zodUnion._def.openapi?.unionOneOf || state.documentOptions?.unionOneOf) {
     return {
       type: 'schema',
       schema: {

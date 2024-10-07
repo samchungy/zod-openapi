@@ -50,4 +50,28 @@ describe('createUnionSchema', () => {
 
     expect(result).toEqual(expected);
   });
+
+  it('creates an oneOf schema for a union if the document options unionOneOf is true', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      },
+    };
+    const schema = z.union([z.string(), z.number()]);
+
+    const result = createUnionSchema(
+      schema,
+      createOutputState(undefined, { unionOneOf: true }),
+    );
+
+    expect(result).toEqual(expected);
+  });
 });

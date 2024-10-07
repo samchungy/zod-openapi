@@ -156,6 +156,7 @@ export type ZodObjectInputType<
 
 export interface CreateDocumentOptions {
   defaultDateSchema?: Pick<oas31.SchemaObject, 'type' | 'format'>;
+  unionOneOf?: boolean;
 }
 
 export const createDocument = (
