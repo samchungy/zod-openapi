@@ -74,4 +74,30 @@ describe('createUnionSchema', () => {
 
     expect(result).toEqual(expected);
   });
+
+  it('preferences individual unionOneOf over global setting', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        anyOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      },
+    };
+    const schema = z
+      .union([z.string(), z.number()])
+      .openapi({ unionOneOf: false });
+
+    const result = createUnionSchema(
+      schema,
+      createOutputState(undefined, { unionOneOf: true }),
+    );
+
+    expect(result).toEqual(expected);
+  });
 });

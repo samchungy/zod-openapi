@@ -155,7 +155,13 @@ export type ZodObjectInputType<
 > = ZodType<Output, Def, Input>;
 
 export interface CreateDocumentOptions {
+  /**
+   * Used to change the default Zod Date schema
+   */
   defaultDateSchema?: Pick<oas31.SchemaObject, 'type' | 'format'>;
+  /**
+   * Used to set the output of a ZodUnion to be `oneOf` instead of `allOf`
+   */
   unionOneOf?: boolean;
 }
 
