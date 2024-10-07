@@ -209,6 +209,74 @@ const document = createDocument(details, {
 });
 ```
 
+### `createSchema`
+
+Creates an OpenAPI Schema Object along with any registered components. OpenAPI 3.1.0 Schema Objects are fully compatible with JSON Schema.
+
+```typescript
+import 'zod-openapi/extend';
+import { z } from 'zod';
+import { createSchema } from 'zod-openapi';
+
+const jobId = z.string().openapi({
+  description: 'A unique identifier for a job',
+  example: '12345',
+  ref: 'jobId',
+});
+
+const title = z.string().openapi({
+  description: 'Job title',
+  example: 'My job',
+});
+
+const job = z.object({
+  jobId,
+  title,
+});
+
+const { schema, components } = createSchema(job);
+```
+
+<details>
+  <summary>Creates the following object:</summary>
+  
+  ```json
+  {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "$ref": "#/components/schemas/jobId"
+        },
+        "title": {
+          "type": "string",
+          "description": "Job title",
+          "example": "My job"
+        }
+      },
+      "required": ["jobId", "title"]
+    },
+    "components": {
+      "jobId": {
+        "type": "string",
+        "description": "A unique identifier for a job",
+        "example": "12345"
+      }
+    }
+  }
+  ```
+</details>
+
+Additional options are available viathe optional `CreateSchemaOptions` parameter which can also take the same [CreateDocumentOptions](#createdocumentoptions).
+
+```typescript
+const { schema, components } = createSchema(job, {
+  schemaType: 'input'; // This controls whether this should be rendered as a request (`input`) or response (`output`). Defaults to `output`
+  openapi: '3.0.0'; // OpenAPI version to use, defaults to `'3.1.0'`
+  components: { jobId: z.string() } // Additional components to use and create while rendering the schema
+})
+```
+
 ### Request Parameters
 
 Query, Path, Header & Cookie parameters can be created using the `requestParams` key under the `method` key as follows:
