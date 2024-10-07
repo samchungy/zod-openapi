@@ -267,7 +267,9 @@ const { schema, components } = createSchema(job);
   ```
 </details>
 
-Additional options are available viathe optional `CreateSchemaOptions` parameter which can also take the same [CreateDocumentOptions](#createdocumentoptions).
+#### CreateSchemaOptions
+
+`createSchema` takes an optional `CreateSchemaOptions` parameter which can also take the same options as [CreateDocumentOptions](#createdocumentoptions) along with the following options:
 
 ```typescript
 const { schema, components } = createSchema(job, {
