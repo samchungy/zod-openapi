@@ -154,8 +154,20 @@ export type ZodObjectInputType<
   Input = Record<string, unknown>,
 > = ZodType<Output, Def, Input>;
 
+export interface CreateDocumentOptions {
+  /**
+   * Used to change the default Zod Date schema
+   */
+  defaultDateSchema?: Pick<oas31.SchemaObject, 'type' | 'format'>;
+  /**
+   * Used to set the output of a ZodUnion to be `oneOf` instead of `allOf`
+   */
+  unionOneOf?: boolean;
+}
+
 export const createDocument = (
   zodOpenApiObject: ZodOpenApiObject,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.OpenAPIObject => {
   const { paths, webhooks, components = {}, ...rest } = zodOpenApiObject;
   const defaultComponents = getDefaultComponents(
@@ -163,9 +175,17 @@ export const createDocument = (
     zodOpenApiObject.openapi,
   );
 
-  const createdPaths = createPaths(paths, defaultComponents);
-  const createdWebhooks = createPaths(webhooks, defaultComponents);
-  const createdComponents = createComponents(components, defaultComponents);
+  const createdPaths = createPaths(paths, defaultComponents, documentOptions);
+  const createdWebhooks = createPaths(
+    webhooks,
+    defaultComponents,
+    documentOptions,
+  );
+  const createdComponents = createComponents(
+    components,
+    defaultComponents,
+    documentOptions,
+  );
 
   return {
     ...rest,

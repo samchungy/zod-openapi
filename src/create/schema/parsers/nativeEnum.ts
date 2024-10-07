@@ -11,7 +11,7 @@ export const createNativeEnumSchema = <T extends EnumLike>(
   const { numbers, strings } = sortStringsAndNumbers(enumValues);
 
   if (strings.length && numbers.length) {
-    if (satisfiesVersion(state.components.openapi, '3.1.0'))
+    if (satisfiesVersion(state.components.openapi, '3.1.0')) {
       return {
         type: 'schema',
         schema: {
@@ -19,6 +19,7 @@ export const createNativeEnumSchema = <T extends EnumLike>(
           enum: [...strings, ...numbers],
         },
       };
+    }
     return {
       type: 'schema',
       schema: {

@@ -114,7 +114,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodDate')) {
-    return createDateSchema(zodSchema);
+    return createDateSchema(zodSchema, state);
   }
 
   if (isZodType(zodSchema, 'ZodPipeline')) {

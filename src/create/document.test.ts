@@ -2,6 +2,7 @@ import '../entries/extend';
 import { type ZodType, z } from 'zod';
 
 import {
+  type CreateDocumentOptions,
   type ZodOpenApiCallbackObject,
   type ZodOpenApiObject,
   createDocument,
@@ -1116,6 +1117,7 @@ describe('createDocument', () => {
       user?: User;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const BaseUser2 = z.object({
       id: z.string(),
     });
@@ -1377,6 +1379,246 @@ describe('createDocument', () => {
                     },
                   },
                   "description": "200 OK",
+                },
+              },
+            },
+          },
+        },
+      }
+    `);
+  });
+
+  it('Supports defaultDateSchema option', () => {
+    const UserSchema = z.object({
+      id: z.string(),
+      timestamp: z.date(),
+    });
+
+    const documentOptions: CreateDocumentOptions = {
+      defaultDateSchema: {
+        type: 'string',
+        format: 'date-time',
+      },
+    };
+
+    const document = createDocument(
+      {
+        info: {
+          title: 'My API',
+          version: '1.0.0',
+        },
+        openapi: '3.1.0',
+        components: {
+          schemas: {
+            User: UserSchema,
+          },
+        },
+        paths: {
+          '/timestamp/:timestamp': {
+            post: {
+              parameters: [
+                z.date().openapi({
+                  param: {
+                    in: 'path',
+                    name: 'timestamp',
+                    required: true,
+                  },
+                }),
+              ],
+              requestBody: {
+                content: {
+                  'application/json': {
+                    schema: z.object({
+                      timestamp: z.date(),
+                    }),
+                  },
+                },
+              },
+              responses: {
+                '200': {
+                  description: '200 OK',
+                  headers: z.object({
+                    timeStamp: z.date(),
+                  }),
+                  content: {
+                    'application/json': {
+                      schema: z.object({
+                        timestamp: z.date(),
+                      }),
+                    },
+                  },
+                },
+              },
+              callbacks: {
+                onData: {
+                  '{$request.query.callbackUrl}/data': {
+                    post: {
+                      requestBody: {
+                        content: {
+                          'application/json': {
+                            schema: z.object({
+                              timestamp: z.date(),
+                            }),
+                          },
+                        },
+                      },
+                      responses: {
+                        '202': {
+                          description: '200 OK',
+                          content: {
+                            'application/json': {
+                              schema: z.object({
+                                timestamp: z.date(),
+                              }),
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      documentOptions,
+    );
+
+    expect(document).toMatchInlineSnapshot(`
+      {
+        "components": {
+          "schemas": {
+            "User": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+                "timestamp": {
+                  "format": "date-time",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "timestamp",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "info": {
+          "title": "My API",
+          "version": "1.0.0",
+        },
+        "openapi": "3.1.0",
+        "paths": {
+          "/timestamp/:timestamp": {
+            "post": {
+              "callbacks": {
+                "onData": {
+                  "{$request.query.callbackUrl}/data": {
+                    "post": {
+                      "requestBody": {
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "properties": {
+                                "timestamp": {
+                                  "format": "date-time",
+                                  "type": "string",
+                                },
+                              },
+                              "required": [
+                                "timestamp",
+                              ],
+                              "type": "object",
+                            },
+                          },
+                        },
+                      },
+                      "responses": {
+                        "202": {
+                          "content": {
+                            "application/json": {
+                              "schema": {
+                                "properties": {
+                                  "timestamp": {
+                                    "format": "date-time",
+                                    "type": "string",
+                                  },
+                                },
+                                "required": [
+                                  "timestamp",
+                                ],
+                                "type": "object",
+                              },
+                            },
+                          },
+                          "description": "200 OK",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "timestamp",
+                  "required": true,
+                  "schema": {
+                    "format": "date-time",
+                    "type": "string",
+                  },
+                },
+              ],
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "properties": {
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "timestamp",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                },
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "timestamp": {
+                            "format": "date-time",
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "timestamp",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "200 OK",
+                  "headers": {
+                    "timeStamp": {
+                      "required": true,
+                      "schema": {
+                        "format": "date-time",
+                        "type": "string",
+                      },
+                    },
+                  },
                 },
               },
             },

@@ -4,7 +4,11 @@ import type { oas30, oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType, isZodType } from '../zodType';
 
 import type { ComponentsObject } from './components';
-import type { ZodObjectInputType, ZodOpenApiParameters } from './document';
+import type {
+  CreateDocumentOptions,
+  ZodObjectInputType,
+  ZodOpenApiParameters,
+} from './document';
 import { type SchemaState, createSchema } from './schema';
 import { isOptionalSchema } from './schema/parsers/optional';
 
@@ -15,6 +19,7 @@ export const createBaseParameter = (
   schema: ZodType,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): oas31.BaseParameterObject => {
   const { ref, ...rest } = schema._def.openapi?.param ?? {};
   const state: SchemaState = {
@@ -22,6 +27,7 @@ export const createBaseParameter = (
     type: 'input',
     path: [],
     visited: new Set(),
+    documentOptions,
   };
   const schemaObject = createSchema(schema, state, [...subpath, 'schema']);
   const required = !isOptionalSchema(schema, state)?.optional;
@@ -40,6 +46,7 @@ export const createParamOrRef = (
   zodSchema: ZodType,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
   type?: keyof ZodOpenApiParameters,
   name?: string,
 ): oas31.ParameterObject | oas31.ReferenceObject => {
@@ -69,7 +76,12 @@ export const createParamOrRef = (
   }
 
   // Optional Objects can return a reference object
-  const baseParamOrRef = createBaseParameter(zodSchema, components, subpath);
+  const baseParamOrRef = createBaseParameter(
+    zodSchema,
+    components,
+    subpath,
+    documentOptions,
+  );
   if ('$ref' in baseParamOrRef) {
     throw new Error('Unexpected Error: received a reference object');
   }
@@ -104,6 +116,7 @@ const createParameters = (
   zodObjectType: ZodObjectInputType | undefined,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): Array<oas31.ParameterObject | oas31.ReferenceObject> => {
   if (!zodObjectType) {
     return [];
@@ -112,7 +125,14 @@ const createParameters = (
   const zodObject = getZodObject(zodObjectType, 'input').shape as ZodRawShape;
 
   return Object.entries(zodObject).map(([key, zodSchema]: [string, ZodType]) =>
-    createParamOrRef(zodSchema, components, [...subpath, key], type, key),
+    createParamOrRef(
+      zodSchema,
+      components,
+      [...subpath, key],
+      documentOptions,
+      type,
+      key,
+    ),
   );
 };
 
@@ -120,32 +140,39 @@ const createRequestParams = (
   requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): NonNullable<oas31.OperationObject['parameters']> => {
   if (!requestParams) {
     return [];
   }
 
-  const pathParams = createParameters('path', requestParams.path, components, [
-    ...subpath,
+  const pathParams = createParameters(
     'path',
-  ]);
+    requestParams.path,
+    components,
+    [...subpath, 'path'],
+    documentOptions,
+  );
   const queryParams = createParameters(
     'query',
     requestParams.query,
     components,
     [...subpath, 'query'],
+    documentOptions,
   );
   const cookieParams = createParameters(
     'cookie',
     requestParams.cookie,
     components,
     [...subpath, 'cookie'],
+    documentOptions,
   );
   const headerParams = createParameters(
     'header',
     requestParams.header,
     components,
     [...subpath, 'header'],
+    documentOptions,
   );
 
   return [...pathParams, ...queryParams, ...cookieParams, ...headerParams];
@@ -163,13 +190,16 @@ export const createManualParameters = (
     | undefined,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): Array<oas31.ParameterObject | oas31.ReferenceObject> =>
   parameters?.map((param, index) => {
     if (isAnyZodType(param)) {
-      return createParamOrRef(param, components, [
-        ...subpath,
-        `param index ${index}`,
-      ]);
+      return createParamOrRef(
+        param,
+        components,
+        [...subpath, `param index ${index}`],
+        documentOptions,
+      );
     }
     return param as oas31.ParameterObject | oas31.ReferenceObject;
   }) ?? [];
@@ -187,13 +217,20 @@ export const createParametersObject = (
   requestParams: ZodOpenApiParameters | undefined,
   components: ComponentsObject,
   subpath: string[],
+  documentOptions?: CreateDocumentOptions,
 ): Array<oas31.ParameterObject | oas31.ReferenceObject> | undefined => {
   const manualParameters = createManualParameters(
     parameters,
     components,
     subpath,
+    documentOptions,
   );
-  const createdParams = createRequestParams(requestParams, components, subpath);
+  const createdParams = createRequestParams(
+    requestParams,
+    components,
+    subpath,
+    documentOptions,
+  );
   const combinedParameters: oas31.OperationObject['parameters'] = [
     ...manualParameters,
     ...createdParams,
