@@ -59,16 +59,16 @@ z.string().openapi({ description: 'hello world!', example: 'hello world' });
 
 Use the `.openapi()` method to add metadata to a specific Zod type. The `.openapi()` method takes an object with the following options:
 
-|     Option      |                                                         Description                                                         |
-| :-------------: | :-------------------------------------------------------------------------------------------------------------------------: |
-| OpenAPI Options | This will take any option you would put on a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/). |
-|  `effectType`   |                             Use to override the creation type for a [Zod Effect](#zod-effects)                              |
-|    `header`     |                              Use to provide metadata for [response headers](#response-headers)                              |
-|     `param`     |                                Use to provide metadata for [request parameters](#parameters)                                |
-|      `ref`      |                     Use this to [auto register a schema as a re-usable component](#creating-components)                     |
-|    `refType`    |                 Use this to set the creation type for a component which is not referenced in the document.                  |
-|     `type`      |                 Use this to override the generated type. If this is provided no metadata will be generated.                 |
-|  `unionOneOf`   |                           Set to `true` to force a ZodUnion to output `oneOf` instead of `allOf`                            |
+|     Option      |                                                                      Description                                                                       |
+| :-------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------: |
+| OpenAPI Options |              This will take any option you would put on a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/).               |
+|  `effectType`   |                                           Use to override the creation type for a [Zod Effect](#zod-effects)                                           |
+|    `header`     |                                           Use to provide metadata for [response headers](#response-headers)                                            |
+|     `param`     |                                             Use to provide metadata for [request parameters](#parameters)                                              |
+|      `ref`      |                                  Use this to [auto register a schema as a re-usable component](#creating-components)                                   |
+|    `refType`    |                               Use this to set the creation type for a component which is not referenced in the document.                               |
+|     `type`      |                              Use this to override the generated type. If this is provided no metadata will be generated.                               |
+|  `unionOneOf`   | Set to `true` to force a single ZodUnion to output `oneOf` instead of `allOf`. See [CreateDocumentOptions](#CreateDocumentOptions) for a global option |
 
 ### `createDocument`
 
@@ -198,11 +198,14 @@ const document = createDocument({
   ```
 </details>
 
+#### CreateDocumentOptions
+
 `createDocument` takes an optional `CreateDocumentOptions` argument which can be used to modify how the document is created.
 
 ```typescript
 const document = createDocument(details, {
   defaultDateSchema: { type: 'string', format: 'date-time' }, // defaults to { type: 'string' }
+  unionOneOf: true, // defaults to false. Forces all ZodUnions to output `true`
 });
 ```
 
