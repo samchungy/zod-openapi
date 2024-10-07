@@ -7,9 +7,9 @@ import {
   createSchemaComponents,
   getDefaultComponents,
 } from '../components';
+import type { CreateDocumentOptions } from '../document';
 
 import { type SchemaState, createSchema as internalCreateSchema } from '.';
-import { CreateDocumentOptions } from '../document';
 
 export interface SchemaResult {
   schema: oas30.SchemaObject | oas31.SchemaObject | oas31.ReferenceObject;
@@ -21,7 +21,7 @@ export interface SchemaResult {
     | undefined;
 }
 
-export interface CreateSchemaOpts extends CreateDocumentOptions {
+export interface CreateSchemaOptions extends CreateDocumentOptions {
   /**
    * This controls whether this should be rendered as a request (`input`) or response (`output`). Defaults to `output`
    */
@@ -38,7 +38,7 @@ export interface CreateSchemaOpts extends CreateDocumentOptions {
 
 export const createSchema = (
   zodType: ZodType,
-  opts?: CreateSchemaOpts,
+  opts?: CreateSchemaOptions,
 ): SchemaResult => {
   const components = getDefaultComponents(
     {
