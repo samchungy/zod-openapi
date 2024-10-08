@@ -46,9 +46,9 @@ export const createParamOrRef = (
   zodSchema: ZodType,
   components: ComponentsObject,
   subpath: string[],
-  documentOptions?: CreateDocumentOptions,
   type?: keyof ZodOpenApiParameters,
   name?: string,
+  documentOptions?: CreateDocumentOptions,
 ): oas31.ParameterObject | oas31.ReferenceObject => {
   const component = components.parameters.get(zodSchema);
   const paramType = zodSchema._def?.openapi?.param?.in ?? component?.in ?? type;
@@ -129,9 +129,9 @@ const createParameters = (
       zodSchema,
       components,
       [...subpath, key],
-      documentOptions,
       type,
       key,
+      documentOptions,
     ),
   );
 };
@@ -198,6 +198,8 @@ export const createManualParameters = (
         param,
         components,
         [...subpath, `param index ${index}`],
+        undefined,
+        undefined,
         documentOptions,
       );
     }
