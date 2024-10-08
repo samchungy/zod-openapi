@@ -509,9 +509,9 @@ const createParamComponents = (
         schema,
         components,
         [`component parameter index ${index}`],
-        documentOptions,
         component.in,
         component.ref,
+        documentOptions,
       );
     }
   });
