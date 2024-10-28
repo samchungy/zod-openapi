@@ -34,6 +34,10 @@ export interface CreateSchemaOptions extends CreateDocumentOptions {
    * Additional components to use and create while rendering the schema
    */
   components?: Record<string, ZodType>;
+  /**
+   * The $ref path to use for the component. Defaults to `#/components/schemas/`
+   */
+  componentRefPath?: string;
 }
 
 export const createSchema = (

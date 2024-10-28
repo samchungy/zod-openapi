@@ -8,11 +8,11 @@ import {
   type SchemaComponent,
   createComponentSchemaRef,
 } from '../components';
-import type { CreateDocumentOptions } from '../document';
 
 import { enhanceWithMetadata } from './metadata';
 import { createSchemaSwitch } from './parsers';
 import { verifyEffects } from './parsers/transform';
+import type { CreateSchemaOptions } from './single';
 
 export type LazyMap = Map<ZodType, true>;
 
@@ -21,7 +21,7 @@ export interface SchemaState {
   type: CreationType;
   path: string[];
   visited: Set<ZodType>;
-  documentOptions?: CreateDocumentOptions;
+  documentOptions?: CreateSchemaOptions;
 }
 
 const isDescriptionEqual = (schema: Schema, zodSchema: ZodType): boolean =>
@@ -95,7 +95,12 @@ export const createNewRef = <
 
   return {
     type: 'ref',
-    schema: { $ref: createComponentSchemaRef(ref) },
+    schema: {
+      $ref: createComponentSchemaRef(
+        ref,
+        state.documentOptions?.componentRefPath,
+      ),
+    },
     effects: newSchema.effects
       ? [
           {
@@ -121,7 +126,12 @@ export const createExistingRef = <
   if (component && component.type === 'complete') {
     return {
       type: 'ref',
-      schema: { $ref: createComponentSchemaRef(component.ref) },
+      schema: {
+        $ref: createComponentSchemaRef(
+          component.ref,
+          state.documentOptions?.componentRefPath,
+        ),
+      },
       effects: component.effects
         ? [
             {
@@ -138,7 +148,12 @@ export const createExistingRef = <
   if (component && component.type === 'in-progress') {
     return {
       type: 'ref',
-      schema: { $ref: createComponentSchemaRef(component.ref) },
+      schema: {
+        $ref: createComponentSchemaRef(
+          component.ref,
+          state.documentOptions?.componentRefPath,
+        ),
+      },
       effects: [
         {
           type: 'component',

@@ -107,7 +107,14 @@ export const createExtendedSchema = <
   return {
     type: 'schema',
     schema: {
-      allOf: [{ $ref: createComponentSchemaRef(completeComponent.ref) }],
+      allOf: [
+        {
+          $ref: createComponentSchemaRef(
+            completeComponent.ref,
+            state.documentOptions?.componentRefPath,
+          ),
+        },
+      ],
       ...extendedSchema.schema,
     },
     effects: flattenEffects([

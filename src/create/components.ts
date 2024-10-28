@@ -385,8 +385,10 @@ const getCallbacks = (
   });
 };
 
-export const createComponentSchemaRef = (schemaRef: string) =>
-  `#/components/schemas/${schemaRef}`;
+export const createComponentSchemaRef = (
+  schemaRef: string,
+  componentPath?: string,
+) => `${componentPath ?? '#/components/schemas/'}${schemaRef}`;
 
 export const createComponentResponseRef = (responseRef: string) =>
   `#/components/responses/${responseRef}`;
