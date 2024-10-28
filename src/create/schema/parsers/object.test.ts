@@ -288,7 +288,7 @@ describe('extend', () => {
     expect(result).toEqual(expected);
   });
 
-  it('creates a object with union field', () => {
+  it('creates an object with 2 required fields using a custom type', () => {
     const expected: Schema = {
       type: 'schema',
       schema: {
