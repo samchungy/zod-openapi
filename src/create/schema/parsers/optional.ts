@@ -1,6 +1,6 @@
 import type { ZodOptional, ZodType, ZodTypeAny } from 'zod';
 
-import { isAnyZodType, isZodType } from '../../../zodType';
+import { isZodType } from '../../../zodType';
 import type { Effect } from '../../components';
 import {
   type Schema,

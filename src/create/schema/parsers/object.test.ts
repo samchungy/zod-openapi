@@ -1,5 +1,5 @@
 import '../../../entries/extend';
-import { z, ZodType } from 'zod';
+import { z } from 'zod';
 
 import type { Schema } from '..';
 import { createInputState, createOutputState } from '../../../testing/state';
