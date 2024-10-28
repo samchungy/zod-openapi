@@ -58,4 +58,25 @@ describe('createSchema', () => {
       },
     });
   });
+
+  it('should support componentRefPath', () => {
+    const schema = createSchema(
+      z.string().openapi({ description: 'foo', ref: 'String' }),
+      {
+        componentRefPath: '#/definitions/',
+      },
+    );
+
+    expect(schema).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/definitions/String',
+      },
+      components: {
+        String: {
+          type: 'string',
+          description: 'foo',
+        },
+      },
+    });
+  });
 });
