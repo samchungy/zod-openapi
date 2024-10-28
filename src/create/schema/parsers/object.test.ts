@@ -1,5 +1,5 @@
 import '../../../entries/extend';
-import { z } from 'zod';
+import { z, ZodType } from 'zod';
 
 import type { Schema } from '..';
 import { createInputState, createOutputState } from '../../../testing/state';
@@ -282,6 +282,43 @@ describe('extend', () => {
       },
     };
     const schema = z.object({ a: z.string(), b: z.undefined(), c: z.never() });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toEqual(expected);
+  });
+
+  it('creates a object with union field', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+          },
+          b: {
+            type: 'string',
+            format: 'date',
+          },
+        },
+        required: ['a', 'b'],
+      },
+    };
+    const zodDate = z
+      .union([
+        z.custom<Date>((val: unknown) => val instanceof Date),
+        z.string().transform((str: string): Date => new Date(str)), //ignore validation
+      ])
+      .openapi({
+        type: 'string',
+        format: 'date',
+      });
+
+    const schema = z.object({
+      a: z.string(),
+      b: zodDate,
+    });
 
     const result = createObjectSchema(schema, createOutputState());
 
