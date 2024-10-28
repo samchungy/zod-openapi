@@ -276,6 +276,7 @@ const { schema, components } = createSchema(job, {
   schemaType: 'input'; // This controls whether this should be rendered as a request (`input`) or response (`output`). Defaults to `output`
   openapi: '3.0.0'; // OpenAPI version to use, defaults to `'3.1.0'`
   components: { jobId: z.string() } // Additional components to use and create while rendering the schema
+  componentRefPath: '#/definitions/' // Defaults to #/components/schemas/
 })
 ```
 
