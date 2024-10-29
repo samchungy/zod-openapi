@@ -96,6 +96,13 @@ describe('isOptionalSchema', () => {
     expect(result).toEqual({ optional: false });
   });
 
+  it('returns true for a custom undefined without a check', () => {
+    const schema = z.custom<undefined>();
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
   it('returns true for a custom with an optional', () => {
     const schema = z.custom<Date>((d) => d instanceof Date).optional();
     const result = isOptionalSchema(schema, createOutputState());
