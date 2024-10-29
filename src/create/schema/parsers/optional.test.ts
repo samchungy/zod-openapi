@@ -135,7 +135,7 @@ describe('isOptionalSchema', () => {
     expect(result).toEqual({ optional: false });
   });
 
-  it('returns true for a custom with an optional', () => {
+  it('returns true for a custom with Date with an optional', () => {
     const schema = z.custom<Date>((d) => d instanceof Date).optional();
     const result = isOptionalSchema(schema, createOutputState());
 
@@ -152,7 +152,7 @@ describe('isOptionalSchema', () => {
     expect(result).toEqual({ optional: false });
   });
 
-  it('returns true for a custom with an optional', () => {
+  it('returns true for a custom with an optional using a transform', () => {
     const schema = z
       .custom<Date>((d) => d instanceof Date)
       .optional()

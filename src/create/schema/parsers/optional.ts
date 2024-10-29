@@ -58,8 +58,9 @@ export const isOptionalSchema = (
 
   if (isZodType(zodSchema, 'ZodEffects')) {
     // zod custom types
-    if (isZodType(zodSchema._def.schema, 'ZodAny'))
+    if (isZodType(zodSchema._def.schema, 'ZodAny')) {
       return { optional: zodSchema.isOptional() };
+    }
 
     return isOptionalSchema(zodSchema._def.schema, state);
   }

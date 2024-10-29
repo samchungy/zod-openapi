@@ -308,7 +308,7 @@ describe('extend', () => {
     const zodDate = z
       .union([
         z.custom<Date>((val: unknown) => val instanceof Date),
-        z.string().transform((str: string): Date => new Date(str)), //ignore validation
+        z.string().transform((str: string): Date => new Date(str)), // ignore validation
       ])
       .openapi({
         type: 'string',
