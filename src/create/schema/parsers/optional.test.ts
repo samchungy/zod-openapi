@@ -103,6 +103,31 @@ describe('isOptionalSchema', () => {
     expect(result).toEqual({ optional: true });
   });
 
+  it('returns false for a custom string | undefined without a check', () => {
+    const schema = z.custom<string | undefined>();
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns false for a custom string | undefined with a check that returns false for undefined', () => {
+    const schema = z.custom<string | undefined>(
+      (toCheck: string | undefined) => toCheck !== undefined,
+    );
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: false });
+  });
+
+  it('returns true for a custom string | undefined with a check that returns true for undefined', () => {
+    const schema = z.custom<string | undefined>(
+      (toCheck: string | undefined) => toCheck === undefined,
+    );
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
   it('returns true for a custom undefined with a check', () => {
     const schema = z.custom<undefined>((_: unknown) => false);
     const result = isOptionalSchema(schema, createOutputState());
