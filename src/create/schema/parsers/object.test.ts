@@ -101,6 +101,34 @@ describe('createObjectSchema', () => {
     expect(result).toEqual(expected);
   });
 
+  it('considers ZodCatch in an input state as an effect', () => {
+    const schema = z.object({
+      a: z.string().catch('a'),
+    });
+
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+      },
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'input',
+          zodType: schema.shape.a,
+          path: ['property: a'],
+        },
+      ],
+    };
+
+    const result = createObjectSchema(schema, createInputState());
+
+    expect(result).toEqual(expected);
+  });
+
   it('considers ZodDefault in an output state as an effect', () => {
     const schema = z.object({
       a: z.string().default('a'),
@@ -128,6 +156,99 @@ describe('createObjectSchema', () => {
     const result = createObjectSchema(schema, createOutputState());
 
     expect(result).toEqual(expected);
+  });
+
+  it('considers ZodCatch in an output state as an effect', () => {
+    const schema = z.object({
+      a: z.string().catch('a'),
+    });
+
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+        required: ['a'],
+      },
+      effects: [
+        {
+          type: 'schema',
+          creationType: 'output',
+          zodType: schema.shape.a,
+          path: ['property: a'],
+        },
+      ],
+    };
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toEqual(expected);
+  });
+});
+
+describe('required', () => {
+  it('creates a required array containing all properties', () => {
+    const schema = z.object({
+      a: z.string(),
+      b: z.string().nullable(),
+      c: z.number(),
+      d: z.literal(null),
+      e: z.union([z.string(), z.number()]),
+    });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toEqual<Schema>({
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: ['string', 'null'] },
+          c: { type: 'number' },
+          d: { type: 'null' },
+          e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        },
+        required: ['a', 'b', 'c', 'd', 'e'],
+      },
+    });
+  });
+
+  it('does not create an required array', () => {
+    const ref = z.string().openapi({ ref: 'ref' });
+    const oref = z.string().optional().openapi({ ref: 'oref' });
+    const schema = z.object({
+      a: z.literal(undefined),
+      b: z.never(),
+      c: z.undefined(),
+      d: z.string().optional(),
+      e: z.string().nullish(),
+      f: z.number().optional(),
+      g: z.union([z.string(), z.undefined()]),
+      h: z.union([z.string(), z.number().optional()]),
+      i: ref.optional(),
+      j: oref,
+    });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toEqual<Schema>({
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          d: { type: 'string' },
+          e: { type: ['string', 'null'] },
+          f: { type: 'number' },
+          g: { anyOf: [{ type: 'string' }] },
+          h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+          i: { $ref: '#/components/schemas/ref' },
+          j: { $ref: '#/components/schemas/oref' },
+        },
+      },
+    });
   });
 });
 
@@ -264,24 +385,6 @@ describe('extend', () => {
       obj1: object1,
       obj2: object2,
     });
-
-    const result = createObjectSchema(schema, createOutputState());
-
-    expect(result).toEqual(expected);
-  });
-
-  it('ignores ZodNever and ZodUndefined schemas', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'object',
-        properties: {
-          a: { type: 'string' },
-        },
-        required: ['a'],
-      },
-    };
-    const schema = z.object({ a: z.string(), b: z.undefined(), c: z.never() });
 
     const result = createObjectSchema(schema, createOutputState());
 

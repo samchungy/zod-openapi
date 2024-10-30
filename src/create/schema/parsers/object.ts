@@ -17,7 +17,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { isOptionalSchema } from './optional';
+import { isOptionalKeys } from './optional';
 import { flattenEffects } from './transform';
 
 export const createObjectSchema = <
@@ -184,7 +184,7 @@ export const createObjectSchemaFromShape = (
   state: SchemaState,
 ): Schema => {
   const properties = mapProperties(shape, state);
-  const required = mapRequired(shape, state);
+  const required = mapRequired(properties, shape, state);
   const additionalProperties = !isZodType(catchAll, 'ZodNever')
     ? createSchemaObject(catchAll, state, ['additional properties'])
     : undefined;
@@ -209,23 +209,57 @@ export const createObjectSchemaFromShape = (
 };
 
 export const mapRequired = (
+  properties: PropertyMap | undefined,
   shape: ZodRawShape,
   state: SchemaState,
 ): { required: string[]; effects?: Effect[] } | undefined => {
-  const { required, effects: allEffects } = Object.entries(shape).reduce<{
+  if (!properties) {
+    return undefined;
+  }
+
+  const { required, effects } = Object.entries(properties.schemas).reduce<{
     required: string[];
-    effects: Effect[][];
+    effects: Effect[];
   }>(
-    (acc, [key, zodSchema]) => {
-      state.path.push(`property: ${key}`);
-      const { optional, effects } = isOptionalSchema(zodSchema, state);
-      state.path.pop();
-      if (!optional) {
+    (acc, [key, schemaOrRef]) => {
+      const zodSchema = shape[key];
+      if (!zodSchema) {
+        throw new Error("Property somehow doesn't exist in shape");
+      }
+
+      const result = zodSchema.safeParse(undefined);
+
+      if (!result.success) {
         acc.required.push(key);
+        return acc;
       }
-      if (effects) {
-        acc.effects.push(effects);
+
+      // Defaulted to a value
+      if (result.data !== undefined) {
+        const baseEffect: Pick<Effect, 'zodType' | 'path'> = {
+          zodType: zodSchema as ZodType,
+          path: [...state.path, `property: ${key}`],
+        };
+
+        const effect: Effect =
+          schemaOrRef.type === 'ref'
+            ? {
+                ...baseEffect,
+                type: 'component',
+              }
+            : {
+                ...baseEffect,
+                type: 'schema',
+                creationType: state.type,
+              };
+
+        acc.effects.push(effect);
+
+        if (state.type === 'output') {
+          acc.required.push(key);
+        }
       }
+
       return acc;
     },
     {
@@ -234,10 +268,11 @@ export const mapRequired = (
     },
   );
 
-  return { required, effects: flattenEffects(allEffects) };
+  return { required, effects };
 };
 
 interface PropertyMap {
+  schemas: Record<string, Schema>;
   properties: NonNullable<oas31.SchemaObject['properties']>;
   effects: Array<Effect[] | undefined>;
 }
@@ -253,22 +288,19 @@ export const mapProperties = (
   }
   return shapeEntries.reduce(
     (acc, [key, zodSchema]) => {
-      if (
-        isZodType(zodSchema, 'ZodNever') ||
-        isZodType(zodSchema, 'ZodUndefined')
-      ) {
+      if (isOptionalKeys(zodSchema)) {
         return acc;
       }
 
-      const property = createSchemaObject(zodSchema, state, [
-        `property: ${key}`,
-      ]);
+      const schema = createSchemaObject(zodSchema, state, [`property: ${key}`]);
 
-      acc.properties[key] = property.schema;
-      acc.effects.push(property.effects);
+      acc.schemas[key] = schema;
+      acc.properties[key] = schema.schema;
+      acc.effects.push(schema.effects);
       return acc;
     },
     {
+      schemas: {},
       properties: {},
       effects: [],
     } as PropertyMap,

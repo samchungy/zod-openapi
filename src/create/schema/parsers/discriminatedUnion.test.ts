@@ -443,7 +443,22 @@ describe('createDiscriminatedUnionSchema', () => {
   });
 
   it('handles a discriminated union with a catch type', () => {
-    const expected: Schema = {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal('a').catch('a'),
+        })
+        .openapi({ ref: 'a' }),
+      z
+        .object({
+          type: z.literal('b'),
+        })
+        .openapi({ ref: 'b' }),
+    ]);
+
+    const result = createDiscriminatedUnionSchema(schema, createOutputState());
+
+    expect(result).toEqual<Schema>({
       type: 'schema',
       schema: {
         discriminator: {
@@ -462,22 +477,13 @@ describe('createDiscriminatedUnionSchema', () => {
           },
         ],
       },
-    };
-    const schema = z.discriminatedUnion('type', [
-      z
-        .object({
-          type: z.literal('a').catch('a'),
-        })
-        .openapi({ ref: 'a' }),
-      z
-        .object({
-          type: z.literal('b'),
-        })
-        .openapi({ ref: 'b' }),
-    ]);
-
-    const result = createDiscriminatedUnionSchema(schema, createOutputState());
-
-    expect(result).toEqual(expected);
+      effects: [
+        {
+          type: 'component',
+          path: ['discriminated union option 0'],
+          zodType: schema.options[0],
+        },
+      ],
+    });
   });
 });

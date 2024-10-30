@@ -112,3 +112,8 @@ export const isOptionalSchema = (
 
   return { optional: zodSchema.isOptional() };
 };
+
+export const isOptionalKeys = (zodSchema: ZodTypeAny) =>
+  isZodType(zodSchema, 'ZodNever') ||
+  isZodType(zodSchema, 'ZodUndefined') ||
+  (isZodType(zodSchema, 'ZodLiteral') && zodSchema._def.value === undefined);
