@@ -469,7 +469,7 @@ createDocument({
 
 ##### Zod Effects
 
-`.transform()`, `.default()` and `.pipe()` are complicated because they technically comprise of two types (input & output). This means that we need to understand which type you are creating. In particular with transform it is very difficult to infer the output type. This library will automatically select which _type_ to use by checking how the schema is used based on the following rules:
+`.transform()`, `.catch()`, `.default()` and `.pipe()` are complicated because they technically comprise of two types (input & output). This means that we need to understand which type you are creating. In particular with transform it is very difficult to infer the output type. This library will automatically select which _type_ to use by checking how the schema is used based on the following rules:
 
 _Input_: Request Bodies, Request Parameters, Headers
 
@@ -694,6 +694,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodBoolean
 - ZodBranded
 - ZodCatch
+  - Treated as ZodDefault
 - ZodDate
   - `type` is mapped as `string` by default
 - ZodDefault

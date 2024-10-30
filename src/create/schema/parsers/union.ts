@@ -6,6 +6,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
+import { isOptionalObjectKey } from './optional';
 import { flattenEffects } from './transform';
 
 export const createUnionSchema = <
@@ -14,9 +15,12 @@ export const createUnionSchema = <
   zodUnion: ZodUnion<T>,
   state: SchemaState,
 ): Schema => {
-  const schemas = zodUnion.options.map((option, index) =>
-    createSchemaObject(option, state, [`union option ${index}`]),
-  );
+  const schemas = zodUnion.options.reduce<Schema[]>((acc, option, index) => {
+    if (!isOptionalObjectKey(option)) {
+      acc.push(createSchemaObject(option, state, [`union option ${index}`]));
+    }
+    return acc;
+  }, []);
 
   if (zodUnion._def.openapi?.unionOneOf ?? state.documentOptions?.unionOneOf) {
     return {

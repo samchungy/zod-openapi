@@ -100,4 +100,26 @@ describe('createUnionSchema', () => {
 
     expect(result).toEqual(expected);
   });
+
+  it('ignores optional values in a union', () => {
+    const schema = z.union([
+      z.string(),
+      z.literal(undefined),
+      z.undefined(),
+      z.never(),
+    ]);
+
+    const result = createUnionSchema(schema, createOutputState());
+
+    expect(result).toEqual<Schema>({
+      type: 'schema',
+      schema: {
+        anyOf: [
+          {
+            type: 'string',
+          },
+        ],
+      },
+    });
+  });
 });

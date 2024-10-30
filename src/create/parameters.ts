@@ -10,7 +10,6 @@ import type {
   ZodOpenApiParameters,
 } from './document';
 import { type SchemaState, createSchema } from './schema';
-import { isOptionalSchema } from './schema/parsers/optional';
 
 export const createComponentParamRef = (ref: string) =>
   `#/components/parameters/${ref}`;
@@ -30,7 +29,8 @@ export const createBaseParameter = (
     documentOptions,
   };
   const schemaObject = createSchema(schema, state, [...subpath, 'schema']);
-  const required = !isOptionalSchema(schema, state)?.optional;
+  const required = !schema.isOptional();
+
   const description =
     schema._def.openapi?.description ?? schema._def.description;
 

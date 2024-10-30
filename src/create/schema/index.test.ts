@@ -191,6 +191,7 @@ const expectedZodUnion: Schema['schema'] = {
 const zodCatch = z.string().catch('bob');
 const expectedZodCatch: Schema['schema'] = {
   type: 'string',
+  default: 'bob',
 };
 
 const zodPipeline = z
