@@ -12,7 +12,7 @@ export const createOptionalSchema = <T extends ZodTypeAny>(
   state: SchemaState,
 ): Schema => createSchemaObject(zodOptional.unwrap(), state, ['optional']); // Optional doesn't change OpenAPI schema
 
-export const isOptionalKeys = (zodSchema: ZodTypeAny) =>
+export const isOptionalObjectKey = (zodSchema: ZodTypeAny) =>
   isZodType(zodSchema, 'ZodNever') ||
   isZodType(zodSchema, 'ZodUndefined') ||
   (isZodType(zodSchema, 'ZodLiteral') && zodSchema._def.value === undefined);

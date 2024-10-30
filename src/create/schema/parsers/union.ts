@@ -6,7 +6,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { isOptionalKeys } from './optional';
+import { isOptionalObjectKey } from './optional';
 import { flattenEffects } from './transform';
 
 export const createUnionSchema = <
@@ -16,7 +16,7 @@ export const createUnionSchema = <
   state: SchemaState,
 ): Schema => {
   const schemas = zodUnion.options.reduce<Schema[]>((acc, option, index) => {
-    if (!isOptionalKeys(option)) {
+    if (!isOptionalObjectKey(option)) {
       acc.push(createSchemaObject(option, state, [`union option ${index}`]));
     }
     return acc;

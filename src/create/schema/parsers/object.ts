@@ -17,7 +17,7 @@ import {
   createSchemaObject,
 } from '../../schema';
 
-import { isOptionalKeys } from './optional';
+import { isOptionalObjectKey } from './optional';
 import { flattenEffects } from './transform';
 
 export const createObjectSchema = <
@@ -288,7 +288,7 @@ export const mapProperties = (
   }
   return shapeEntries.reduce(
     (acc, [key, zodSchema]) => {
-      if (isOptionalKeys(zodSchema)) {
+      if (isOptionalObjectKey(zodSchema)) {
         return acc;
       }
 

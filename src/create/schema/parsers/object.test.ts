@@ -320,6 +320,7 @@ describe('required', () => {
           .transform((str) => str?.length)
           .pipe(z.number().optional()),
         m: z.string().default('a'),
+        n: z.intersection(z.literal(undefined), z.number()),
       });
 
       const result = createObjectSchema(schema, createInputState());
