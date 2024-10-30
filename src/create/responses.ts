@@ -14,7 +14,6 @@ import type {
   ZodOpenApiResponsesObject,
 } from './document';
 import { type SchemaState, createSchema } from './schema';
-import { isOptionalSchema } from './schema/parsers/optional';
 import { isISpecificationExtension } from './specificationExtension';
 
 export const createResponseHeaders = (
@@ -90,7 +89,9 @@ export const createBaseHeader = (
     documentOptions,
   };
   const schemaObject = createSchema(schema, state, ['header']);
-  const required = !isOptionalSchema(schema, state)?.optional;
+  const optionalResult = schema.safeParse(undefined);
+
+  const required = !optionalResult.success || optionalResult !== undefined;
   return {
     ...rest,
     ...(schema && { schema: schemaObject }),
