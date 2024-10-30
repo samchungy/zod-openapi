@@ -287,4 +287,41 @@ describe('extend', () => {
 
     expect(result).toEqual(expected);
   });
+
+  it('creates an object with 2 required fields using a custom type', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+          },
+          b: {
+            type: 'string',
+            format: 'date',
+          },
+        },
+        required: ['a', 'b'],
+      },
+    };
+    const zodDate = z
+      .union([
+        z.custom<Date>((val: unknown) => val instanceof Date),
+        z.string().transform((str: string): Date => new Date(str)), // ignore validation
+      ])
+      .openapi({
+        type: 'string',
+        format: 'date',
+      });
+
+    const schema = z.object({
+      a: z.string(),
+      b: zodDate,
+    });
+
+    const result = createObjectSchema(schema, createOutputState());
+
+    expect(result).toEqual(expected);
+  });
 });

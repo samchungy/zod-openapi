@@ -78,6 +78,91 @@ describe('isOptionalSchema', () => {
     expect(result).toEqual({ optional: true });
   });
 
+  it('returns false for an async transform without an optional', () => {
+    const schema = z
+      .string()
+      // eslint-disable-next-line @typescript-eslint/require-await
+      .transform(async () => 'x');
+
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: false });
+  });
+
+  it('returns false for a custom without an optional', () => {
+    const schema = z.custom<Date>((d) => d instanceof Date);
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: false });
+  });
+
+  it('returns true for a custom undefined without a check', () => {
+    const schema = z.custom<undefined>();
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns false for a custom string | undefined without a check', () => {
+    const schema = z.custom<string | undefined>();
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns false for a custom string | undefined with a check that returns false for undefined', () => {
+    const schema = z.custom<string | undefined>(
+      (toCheck: string | undefined) => toCheck !== undefined,
+    );
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: false });
+  });
+
+  it('returns true for a custom string | undefined with a check that returns true for undefined', () => {
+    const schema = z.custom<string | undefined>(
+      (toCheck: string | undefined) => toCheck === undefined,
+    );
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns true for a custom undefined with a check', () => {
+    const schema = z.custom<undefined>((_: unknown) => false);
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: false });
+  });
+
+  it('returns true for a custom with Date with an optional', () => {
+    const schema = z.custom<Date>((d) => d instanceof Date).optional();
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
+  it('returns false for a custom without an optional with async transform', () => {
+    const schema = z
+      .custom<Date>((d) => d instanceof Date)
+      // eslint-disable-next-line @typescript-eslint/require-await
+      .transform(async () => 'x');
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: false });
+  });
+
+  it('returns true for a custom with an optional using a transform', () => {
+    const schema = z
+      .custom<Date>((d) => d instanceof Date)
+      .optional()
+      // eslint-disable-next-line @typescript-eslint/require-await
+      .transform(async () => 'x');
+    const result = isOptionalSchema(schema, createOutputState());
+
+    expect(result).toEqual({ optional: true });
+  });
+
   it('returns true for an output state on pipeline', () => {
     const schema = z
       .string()
