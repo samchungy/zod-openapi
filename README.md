@@ -695,6 +695,7 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodBranded
 - ZodCatch
   - Treated as ZodDefault
+- ZodCustom
 - ZodDate
   - `type` is mapped as `string` by default
 - ZodDefault
