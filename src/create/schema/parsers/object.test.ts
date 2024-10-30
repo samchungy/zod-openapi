@@ -189,65 +189,160 @@ describe('createObjectSchema', () => {
 });
 
 describe('required', () => {
-  it('creates a required array containing all properties', () => {
-    const schema = z.object({
-      a: z.string(),
-      b: z.string().nullable(),
-      c: z.number(),
-      d: z.literal(null),
-      e: z.union([z.string(), z.number()]),
+  describe('output', () => {
+    it('creates a required array containing all properties', () => {
+      const schema = z.object({
+        a: z.string(),
+        b: z.string().nullable(),
+        c: z.number(),
+        d: z.literal(null),
+        e: z.union([z.string(), z.number()]),
+        f: z.custom((r) => r !== undefined),
+        g: z.string().default('a'),
+        h: z.string().catch('a'),
+      });
+
+      const result = createObjectSchema(schema, createOutputState());
+
+      expect(result).toEqual<Schema>({
+        effects: expect.any(Array),
+        type: 'schema',
+        schema: {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { type: ['string', 'null'] },
+            c: { type: 'number' },
+            d: { type: 'null' },
+            e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            f: {},
+            g: { type: 'string', default: 'a' },
+            h: { type: 'string', default: 'a' },
+          },
+          required: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+        },
+      });
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    it('does not create an required array', () => {
+      const ref = z.string().openapi({ ref: 'ref' });
+      const oref = z.string().optional().openapi({ ref: 'oref' });
+      const schema = z.object({
+        a: z.literal(undefined),
+        b: z.never(),
+        c: z.undefined(),
+        d: z.string().optional(),
+        e: z.string().nullish(),
+        f: z.number().optional(),
+        g: z.union([z.string(), z.undefined()]),
+        h: z.union([z.string(), z.number().optional()]),
+        i: ref.optional(),
+        j: oref,
+        k: z.custom<string | undefined>(),
+        l: z
+          .string()
+          .optional()
+          .transform((str) => str?.length)
+          .pipe(z.number().optional()),
+      });
 
-    expect(result).toEqual<Schema>({
-      type: 'schema',
-      schema: {
-        type: 'object',
-        properties: {
-          a: { type: 'string' },
-          b: { type: ['string', 'null'] },
-          c: { type: 'number' },
-          d: { type: 'null' },
-          e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+      const result = createObjectSchema(schema, createOutputState());
+
+      expect(result).toEqual<Schema>({
+        effects: expect.any(Array),
+        type: 'schema',
+        schema: {
+          type: 'object',
+          properties: {
+            d: { type: 'string' },
+            e: { type: ['string', 'null'] },
+            f: { type: 'number' },
+            g: { anyOf: [{ type: 'string' }] },
+            h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            i: { $ref: '#/components/schemas/ref' },
+            j: { $ref: '#/components/schemas/oref' },
+            k: {},
+            l: { type: 'number' },
+          },
         },
-        required: ['a', 'b', 'c', 'd', 'e'],
-      },
+      });
     });
   });
 
-  it('does not create an required array', () => {
-    const ref = z.string().openapi({ ref: 'ref' });
-    const oref = z.string().optional().openapi({ ref: 'oref' });
-    const schema = z.object({
-      a: z.literal(undefined),
-      b: z.never(),
-      c: z.undefined(),
-      d: z.string().optional(),
-      e: z.string().nullish(),
-      f: z.number().optional(),
-      g: z.union([z.string(), z.undefined()]),
-      h: z.union([z.string(), z.number().optional()]),
-      i: ref.optional(),
-      j: oref,
+  describe('input', () => {
+    it('creates a required array containing all properties', () => {
+      const schema = z.object({
+        a: z.string(),
+        b: z.string().nullable(),
+        c: z.number(),
+        d: z.literal(null),
+        e: z.union([z.string(), z.number()]),
+        f: z.custom((r) => r !== undefined),
+      });
+
+      const result = createObjectSchema(schema, createInputState());
+
+      expect(result).toEqual<Schema>({
+        type: 'schema',
+        schema: {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { type: ['string', 'null'] },
+            c: { type: 'number' },
+            d: { type: 'null' },
+            e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            f: {},
+          },
+          required: ['a', 'b', 'c', 'd', 'e', 'f'],
+        },
+      });
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    it('does not create an required array', () => {
+      const ref = z.string().openapi({ ref: 'ref' });
+      const oref = z.string().optional().openapi({ ref: 'oref' });
+      const schema = z.object({
+        a: z.literal(undefined),
+        b: z.never(),
+        c: z.undefined(),
+        d: z.string().optional(),
+        e: z.string().nullish(),
+        f: z.number().optional(),
+        g: z.union([z.string(), z.undefined()]),
+        h: z.union([z.string(), z.number().optional()]),
+        i: ref.optional(),
+        j: oref,
+        k: z.custom<string | undefined>(),
+        l: z
+          .string()
+          .optional()
+          .transform((str) => str?.length)
+          .pipe(z.number().optional()),
+        m: z.string().default('a'),
+      });
 
-    expect(result).toEqual<Schema>({
-      type: 'schema',
-      schema: {
-        type: 'object',
-        properties: {
-          d: { type: 'string' },
-          e: { type: ['string', 'null'] },
-          f: { type: 'number' },
-          g: { anyOf: [{ type: 'string' }] },
-          h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
-          i: { $ref: '#/components/schemas/ref' },
-          j: { $ref: '#/components/schemas/oref' },
+      const result = createObjectSchema(schema, createInputState());
+
+      expect(result).toEqual<Schema>({
+        effects: expect.any(Array),
+        type: 'schema',
+        schema: {
+          type: 'object',
+          properties: {
+            d: { type: 'string' },
+            e: { type: ['string', 'null'] },
+            f: { type: 'number' },
+            g: { anyOf: [{ type: 'string' }] },
+            h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            i: { $ref: '#/components/schemas/ref' },
+            j: { $ref: '#/components/schemas/oref' },
+            k: {},
+            l: { type: 'string' },
+            m: { type: 'string', default: 'a' },
+          },
         },
-      },
+      });
     });
   });
 });
