@@ -26,6 +26,14 @@ export function extendZodWithOpenApi(zod: typeof z) {
   };
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
+  const zodDescribe = zod.ZodObject.prototype.describe;
+
+  zod.ZodType.prototype.describe = function (description) {
+    const result = zodDescribe.apply(this, [description]);
+    return result.openapi({ description });
+  };
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const zodObjectExtend = zod.ZodObject.prototype.extend;
 
   zod.ZodObject.prototype.extend = function (

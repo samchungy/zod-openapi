@@ -24,9 +24,6 @@ export interface SchemaState {
   documentOptions?: CreateSchemaOptions;
 }
 
-const isDescriptionEqual = (schema: Schema, zodSchema: ZodType): boolean =>
-  schema.type === 'ref' && zodSchema.description === schema.zodType.description;
-
 export const createNewSchema = <
   Output = unknown,
   Def extends ZodTypeDef = ZodTypeDef,
@@ -54,17 +51,10 @@ export const createNewSchema = <
   } = zodSchema._def.openapi ?? {};
 
   const schema = createSchemaSwitch(zodSchema, state);
-  const description =
-    zodSchema.description && !isDescriptionEqual(schema, zodSchema)
-      ? zodSchema.description
-      : undefined;
 
   const schemaWithMetadata = enhanceWithMetadata(
     schema,
-    {
-      ...(description && { description }),
-      ...additionalMetadata,
-    },
+    additionalMetadata,
     state,
   );
   state.visited.delete(zodSchema);
