@@ -66,6 +66,21 @@ interface ZodOpenApiMetadata<
   type?: SchemaObject['type'];
 }
 
+interface ZodOpenApiMetadataDef {
+  /**
+   * Up to date OpenAPI metadata
+   */
+  openapi: ZodOpenApiMetadata<ZodTypeAny>;
+  /**
+   * Used to keep track of the Zod Schema had `.openapi` called on it
+   */
+  current?: ZodTypeAny;
+  /**
+   * Used to keep track of the previous Zod Schema that had `.openapi` called on it if another `.openapi` is called
+   */
+  previous?: ZodTypeAny;
+}
+
 interface ZodOpenApiExtendMetadata {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extends: ZodObject<any, any, any, any, any>;
@@ -80,11 +95,7 @@ declare module 'zod' {
   }
 
   interface ZodTypeDef {
-    /**
-     * OpenAPI metadata
-     */
-    openapi?: ZodOpenApiMetadata<ZodTypeAny>;
-    previous?: ZodTypeAny;
+    zodOpenApi?: ZodOpenApiMetadataDef;
   }
 
   export interface ZodObjectDef {

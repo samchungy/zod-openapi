@@ -48,7 +48,7 @@ export const createNewSchema = <
     refType,
     unionOneOf,
     ...additionalMetadata
-  } = zodSchema._def.openapi ?? {};
+  } = zodSchema._def.zodOpenApi?.openapi ?? {};
 
   const schema = createSchemaSwitch(zodSchema, state);
 
@@ -186,6 +186,7 @@ export const createSchemaOrRef = <
 >(
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
+  refOnly?: boolean,
 ): Schema => {
   const component = state.components.schemas.get(zodSchema);
   const existingRef = createExistingRef(zodSchema, component, state);
@@ -194,9 +195,27 @@ export const createSchemaOrRef = <
     return existingRef;
   }
 
-  const ref = zodSchema._def.openapi?.ref ?? component?.ref;
+  if (zodSchema._def.zodOpenApi?.previous) {
+    createSchemaOrRef(zodSchema._def.zodOpenApi.previous, state, true);
+  }
+
+  const ref = zodSchema._def.zodOpenApi?.openapi?.ref ?? component?.ref;
   if (ref) {
+    if (
+      zodSchema._def.zodOpenApi?.current &&
+      zodSchema._def.zodOpenApi?.current !== zodSchema
+    ) {
+      createSchemaOrRef(zodSchema._def.zodOpenApi.current, state, true);
+      return createNewSchema(zodSchema, state);
+    }
     return createNewRef(ref, zodSchema, state);
+  }
+
+  if (refOnly) {
+    return {
+      type: 'schema',
+      schema: {},
+    };
   }
 
   return createNewSchema(zodSchema, state);

@@ -10,7 +10,7 @@ export const createManualTypeSchema = <
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
 ): Schema => {
-  if (!zodSchema._def.openapi?.type) {
+  if (!zodSchema._def.zodOpenApi?.openapi?.type) {
     const schemaName = zodSchema.constructor.name;
     throw new Error(
       `Unknown schema ${schemaName} at ${state.path.join(
@@ -22,7 +22,7 @@ export const createManualTypeSchema = <
   return {
     type: 'schema',
     schema: {
-      type: zodSchema._def.openapi.type,
+      type: zodSchema._def.zodOpenApi?.openapi.type,
     },
   };
 };

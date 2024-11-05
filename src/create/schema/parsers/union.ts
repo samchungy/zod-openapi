@@ -22,7 +22,10 @@ export const createUnionSchema = <
     return acc;
   }, []);
 
-  if (zodUnion._def.openapi?.unionOneOf ?? state.documentOptions?.unionOneOf) {
+  if (
+    zodUnion._def.zodOpenApi?.openapi?.unionOneOf ??
+    state.documentOptions?.unionOneOf
+  ) {
     return {
       type: 'schema',
       schema: {

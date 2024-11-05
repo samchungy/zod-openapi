@@ -59,7 +59,7 @@ export const createHeaderOrRef = (
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  const ref = schema._def?.openapi?.header?.ref ?? component?.ref;
+  const ref = schema._def.zodOpenApi?.openapi?.header?.ref ?? component?.ref;
 
   if (ref) {
     components.headers.set(schema, {
@@ -80,7 +80,7 @@ export const createBaseHeader = (
   components: ComponentsObject,
   documentOptions?: CreateDocumentOptions,
 ): oas31.BaseParameterObject => {
-  const { ref, ...rest } = schema._def.openapi?.header ?? {};
+  const { ref, ...rest } = schema._def.zodOpenApi?.openapi?.header ?? {};
   const state: SchemaState = {
     components,
     type: 'output',

@@ -249,6 +249,7 @@ describe('createParametersObject', () => {
     const expectedResult: oas31.BaseParameterObject = {
       schema: {
         type: 'string',
+        description: 'foo',
       },
       description: 'boo',
       required: true,

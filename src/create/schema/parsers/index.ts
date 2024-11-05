@@ -41,7 +41,7 @@ export const createSchemaSwitch = <
   zodSchema: ZodType<Output, Def, Input>,
   state: SchemaState,
 ): Schema => {
-  if (zodSchema._def.openapi?.type) {
+  if (zodSchema._def.zodOpenApi?.openapi?.type) {
     return createManualTypeSchema(zodSchema, state);
   }
 

@@ -16,13 +16,13 @@ export const createPipelineSchema = <
   state: SchemaState,
 ): Schema => {
   if (
-    zodPipeline._def.openapi?.effectType === 'input' ||
-    zodPipeline._def.openapi?.effectType === 'same'
+    zodPipeline._def.zodOpenApi?.openapi?.effectType === 'input' ||
+    zodPipeline._def.zodOpenApi?.openapi?.effectType === 'same'
   ) {
     return createSchemaObject(zodPipeline._def.in, state, ['pipeline input']);
   }
 
-  if (zodPipeline._def.openapi?.effectType === 'output') {
+  if (zodPipeline._def.zodOpenApi?.openapi?.effectType === 'output') {
     return createSchemaObject(zodPipeline._def.out, state, ['pipeline output']);
   }
 

@@ -254,7 +254,7 @@ const getSchemas = (
           `Schema ${JSON.stringify(schema._def)} is already registered`,
         );
       }
-      const ref = schema._def.openapi?.ref ?? key;
+      const ref = schema._def.zodOpenApi?.openapi?.ref ?? key;
       components.schemas.set(schema, {
         type: 'manual',
         ref,
@@ -278,9 +278,9 @@ const getParameters = (
           `Parameter ${JSON.stringify(schema._def)} is already registered`,
         );
       }
-      const ref = schema._def.openapi?.param?.ref ?? key;
-      const name = schema._def.openapi?.param?.name;
-      const location = schema._def.openapi?.param?.in;
+      const ref = schema._def.zodOpenApi?.openapi?.param?.ref ?? key;
+      const name = schema._def.zodOpenApi?.openapi?.param?.name;
+      const location = schema._def.zodOpenApi?.openapi?.param?.in;
 
       if (!name || !location) {
         throw new Error('`name` or `in` missing in .openapi()');
@@ -310,7 +310,7 @@ const getHeaders = (
           `Header ${JSON.stringify(schema._def)} is already registered`,
         );
       }
-      const ref = schema._def.openapi?.param?.ref ?? key;
+      const ref = schema._def.zodOpenApi?.openapi?.param?.ref ?? key;
       components.headers.set(schema, {
         type: 'manual',
         ref,
@@ -456,7 +456,7 @@ export const createSchemaComponents = (
     if (type === 'manual') {
       const state: SchemaState = {
         components,
-        type: schema._def.openapi?.refType ?? 'output',
+        type: schema._def.zodOpenApi?.openapi?.refType ?? 'output',
         path: [],
         visited: new Set(),
         documentOptions,

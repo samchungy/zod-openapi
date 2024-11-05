@@ -32,7 +32,7 @@ export const createObjectSchema = <
 ): Schema => {
   const extendedSchema = createExtendedSchema(
     zodObject,
-    zodObject._def.previous as
+    zodObject._def.zodOpenApi?.previous as
       | ZodObject<T, UnknownKeys, Catchall, Output, Input>
       | undefined,
     state,
@@ -68,7 +68,7 @@ export const createExtendedSchema = <
   }
 
   const component = state.components.schemas.get(baseZodObject);
-  if (component ?? baseZodObject._def.openapi?.ref) {
+  if (component ?? baseZodObject._def.zodOpenApi?.openapi.ref) {
     createSchemaObject(baseZodObject, state, ['extended schema']);
   }
 

@@ -24,7 +24,7 @@ export const createTransformSchema = <
   zodTransform: ZodEffects<T, Output, Input>,
   state: SchemaState,
 ): Schema => {
-  if (zodTransform._def.openapi?.effectType === 'output') {
+  if (zodTransform._def.zodOpenApi?.openapi?.effectType === 'output') {
     return {
       type: 'schema',
       schema: createManualOutputTransformSchema(zodTransform, state),
@@ -32,8 +32,8 @@ export const createTransformSchema = <
   }
 
   if (
-    zodTransform._def.openapi?.effectType === 'input' ||
-    zodTransform._def.openapi?.effectType === 'same'
+    zodTransform._def.zodOpenApi?.openapi?.effectType === 'input' ||
+    zodTransform._def.zodOpenApi?.openapi?.effectType === 'same'
   ) {
     return createSchemaObject(zodTransform._def.schema, state, [
       'transform input',
@@ -75,7 +75,7 @@ export const createManualOutputTransformSchema = <
   zodTransform: ZodEffects<T, Output, Input>,
   state: SchemaState,
 ): oas31.SchemaObject => {
-  if (!zodTransform._def.openapi?.type) {
+  if (!zodTransform._def.zodOpenApi?.openapi?.type) {
     const zodType = zodTransform.constructor.name;
     const schemaName = `${zodType} - ${zodTransform._def.effect.type}`;
     throw new Error(
@@ -86,7 +86,7 @@ export const createManualOutputTransformSchema = <
   }
 
   return {
-    type: zodTransform._def.openapi.type,
+    type: zodTransform._def.zodOpenApi?.openapi.type,
   };
 };
 

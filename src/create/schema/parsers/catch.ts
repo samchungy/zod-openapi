@@ -1,6 +1,6 @@
 import type { ZodCatch, ZodTypeAny } from 'zod';
 
-import type { oas31 } from '../../../../dist';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import {
   type Schema,
   type SchemaState,

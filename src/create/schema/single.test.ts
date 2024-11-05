@@ -1,4 +1,4 @@
-import 'zod-openapi/extend';
+import '../../entries/extend';
 import { z } from 'zod';
 
 import { type SchemaResult, createSchema } from './single';
