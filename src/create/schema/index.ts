@@ -59,10 +59,14 @@ export const createNewSchema = <
       ? zodSchema.description
       : undefined;
 
-  const schemaWithMetadata = enhanceWithMetadata(schema, {
-    ...(description && { description }),
-    ...additionalMetadata,
-  });
+  const schemaWithMetadata = enhanceWithMetadata(
+    schema,
+    {
+      ...(description && { description }),
+      ...additionalMetadata,
+    },
+    state,
+  );
   state.visited.delete(zodSchema);
   return schemaWithMetadata;
 };

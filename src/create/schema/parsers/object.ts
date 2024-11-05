@@ -32,7 +32,9 @@ export const createObjectSchema = <
 ): Schema => {
   const extendedSchema = createExtendedSchema(
     zodObject,
-    zodObject._def.extendMetadata?.extends,
+    zodObject._def.previous as
+      | ZodObject<T, UnknownKeys, Catchall, Output, Input>
+      | undefined,
     state,
   );
 

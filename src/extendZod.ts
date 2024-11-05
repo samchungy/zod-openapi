@@ -1,4 +1,4 @@
-import type { ZodRawShape, z } from 'zod';
+import type { ZodRawShape, ZodTypeDef, z } from 'zod';
 import './extendZodTypes';
 
 export function extendZodWithOpenApi(zod: typeof z) {
@@ -6,9 +6,18 @@ export function extendZodWithOpenApi(zod: typeof z) {
     return;
   }
   zod.ZodType.prototype.openapi = function (openapi) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { openapi: prevOpenapi, ...rest } = this._def;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const previous: Pick<ZodTypeDef, 'previous'> = prevOpenapi && {
+      previous: this,
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     const result = new (this as any).constructor({
-      ...this._def,
+      ...rest,
+      ...previous,
       openapi,
     });
 
@@ -23,10 +32,12 @@ export function extendZodWithOpenApi(zod: typeof z) {
     ...args: [augmentation: ZodRawShape]
   ) {
     const extendResult = zodObjectExtend.apply(this, args);
-    extendResult._def.extendMetadata = {
-      extends: this,
-    };
-    delete extendResult._def.openapi;
+
+    if (extendResult._def.openapi) {
+      delete extendResult._def.openapi;
+      extendResult._def.previous = this;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return extendResult as any;
   };
@@ -38,8 +49,12 @@ export function extendZodWithOpenApi(zod: typeof z) {
     ...args: [mask: Record<string, true | undefined>]
   ) {
     const omitResult = zodObjectOmit.apply(this, args);
-    delete omitResult._def.extendMetadata;
-    delete omitResult._def.openapi;
+
+    if (omitResult._def.openapi) {
+      delete omitResult._def.openapi;
+      omitResult._def.previous = this;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return omitResult as any;
   };
@@ -51,8 +66,11 @@ export function extendZodWithOpenApi(zod: typeof z) {
     ...args: [mask: Record<string, true | undefined>]
   ) {
     const pickResult = zodObjectPick.apply(this, args);
-    delete pickResult._def.extendMetadata;
-    delete pickResult._def.openapi;
+
+    if (pickResult._def.openapi) {
+      delete pickResult._def.openapi;
+      pickResult._def.previous = this;
+    }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return pickResult as any;
   };

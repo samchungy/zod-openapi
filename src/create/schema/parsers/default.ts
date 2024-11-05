@@ -15,7 +15,11 @@ export const createDefaultSchema = <T extends ZodTypeAny>(
     'default',
   ]);
 
-  return enhanceWithMetadata(schemaObject, {
-    default: zodDefault._def.defaultValue(),
-  });
+  return enhanceWithMetadata(
+    schemaObject,
+    {
+      default: zodDefault._def.defaultValue(),
+    },
+    state,
+  );
 };

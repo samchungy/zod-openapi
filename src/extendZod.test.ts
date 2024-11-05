@@ -14,6 +14,15 @@ describe('extendZodWithOpenApi', () => {
     expect(() => run()).not.toThrow();
   });
 
+  it('allows .openapi() to be chained in Zod Types', () => {
+    const a = z.string().openapi({ description: 'test' });
+    const b = a.openapi({ description: 'test2' });
+
+    expect(a._def.openapi?.description).toBe('test');
+    expect(b._def.openapi?.description).toBe('test2');
+    expect(b._def.previous?._def.openapi?.description).toBe('test');
+  });
+
   it('adds ._def.openapi fields to a zod type', () => {
     const a = z.string().openapi({ description: 'a' });
     const b = z.number().openapi({ examples: [1] });
@@ -33,7 +42,7 @@ describe('extendZodWithOpenApi', () => {
     const b = a.extend({ b: z.string() });
 
     expect(a._def.openapi?.ref).toBe('a');
-    expect(b._def.extendMetadata?.extends).toStrictEqual(a);
+    expect(b._def?.previous).toStrictEqual(a);
   });
 
   it('adds removes extendsMetadata to an object when .omit or .pick is used', () => {
@@ -43,10 +52,8 @@ describe('extendZodWithOpenApi', () => {
     const d = b.omit({ a: true });
 
     expect(a._def.openapi?.ref).toBe('a');
-    expect(b._def.extendMetadata?.extends).toStrictEqual(a);
-    expect(c._def.extendMetadata).toBeUndefined();
+    expect(b._def.previous).toStrictEqual(a);
     expect(c._def.openapi).toBeUndefined();
-    expect(d._def.extendMetadata).toBeUndefined();
     expect(d._def.openapi).toBeUndefined();
   });
 

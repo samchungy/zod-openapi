@@ -84,6 +84,7 @@ declare module 'zod' {
      * OpenAPI metadata
      */
     openapi?: ZodOpenApiMetadata<ZodTypeAny>;
+    previous?: ZodTypeAny;
   }
 
   export interface ZodObjectDef {

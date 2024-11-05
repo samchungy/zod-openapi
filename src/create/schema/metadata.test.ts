@@ -1,7 +1,10 @@
 import '../../entries/extend';
 import { z } from 'zod';
 
-import { createOutputState } from '../../testing/state';
+import {
+  createOutputOpenapi3State,
+  createOutputState,
+} from '../../testing/state';
 
 import { type Schema, createSchemaObject } from './index';
 
@@ -83,7 +86,28 @@ describe('enhanceWithMetadata', () => {
     expect(result).toEqual(expected);
   });
 
-  it('adds allOf to $refs', () => {
+  it('adds adds a description alongside $ref when only description is added in 3.1.0', () => {
+    const ref = z.string().openapi({ ref: 'ref' });
+
+    const expected: Schema = {
+      type: 'ref',
+      schema: {
+        $ref: '#/components/schemas/ref',
+        description: 'hello',
+      },
+      zodType: ref,
+    };
+
+    const schema = ref.optional().openapi({ description: 'hello' });
+
+    const result = createSchemaObject(schema, createOutputState(), []);
+
+    expect(result).toEqual(expected);
+  });
+
+  it('adds adds a description alongside allOf when only description is added in 3.0.0', () => {
+    const ref = z.string().openapi({ ref: 'ref' });
+
     const expected: Schema = {
       type: 'schema',
       schema: {
@@ -91,18 +115,14 @@ describe('enhanceWithMetadata', () => {
           {
             $ref: '#/components/schemas/ref',
           },
-          {
-            description: 'hello',
-          },
         ],
+        description: 'hello',
       },
     };
 
-    const ref = z.string().openapi({ ref: 'ref' });
-
     const schema = ref.optional().openapi({ description: 'hello' });
 
-    const result = createSchemaObject(schema, createOutputState(), []);
+    const result = createSchemaObject(schema, createOutputOpenapi3State(), []);
 
     expect(result).toEqual(expected);
   });

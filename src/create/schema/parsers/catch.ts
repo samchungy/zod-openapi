@@ -25,7 +25,11 @@ export const createCatchSchema = <T extends ZodTypeAny>(
         }
       : undefined;
 
-  return enhanceWithMetadata(schemaObject, {
-    ...maybeDefaultValue,
-  });
+  return enhanceWithMetadata(
+    schemaObject,
+    {
+      ...maybeDefaultValue,
+    },
+    state,
+  );
 };
