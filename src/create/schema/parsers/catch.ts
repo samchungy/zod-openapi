@@ -20,19 +20,12 @@ export const createCatchSchema = <T extends ZodTypeAny>(
 
   const catchResult = zodCatch.safeParse(undefined);
 
-  const maybeDefaultValue: Pick<oas31.SchemaObject, 'default'> | undefined =
+  const maybeDefaultValue: Pick<oas31.SchemaObject, 'default'> =
     catchResult.success
       ? {
           default: catchResult.data,
         }
-      : undefined;
+      : {};
 
-  return enhanceWithMetadata(
-    schemaObject,
-    {
-      ...maybeDefaultValue,
-    },
-    state,
-    previous,
-  );
+  return enhanceWithMetadata(schemaObject, maybeDefaultValue, state, previous);
 };
