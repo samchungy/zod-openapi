@@ -103,7 +103,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodDefault')) {
-    return createDefaultSchema(zodSchema, state);
+    return createDefaultSchema(zodSchema, state, previous);
   }
 
   if (isZodType(zodSchema, 'ZodRecord')) {
@@ -152,7 +152,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodCatch')) {
-    return createCatchSchema(zodSchema, state);
+    return createCatchSchema(zodSchema, state, previous);
   }
 
   if (isZodType(zodSchema, 'ZodUnknown') || isZodType(zodSchema, 'ZodAny')) {

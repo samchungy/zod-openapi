@@ -17,7 +17,7 @@ describe('createDefaultSchema', () => {
     };
     const schema = z.string().default('a');
 
-    const result = createDefaultSchema(schema, createOutputState());
+    const result = createDefaultSchema(schema, createOutputState(), undefined);
 
     expect(result).toEqual(expected);
   });
@@ -36,7 +36,7 @@ describe('createDefaultSchema', () => {
     };
     const schema = z.string().openapi({ ref: 'ref' }).optional().default('a');
 
-    const result = createDefaultSchema(schema, createOutputState());
+    const result = createDefaultSchema(schema, createOutputState(), undefined);
 
     expect(result).toEqual(expected);
   });

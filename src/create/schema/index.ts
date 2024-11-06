@@ -226,18 +226,17 @@ export const createSchemaOrRef = <
       | RefObject
       | undefined);
 
+  const current =
+    zodSchema._def.zodOpenApi?.current &&
+    zodSchema._def.zodOpenApi.current !== zodSchema
+      ? (createSchemaOrRef(zodSchema._def.zodOpenApi.current, state, true) as
+          | RefObject
+          | undefined)
+      : undefined;
+
   const ref = zodSchema._def.zodOpenApi?.openapi?.ref ?? component?.ref;
   if (ref) {
-    if (
-      zodSchema._def.zodOpenApi?.current &&
-      zodSchema._def.zodOpenApi?.current !== zodSchema
-    ) {
-      const current = createSchemaOrRef(
-        zodSchema._def.zodOpenApi.current,
-        state,
-        true,
-      ) as RefObject | undefined;
-
+    if (current) {
       if (onlyRef) {
         return current;
       }
@@ -248,10 +247,10 @@ export const createSchemaOrRef = <
   }
 
   if (onlyRef) {
-    return previous;
+    return previous ?? current;
   }
 
-  return createNewSchema({ zodSchema, previous, state });
+  return createNewSchema({ zodSchema, previous: previous ?? current, state });
 };
 
 export const createSchemaObject = <
