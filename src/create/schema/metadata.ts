@@ -75,9 +75,10 @@ export const enhanceWithMetadata = (
     const diff = Object.entries({ ...schema.schema, ...values }).reduce(
       (acc, [key, value]) => {
         if (
-          previous.schemaObject &&
-          !isReferenceObject(previous.schemaObject) &&
-          (previous.schemaObject as Record<string, unknown>)[key] === value
+          ['oneOf', 'allOf', 'anyOf'].includes(key) ||
+          (previous.schemaObject &&
+            !isReferenceObject(previous.schemaObject) &&
+            (previous.schemaObject as Record<string, unknown>)[key] === value)
         ) {
           return acc;
         }
