@@ -30,10 +30,8 @@ describe('createDefaultSchema', () => {
           {
             $ref: '#/components/schemas/ref',
           },
-          {
-            default: 'a',
-          },
         ],
+        default: 'a',
       },
     };
     const schema = z.string().openapi({ ref: 'ref' }).optional().default('a');

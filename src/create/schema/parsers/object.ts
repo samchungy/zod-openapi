@@ -12,6 +12,7 @@ import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
 import { type Effect, createComponentSchemaRef } from '../../components';
 import {
+  type RefObject,
   type Schema,
   type SchemaState,
   createSchemaObject,
@@ -28,13 +29,12 @@ export const createObjectSchema = <
   Input = objectInputType<T, Catchall, UnknownKeys>,
 >(
   zodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input>,
+  previous: RefObject | undefined,
   state: SchemaState,
 ): Schema => {
   const extendedSchema = createExtendedSchema(
     zodObject,
-    zodObject._def.zodOpenApi?.previous as
-      | ZodObject<T, UnknownKeys, Catchall, Output, Input>
-      | undefined,
+    previous?.zodType as ZodObject<T, UnknownKeys, Catchall, Output, Input>,
     state,
   );
 
@@ -68,7 +68,7 @@ export const createExtendedSchema = <
   }
 
   const component = state.components.schemas.get(baseZodObject);
-  if (component ?? baseZodObject._def.zodOpenApi?.openapi.ref) {
+  if (component ?? baseZodObject._def.zodOpenApi?.openapi?.ref) {
     createSchemaObject(baseZodObject, state, ['extended schema']);
   }
 
@@ -104,6 +104,7 @@ export const createExtendedSchema = <
     diffShape,
     diffOpts,
     state,
+    true,
   );
 
   return {
@@ -184,6 +185,7 @@ export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
   { unknownKeys, catchAll }: AdditionalPropertyOptions,
   state: SchemaState,
+  omitType?: boolean,
 ): Schema => {
   const properties = mapProperties(shape, state);
   const required = mapRequired(properties, shape, state);
@@ -194,7 +196,7 @@ export const createObjectSchemaFromShape = (
   return {
     type: 'schema',
     schema: {
-      type: 'object',
+      ...(!omitType && { type: 'object' }),
       ...(properties && { properties: properties.properties }),
       ...(required?.required.length && { required: required.required }),
       ...(unknownKeys === 'strict' && { additionalProperties: false }),

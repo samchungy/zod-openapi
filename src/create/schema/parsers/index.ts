@@ -1,7 +1,7 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
 import { isZodType } from '../../../zodType';
-import type { Schema, SchemaState } from '../../schema';
+import type { RefObject, Schema, SchemaState } from '../../schema';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -39,6 +39,7 @@ export const createSchemaSwitch = <
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
+  previous: RefObject | undefined,
   state: SchemaState,
 ): Schema => {
   if (zodSchema._def.zodOpenApi?.openapi?.type) {
@@ -74,7 +75,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodObject')) {
-    return createObjectSchema(zodSchema, state);
+    return createObjectSchema(zodSchema, previous, state);
   }
 
   if (isZodType(zodSchema, 'ZodUnion')) {

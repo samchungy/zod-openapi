@@ -87,6 +87,6 @@ describe('extendZodWithOpenApi', () => {
 
     const barString = fooString.openapi({ description: 'foo' });
 
-    expect(barString._def.zodOpenApi?.openapi.effectType).toBe('input');
+    expect(barString._def.zodOpenApi?.openapi?.effectType).toBe('input');
   });
 });

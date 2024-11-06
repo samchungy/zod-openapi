@@ -65,6 +65,10 @@ describe('enhanceWithMetadata', () => {
         $ref: '#/components/schemas/bla',
       },
       zodType: blaSchema,
+      schemaObject: {
+        type: 'string',
+        description: 'bla',
+      },
     };
 
     const result = createSchemaObject(fooSchema, createOutputState(), []);
@@ -96,6 +100,9 @@ describe('enhanceWithMetadata', () => {
         description: 'hello',
       },
       zodType: ref,
+      schemaObject: {
+        type: 'string',
+      },
     };
 
     const schema = ref.optional().openapi({ description: 'hello' });
@@ -135,6 +142,9 @@ describe('enhanceWithMetadata', () => {
         $ref: '#/components/schemas/og',
       },
       zodType: ref,
+      schemaObject: {
+        type: 'string',
+      },
     };
 
     const schema = ref.optional();
@@ -152,10 +162,8 @@ describe('enhanceWithMetadata', () => {
           {
             $ref: '#/components/schemas/ref2',
           },
-          {
-            default: 'a',
-          },
         ],
+        default: 'a',
       },
     };
 
@@ -175,7 +183,6 @@ describe('enhanceWithMetadata', () => {
         properties: {
           b: {
             allOf: [{ $ref: '#/components/schemas/a' }],
-            type: 'object',
             properties: { b: { type: 'string' } },
             required: ['b'],
             description: 'jello',

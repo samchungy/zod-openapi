@@ -1,4 +1,4 @@
-import type { oas31 } from './openapi3-ts/dist';
+import type { oas30, oas31 } from './openapi3-ts/dist';
 
 export const openApiVersions = [
   '3.0.0',
@@ -16,6 +16,10 @@ export const satisfiesVersion = (
 ) => openApiVersions.indexOf(test) >= openApiVersions.indexOf(against);
 
 export const isReferenceObject = (
-  schemaOrRef: oas31.SchemaObject | oas31.ReferenceObject,
+  schemaOrRef:
+    | oas31.SchemaObject
+    | oas31.ReferenceObject
+    | oas30.SchemaObject
+    | oas30.ReferenceObject,
 ): schemaOrRef is oas31.ReferenceObject =>
   Boolean('$ref' in schemaOrRef && schemaOrRef.$ref);

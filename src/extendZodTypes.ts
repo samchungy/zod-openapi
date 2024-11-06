@@ -70,13 +70,14 @@ interface ZodOpenApiMetadataDef {
   /**
    * Up to date OpenAPI metadata
    */
-  openapi: ZodOpenApiMetadata<ZodTypeAny>;
+  openapi?: ZodOpenApiMetadata<ZodTypeAny>;
   /**
    * Used to keep track of the Zod Schema had `.openapi` called on it
    */
   current?: ZodTypeAny;
   /**
-   * Used to keep track of the previous Zod Schema that had `.openapi` called on it if another `.openapi` is called
+   * Used to keep track of the previous Zod Schema that had `.openapi` called on it if another `.openapi` is called.
+   * This can also be present when .extend is called on an object.
    */
   previous?: ZodTypeAny;
 }

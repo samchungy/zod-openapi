@@ -75,6 +75,10 @@ export function extendZodWithOpenApi(zod: typeof z) {
       cloned.openapi = mergeOpenApi({}, cloned.openapi);
       cloned.previous = this;
       extendResult._def.zodOpenApi = cloned;
+    } else {
+      extendResult._def.zodOpenApi = {
+        previous: this,
+      };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
