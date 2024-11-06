@@ -31,6 +31,46 @@ const createDescriptionMetadata = (
   };
 };
 
+const isValueEqual = (value: unknown, previous: unknown): boolean => {
+  if (typeof value !== typeof previous) {
+    return false;
+  }
+
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return value === previous;
+  }
+
+  if (Array.isArray(value) && Array.isArray(previous)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const sorted = [...value].sort();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const previousSorted = [...previous].sort();
+
+    return sorted.every((v, i) => isValueEqual(v, previousSorted[i]));
+  }
+
+  if (value === null || previous === null) {
+    return value === previous;
+  }
+
+  if (typeof value === 'object' && typeof previous === 'object') {
+    const keys = Object.keys(value);
+
+    return keys.every((key) =>
+      isValueEqual(
+        (value as Record<string, unknown>)[key],
+        (previous as Record<string, unknown>)[key],
+      ),
+    );
+  }
+
+  return value === previous;
+};
+
 export const enhanceWithMetadata = (
   schema: Schema,
   metadata: oas31.SchemaObject | oas31.ReferenceObject,
@@ -75,10 +115,12 @@ export const enhanceWithMetadata = (
     const diff = Object.entries({ ...schema.schema, ...values }).reduce(
       (acc, [key, value]) => {
         if (
-          ['oneOf', 'allOf', 'anyOf'].includes(key) ||
-          (previous.schemaObject &&
-            !isReferenceObject(previous.schemaObject) &&
-            (previous.schemaObject as Record<string, unknown>)[key] === value)
+          previous.schemaObject &&
+          !isReferenceObject(previous.schemaObject) &&
+          isValueEqual(
+            (previous.schemaObject as Record<string, unknown>)[key],
+            value,
+          )
         ) {
           return acc;
         }

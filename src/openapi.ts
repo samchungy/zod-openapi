@@ -21,5 +21,5 @@ export const isReferenceObject = (
     | oas31.ReferenceObject
     | oas30.SchemaObject
     | oas30.ReferenceObject,
-): schemaOrRef is oas31.ReferenceObject =>
+): schemaOrRef is oas31.ReferenceObject | oas30.ReferenceObject =>
   Boolean('$ref' in schemaOrRef && schemaOrRef.$ref);
