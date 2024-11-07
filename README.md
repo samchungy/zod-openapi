@@ -737,7 +737,7 @@ createDocument({
 });
 ```
 
-For example in `z.string().nullable()` will be rendered differently
+As an example `z.string().nullable()` will be rendered differently
 
 `3.0.0`
 
