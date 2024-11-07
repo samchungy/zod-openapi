@@ -116,7 +116,6 @@ export const enhanceWithMetadata = (
       (acc, [key, value]) => {
         if (
           previous.schemaObject &&
-          !isReferenceObject(previous.schemaObject) &&
           isValueEqual(
             (previous.schemaObject as Record<string, unknown>)[key],
             value,
