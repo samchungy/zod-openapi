@@ -1,4 +1,4 @@
-import { isReferenceObject, satisfiesVersion } from '../../openapi';
+import { satisfiesVersion } from '../../openapi';
 import type { oas31 } from '../../openapi3-ts/dist';
 
 import type { RefObject, Schema, SchemaState } from '.';
