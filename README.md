@@ -717,7 +717,8 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodNullable
 - ZodNumber
   - `integer` `type` mapping for `.int()`
-  - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`
+  - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`, `.positive()`, `.negative()`, `.nonnegative()`, `.nonpositive()`.
+  - `multipleOf` mapping for `.multipleOf()`
 - ZodObject
   - `additionalProperties` mapping for `.catchall()`, `.strict()`
   - `allOf` mapping for `.extend()` when the base object is registered and does not have `catchall()`, `strict()` and extension does not override a field.
