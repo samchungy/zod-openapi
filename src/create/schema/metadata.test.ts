@@ -2,6 +2,7 @@ import '../../entries/extend';
 import { z } from 'zod';
 
 import {
+  createInputState,
   createOutputOpenapi3State,
   createOutputState,
 } from '../../testing/state';
@@ -200,5 +201,505 @@ describe('enhanceWithMetadata', () => {
     const result = createSchemaObject(schema, createOutputState(), []);
 
     expect(result).toEqual(expected);
+  });
+
+  it('handles current and previous schemas', () => {
+    const FooSchema = z.string().openapi({ ref: 'foo' });
+
+    const BarSchema = z.object({
+      a: FooSchema.optional(),
+      b: FooSchema.openapi({ description: 'bar' }).optional(),
+      c: FooSchema.min(1).max(10),
+      d: FooSchema.openapi({ description: 'bar' }).min(1).max(10),
+      e: FooSchema.catch('a'),
+      f: FooSchema.default('a'),
+      g: FooSchema.email(),
+      h: FooSchema.datetime(),
+      i: FooSchema.openapi({ example: 'foo' }).min(1).max(10),
+    });
+
+    const result = createSchemaObject(BarSchema, createOutputState(), []);
+    const inputResult = createSchemaObject(BarSchema, createInputState(), []);
+    expect(result).toMatchInlineSnapshot(`
+{
+  "effects": [
+    {
+      "creationType": "output",
+      "path": [
+        "property: e",
+      ],
+      "type": "schema",
+      "zodType": ZodCatch {
+        "_def": {
+          "catchValue": [Function],
+          "description": undefined,
+          "errorMap": [Function],
+          "innerType": ZodString {
+            "_def": {
+              "checks": [],
+              "coerce": false,
+              "typeName": "ZodString",
+              "zodOpenApi": {
+                "current": [Circular],
+                "openapi": {
+                  "ref": "foo",
+                },
+              },
+            },
+            "and": [Function],
+            "array": [Function],
+            "brand": [Function],
+            "catch": [Function],
+            "default": [Function],
+            "describe": [Function],
+            "isNullable": [Function],
+            "isOptional": [Function],
+            "nullable": [Function],
+            "nullish": [Function],
+            "optional": [Function],
+            "or": [Function],
+            "parse": [Function],
+            "parseAsync": [Function],
+            "pipe": [Function],
+            "promise": [Function],
+            "readonly": [Function],
+            "refine": [Function],
+            "refinement": [Function],
+            "safeParse": [Function],
+            "safeParseAsync": [Function],
+            "spa": [Function],
+            "superRefine": [Function],
+            "transform": [Function],
+          },
+          "typeName": "ZodCatch",
+        },
+        "and": [Function],
+        "array": [Function],
+        "brand": [Function],
+        "catch": [Function],
+        "default": [Function],
+        "describe": [Function],
+        "isNullable": [Function],
+        "isOptional": [Function],
+        "nullable": [Function],
+        "nullish": [Function],
+        "optional": [Function],
+        "or": [Function],
+        "parse": [Function],
+        "parseAsync": [Function],
+        "pipe": [Function],
+        "promise": [Function],
+        "readonly": [Function],
+        "refine": [Function],
+        "refinement": [Function],
+        "safeParse": [Function],
+        "safeParseAsync": [Function],
+        "spa": [Function],
+        "superRefine": [Function],
+        "transform": [Function],
+      },
+    },
+    {
+      "creationType": "output",
+      "path": [
+        "property: f",
+      ],
+      "type": "schema",
+      "zodType": ZodDefault {
+        "_def": {
+          "defaultValue": [Function],
+          "description": undefined,
+          "errorMap": [Function],
+          "innerType": ZodString {
+            "_def": {
+              "checks": [],
+              "coerce": false,
+              "typeName": "ZodString",
+              "zodOpenApi": {
+                "current": [Circular],
+                "openapi": {
+                  "ref": "foo",
+                },
+              },
+            },
+            "and": [Function],
+            "array": [Function],
+            "brand": [Function],
+            "catch": [Function],
+            "default": [Function],
+            "describe": [Function],
+            "isNullable": [Function],
+            "isOptional": [Function],
+            "nullable": [Function],
+            "nullish": [Function],
+            "optional": [Function],
+            "or": [Function],
+            "parse": [Function],
+            "parseAsync": [Function],
+            "pipe": [Function],
+            "promise": [Function],
+            "readonly": [Function],
+            "refine": [Function],
+            "refinement": [Function],
+            "safeParse": [Function],
+            "safeParseAsync": [Function],
+            "spa": [Function],
+            "superRefine": [Function],
+            "transform": [Function],
+          },
+          "typeName": "ZodDefault",
+        },
+        "and": [Function],
+        "array": [Function],
+        "brand": [Function],
+        "catch": [Function],
+        "default": [Function],
+        "describe": [Function],
+        "isNullable": [Function],
+        "isOptional": [Function],
+        "nullable": [Function],
+        "nullish": [Function],
+        "optional": [Function],
+        "or": [Function],
+        "parse": [Function],
+        "parseAsync": [Function],
+        "pipe": [Function],
+        "promise": [Function],
+        "readonly": [Function],
+        "refine": [Function],
+        "refinement": [Function],
+        "safeParse": [Function],
+        "safeParseAsync": [Function],
+        "spa": [Function],
+        "superRefine": [Function],
+        "transform": [Function],
+      },
+    },
+  ],
+  "schema": {
+    "properties": {
+      "a": {
+        "$ref": "#/components/schemas/foo",
+      },
+      "b": {
+        "$ref": "#/components/schemas/foo",
+        "description": "bar",
+      },
+      "c": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "maxLength": 10,
+        "minLength": 1,
+      },
+      "d": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "description": "bar",
+        "maxLength": 10,
+        "minLength": 1,
+      },
+      "e": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "default": "a",
+      },
+      "f": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "default": "a",
+      },
+      "g": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "format": "email",
+      },
+      "h": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "format": "date-time",
+      },
+      "i": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "example": "foo",
+        "maxLength": 10,
+        "minLength": 1,
+      },
+    },
+    "required": [
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+    ],
+    "type": "object",
+  },
+  "type": "schema",
+}
+`);
+
+    expect(inputResult).toMatchInlineSnapshot(`
+{
+  "effects": [
+    {
+      "creationType": "input",
+      "path": [
+        "property: e",
+      ],
+      "type": "schema",
+      "zodType": ZodCatch {
+        "_def": {
+          "catchValue": [Function],
+          "description": undefined,
+          "errorMap": [Function],
+          "innerType": ZodString {
+            "_def": {
+              "checks": [],
+              "coerce": false,
+              "typeName": "ZodString",
+              "zodOpenApi": {
+                "current": [Circular],
+                "openapi": {
+                  "ref": "foo",
+                },
+              },
+            },
+            "and": [Function],
+            "array": [Function],
+            "brand": [Function],
+            "catch": [Function],
+            "default": [Function],
+            "describe": [Function],
+            "isNullable": [Function],
+            "isOptional": [Function],
+            "nullable": [Function],
+            "nullish": [Function],
+            "optional": [Function],
+            "or": [Function],
+            "parse": [Function],
+            "parseAsync": [Function],
+            "pipe": [Function],
+            "promise": [Function],
+            "readonly": [Function],
+            "refine": [Function],
+            "refinement": [Function],
+            "safeParse": [Function],
+            "safeParseAsync": [Function],
+            "spa": [Function],
+            "superRefine": [Function],
+            "transform": [Function],
+          },
+          "typeName": "ZodCatch",
+        },
+        "and": [Function],
+        "array": [Function],
+        "brand": [Function],
+        "catch": [Function],
+        "default": [Function],
+        "describe": [Function],
+        "isNullable": [Function],
+        "isOptional": [Function],
+        "nullable": [Function],
+        "nullish": [Function],
+        "optional": [Function],
+        "or": [Function],
+        "parse": [Function],
+        "parseAsync": [Function],
+        "pipe": [Function],
+        "promise": [Function],
+        "readonly": [Function],
+        "refine": [Function],
+        "refinement": [Function],
+        "safeParse": [Function],
+        "safeParseAsync": [Function],
+        "spa": [Function],
+        "superRefine": [Function],
+        "transform": [Function],
+      },
+    },
+    {
+      "creationType": "input",
+      "path": [
+        "property: f",
+      ],
+      "type": "schema",
+      "zodType": ZodDefault {
+        "_def": {
+          "defaultValue": [Function],
+          "description": undefined,
+          "errorMap": [Function],
+          "innerType": ZodString {
+            "_def": {
+              "checks": [],
+              "coerce": false,
+              "typeName": "ZodString",
+              "zodOpenApi": {
+                "current": [Circular],
+                "openapi": {
+                  "ref": "foo",
+                },
+              },
+            },
+            "and": [Function],
+            "array": [Function],
+            "brand": [Function],
+            "catch": [Function],
+            "default": [Function],
+            "describe": [Function],
+            "isNullable": [Function],
+            "isOptional": [Function],
+            "nullable": [Function],
+            "nullish": [Function],
+            "optional": [Function],
+            "or": [Function],
+            "parse": [Function],
+            "parseAsync": [Function],
+            "pipe": [Function],
+            "promise": [Function],
+            "readonly": [Function],
+            "refine": [Function],
+            "refinement": [Function],
+            "safeParse": [Function],
+            "safeParseAsync": [Function],
+            "spa": [Function],
+            "superRefine": [Function],
+            "transform": [Function],
+          },
+          "typeName": "ZodDefault",
+        },
+        "and": [Function],
+        "array": [Function],
+        "brand": [Function],
+        "catch": [Function],
+        "default": [Function],
+        "describe": [Function],
+        "isNullable": [Function],
+        "isOptional": [Function],
+        "nullable": [Function],
+        "nullish": [Function],
+        "optional": [Function],
+        "or": [Function],
+        "parse": [Function],
+        "parseAsync": [Function],
+        "pipe": [Function],
+        "promise": [Function],
+        "readonly": [Function],
+        "refine": [Function],
+        "refinement": [Function],
+        "safeParse": [Function],
+        "safeParseAsync": [Function],
+        "spa": [Function],
+        "superRefine": [Function],
+        "transform": [Function],
+      },
+    },
+  ],
+  "schema": {
+    "properties": {
+      "a": {
+        "$ref": "#/components/schemas/foo",
+      },
+      "b": {
+        "$ref": "#/components/schemas/foo",
+        "description": "bar",
+      },
+      "c": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "maxLength": 10,
+        "minLength": 1,
+      },
+      "d": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "description": "bar",
+        "maxLength": 10,
+        "minLength": 1,
+      },
+      "e": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "default": "a",
+      },
+      "f": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "default": "a",
+      },
+      "g": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "format": "email",
+      },
+      "h": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "format": "date-time",
+      },
+      "i": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+        ],
+        "example": "foo",
+        "maxLength": 10,
+        "minLength": 1,
+      },
+    },
+    "required": [
+      "c",
+      "d",
+      "g",
+      "h",
+      "i",
+    ],
+    "type": "object",
+  },
+  "type": "schema",
+}
+`);
   });
 });
