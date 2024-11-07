@@ -29,6 +29,7 @@ interface ZodOpenApiMetadata<
   refType?: CreationType;
   /**
    * Used to set the created type of an effect.
+   * If this was previously set to `same` and this is throwing an error, your effect is no longer returning the same type.
    */
   effectType?:
     | CreationType
