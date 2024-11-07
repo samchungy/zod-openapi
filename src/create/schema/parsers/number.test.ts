@@ -104,4 +104,19 @@ describe('createNumberSchema', () => {
 
     expect(result).toStrictEqual(expected);
   });
+
+  it('supports multipleOf', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'number',
+        multipleOf: 2,
+      },
+    };
+    const schema = z.number().multipleOf(2);
+
+    const result = createNumberSchema(schema, createOutputState());
+
+    expect(result).toStrictEqual(expected);
+  });
 });

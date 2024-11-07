@@ -13,16 +13,25 @@ export const createNumberSchema = (
 
   const minimum = mapMinimum(zodNumberChecks, state.components.openapi);
   const maximum = mapMaximum(zodNumberChecks, state.components.openapi);
+  const multipleOf = mapMultipleOf(zodNumberChecks);
 
   return {
     type: 'schema',
     schema: {
       type: mapNumberType(zodNumberChecks),
+      ...(multipleOf && multipleOf),
       ...(minimum && (minimum as oas31.SchemaObject)), // Union types are not easy to tame
       ...(maximum && (maximum as oas31.SchemaObject)),
     },
   };
 };
+
+export const mapMultipleOf = (
+  zodNumberCheck: ZodNumberCheckMap,
+): Pick<oas31.SchemaObject | oas30.SchemaObject, 'multipleOf'> | undefined =>
+  zodNumberCheck.multipleOf
+    ? { multipleOf: zodNumberCheck.multipleOf.value }
+    : undefined;
 
 export const mapMaximum = (
   zodNumberCheck: ZodNumberCheckMap,
