@@ -20,7 +20,7 @@ export const createBaseParameter = (
   subpath: string[],
   documentOptions?: CreateDocumentOptions,
 ): oas31.BaseParameterObject => {
-  const { ref, ...rest } = schema._def.openapi?.param ?? {};
+  const { ref, ...rest } = schema._def.zodOpenApi?.openapi?.param ?? {};
   const state: SchemaState = {
     components,
     type: 'input',
@@ -32,7 +32,7 @@ export const createBaseParameter = (
   const required = !schema.isOptional();
 
   const description =
-    schema._def.openapi?.description ?? schema._def.description;
+    schema._def.zodOpenApi?.openapi?.description ?? schema._def.description;
 
   return {
     ...(description && { description }),
@@ -51,9 +51,10 @@ export const createParamOrRef = (
   documentOptions?: CreateDocumentOptions,
 ): oas31.ParameterObject | oas31.ReferenceObject => {
   const component = components.parameters.get(zodSchema);
-  const paramType = zodSchema._def?.openapi?.param?.in ?? component?.in ?? type;
+  const paramType =
+    zodSchema._def.zodOpenApi?.openapi?.param?.in ?? component?.in ?? type;
   const paramName =
-    zodSchema._def?.openapi?.param?.name ?? component?.name ?? name;
+    zodSchema._def.zodOpenApi?.openapi?.param?.name ?? component?.name ?? name;
 
   if (!paramType) {
     throw new Error('Parameter type missing');
@@ -86,7 +87,7 @@ export const createParamOrRef = (
     throw new Error('Unexpected Error: received a reference object');
   }
 
-  const ref = zodSchema?._def?.openapi?.param?.ref ?? component?.ref;
+  const ref = zodSchema?._def.zodOpenApi?.openapi?.param?.ref ?? component?.ref;
 
   const paramObject: oas31.ParameterObject = {
     in: paramType,

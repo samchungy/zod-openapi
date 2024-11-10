@@ -88,7 +88,6 @@ describe('createNullableSchema', () => {
         properties: {
           b: {
             allOf: [{ $ref: '#/components/schemas/a' }],
-            type: 'object',
             properties: { b: { type: 'string' } },
             required: ['b'],
             nullable: true,
@@ -215,7 +214,6 @@ describe('createNullableSchema', () => {
               oneOf: [
                 {
                   allOf: [{ $ref: '#/components/schemas/a' }],
-                  type: 'object',
                   properties: { b: { type: 'string' } },
                   required: ['b'],
                 },

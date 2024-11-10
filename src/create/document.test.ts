@@ -518,7 +518,6 @@ describe('createDocument', () => {
         "required": [
           "d",
         ],
-        "type": "object",
       },
       "lazy": {
         "items": {
@@ -852,7 +851,6 @@ describe('createDocument', () => {
         "required": [
           "d",
         ],
-        "type": "object",
       },
       "lazy": {
         "items": {

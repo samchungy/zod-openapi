@@ -1,7 +1,7 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
 import { isZodType } from '../../../zodType';
-import type { Schema, SchemaState } from '../../schema';
+import type { RefObject, Schema, SchemaState } from '../../schema';
 
 import { createArraySchema } from './array';
 import { createBooleanSchema } from './boolean';
@@ -39,9 +39,10 @@ export const createSchemaSwitch = <
   Input = Output,
 >(
   zodSchema: ZodType<Output, Def, Input>,
+  previous: RefObject | undefined,
   state: SchemaState,
 ): Schema => {
-  if (zodSchema._def.openapi?.type) {
+  if (zodSchema._def.zodOpenApi?.openapi?.type) {
     return createManualTypeSchema(zodSchema, state);
   }
 
@@ -74,7 +75,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodObject')) {
-    return createObjectSchema(zodSchema, state);
+    return createObjectSchema(zodSchema, previous, state);
   }
 
   if (isZodType(zodSchema, 'ZodUnion')) {
@@ -102,7 +103,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodDefault')) {
-    return createDefaultSchema(zodSchema, state);
+    return createDefaultSchema(zodSchema, state, previous);
   }
 
   if (isZodType(zodSchema, 'ZodRecord')) {
@@ -151,7 +152,7 @@ export const createSchemaSwitch = <
   }
 
   if (isZodType(zodSchema, 'ZodCatch')) {
-    return createCatchSchema(zodSchema, state);
+    return createCatchSchema(zodSchema, state, previous);
   }
 
   if (isZodType(zodSchema, 'ZodUnknown') || isZodType(zodSchema, 'ZodAny')) {

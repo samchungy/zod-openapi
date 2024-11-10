@@ -12,10 +12,12 @@ import type { oas31 } from '../../../openapi3-ts/dist';
 import { isZodType } from '../../../zodType';
 import { type Effect, createComponentSchemaRef } from '../../components';
 import {
+  type RefObject,
   type Schema,
   type SchemaState,
   createSchemaObject,
 } from '../../schema';
+import { createDescriptionMetadata } from '../metadata';
 
 import { isOptionalObjectKey } from './optional';
 import { flattenEffects } from './transform';
@@ -28,11 +30,12 @@ export const createObjectSchema = <
   Input = objectInputType<T, Catchall, UnknownKeys>,
 >(
   zodObject: ZodObject<T, UnknownKeys, Catchall, Output, Input>,
+  previous: RefObject | undefined,
   state: SchemaState,
 ): Schema => {
   const extendedSchema = createExtendedSchema(
     zodObject,
-    zodObject._def.extendMetadata?.extends,
+    previous?.zodType as ZodObject<T, UnknownKeys, Catchall, Output, Input>,
     state,
   );
 
@@ -66,7 +69,7 @@ export const createExtendedSchema = <
   }
 
   const component = state.components.schemas.get(baseZodObject);
-  if (component ?? baseZodObject._def.openapi?.ref) {
+  if (component ?? baseZodObject._def.zodOpenApi?.openapi?.ref) {
     createSchemaObject(baseZodObject, state, ['extended schema']);
   }
 
@@ -102,7 +105,63 @@ export const createExtendedSchema = <
     diffShape,
     diffOpts,
     state,
+    true,
   );
+
+  const schemaLength = Object.keys(extendedSchema.schema).length;
+  const effects = flattenEffects([
+    completeComponent.type === 'complete' ? completeComponent.effects : [],
+    completeComponent.type === 'in-progress'
+      ? [
+          {
+            type: 'component',
+            zodType: zodObject,
+            path: [...state.path],
+          },
+        ]
+      : [],
+    extendedSchema.effects,
+  ]);
+
+  if (schemaLength === 0) {
+    return {
+      type: 'ref',
+      schema: {
+        $ref: createComponentSchemaRef(
+          completeComponent.ref,
+          state.documentOptions?.componentRefPath,
+        ),
+      },
+      schemaObject:
+        completeComponent.type === 'complete'
+          ? completeComponent.schemaObject
+          : undefined,
+      zodType: zodObject,
+      effects,
+    };
+  }
+
+  if (schemaLength === 1 && extendedSchema.schema.description) {
+    return createDescriptionMetadata(
+      {
+        type: 'ref',
+        schema: {
+          $ref: createComponentSchemaRef(
+            completeComponent.ref,
+            state.documentOptions?.componentRefPath,
+          ),
+        },
+        schemaObject:
+          completeComponent.type === 'complete'
+            ? completeComponent.schemaObject
+            : undefined,
+        zodType: zodObject,
+        effects,
+      },
+      extendedSchema.schema.description,
+      state,
+    );
+  }
 
   return {
     type: 'schema',
@@ -182,6 +241,7 @@ export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
   { unknownKeys, catchAll }: AdditionalPropertyOptions,
   state: SchemaState,
+  omitType?: boolean,
 ): Schema => {
   const properties = mapProperties(shape, state);
   const required = mapRequired(properties, shape, state);
@@ -192,7 +252,7 @@ export const createObjectSchemaFromShape = (
   return {
     type: 'schema',
     schema: {
-      type: 'object',
+      ...(!omitType && { type: 'object' }),
       ...(properties && { properties: properties.properties }),
       ...(required?.required.length && { required: required.required }),
       ...(unknownKeys === 'strict' && { additionalProperties: false }),

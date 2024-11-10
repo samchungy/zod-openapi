@@ -24,7 +24,7 @@ describe('createObjectSchema', () => {
       b: z.string().optional(),
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -47,7 +47,7 @@ describe('createObjectSchema', () => {
       a: z.string(),
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -70,7 +70,9 @@ describe('createObjectSchema', () => {
       })
       .catchall(z.boolean());
 
-    expect(createObjectSchema(schema, createOutputState())).toEqual(expected);
+    expect(createObjectSchema(schema, undefined, createOutputState())).toEqual(
+      expected,
+    );
   });
 
   it('considers ZodDefault in an input state as an effect', () => {
@@ -96,7 +98,7 @@ describe('createObjectSchema', () => {
       ],
     };
 
-    const result = createObjectSchema(schema, createInputState());
+    const result = createObjectSchema(schema, undefined, createInputState());
 
     expect(result).toEqual(expected);
   });
@@ -124,7 +126,7 @@ describe('createObjectSchema', () => {
       ],
     };
 
-    const result = createObjectSchema(schema, createInputState());
+    const result = createObjectSchema(schema, undefined, createInputState());
 
     expect(result).toEqual(expected);
   });
@@ -153,7 +155,7 @@ describe('createObjectSchema', () => {
       ],
     };
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -182,7 +184,7 @@ describe('createObjectSchema', () => {
       ],
     };
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -202,7 +204,7 @@ describe('required', () => {
         h: z.string().catch('a'),
       });
 
-      const result = createObjectSchema(schema, createOutputState());
+      const result = createObjectSchema(schema, undefined, createOutputState());
 
       expect(result).toEqual<Schema>({
         effects: expect.any(Array),
@@ -246,7 +248,7 @@ describe('required', () => {
           .pipe(z.number().optional()),
       });
 
-      const result = createObjectSchema(schema, createOutputState());
+      const result = createObjectSchema(schema, undefined, createOutputState());
 
       expect(result).toEqual<Schema>({
         effects: expect.any(Array),
@@ -280,7 +282,7 @@ describe('required', () => {
         f: z.custom((r) => r !== undefined),
       });
 
-      const result = createObjectSchema(schema, createInputState());
+      const result = createObjectSchema(schema, undefined, createInputState());
 
       expect(result).toEqual<Schema>({
         type: 'schema',
@@ -322,7 +324,7 @@ describe('required', () => {
         m: z.string().default('a'),
       });
 
-      const result = createObjectSchema(schema, createInputState());
+      const result = createObjectSchema(schema, undefined, createInputState());
 
       expect(result).toEqual<Schema>({
         effects: expect.any(Array),
@@ -357,7 +359,6 @@ describe('extend', () => {
           obj1: { $ref: '#/components/schemas/obj1' },
           obj2: {
             allOf: [{ $ref: '#/components/schemas/obj1' }],
-            type: 'object',
             properties: { b: { type: 'string' } },
             required: ['b'],
           },
@@ -372,7 +373,7 @@ describe('extend', () => {
       obj2: object2,
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -406,7 +407,7 @@ describe('extend', () => {
       obj2: object2,
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -420,7 +421,6 @@ describe('extend', () => {
           obj1: { $ref: '#/components/schemas/obj1' },
           obj2: {
             allOf: [{ $ref: '#/components/schemas/obj1' }],
-            type: 'object',
             properties: { b: { type: 'number' } },
             required: ['b'],
             additionalProperties: {
@@ -438,7 +438,7 @@ describe('extend', () => {
       obj2: object2,
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -452,7 +452,7 @@ describe('extend', () => {
     });
 
     const state = createOutputState();
-    createObjectSchema(schema, state);
+    createObjectSchema(schema, undefined, state);
 
     expect(state.components.schemas.get(object1)?.ref).toBe('obj1');
     expect(state.components.schemas.get(object1)?.type).toBe('complete');
@@ -481,7 +481,7 @@ describe('extend', () => {
       obj2: object2,
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });
@@ -518,7 +518,7 @@ describe('extend', () => {
       b: zodDate,
     });
 
-    const result = createObjectSchema(schema, createOutputState());
+    const result = createObjectSchema(schema, undefined, createOutputState());
 
     expect(result).toEqual(expected);
   });

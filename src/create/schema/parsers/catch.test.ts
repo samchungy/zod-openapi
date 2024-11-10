@@ -17,7 +17,7 @@ describe('createCatchSchema', () => {
     };
     const schema = z.string().catch('bob');
 
-    const result = createCatchSchema(schema, createOutputState());
+    const result = createCatchSchema(schema, createOutputState(), undefined);
 
     expect(result).toEqual(expected);
   });

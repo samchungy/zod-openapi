@@ -132,6 +132,7 @@ describe('createLazySchema', () => {
 
     const result = createObjectSchema(
       UserSchema as ZodObject<any, any, any, any, any>,
+      undefined,
       state,
     );
 
@@ -210,7 +211,11 @@ describe('createLazySchema', () => {
       ref: 'post',
     });
 
-    const result = createNewSchema(UserSchema, state);
+    const result = createNewSchema({
+      zodSchema: UserSchema,
+      previous: undefined,
+      state,
+    });
 
     expect(result.schema).toEqual(expected);
   });
@@ -258,7 +263,7 @@ describe('createLazySchema', () => {
 
     const state = createOutputState();
 
-    const result = createObjectSchema(ContainerSchema, state);
+    const result = createObjectSchema(ContainerSchema, undefined, state);
 
     expect(result).toEqual(expected);
 
