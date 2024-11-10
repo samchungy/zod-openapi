@@ -206,6 +206,9 @@ describe('enhanceWithMetadata', () => {
   it('handles current and previous schemas', () => {
     const FooSchema = z.string().openapi({ ref: 'foo' });
     const CazSchema = z.object({ a: z.string() }).openapi({ ref: 'caz' });
+    const QuxSchema = CazSchema.extend({ b: FooSchema }).openapi({
+      ref: 'qux',
+    });
 
     const BarSchema = z.object({
       a: FooSchema.optional(),
@@ -221,6 +224,8 @@ describe('enhanceWithMetadata', () => {
       k: FooSchema.nullish().openapi({ description: 'bar' }),
       l: FooSchema.describe('bar'),
       m: CazSchema.openapi({ description: 'bar' }),
+      n: QuxSchema,
+      o: QuxSchema.extend({ c: FooSchema }).openapi({ description: 'qux' }),
     });
 
     const outputState = createOutputState();
@@ -477,6 +482,25 @@ describe('enhanceWithMetadata', () => {
         "$ref": "#/components/schemas/caz",
         "description": "bar",
       },
+      "n": {
+        "$ref": "#/components/schemas/qux",
+      },
+      "o": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/qux",
+          },
+        ],
+        "description": "qux",
+        "properties": {
+          "c": {
+            "$ref": "#/components/schemas/foo",
+          },
+        },
+        "required": [
+          "c",
+        ],
+      },
     },
     "required": [
       "c",
@@ -488,6 +512,8 @@ describe('enhanceWithMetadata', () => {
       "i",
       "l",
       "m",
+      "n",
+      "o",
     ],
     "type": "object",
   },
@@ -516,6 +542,23 @@ describe('enhanceWithMetadata', () => {
         "a",
       ],
       "type": "object",
+    },
+  },
+  {
+    "qux": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/caz",
+        },
+      ],
+      "properties": {
+        "b": {
+          "$ref": "#/components/schemas/foo",
+        },
+      },
+      "required": [
+        "b",
+      ],
     },
   },
 ]
@@ -770,6 +813,25 @@ describe('enhanceWithMetadata', () => {
         "$ref": "#/components/schemas/caz",
         "description": "bar",
       },
+      "n": {
+        "$ref": "#/components/schemas/qux",
+      },
+      "o": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/qux",
+          },
+        ],
+        "description": "qux",
+        "properties": {
+          "c": {
+            "$ref": "#/components/schemas/foo",
+          },
+        },
+        "required": [
+          "c",
+        ],
+      },
     },
     "required": [
       "c",
@@ -779,6 +841,8 @@ describe('enhanceWithMetadata', () => {
       "i",
       "l",
       "m",
+      "n",
+      "o",
     ],
     "type": "object",
   },
@@ -808,6 +872,23 @@ describe('enhanceWithMetadata', () => {
         "a",
       ],
       "type": "object",
+    },
+  },
+  {
+    "qux": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/caz",
+        },
+      ],
+      "properties": {
+        "b": {
+          "$ref": "#/components/schemas/foo",
+        },
+      },
+      "required": [
+        "b",
+      ],
     },
   },
 ]
