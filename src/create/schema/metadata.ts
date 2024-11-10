@@ -3,7 +3,7 @@ import type { oas31 } from '../../openapi3-ts/dist';
 
 import type { RefObject, Schema, SchemaState } from '.';
 
-const createDescriptionMetadata = (
+export const createDescriptionMetadata = (
   schema: RefObject,
   description: string,
   state: SchemaState,
@@ -148,7 +148,6 @@ export const enhanceWithMetadata = (
       return createDescriptionMetadata(previous, diff.description, state);
     }
 
-    // Calculate if we can extend the previous schema
     return {
       type: 'schema',
       schema: { allOf: [previous.schema], ...diff },

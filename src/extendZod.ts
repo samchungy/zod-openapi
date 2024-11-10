@@ -54,11 +54,26 @@ export function extendZodWithOpenApi(zod: typeof z) {
   };
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const zodDescribe = zod.ZodObject.prototype.describe;
+  const zodDescribe = zod.ZodType.prototype.describe;
 
   zod.ZodType.prototype.describe = function (...args: [description: string]) {
     const result = zodDescribe.apply(this, args);
-    return result.openapi({ description: args[0] });
+    const def = result._def as ZodTypeDef;
+
+    if (def.zodOpenApi) {
+      const cloned = { ...def.zodOpenApi };
+      cloned.openapi = mergeOpenApi({ description: args[0] }, cloned.openapi);
+      cloned.previous = this;
+      cloned.current = result;
+      def.zodOpenApi = cloned;
+    } else {
+      def.zodOpenApi = {
+        openapi: { description: args[0] },
+        current: result,
+      };
+    }
+
+    return result;
   };
 
   // eslint-disable-next-line @typescript-eslint/unbound-method

@@ -205,6 +205,7 @@ describe('enhanceWithMetadata', () => {
 
   it('handles current and previous schemas', () => {
     const FooSchema = z.string().openapi({ ref: 'foo' });
+    const CazSchema = z.object({ a: z.string() }).openapi({ ref: 'caz' });
 
     const BarSchema = z.object({
       a: FooSchema.optional(),
@@ -216,10 +217,17 @@ describe('enhanceWithMetadata', () => {
       g: FooSchema.email(),
       h: FooSchema.datetime(),
       i: FooSchema.openapi({ example: 'foo' }).min(1).max(10),
+      j: FooSchema.optional().openapi({ description: 'bar' }),
+      k: FooSchema.nullish().openapi({ description: 'bar' }),
+      l: FooSchema.describe('bar'),
+      m: CazSchema.openapi({ description: 'bar' }),
     });
 
-    const result = createSchemaObject(BarSchema, createOutputState(), []);
-    const inputResult = createSchemaObject(BarSchema, createInputState(), []);
+    const outputState = createOutputState();
+    const inputState = createInputState();
+    const result = createSchemaObject(BarSchema, outputState, []);
+    const inputResult = createSchemaObject(BarSchema, inputState, []);
+
     expect(result).toMatchInlineSnapshot(`
 {
   "effects": [
@@ -446,6 +454,29 @@ describe('enhanceWithMetadata', () => {
         "maxLength": 10,
         "minLength": 1,
       },
+      "j": {
+        "$ref": "#/components/schemas/foo",
+        "description": "bar",
+      },
+      "k": {
+        "description": "bar",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+          {
+            "type": "null",
+          },
+        ],
+      },
+      "l": {
+        "$ref": "#/components/schemas/foo",
+        "description": "bar",
+      },
+      "m": {
+        "$ref": "#/components/schemas/caz",
+        "description": "bar",
+      },
     },
     "required": [
       "c",
@@ -455,11 +486,39 @@ describe('enhanceWithMetadata', () => {
       "g",
       "h",
       "i",
+      "l",
+      "m",
     ],
     "type": "object",
   },
   "type": "schema",
 }
+`);
+    expect(
+      Array.from(outputState.components.schemas.entries(), ([, value]) => ({
+        [value.ref]: value.type === 'complete' ? value.schemaObject : null,
+      })),
+    ).toMatchInlineSnapshot(`
+[
+  {
+    "foo": {
+      "type": "string",
+    },
+  },
+  {
+    "caz": {
+      "properties": {
+        "a": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "a",
+      ],
+      "type": "object",
+    },
+  },
+]
 `);
 
     expect(inputResult).toMatchInlineSnapshot(`
@@ -688,6 +747,29 @@ describe('enhanceWithMetadata', () => {
         "maxLength": 10,
         "minLength": 1,
       },
+      "j": {
+        "$ref": "#/components/schemas/foo",
+        "description": "bar",
+      },
+      "k": {
+        "description": "bar",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/foo",
+          },
+          {
+            "type": "null",
+          },
+        ],
+      },
+      "l": {
+        "$ref": "#/components/schemas/foo",
+        "description": "bar",
+      },
+      "m": {
+        "$ref": "#/components/schemas/caz",
+        "description": "bar",
+      },
     },
     "required": [
       "c",
@@ -695,11 +777,40 @@ describe('enhanceWithMetadata', () => {
       "g",
       "h",
       "i",
+      "l",
+      "m",
     ],
     "type": "object",
   },
   "type": "schema",
 }
+`);
+
+    expect(
+      Array.from(inputState.components.schemas.entries(), ([, value]) => ({
+        [value.ref]: value.type === 'complete' ? value.schemaObject : null,
+      })),
+    ).toMatchInlineSnapshot(`
+[
+  {
+    "foo": {
+      "type": "string",
+    },
+  },
+  {
+    "caz": {
+      "properties": {
+        "a": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "a",
+      ],
+      "type": "object",
+    },
+  },
+]
 `);
   });
 });

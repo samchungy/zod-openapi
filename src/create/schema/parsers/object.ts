@@ -17,6 +17,7 @@ import {
   type SchemaState,
   createSchemaObject,
 } from '../../schema';
+import { createDescriptionMetadata } from '../metadata';
 
 import { isOptionalObjectKey } from './optional';
 import { flattenEffects } from './transform';
@@ -106,6 +107,61 @@ export const createExtendedSchema = <
     state,
     true,
   );
+
+  const schemaLength = Object.keys(extendedSchema.schema).length;
+  const effects = flattenEffects([
+    completeComponent.type === 'complete' ? completeComponent.effects : [],
+    completeComponent.type === 'in-progress'
+      ? [
+          {
+            type: 'component',
+            zodType: zodObject,
+            path: [...state.path],
+          },
+        ]
+      : [],
+    extendedSchema.effects,
+  ]);
+
+  if (schemaLength === 0) {
+    return {
+      type: 'ref',
+      schema: {
+        $ref: createComponentSchemaRef(
+          completeComponent.ref,
+          state.documentOptions?.componentRefPath,
+        ),
+      },
+      schemaObject:
+        completeComponent.type === 'complete'
+          ? completeComponent.schemaObject
+          : undefined,
+      zodType: zodObject,
+      effects,
+    };
+  }
+
+  if (schemaLength === 1 && extendedSchema.schema.description) {
+    return createDescriptionMetadata(
+      {
+        type: 'ref',
+        schema: {
+          $ref: createComponentSchemaRef(
+            completeComponent.ref,
+            state.documentOptions?.componentRefPath,
+          ),
+        },
+        schemaObject:
+          completeComponent.type === 'complete'
+            ? completeComponent.schemaObject
+            : undefined,
+        zodType: zodObject,
+        effects,
+      },
+      extendedSchema.schema.description,
+      state,
+    );
+  }
 
   return {
     type: 'schema',
