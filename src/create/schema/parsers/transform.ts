@@ -81,7 +81,7 @@ export const createManualOutputTransformSchema = <
     throw new Error(
       `Failed to determine a type for ${schemaName} at ${state.path.join(
         ' > ',
-      )}. Please change the 'effectType' to 'input', wrap it in a ZodPipeline or assign it a manual 'type'.`,
+      )}. Please change the 'effectType' to 'same' or 'input', wrap it in a ZodPipeline or assign it a manual 'type'.`,
     );
   }
 

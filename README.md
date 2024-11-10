@@ -467,20 +467,6 @@ createDocument({
 });
 ```
 
-##### Zod Effects
-
-`.transform()`, `.catch()`, `.default()` and `.pipe()` are complicated because they technically comprise of two types (input & output). This means that we need to understand which type you are creating. In particular with transform it is very difficult to infer the output type. This library will automatically select which _type_ to use by checking how the schema is used based on the following rules:
-
-_Input_: Request Bodies, Request Parameters, Headers
-
-_Output_: Responses, Response Headers
-
-If a registered schema with a transform or pipeline is used in both a request and response schema you will receive an error because the created schema for each will be different. To override the creation type for a specific ZodEffect, add an `.openapi()` field on it and set the `effectType` field to `input`, `output` or `same`. This will force this library to always generate the input/output type even if we are creating a response (output) or request (input) type. You typically want to set this when you know the type has not changed in the transform. `same` is the recommended choice as it will generate a TypeScript compiler error if the input and output types in the transform drift.
-
-`.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
-
-If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input or output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
-
 #### Parameters
 
 Query, Path, Header & Cookie parameters can be similarly registered:
@@ -649,6 +635,90 @@ createDocument({
 });
 ```
 
+### Zod Effects
+
+`.transform()`, `.catch()`, `.default()` and `.pipe()` are complicated because they all comprise of two different types that we could generate (input & output).
+
+We attempt to determine what type of schema to create based on the following contexts:
+
+_Input_: Request Bodies, Request Parameters, Headers
+
+_Output_: Responses, Response Headers
+
+As an example:
+
+```ts
+z.object({
+  a: z.string().default('a'),
+});
+```
+
+In a request context, this would render the following OpenAPI schema:
+
+```yaml
+type: 'object'
+properties:
+  - a:
+    type: 'string'
+    default: 'a'
+```
+
+or the following for a response:
+
+```yaml
+type: 'object'
+properties:
+  - a:
+    type: 'string'
+    default: 'a'
+required:
+  - a
+```
+
+Note how the response schema created an extra `required` field. This means, if you were to register a Zod schema with `.default()` as a component and use it in both a request or response, your schema would be invalid. Zod OpenAPI keeps track of this usage and will throw an error if this occurs.
+
+#### EffectType
+
+```ts
+z.string().transform((str) => str.trim());
+```
+
+Whilst the TypeScript compiler can understand that the result is still a `string`, unfortunately we cannot introspect this as your transform function may be far more complicated than this example. To address this, you can set the `effectType` on the schema to `same`, `input` or `output`.
+
+`same` - This informs Zod OpenAPI to pick either the input schema or output schema to generate with because they should be the same.
+
+```ts
+z.string()
+  .transform((str) => str.trim())
+  .openapi({ effectType: 'same' });
+```
+
+If the transform were to drift from this, you will receive a TypeScript error:
+
+```ts
+z.string()
+  .transform((str) => str.length)
+  .openapi({ effectType: 'same' });
+//           ~~~~~~~~~~
+//           Type 'same' is not assignable to type 'CreationType | undefined'.ts(2322)
+```
+
+`input` or `output` - This tells Zod OpenAPI to pick a specific schema to create whenever we run into this schema, regardless of it is a request or response schema.
+
+```ts
+z.string()
+  .transform((str) => str.length)
+  .openapi({ effectType: 'input' });
+```
+
+#### Preprocess
+
+`.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
+
+#### Component Effects
+
+If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input or output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
+
 ## Supported OpenAPI Versions
 
 Currently the following versions of OpenAPI are supported
@@ -667,7 +737,7 @@ createDocument({
 });
 ```
 
-For example in `z.string().nullable()` will be rendered differently
+As an example `z.string().nullable()` will be rendered differently
 
 `3.0.0`
 
@@ -717,7 +787,8 @@ For example in `z.string().nullable()` will be rendered differently
 - ZodNullable
 - ZodNumber
   - `integer` `type` mapping for `.int()`
-  - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`
+  - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`, `.positive()`, `.negative()`, `.nonnegative()`, `.nonpositive()`.
+  - `multipleOf` mapping for `.multipleOf()`
 - ZodObject
   - `additionalProperties` mapping for `.catchall()`, `.strict()`
   - `allOf` mapping for `.extend()` when the base object is registered and does not have `catchall()`, `strict()` and extension does not override a field.
