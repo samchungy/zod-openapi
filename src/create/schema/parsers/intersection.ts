@@ -16,7 +16,7 @@ export const createIntersectionSchema = <
   zodIntersection: ZodIntersection<T, U>,
   state: SchemaState,
 ): Schema => {
-  const schemas = flattenIntersections(zodIntersection);
+  const schemas = flattenIntersection(zodIntersection);
   const allOfs = schemas.map((schema, index) =>
     createSchemaObject(schema, state, [`intersection ${index}`]),
   );
@@ -29,13 +29,13 @@ export const createIntersectionSchema = <
   };
 };
 
-export const flattenIntersections = (zodType: ZodTypeAny): ZodTypeAny[] => {
+export const flattenIntersection = (zodType: ZodTypeAny): ZodTypeAny[] => {
   if (!isZodType(zodType, 'ZodIntersection')) {
     return [zodType];
   }
 
-  const leftSubTypes = flattenIntersections(zodType._def.left);
-  const rightSubTypes = flattenIntersections(zodType._def.right);
+  const leftSchemas = flattenIntersection(zodType._def.left);
+  const rightSchemas = flattenIntersection(zodType._def.right);
 
-  return [...leftSubTypes, ...rightSubTypes];
+  return [...leftSchemas, ...rightSchemas];
 };
