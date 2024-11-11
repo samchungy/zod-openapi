@@ -15,8 +15,8 @@ importers:
         specifier: 0.15.5
         version: 0.15.5(@types/node@20.12.13)(terser@5.31.1)(typescript@5.6.2)(webpack@5.92.0(@swc/core@1.6.1)(esbuild@0.24.0))
       '@redocly/cli':
-        specifier: 1.25.9
-        version: 1.25.9(encoding@0.1.13)(enzyme@3.11.0)
+        specifier: 1.25.11
+        version: 1.25.11(encoding@0.1.13)(enzyme@3.11.0)
       '@types/node':
         specifier: ^20.3.0
         version: 20.12.13
@@ -1181,16 +1181,16 @@ packages:
   '@redocly/ajv@8.11.2':
     resolution: {integrity: sha512-io1JpnwtIcvojV7QKDUSIuMN/ikdOUd1ReEnUnMKGfDVridQZ31J0MmIuqwuRjWDZfmvr+Q0MqCcfHM2gTivOg==}
 
-  '@redocly/cli@1.25.9':
-    resolution: {integrity: sha512-dIQdZGFA1ZqXgE+az0P/5LrhD9evE+AfEen2uTR/EY2e/HdwC2m0aFMaLAMUSdwFYmOmHd8JishUh67TGlBesQ==}
+  '@redocly/cli@1.25.11':
+    resolution: {integrity: sha512-dttBsmLnnbTlJCTa+s7Sy+qtXDq692n7Ru3nUUIHp9XdCbhXIHWhpc8uAl+GmR4MGbVe8ohATl3J+zX3aFy82A==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
     hasBin: true
 
-  '@redocly/config@0.15.0':
-    resolution: {integrity: sha512-QmzuqbhzrbiktRGw+FV7iim+TsfQRU8crJb2s7ls8gP+BMkE1RHZnmJ1lAA/QwzyXbEmKZeGFTdM6PWuRwNlRA==}
+  '@redocly/config@0.16.0':
+    resolution: {integrity: sha512-t9jnODbUcuANRSl/K4L9nb12V+U5acIHnVSl26NWrtSdDZVtoqUXk2yGFPZzohYf62cCfEQUT8ouJ3bhPfpnJg==}
 
-  '@redocly/openapi-core@1.25.9':
-    resolution: {integrity: sha512-tod9bhIxBJQOeGQ3Ot5Zk707Wcg5YgEcEG766cGxwHqjRUNF5kwZnleBO7CpaLusOMWnQefj7RfFWLZS+IqnhA==}
+  '@redocly/openapi-core@1.25.11':
+    resolution: {integrity: sha512-bH+a8izQz4fnKROKoX3bEU8sQ9rjvEIZOqU6qTmxlhOJ0NsKa5e+LmU18SV0oFeg5YhWQhhEDihXkvKJ1wMMNQ==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
 
   '@remix-run/router@1.16.1':
@@ -6736,9 +6736,9 @@ snapshots:
       require-from-string: 2.0.2
       uri-js-replace: 1.0.1
 
-  '@redocly/cli@1.25.9(encoding@0.1.13)(enzyme@3.11.0)':
+  '@redocly/cli@1.25.11(encoding@0.1.13)(enzyme@3.11.0)':
     dependencies:
-      '@redocly/openapi-core': 1.25.9(encoding@0.1.13)
+      '@redocly/openapi-core': 1.25.11(encoding@0.1.13)
       abort-controller: 3.0.0
       chokidar: 3.6.0
       colorette: 1.4.0
@@ -6765,12 +6765,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@redocly/config@0.15.0': {}
+  '@redocly/config@0.16.0': {}
 
-  '@redocly/openapi-core@1.25.9(encoding@0.1.13)':
+  '@redocly/openapi-core@1.25.11(encoding@0.1.13)':
     dependencies:
       '@redocly/ajv': 8.11.2
-      '@redocly/config': 0.15.0
+      '@redocly/config': 0.16.0
       colorette: 1.4.0
       https-proxy-agent: 7.0.4
       js-levenshtein: 1.1.6
@@ -10771,7 +10771,7 @@ snapshots:
   redoc@2.2.0(core-js@3.37.1)(encoding@0.1.13)(enzyme@3.11.0)(mobx@6.12.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       '@cfaester/enzyme-adapter-react-18': 0.8.0(enzyme@3.11.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@redocly/openapi-core': 1.25.9(encoding@0.1.13)
+      '@redocly/openapi-core': 1.25.11(encoding@0.1.13)
       classnames: 2.5.1
       core-js: 3.37.1
       decko: 1.2.0
