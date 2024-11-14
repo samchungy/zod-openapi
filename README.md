@@ -205,7 +205,7 @@ const document = createDocument({
 ```typescript
 const document = createDocument(details, {
   defaultDateSchema: { type: 'string', format: 'date-time' }, // defaults to { type: 'string' }
-  unionOneOf: true, // defaults to false. Forces all ZodUnions to output oneOf instead of allOf. An `.openapi()` `unionOneOf` value takes precedence over this one.
+  unionOneOf: true, // defaults to false. Forces all ZodUnions to output oneOf instead of anyOf. An `.openapi()` `unionOneOf` value takes precedence over this one.
 });
 ```
 
