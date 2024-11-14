@@ -160,7 +160,7 @@ export interface CreateDocumentOptions {
    */
   defaultDateSchema?: Pick<oas31.SchemaObject, 'type' | 'format'>;
   /**
-   * Used to set the output of a ZodUnion to be `oneOf` instead of `allOf`
+   * Used to set the output of a ZodUnion to be `oneOf` instead of `anyOf`
    */
   unionOneOf?: boolean;
 }
