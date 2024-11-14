@@ -68,7 +68,7 @@ Use the `.openapi()` method to add metadata to a specific Zod type. The `.openap
 |      `ref`      |                                  Use this to [auto register a schema as a re-usable component](#creating-components)                                   |
 |    `refType`    |                               Use this to set the creation type for a component which is not referenced in the document.                               |
 |     `type`      |                              Use this to override the generated type. If this is provided no metadata will be generated.                               |
-|  `unionOneOf`   | Set to `true` to force a single ZodUnion to output `oneOf` instead of `allOf`. See [CreateDocumentOptions](#CreateDocumentOptions) for a global option |
+|  `unionOneOf`   | Set to `true` to force a single ZodUnion to output `oneOf` instead of `anyOf`. See [CreateDocumentOptions](#CreateDocumentOptions) for a global option |
 
 ### `createDocument`
 
