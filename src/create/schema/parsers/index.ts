@@ -4,6 +4,7 @@ import { isZodType } from '../../../zodType';
 import type { RefObject, Schema, SchemaState } from '../../schema';
 
 import { createArraySchema } from './array';
+import { createBigIntSchema } from './bigint';
 import { createBooleanSchema } from './boolean';
 import { createBrandedSchema } from './brand';
 import { createCatchSchema } from './catch';
@@ -169,6 +170,10 @@ export const createSchemaSwitch = <
 
   if (isZodType(zodSchema, 'ZodSet')) {
     return createSetSchema(zodSchema, state);
+  }
+
+  if (isZodType(zodSchema, 'ZodBigInt')) {
+    return createBigIntSchema(zodSchema);
   }
 
   return createManualTypeSchema(zodSchema, state);
