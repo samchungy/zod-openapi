@@ -467,7 +467,7 @@ createDocument({
 });
 ```
 
-Unfortunately, as a limitation of this library, you will need to attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or else you may not get the full power of the component generation. As a result, I recommend utilising the auto registering components over manual egistration.
+Unfortunately, as a limitation of this library, you will need to attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or else you may not get the full power of the component generation. As a result, I recommend utilising the auto registering components over manual registration.
 
 #### Parameters
 
