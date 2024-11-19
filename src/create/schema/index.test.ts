@@ -293,6 +293,12 @@ const expectedZodReadonly: Schema['schema'] = {
   type: 'string',
 };
 
+const zodBigInt = z.bigint();
+const expectedZodBigInt: Schema['schema'] = {
+  type: 'integer',
+  format: 'int64',
+};
+
 it('creates an output schema for zodType', () => {
   expect(
     createSchema(zodLazyComplex, createOutputState(), ['previous']),
@@ -332,6 +338,7 @@ describe('createSchema', () => {
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
     ${'ZodReadonly'}             | ${zodReadonly}           | ${expectedZodReadonly}
+    ${'ZodBigInt'}               | ${zodBigInt}             | ${expectedZodBigInt}
   `('creates an output schema for $zodType', ({ schema, expected }) => {
     expect(createSchema(schema, createOutputState(), ['previous'])).toEqual(
       expected,
@@ -370,6 +377,7 @@ describe('createSchema', () => {
     ${'ZodBranded'}              | ${zodBranded}            | ${expectedZodBranded}
     ${'ZodSet'}                  | ${zodSet}                | ${expectedZodSet}
     ${'ZodReadonly'}             | ${zodReadonly}           | ${expectedZodReadonly}
+    ${'ZodBigInt'}               | ${zodBigInt}             | ${expectedZodBigInt}
   `('creates an input schema for $zodType', ({ schema, expected }) => {
     expect(createSchema(schema, createInputState(), ['previous'])).toEqual(
       expected,
