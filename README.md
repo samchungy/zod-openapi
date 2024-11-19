@@ -763,6 +763,8 @@ As an example `z.string().nullable()` will be rendered differently
 - ZodAny
 - ZodArray
   - `minItems`/`maxItems` mapping for `.length()`, `.min()`, `.max()`
+- ZodBigInt
+  - `integer` `type` and `int64` `format` mapping for `.bigint()`
 - ZodBoolean
 - ZodBranded
 - ZodCatch
