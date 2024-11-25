@@ -156,6 +156,10 @@ export type ZodObjectInputType<
 
 export interface CreateDocumentOptions {
   /**
+   * Used to throw an error if a Discriminated Union member is not registered as a component
+   */
+  enforceDiscriminatedUnionComponents?: boolean;
+  /**
    * Used to change the default Zod Date schema
    */
   defaultDateSchema?: Pick<oas31.SchemaObject, 'type' | 'format'>;

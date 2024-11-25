@@ -206,6 +206,7 @@ const document = createDocument({
 const document = createDocument(details, {
   defaultDateSchema: { type: 'string', format: 'date-time' }, // defaults to { type: 'string' }
   unionOneOf: true, // defaults to false. Forces all ZodUnions to output oneOf instead of anyOf. An `.openapi()` `unionOneOf` value takes precedence over this one.
+  enforceDiscriminatedUnionComponents: true, // defaults to false. Throws an error if a Discriminated Union member is not registered as a component.
 });
 ```
 

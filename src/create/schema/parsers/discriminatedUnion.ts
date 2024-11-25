@@ -36,6 +36,7 @@ export const createDiscriminatedUnionSchema = <
     zodDiscriminatedUnion.discriminator,
     state,
   );
+
   return {
     type: 'schema',
     schema: {
@@ -98,6 +99,11 @@ export const mapDiscriminator = (
     const schema = schemas[index] as oas31.SchemaObject | oas31.ReferenceObject;
     const componentSchemaRef = '$ref' in schema ? schema?.$ref : undefined;
     if (!componentSchemaRef) {
+      if (state.documentOptions?.enforceDiscriminatedUnionComponents) {
+        throw new Error(
+          `Discriminated Union member ${index} at ${state.path.join(' > ')} is not registered as a component`,
+        );
+      }
       return undefined;
     }
 
