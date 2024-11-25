@@ -486,4 +486,26 @@ describe('createDiscriminatedUnionSchema', () => {
       ],
     });
   });
+
+  it('throws an error if enforceDiscriminatedUnionComponents is specified and a schema is not registered', () => {
+    const schema = z.discriminatedUnion('type', [
+      z.object({
+        type: z.literal('a'),
+      }),
+      z
+        .object({
+          type: z.literal('b'),
+        })
+        .openapi({ ref: 'b' }),
+    ]);
+
+    expect(() =>
+      createDiscriminatedUnionSchema(schema, {
+        ...createOutputState({}, { enforceDiscriminatedUnionComponents: true }),
+        path: ['some', 'path'],
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Discriminated Union member 0 at some > path is not registered as a component"`,
+    );
+  });
 });
