@@ -94,10 +94,12 @@ describe('extendZodWithOpenApi', () => {
     const fooString = z.union([z.date().optional(), z.string(), z.null()]);
 
     const barString = fooString.openapi({
-      description: 'foo',
       examples: [null, '2021-01-01'],
     });
 
-    expect(barString._def.zodOpenApi?.openapi?.effectType).toBe('input');
+    expect(barString._def.zodOpenApi?.openapi?.examples).toBe([
+      null,
+      '2021-01-01',
+    ]);
   });
 });
