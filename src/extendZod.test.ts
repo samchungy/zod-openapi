@@ -97,7 +97,7 @@ describe('extendZodWithOpenApi', () => {
       examples: [null, '2021-01-01'],
     });
 
-    expect(barString._def.zodOpenApi?.openapi?.examples).toBe([
+    expect(barString._def.zodOpenApi?.openapi?.examples).toEqual([
       null,
       '2021-01-01',
     ]);
