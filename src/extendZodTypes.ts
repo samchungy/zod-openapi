@@ -1,20 +1,22 @@
-import type { ZodDate, ZodObject, ZodTypeAny, z } from 'zod';
+import type { ZodObject, ZodTypeAny, z } from 'zod';
 
 import type { CreationType } from './create/components';
 import type { oas30, oas31 } from './openapi3-ts/dist';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
+type ReplaceDate<T> = T extends Date ? Exclude<T, Date> | string : T;
+
 /**
  * zod-openapi metadata
  */
 interface ZodOpenApiMetadata<
   T extends ZodTypeAny,
-  TInferred = z.input<T> | z.output<T>,
+  TInferred = Exclude<ReplaceDate<z.input<T> | z.output<T>>, undefined>,
 > extends SchemaObject {
   example?: TInferred;
   examples?: [TInferred, ...TInferred[]];
-  default?: T extends ZodDate ? string : TInferred;
+  default?: TInferred;
   /**
    * Used to set the output of a ZodUnion to be `oneOf` instead of `allOf`
    */
