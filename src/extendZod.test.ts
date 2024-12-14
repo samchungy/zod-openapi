@@ -102,4 +102,16 @@ describe('extendZodWithOpenApi', () => {
       '2021-01-01',
     ]);
   });
+
+  it('makes allows example to accept undefined but forbids undefined in examples', () => {
+    const fooString = z.union([z.date().optional(), z.string(), z.null()]);
+
+    const barString = fooString.openapi({
+      example: undefined,
+      // @ts-expect-error - Testing types
+      examples: [undefined],
+    });
+
+    expect(barString._def.zodOpenApi?.openapi?.example).toBeUndefined();
+  });
 });
