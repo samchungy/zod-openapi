@@ -5,7 +5,7 @@ import type { oas30, oas31 } from './openapi3-ts/dist';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
-type ReplaceDate<T> = T extends Date ? Exclude<T, Date> | string : T;
+type ReplaceDate<T> = T extends Date ? Date | string : T;
 
 /**
  * zod-openapi metadata
