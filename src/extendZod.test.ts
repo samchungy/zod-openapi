@@ -89,4 +89,29 @@ describe('extendZodWithOpenApi', () => {
 
     expect(barString._def.zodOpenApi?.openapi?.effectType).toBe('input');
   });
+
+  it('makes a date example accept strings', () => {
+    const fooString = z.union([z.date().optional(), z.string(), z.null()]);
+
+    const barString = fooString.openapi({
+      examples: [null, '2021-01-01'],
+    });
+
+    expect(barString._def.zodOpenApi?.openapi?.examples).toEqual([
+      null,
+      '2021-01-01',
+    ]);
+  });
+
+  it('makes allows example to accept undefined but forbids undefined in examples', () => {
+    const fooString = z.union([z.date().optional(), z.string(), z.null()]);
+
+    const barString = fooString.openapi({
+      example: undefined,
+      // @ts-expect-error - Testing types
+      examples: [undefined],
+    });
+
+    expect(barString._def.zodOpenApi?.openapi?.example).toBeUndefined();
+  });
 });
