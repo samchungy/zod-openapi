@@ -450,7 +450,7 @@ Wherever `title` is used in schemas across the document, it will instead be crea
 }
 ```
 
-This can be an extremely powerful way to create less repetitive Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
+This is a great way to create less repetitive Open API documentation. There are some Open API features like [discriminator mapping](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) which require all schemas in the union to contain a ref.
 
 ##### Manually Registering Schema
 
@@ -468,7 +468,7 @@ createDocument({
 });
 ```
 
-Unfortunately, as a limitation of this library, you will need to attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or else you may not get the full power of the component generation. As a result, I recommend utilising the auto registering components over manual registration.
+Unfortunately, as a limitation of this library, you will need to attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or you will not reap the full benefits of component generation. As a result, I recommend utilising the auto registering components over manual registration.
 
 #### Parameters
 
