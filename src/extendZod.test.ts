@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { createSchema } from './create/schema/single';
 import { extendZodWithOpenApi } from './extendZod';
 
 extendZodWithOpenApi(z);
@@ -60,11 +61,102 @@ describe('extendZodWithOpenApi', () => {
     const b = a.extend({ b: z.string() });
     const c = b.pick({ a: true });
     const d = b.omit({ a: true });
+    const e = b.pick({ a: true }).openapi({ ref: 'e' });
+    const f = b.omit({ a: true }).openapi({ ref: 'f' });
+
+    const object = z.object({
+      a,
+      b,
+      c,
+      d,
+      e,
+      f,
+    });
 
     expect(a._def.zodOpenApi?.openapi?.ref).toBe('a');
     expect(b._def.zodOpenApi?.previous).toStrictEqual(a);
     expect(c._def.zodOpenApi?.openapi).toEqual({});
     expect(d._def.zodOpenApi?.openapi).toEqual({});
+
+    const schema = createSchema(object);
+
+    expect(schema).toEqual({
+      components: {
+        a: {
+          properties: {
+            a: {
+              type: 'string',
+            },
+          },
+          required: ['a'],
+          type: 'object',
+        },
+        e: {
+          properties: {
+            a: {
+              type: 'string',
+            },
+          },
+          required: ['a'],
+          type: 'object',
+        },
+        f: {
+          properties: {
+            b: {
+              type: 'string',
+            },
+          },
+          required: ['b'],
+          type: 'object',
+        },
+      },
+      schema: {
+        properties: {
+          a: {
+            $ref: '#/components/schemas/a',
+          },
+          b: {
+            allOf: [
+              {
+                $ref: '#/components/schemas/a',
+              },
+            ],
+            properties: {
+              b: {
+                type: 'string',
+              },
+            },
+            required: ['b'],
+          },
+          c: {
+            properties: {
+              a: {
+                type: 'string',
+              },
+            },
+            required: ['a'],
+            type: 'object',
+          },
+          d: {
+            properties: {
+              b: {
+                type: 'string',
+              },
+            },
+            required: ['b'],
+            type: 'object',
+          },
+          e: {
+            $ref: '#/components/schemas/e',
+          },
+          f: {
+            $ref: '#/components/schemas/f',
+          },
+        },
+        required: ['a', 'b', 'c', 'd', 'e', 'f'],
+        type: 'object',
+      },
+    });
   });
 
   it("allows 'same' effectType when the input and output are equal", () => {
