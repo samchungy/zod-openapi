@@ -113,6 +113,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
       const cloned = { ...zodOpenApi };
       cloned.openapi = mergeOpenApi({}, cloned.openapi);
       delete cloned.previous;
+      delete cloned.current;
       omitResult._def.zodOpenApi = cloned;
     }
 
@@ -133,6 +134,7 @@ export function extendZodWithOpenApi(zod: typeof z) {
       const cloned = { ...zodOpenApi };
       cloned.openapi = mergeOpenApi({}, cloned.openapi);
       delete cloned.previous;
+      delete cloned.current;
       pickResult._def.zodOpenApi = cloned;
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
