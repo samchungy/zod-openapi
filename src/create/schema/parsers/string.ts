@@ -161,6 +161,22 @@ const mapStringFormat = (
     return 'uri';
   }
 
+  if (zodStringChecks.ip?.every((ip) => ip.version === 'v4')) {
+    return 'ipv4';
+  }
+
+  if (zodStringChecks.ip?.every((ip) => ip.version === 'v6')) {
+    return 'ipv6';
+  }
+
+  if (zodStringChecks.cidr?.every((ip) => ip.version === 'v4')) {
+    return 'ipv4';
+  }
+
+  if (zodStringChecks.cidr?.every((ip) => ip.version === 'v6')) {
+    return 'ipv6';
+  }
+
   return undefined;
 };
 

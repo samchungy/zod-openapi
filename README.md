@@ -805,7 +805,7 @@ As an example `z.string().nullable()` will be rendered differently
 - ZodSet
   - Treated as an array with `uniqueItems` (you may need to add a pre-process to convert it to a set)
 - ZodString
-  - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`, `.date()`, `.time()`, `.duration()`
+  - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`, `.date()`, `.time()`, `.duration()`, `.ip({ version: 'v4' })`, `.ip({ version: 'v6' })`, `.cidr({ version: 'v4' })`, `.cidr({ version: 'v6' })`
   - `minLength`/`maxLength` mapping for `.length()`, `.min()`, `.max()`
   - `pattern` mapping for `.regex()`, `.startsWith()`, `.endsWith()`, `.includes()`
   - `contentEncoding` mapping for `.base64()` for OpenAPI 3.1.0+

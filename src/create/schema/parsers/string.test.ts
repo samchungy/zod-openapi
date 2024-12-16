@@ -202,14 +202,18 @@ describe('createStringSchema', () => {
   });
 
   it.each`
-    zodString                | format
-    ${z.string().uuid()}     | ${'uuid'}
-    ${z.string().email()}    | ${'email'}
-    ${z.string().url()}      | ${'uri'}
-    ${z.string().datetime()} | ${'date-time'}
-    ${z.string().date()}     | ${'date'}
-    ${z.string().time()}     | ${'time'}
-    ${z.string().duration()} | ${'duration'}
+    zodString                             | format
+    ${z.string().uuid()}                  | ${'uuid'}
+    ${z.string().email()}                 | ${'email'}
+    ${z.string().url()}                   | ${'uri'}
+    ${z.string().datetime()}              | ${'date-time'}
+    ${z.string().date()}                  | ${'date'}
+    ${z.string().time()}                  | ${'time'}
+    ${z.string().duration()}              | ${'duration'}
+    ${z.string().ip({ version: 'v4' })}   | ${'ipv4'}
+    ${z.string().ip({ version: 'v6' })}   | ${'ipv6'}
+    ${z.string().cidr({ version: 'v4' })} | ${'ipv4'}
+    ${z.string().cidr({ version: 'v6' })} | ${'ipv6'}
   `(
     'creates a string schema with $format',
     ({ zodString, format }: { zodString: ZodString; format: string }) => {
