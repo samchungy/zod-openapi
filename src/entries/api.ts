@@ -4,4 +4,4 @@ export {
   type ComponentsObject,
 } from '../create/components';
 export { createMediaTypeSchema } from '../create/content';
-export { createParamOrRef } from '../create/parameters';
+export { createParamOrRef, getZodObject } from '../create/parameters';
