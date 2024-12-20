@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { createSchema } from './create/schema/single';
 import { extendZodWithOpenApi } from './extendZod';
+import { currentSymbol, previousSymbol } from './extendZodTypes';
 
 extendZodWithOpenApi(z);
 
@@ -22,7 +23,8 @@ describe('extendZodWithOpenApi', () => {
     expect(a._def.zodOpenApi?.openapi?.description).toBe('test');
     expect(b._def.zodOpenApi?.openapi?.description).toBe('test2');
     expect(
-      b._def.zodOpenApi?.previous?._def.zodOpenApi?.openapi?.description,
+      b._def.zodOpenApi?.[previousSymbol]?._def.zodOpenApi?.openapi
+        ?.description,
     ).toBe('test');
   });
 
@@ -30,8 +32,8 @@ describe('extendZodWithOpenApi', () => {
     const a = z.string().openapi({ ref: 'a' });
     const b = a.uuid();
 
-    expect(a._def.zodOpenApi?.current).toBe(a);
-    expect(b._def.zodOpenApi?.current).toBe(a);
+    expect(a._def.zodOpenApi?.[currentSymbol]).toBe(a);
+    expect(b._def.zodOpenApi?.[currentSymbol]).toBe(a);
   });
 
   it('adds ._def.zodOpenApi.openapi fields to a zod type', () => {
@@ -53,7 +55,7 @@ describe('extendZodWithOpenApi', () => {
     const b = a.extend({ b: z.string() });
 
     expect(a._def.zodOpenApi?.openapi?.ref).toBe('a');
-    expect(b._def.zodOpenApi?.previous).toStrictEqual(a);
+    expect(b._def.zodOpenApi?.[previousSymbol]).toStrictEqual(a);
   });
 
   it('removes previous openapi ref for an object when .omit or .pick is used', () => {
@@ -74,7 +76,7 @@ describe('extendZodWithOpenApi', () => {
     });
 
     expect(a._def.zodOpenApi?.openapi?.ref).toBe('a');
-    expect(b._def.zodOpenApi?.previous).toStrictEqual(a);
+    expect(b._def.zodOpenApi?.[previousSymbol]).toStrictEqual(a);
     expect(c._def.zodOpenApi?.openapi).toEqual({});
     expect(d._def.zodOpenApi?.openapi).toEqual({});
 
