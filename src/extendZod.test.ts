@@ -23,7 +23,8 @@ describe('extendZodWithOpenApi', () => {
     expect(a._def.zodOpenApi?.openapi?.description).toBe('test');
     expect(b._def.zodOpenApi?.openapi?.description).toBe('test2');
     expect(
-      b._def.zodOpenApi?.[previousSymbol]?._def.zodOpenApi?.openapi?.description,
+      b._def.zodOpenApi?.[previousSymbol]?._def.zodOpenApi?.openapi
+        ?.description,
     ).toBe('test');
   });
 

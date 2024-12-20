@@ -1,5 +1,6 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
+import { currentSymbol, previousSymbol } from '../../extendZodTypes';
 import type { oas30, oas31 } from '../../openapi3-ts/dist';
 import {
   type ComponentsObject,
@@ -13,7 +14,6 @@ import { enhanceWithMetadata } from './metadata';
 import { createSchemaSwitch } from './parsers';
 import { verifyEffects } from './parsers/transform';
 import type { CreateSchemaOptions } from './single';
-import { currentSymbol, previousSymbol } from '../../extendZodTypes';
 
 export type LazyMap = Map<ZodType, true>;
 
@@ -222,17 +222,21 @@ export const createSchemaOrRef = <
   }
 
   const previous = zodSchema._def.zodOpenApi?.[previousSymbol]
-    ? (createSchemaOrRef(zodSchema._def.zodOpenApi[previousSymbol], state, true) as
-        | RefObject
-        | undefined)
+    ? (createSchemaOrRef(
+        zodSchema._def.zodOpenApi[previousSymbol],
+        state,
+        true,
+      ) as RefObject | undefined)
     : undefined;
 
   const current =
     zodSchema._def.zodOpenApi?.[currentSymbol] &&
     zodSchema._def.zodOpenApi[currentSymbol] !== zodSchema
-      ? (createSchemaOrRef(zodSchema._def.zodOpenApi[currentSymbol], state, true) as
-          | RefObject
-          | undefined)
+      ? (createSchemaOrRef(
+          zodSchema._def.zodOpenApi[currentSymbol],
+          state,
+          true,
+        ) as RefObject | undefined)
       : undefined;
 
   const ref = zodSchema._def.zodOpenApi?.openapi?.ref ?? component?.ref;

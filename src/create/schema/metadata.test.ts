@@ -937,6 +937,8 @@ describe('enhanceWithMetadata', () => {
 
   it('does not fail JSON serialization', () => {
     const FooSchema = z.string().openapi({ ref: 'foo' });
-    expect(()=>{JSON.stringify(FooSchema)}).not.toThrow();
+    expect(() => {
+      JSON.stringify(FooSchema);
+    }).not.toThrow();
   });
 });

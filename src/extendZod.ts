@@ -1,6 +1,5 @@
 import type { ZodRawShape, ZodTypeDef, z } from 'zod';
 
-import './extendZodTypes';
 import { currentSymbol, previousSymbol } from './extendZodTypes';
 
 type ZodOpenApiMetadataDef = NonNullable<ZodTypeDef['zodOpenApi']>;

@@ -7,8 +7,8 @@ type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
 type ReplaceDate<T> = T extends Date ? Date | string : T;
 
-export const currentSymbol = Symbol("current");
-export const previousSymbol = Symbol("previous");
+export const currentSymbol = Symbol('current');
+export const previousSymbol = Symbol('previous');
 
 /**
  * zod-openapi metadata
