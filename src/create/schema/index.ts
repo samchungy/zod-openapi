@@ -13,6 +13,7 @@ import { enhanceWithMetadata } from './metadata';
 import { createSchemaSwitch } from './parsers';
 import { verifyEffects } from './parsers/transform';
 import type { CreateSchemaOptions } from './single';
+import { currentSymbol, previousSymbol } from '../../extendZodTypes';
 
 export type LazyMap = Map<ZodType, true>;
 
@@ -220,16 +221,16 @@ export const createSchemaOrRef = <
     return existingRef;
   }
 
-  const previous = zodSchema._def.zodOpenApi?.previous
-    ? (createSchemaOrRef(zodSchema._def.zodOpenApi.previous, state, true) as
+  const previous = zodSchema._def.zodOpenApi?.[previousSymbol]
+    ? (createSchemaOrRef(zodSchema._def.zodOpenApi[previousSymbol], state, true) as
         | RefObject
         | undefined)
     : undefined;
 
   const current =
-    zodSchema._def.zodOpenApi?.current &&
-    zodSchema._def.zodOpenApi.current !== zodSchema
-      ? (createSchemaOrRef(zodSchema._def.zodOpenApi.current, state, true) as
+    zodSchema._def.zodOpenApi?.[currentSymbol] &&
+    zodSchema._def.zodOpenApi[currentSymbol] !== zodSchema
+      ? (createSchemaOrRef(zodSchema._def.zodOpenApi[currentSymbol], state, true) as
           | RefObject
           | undefined)
       : undefined;

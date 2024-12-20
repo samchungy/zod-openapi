@@ -7,6 +7,9 @@ type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
 type ReplaceDate<T> = T extends Date ? Date | string : T;
 
+export const currentSymbol = Symbol("current");
+export const previousSymbol = Symbol("previous");
+
 /**
  * zod-openapi metadata
  */
@@ -77,12 +80,12 @@ interface ZodOpenApiMetadataDef {
   /**
    * Used to keep track of the Zod Schema had `.openapi` called on it
    */
-  current?: ZodTypeAny;
+  [currentSymbol]?: ZodTypeAny;
   /**
    * Used to keep track of the previous Zod Schema that had `.openapi` called on it if another `.openapi` is called.
    * This can also be present when .extend is called on an object.
    */
-  previous?: ZodTypeAny;
+  [previousSymbol]?: ZodTypeAny;
 }
 
 interface ZodOpenApiExtendMetadata {
