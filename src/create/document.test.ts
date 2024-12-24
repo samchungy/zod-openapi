@@ -1625,4 +1625,124 @@ describe('createDocument', () => {
       }
     `);
   });
+
+  it('Supports unionOneOf option', () => {
+    const UserSchema = z.object({
+      id: z.string(),
+      timestamp: z.date(),
+    });
+
+    const documentOptions: CreateDocumentOptions = {
+      unionOneOf: true,
+    };
+
+    const document = createDocument(
+      {
+        info: {
+          title: 'My API',
+          version: '1.0.0',
+        },
+        openapi: '3.1.0',
+        components: {
+          schemas: {
+            User: UserSchema,
+          },
+        },
+        paths: {
+          '/timestamp/:timestamp': {
+            post: {
+              responses: {
+                '200': {
+                  description: '200 OK',
+                  content: {
+                    'application/json': {
+                      schema: z.union([
+                        z.object({
+                          foo: z.string(),
+                        }),
+                        z.object({
+                          bar: z.string(),
+                        }),
+                      ]),
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      documentOptions,
+    );
+
+    expect(document).toMatchInlineSnapshot(`
+{
+  "components": {
+    "schemas": {
+      "User": {
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "timestamp": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "timestamp",
+        ],
+        "type": "object",
+      },
+    },
+  },
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/timestamp/:timestamp": {
+      "post": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "foo": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "foo",
+                      ],
+                      "type": "object",
+                    },
+                    {
+                      "properties": {
+                        "bar": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "bar",
+                      ],
+                      "type": "object",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "200 OK",
+          },
+        },
+      },
+    },
+  },
+}
+`);
+  });
 });
