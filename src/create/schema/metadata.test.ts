@@ -253,10 +253,10 @@ describe('enhanceWithMetadata', () => {
               "coerce": false,
               "typeName": "ZodString",
               "zodOpenApi": {
-                "current": [Circular],
                 "openapi": {
                   "ref": "foo",
                 },
+                Symbol(current): [Circular],
               },
             },
             "and": [Function],
@@ -339,10 +339,10 @@ describe('enhanceWithMetadata', () => {
               "coerce": false,
               "typeName": "ZodString",
               "zodOpenApi": {
-                "current": [Circular],
                 "openapi": {
                   "ref": "foo",
                 },
+                Symbol(current): [Circular],
               },
             },
             "and": [Function],
@@ -604,10 +604,10 @@ describe('enhanceWithMetadata', () => {
               "coerce": false,
               "typeName": "ZodString",
               "zodOpenApi": {
-                "current": [Circular],
                 "openapi": {
                   "ref": "foo",
                 },
+                Symbol(current): [Circular],
               },
             },
             "and": [Function],
@@ -690,10 +690,10 @@ describe('enhanceWithMetadata', () => {
               "coerce": false,
               "typeName": "ZodString",
               "zodOpenApi": {
-                "current": [Circular],
                 "openapi": {
                   "ref": "foo",
                 },
+                Symbol(current): [Circular],
               },
             },
             "and": [Function],
@@ -933,5 +933,12 @@ describe('enhanceWithMetadata', () => {
   },
 ]
 `);
+  });
+
+  it('does not fail JSON serialization', () => {
+    const FooSchema = z.string().openapi({ ref: 'foo' });
+    expect(() => {
+      JSON.stringify(FooSchema);
+    }).not.toThrow();
   });
 });

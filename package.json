@@ -1,6 +1,6 @@
 {
   "name": "zod-openapi",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Convert Zod Schemas to OpenAPI v3.x documentation",
   "keywords": [
     "typescript",
@@ -97,6 +97,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "9.0.0-main-20240928013837"
+    "version": "9.1.0"
   }
 }

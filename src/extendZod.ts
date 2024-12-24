@@ -1,6 +1,6 @@
 import type { ZodRawShape, ZodTypeDef, z } from 'zod';
 
-import './extendZodTypes';
+import { currentSymbol, previousSymbol } from './extendZodTypes';
 
 type ZodOpenApiMetadataDef = NonNullable<ZodTypeDef['zodOpenApi']>;
 type ZodOpenApiMetadata = ZodOpenApiMetadataDef['openapi'];
@@ -42,11 +42,11 @@ export function extendZodWithOpenApi(zod: typeof z) {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    result._def.zodOpenApi.current = result;
+    result._def.zodOpenApi[currentSymbol] = result;
 
     if (zodOpenApi) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      result._def.zodOpenApi.previous = this;
+      result._def.zodOpenApi[previousSymbol] = this;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -63,13 +63,13 @@ export function extendZodWithOpenApi(zod: typeof z) {
     if (def.zodOpenApi) {
       const cloned = { ...def.zodOpenApi };
       cloned.openapi = mergeOpenApi({ description: args[0] }, cloned.openapi);
-      cloned.previous = this;
-      cloned.current = result;
+      cloned[previousSymbol] = this;
+      cloned[currentSymbol] = result;
       def.zodOpenApi = cloned;
     } else {
       def.zodOpenApi = {
         openapi: { description: args[0] },
-        current: result,
+        [currentSymbol]: result,
       };
     }
 
@@ -88,11 +88,11 @@ export function extendZodWithOpenApi(zod: typeof z) {
     if (zodOpenApi) {
       const cloned = { ...zodOpenApi };
       cloned.openapi = mergeOpenApi({}, cloned.openapi);
-      cloned.previous = this;
+      cloned[previousSymbol] = this;
       extendResult._def.zodOpenApi = cloned;
     } else {
       extendResult._def.zodOpenApi = {
-        previous: this,
+        [previousSymbol]: this,
       };
     }
 
@@ -112,8 +112,8 @@ export function extendZodWithOpenApi(zod: typeof z) {
     if (zodOpenApi) {
       const cloned = { ...zodOpenApi };
       cloned.openapi = mergeOpenApi({}, cloned.openapi);
-      delete cloned.previous;
-      delete cloned.current;
+      delete cloned[previousSymbol];
+      delete cloned[currentSymbol];
       omitResult._def.zodOpenApi = cloned;
     }
 
@@ -133,8 +133,8 @@ export function extendZodWithOpenApi(zod: typeof z) {
     if (zodOpenApi) {
       const cloned = { ...zodOpenApi };
       cloned.openapi = mergeOpenApi({}, cloned.openapi);
-      delete cloned.previous;
-      delete cloned.current;
+      delete cloned[previousSymbol];
+      delete cloned[currentSymbol];
       pickResult._def.zodOpenApi = cloned;
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
