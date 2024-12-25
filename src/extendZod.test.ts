@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { createSchema } from './create/schema/single';
 import { extendZodWithOpenApi } from './extendZod';
-import { currentSymbol, previousSymbol } from './extendZodTypes';
+import { currentSymbol, previousSymbol } from './extendZodSymbols';
 
 extendZodWithOpenApi(z);
 

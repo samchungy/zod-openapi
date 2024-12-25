@@ -1,6 +1,6 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 
-import { currentSymbol, previousSymbol } from '../../extendZodTypes';
+import { currentSymbol, previousSymbol } from '../../extendZodSymbols';
 import type { oas30, oas31 } from '../../openapi3-ts/dist';
 import {
   type ComponentsObject,
