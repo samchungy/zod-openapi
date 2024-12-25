@@ -1,14 +1,12 @@
 import type { ZodObject, ZodTypeAny, z } from 'zod';
 
 import type { CreationType } from './create/components';
+import type { currentSymbol, previousSymbol } from './extendZodSymbols';
 import type { oas30, oas31 } from './openapi3-ts/dist';
 
 type SchemaObject = oas30.SchemaObject & oas31.SchemaObject;
 
 type ReplaceDate<T> = T extends Date ? Date | string : T;
-
-export const currentSymbol = Symbol('current');
-export const previousSymbol = Symbol('previous');
 
 /**
  * zod-openapi metadata
