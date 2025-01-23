@@ -52,6 +52,35 @@ describe('createObjectSchema', () => {
     expect(result).toEqual(expected);
   });
 
+  it('supports passthrough', () => {
+    const expected: Schema = {
+      type: 'schema',
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+          },
+        },
+        required: ['a'],
+        additionalProperties: true,
+      },
+    };
+    const schema = z
+      .object({
+        a: z.string(),
+      })
+      .passthrough();
+
+    const result = createObjectSchema(
+      schema,
+      undefined,
+      createOutputState(undefined),
+    );
+
+    expect(result).toEqual(expected);
+  });
+
   it('supports catchall', () => {
     const expected: Schema = {
       type: 'schema',

@@ -225,7 +225,9 @@ export const verifyEffects = (effects: Effect[], state: SchemaState) => {
   }
 };
 
-export const flattenEffects = (effects: Array<Effect[] | undefined>) => {
+export const flattenEffects = (
+  effects: Array<Effect[] | undefined | false>,
+) => {
   const allEffects = effects.reduce<Effect[]>((acc, effect) => {
     if (effect) {
       return acc.concat(effect);

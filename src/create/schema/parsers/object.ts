@@ -237,6 +237,25 @@ interface AdditionalPropertyOptions {
   catchAll: ZodType;
 }
 
+const mapAdditionalProperties = (
+  { unknownKeys, catchAll }: AdditionalPropertyOptions,
+  state: SchemaState,
+) => {
+  if (!isZodType(catchAll, 'ZodNever')) {
+    return createSchemaObject(catchAll, state, ['additional properties']);
+  }
+
+  if (unknownKeys === 'strict') {
+    return false;
+  }
+
+  if (unknownKeys === 'passthrough') {
+    return true;
+  }
+
+  return undefined;
+};
+
 export const createObjectSchemaFromShape = (
   shape: ZodRawShape,
   { unknownKeys, catchAll }: AdditionalPropertyOptions,
@@ -245,9 +264,10 @@ export const createObjectSchemaFromShape = (
 ): Schema => {
   const properties = mapProperties(shape, state);
   const required = mapRequired(properties, shape, state);
-  const additionalProperties = !isZodType(catchAll, 'ZodNever')
-    ? createSchemaObject(catchAll, state, ['additional properties'])
-    : undefined;
+  const additionalProperties = mapAdditionalProperties(
+    { catchAll, unknownKeys },
+    state,
+  );
 
   return {
     type: 'schema',
@@ -255,14 +275,16 @@ export const createObjectSchemaFromShape = (
       ...(!omitType && { type: 'object' }),
       ...(properties && { properties: properties.properties }),
       ...(required?.required.length && { required: required.required }),
-      ...(unknownKeys === 'strict' && { additionalProperties: false }),
-      ...(additionalProperties && {
-        additionalProperties: additionalProperties.schema,
+      ...(additionalProperties !== undefined && {
+        additionalProperties:
+          typeof additionalProperties === 'object'
+            ? additionalProperties.schema
+            : additionalProperties,
       }),
     },
     effects: flattenEffects([
       ...(properties?.effects ?? []),
-      additionalProperties?.effects,
+      typeof additionalProperties === 'object' && additionalProperties?.effects,
       required?.effects,
     ]),
   };
