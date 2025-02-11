@@ -7,6 +7,9 @@ on:
       - 'master'
 permissions: {}
 
+env:
+  COREPACK_DEFAULT_TO_LATEST: 0
+
 jobs:
   validate:
     name: Lint & Test
