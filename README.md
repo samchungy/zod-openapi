@@ -459,6 +459,10 @@ Another way to register schema instead of adding a `ref` is to add it to the com
 eg.
 
 ```typescript
+const title = z.string().openapi({
+  description: 'Job title',
+  example: 'My job',
+});
 createDocument({
   components: {
     schemas: {
@@ -468,7 +472,29 @@ createDocument({
 });
 ```
 
-Unfortunately, as a limitation of this library, you will need to attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or you will not reap the full benefits of component generation. As a result, I recommend utilising the auto registering components over manual registration.
+Unfortunately, as a limitation of this library, you should attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or you will not reap the full benefits of component generation.
+
+```ts
+// ❌ Avoid this
+const title = z.string();
+
+// ✅ Recommended ways
+const title = z.string().describe('Job title');
+const title = z.string().openapi({
+  description: 'Job title',
+  example: 'My job',
+});
+
+createDocument({
+  components: {
+    schemas: {
+      jobTitle: title,
+    },
+  },
+});
+```
+
+Overall, I recommend utilising the auto registering components over manual registration.
 
 #### Parameters
 
