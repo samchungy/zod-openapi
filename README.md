@@ -3,35 +3,35 @@
   <h1 align="center">zod-openapi</h1>
 </p>
 <p align="center">
-A Typescript library to use <a href="https://github.com/colinhacks/zod">Zod</a> Schemas to create OpenAPI v3.x documentation
+A TypeScript library for using <a href="https://github.com/colinhacks/zod">Zod</a> schemas to generate OpenAPI v3.x documentation.
 </p>
 <div align="center">
-<a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/><a>
-<a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/dm/zod-openapi"/><a>
-<a href="https://nodejs.org/en/"><img src="https://img.shields.io/badge/node-%3E%3D%2018-brightgreen"/><a>
-<a href="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml/badge.svg"/><a>
-<a href="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml/badge.svg"/><a>
-<a href="https://github.com/seek-oss/skuba"><img src="https://img.shields.io/badge/🤿%20skuba-powered-009DC4"/><a>
+<a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/></a>
+<a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/dm/zod-openapi"/></a>
+<a href="https://nodejs.org/en/"><img src="https://img.shields.io/badge/node-%3E%3D%2018-brightgreen"/></a>
+<a href="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml/badge.svg"/></a>
+<a href="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml/badge.svg"/></a>
+<a href="https://github.com/seek-oss/skuba"><img src="https://img.shields.io/badge/🤿%20skuba-powered-009DC4"/></a>
 </div>
 <br>
 
-## Install
+## Installation
 
-Install via `npm`, `yarn` or `pnpm`:
+Install via `npm`, `yarn`, or `pnpm`:
 
 ```bash
 npm install zod zod-openapi
-## or
+# or
 yarn add zod zod-openapi
-## or
+# or
 pnpm install zod zod-openapi
 ```
 
 ## Usage
 
-### Extend Zod
+### Extending Zod
 
-This mutates Zod to add an extra `.openapi()` method. Call this at the top of your entry point(s). You can achieve this in two different ways, depending on your preference.
+This package extends Zod by adding an `.openapi()` method. Call this at the top of your entry point(s). You can apply this extension in two ways:
 
 #### Subpath Import
 
@@ -39,12 +39,12 @@ This mutates Zod to add an extra `.openapi()` method. Call this at the top of yo
 import 'zod-openapi/extend';
 import { z } from 'zod';
 
-z.string().openapi({ description: 'hello world!', example: 'hello world' });
+z.string().openapi({ description: 'Hello world!', example: 'Hello world' });
 ```
 
 #### Manual Extension
 
-This is useful if you have a specific instance of Zod or a Zod instance from another library that you would like to target.
+This method is useful if you have a specific instance of Zod or a Zod instance from another library that you want to extend.
 
 ```typescript
 import { z } from 'zod';
@@ -52,27 +52,27 @@ import { extendZodWithOpenApi } from 'zod-openapi';
 
 extendZodWithOpenApi(z);
 
-z.string().openapi({ description: 'hello world!', example: 'hello world' });
+z.string().openapi({ description: 'Hello world!', example: 'hello world' });
 ```
 
-#### `.openapi()`
+### `.openapi()`
 
-Use the `.openapi()` method to add metadata to a specific Zod type. The `.openapi()` method takes an object with the following options:
+Use the `.openapi()` method to add metadata to a Zod schema. It accepts an object with the following options:
 
-|     Option      |                                                                      Description                                                                       |
-| :-------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------: |
-| OpenAPI Options |              This will take any option you would put on a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/).               |
-|  `effectType`   |                                           Use to override the creation type for a [Zod Effect](#zod-effects)                                           |
-|    `header`     |                                           Use to provide metadata for [response headers](#response-headers)                                            |
-|     `param`     |                                             Use to provide metadata for [request parameters](#parameters)                                              |
-|      `ref`      |                                  Use this to [auto register a schema as a re-usable component](#creating-components)                                   |
-|    `refType`    |                               Use this to set the creation type for a component which is not referenced in the document.                               |
-|     `type`      |                              Use this to override the generated type. If this is provided no metadata will be generated.                               |
-|  `unionOneOf`   | Set to `true` to force a single ZodUnion to output `oneOf` instead of `anyOf`. See [CreateDocumentOptions](#CreateDocumentOptions) for a global option |
+| Option            | Description                                                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `OpenAPI Options` | Accepts any option available for a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/).         |
+| `effectType`      | Overrides the creation type for a [Zod Effect](#zod-effects).                                                             |
+| `header`          | Adds metadata for [response headers](#response-headers).                                                                  |
+| `param`           | Adds metadata for [request parameters](#parameters).                                                                      |
+| `ref`             | Registers a schema as a reusable OpenAPI component.                                                                       |
+| `refType`         | Defines the creation type for a component not explicitly referenced in the document.                                      |
+| `type`            | Overrides the generated type. If provided, no metadata will be generated.                                                 |
+| `unionOneOf`      | Forces a `oneOf` instead of `anyOf` for unions. See [CreateDocumentOptions](#CreateDocumentOptions) for a global setting. |
 
 ### `createDocument`
 
-Creates an OpenAPI documentation object
+Generates an OpenAPI documentation object.
 
 ```typescript
 import 'zod-openapi/extend';
