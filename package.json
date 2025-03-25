@@ -76,9 +76,9 @@
     "@crackle/cli": "0.15.5",
     "@redocly/cli": "1.27.0",
     "@types/node": "^20.3.0",
-    "eslint-plugin-zod-openapi": "^1.0.0-beta.0",
+    "eslint-plugin-zod-openapi": "1.0.0",
     "openapi3-ts": "4.4.0",
-    "skuba": "9.1.0",
+    "skuba": "10.1.0",
     "yaml": "2.7.0",
     "zod": "3.24.2"
   },
@@ -97,6 +97,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "9.1.0"
+    "version": "10.1.0"
   }
 }

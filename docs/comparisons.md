@@ -17,6 +17,7 @@ zod-openapi was created while trying to add a feature to support auto-registerin
 6. The underlying structure of the library consists of tightly coupled classes, which require you to create an awkward Registry class to create references. This would mean you need to ship a registry class instance along with your types, making sharing types difficult.
 
 7. Previously, zod-to-openapi did not support auto-registering schemas; however, more recently they added a solution which is less clear as they are using named parameters:
+
    ```ts
    z.string().openapi('foo');
    z.string().openapi('foo', { description: 'foo' });
@@ -25,6 +26,7 @@ zod-openapi was created while trying to add a feature to support auto-registerin
    z.string().openapi({ ref: 'foo' });
    z.string().openapi({ description: 'foo', ref: 'foo' });
    ```
+
 8. None of the large number of [issues](https://github.com/asteasolutions/zod-to-openapi/issues), [known issues](https://github.com/asteasolutions/zod-to-openapi#known-issues), or discussion threads apply to this library.
 
 Did I really rewrite an entire library just for this? Absolutely. I believe that creating documentation and types should be as simple and frictionless as possible.
@@ -35,6 +37,7 @@ Did I really rewrite an entire library just for this? Absolutely. I believe that
 
 1. Delete the OpenAPIRegistry and OpenAPIGenerator classes.
 2. Replace any `.register()` call with `ref` in `.openapi()`, or alternatively, add them directly to the components section of the schema.
+
    ```ts
    const registry = new OpenAPIRegistry();
 
@@ -60,6 +63,7 @@ Did I really rewrite an entire library just for this? Absolutely. I believe that
      },
    });
    ```
+
 3. Replace `registry.registerComponent()` with a regular OpenAPI component in the document.
 
    ```ts
@@ -87,6 +91,7 @@ Did I really rewrite an entire library just for this? Absolutely. I believe that
      },
    });
    ```
+
 4. Replace `registry.registerPath()` with regular OpenAPI paths in the document.
 
    ```ts
@@ -99,7 +104,7 @@ Did I really rewrite an entire library just for this? Absolutely. I believe that
        query: z.object({ a: z.string() }),
        params: z.object({ b: z.string() }),
        body: z.object({ c: z.string() }),
-       headers: z.object({ d: z.string() })
+       headers: z.object({ d: z.string() }),
      },
      responses: {},
    });
@@ -110,7 +115,7 @@ Did I really rewrite an entire library just for this? Absolutely. I believe that
        requestParams: {
          query: z.object({ a: z.string() }),
          path: z.object({ b: z.string() }), // params -> path
-         header: z.object({ d: z.string() }) // headers -> header
+         header: z.object({ d: z.string() }), // headers -> header
        }, // renamed from request -> requestParams
        requestBody: z.object({ c: z.string() }), // request.body -> requestBody
        responses: {},
@@ -123,5 +128,3 @@ Did I really rewrite an entire library just for this? Absolutely. I believe that
      },
    });
    ```
-
-

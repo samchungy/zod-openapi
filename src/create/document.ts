@@ -45,10 +45,9 @@ export interface ZodOpenApiResponsesObject
     | oas31.ReferenceObject;
 }
 
-export type ZodOpenApiParameters = {
-  [type in oas31.ParameterLocation &
-    oas30.ParameterLocation]?: ZodObjectInputType;
-};
+export type ZodOpenApiParameters = Partial<
+  Record<oas31.ParameterLocation & oas30.ParameterLocation, ZodObjectInputType>
+>;
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface ZodOpenApiCallbacksObject
