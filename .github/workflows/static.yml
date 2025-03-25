@@ -31,8 +31,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build static content
-        run: npm install && npm run build # Ensure static content is built
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
