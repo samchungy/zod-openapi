@@ -72,7 +72,7 @@ export const createNullableSchema = <T extends ZodTypeAny>(
       schema: {
         type: mapNullType(type),
         ...schema,
-        // https://github.com/OAI/OpenAPI-Specification/issues/3148
+        // https://github.com/json-schema-org/json-schema-spec/issues/258
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         ...(schema.enum && { enum: [...schema.enum, null] }),
       },
