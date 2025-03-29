@@ -52,13 +52,29 @@ export const createNullableSchema = <T extends ZodTypeAny>(
       };
     }
 
-    const { type, ...schema } = schemaObject.schema;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { type, const: schemaConst, ...schema } = schemaObject.schema;
+
+    if (schemaConst) {
+      return {
+        type: 'schema',
+        schema: {
+          type: mapNullType(type),
+          enum: [schemaConst, null],
+          ...schema,
+        } as oas31.SchemaObject,
+        effects: schemaObject.effects,
+      };
+    }
 
     return {
       type: 'schema',
       schema: {
         type: mapNullType(type),
         ...schema,
+        // https://github.com/OAI/OpenAPI-Specification/issues/3148
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        ...(schema.enum && { enum: [...schema.enum, null] }),
       },
       effects: schemaObject.effects,
     };

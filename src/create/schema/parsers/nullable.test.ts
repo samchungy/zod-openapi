@@ -238,10 +238,25 @@ describe('createNullableSchema', () => {
         type: 'schema',
         schema: {
           type: ['string', 'null'],
-          enum: ['a'],
+          enum: ['a', 'null'],
         },
       };
       const schema = z.enum(['a']).nullable();
+
+      const result = createNullableSchema(schema, createOutputState());
+
+      expect(result).toEqual(expected);
+    });
+
+    it('creates a nullable enum from a literal', () => {
+      const expected: Schema = {
+        type: 'schema',
+        schema: {
+          type: ['string', 'null'],
+          enum: ['a', 'null'],
+        },
+      };
+      const schema = z.literal('a').nullable();
 
       const result = createNullableSchema(schema, createOutputState());
 
