@@ -238,7 +238,7 @@ describe('createNullableSchema', () => {
         type: 'schema',
         schema: {
           type: ['string', 'null'],
-          enum: ['a', 'null'],
+          enum: ['a', null],
         },
       };
       const schema = z.enum(['a']).nullable();
@@ -253,7 +253,7 @@ describe('createNullableSchema', () => {
         type: 'schema',
         schema: {
           type: ['string', 'null'],
-          enum: ['a', 'null'],
+          enum: ['a', null],
         },
       };
       const schema = z.literal('a').nullable();
