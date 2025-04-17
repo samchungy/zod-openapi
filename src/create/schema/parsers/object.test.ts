@@ -351,6 +351,7 @@ describe('required', () => {
           .transform((str) => str?.length)
           .pipe(z.number().optional()),
         m: z.string().default('a'),
+        n: z.undefined().optional(),
       });
 
       const result = createObjectSchema(schema, undefined, createInputState());
