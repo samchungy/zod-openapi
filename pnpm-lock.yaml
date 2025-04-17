@@ -33,8 +33,8 @@ importers:
         specifier: 2.7.0
         version: 2.7.0
       zod:
-        specifier: 3.24.2
-        version: 3.24.2
+        specifier: 3.24.3
+        version: 3.24.3
 
 packages:
 
@@ -1621,6 +1621,9 @@ packages:
   '@types/node@20.17.27':
     resolution: {integrity: sha512-U58sbKhDrthHlxHRJw7ZLiLDZGmAUOZUbpw0S6nL27sYUdhvgBLCRu/keSd6qcTsfArd1sRFCCBxzWATGr/0UA==}
 
+  '@types/node@20.17.30':
+    resolution: {integrity: sha512-7zf4YyHA+jvBNfVrk2Gtvs6x7E8V+YDW05bNfG2XkWDJfYRXrTiP/DsB2zSYTaHX0bGIujTBQdMVAhb+j7mwpg==}
+
   '@types/node@22.13.13':
     resolution: {integrity: sha512-ClsL5nMwKaBRwPcCvH8E7+nU4GxHVx1axNvMZTFHMEfNI7oahimt26P5zjVCRrjiIWj6YFXfE1v3dEp94wLcGQ==}
 
@@ -2159,8 +2162,8 @@ packages:
   caniuse-lite@1.0.30001625:
     resolution: {integrity: sha512-4KE9N2gcRH+HQhpeiRZXd+1niLB/XNLAhSy4z7fI8EzcbcPoAqjNInxVHTiTwWfTIV4w096XG8OtCOCQQKPv3w==}
 
-  caniuse-lite@1.0.30001707:
-    resolution: {integrity: sha512-3qtRjw/HQSMlDWf+X79N206fepf4SOOU6SQLMaq/0KkZLmSjPxAkBOQQ+FxbHKfHmYLZFfdWsO3KA90ceHPSnw==}
+  caniuse-lite@1.0.30001713:
+    resolution: {integrity: sha512-wCIWIg+A4Xr7NfhTuHdX+/FKh3+Op3LBbSp2N5Pfx6T/LhdQy3GTyoTg48BReaW/MyMNZAkTadsBtai3ldWK0Q==}
 
   cardinal@2.1.1:
     resolution: {integrity: sha512-JSr5eOgoEymtYHBjNWyjrMqet9Am2miJhlfKNdqLp6zoeAh0KN5dRAcxlecj5mAJrmQomgiOBj35xHLrFjqBpw==}
@@ -2594,8 +2597,8 @@ packages:
   electron-to-chromium@1.4.785:
     resolution: {integrity: sha512-V94FSLwW6V1JYeYT/pl23zIdwiAbeod7gBjyud2uhuWTa2yV3gZ4IaWt6l0t808y4l6NwOspyR5hiENGrYQqvA==}
 
-  electron-to-chromium@1.5.123:
-    resolution: {integrity: sha512-refir3NlutEZqlKaBLK0tzlVLe5P2wDKS7UQt/3SpibizgsRAPOsqQC3ffw1nlv3ze5gjRQZYHoPymgVZkplFA==}
+  electron-to-chromium@1.5.136:
+    resolution: {integrity: sha512-kL4+wUTD7RSA5FHx5YwWtjDnEEkIIikFgWHR4P6fqjw1PPLlqYkxeOb++wAauAssat0YClCy8Y3C5SxgSkjibQ==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -5917,8 +5920,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.24.2:
-    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+  zod@3.24.3:
+    resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
 
 snapshots:
 
@@ -7526,6 +7529,10 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
+  '@types/node@20.17.30':
+    dependencies:
+      undici-types: 6.19.8
+
   '@types/node@22.13.13':
     dependencies:
       undici-types: 6.20.0
@@ -8152,8 +8159,8 @@ snapshots:
 
   browserslist@4.24.4:
     dependencies:
-      caniuse-lite: 1.0.30001707
-      electron-to-chromium: 1.5.123
+      caniuse-lite: 1.0.30001713
+      electron-to-chromium: 1.5.136
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
 
@@ -8254,7 +8261,7 @@ snapshots:
 
   caniuse-lite@1.0.30001625: {}
 
-  caniuse-lite@1.0.30001707: {}
+  caniuse-lite@1.0.30001713: {}
 
   cardinal@2.1.1:
     dependencies:
@@ -8637,7 +8644,7 @@ snapshots:
 
   electron-to-chromium@1.4.785: {}
 
-  electron-to-chromium@1.5.123: {}
+  electron-to-chromium@1.5.136: {}
 
   emittery@0.13.1: {}
 
@@ -10335,7 +10342,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 20.17.27
+      '@types/node': 20.17.30
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -11804,7 +11811,7 @@ snapshots:
       tsconfig-seek: 2.0.0
       tsx: 4.18.0
       typescript: 5.8.2
-      zod: 3.24.2
+      zod: 3.24.3
     transitivePeerDependencies:
       - '@babel/core'
       - '@jest/transform'
@@ -12648,4 +12655,4 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.24.2: {}
+  zod@3.24.3: {}
