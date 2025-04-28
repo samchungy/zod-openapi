@@ -34,12 +34,14 @@ export const createRequestBody = (
     };
   }
 
-  const ref = requestBodyObject.ref ?? component?.ref;
+  const { ref: reqBodyRef, ...cleanRequestBody } = requestBodyObject;
+
+  const ref = reqBodyRef ?? component?.ref;
 
   const requestBody: oas31.RequestBodyObject = {
-    ...requestBodyObject,
+    ...cleanRequestBody,
     content: createContent(
-      requestBodyObject.content,
+      cleanRequestBody.content,
       components,
       'input',
       [...subpath, 'content'],
