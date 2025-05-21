@@ -78,14 +78,14 @@
     "@types/node": "^20.3.0",
     "eslint-plugin-zod-openapi": "1.0.0",
     "openapi3-ts": "4.4.0",
-    "skuba": "10.1.0",
+    "skuba": "11.0.0",
     "yaml": "2.8.0",
-    "zod": "3.25.7"
+    "zod": "3.25.17"
   },
   "peerDependencies": {
     "zod": "^3.21.4"
   },
-  "packageManager": "pnpm@9.0.5",
+  "packageManager": "pnpm@10.11.0",
   "engines": {
     "node": ">=18"
   },
@@ -97,6 +97,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "10.1.0"
+    "version": "11.0.0"
   }
 }
