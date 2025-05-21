@@ -92,7 +92,9 @@ describe('nativeEnum', () => {
 
     const schema = z.nativeEnum(Direction);
 
-    const result = createSchema(schema, createOutputOpenapi3State(), ['nativeEnum']);
+    const result = createSchema(schema, createOutputOpenapi3State(), [
+      'nativeEnum',
+    ]);
 
     expect(result).toEqual(expected);
   });

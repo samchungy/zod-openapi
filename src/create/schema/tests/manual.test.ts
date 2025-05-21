@@ -10,7 +10,7 @@ describe('manual', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    
+
     const schema = z.unknown().openapi({ type: 'string' });
 
     const result = createSchema(schema, createOutputState(), ['manual']);

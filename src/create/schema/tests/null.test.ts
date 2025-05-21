@@ -12,7 +12,7 @@ describe('null', () => {
     };
 
     const schema = z.null();
-    
+
     const result = createSchema(schema, createOutputState(), ['null']);
 
     expect(result).toEqual(expected);

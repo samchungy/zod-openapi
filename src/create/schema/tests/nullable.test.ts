@@ -15,10 +15,12 @@ describe('nullable', () => {
         type: 'string',
         nullable: true,
       };
-      
+
       const schema = z.string().nullable();
 
-      const result = createSchema(schema, createOutputOpenapi3State(), ['nullable']);
+      const result = createSchema(schema, createOutputOpenapi3State(), [
+        'nullable',
+      ]);
 
       expect(result).toEqual(expected);
     });
@@ -28,11 +30,13 @@ describe('nullable', () => {
         allOf: [{ $ref: '#/components/schemas/a' }],
         nullable: true,
       };
-      
+
       const registered = z.string().openapi({ ref: 'a' });
       const schema = registered.optional().nullable();
 
-      const result = createSchema(schema, createOutputOpenapi3State(), ['nullable']);
+      const result = createSchema(schema, createOutputOpenapi3State(), [
+        'nullable',
+      ]);
 
       expect(result).toEqual(expected);
     });
@@ -61,12 +65,14 @@ describe('nullable', () => {
         ],
         nullable: true,
       };
-      
+
       const schema = z
         .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
         .nullable();
 
-      const result = createSchema(schema, createOutputOpenapi3State(), ['nullable']);
+      const result = createSchema(schema, createOutputOpenapi3State(), [
+        'nullable',
+      ]);
 
       expect(result).toEqual(expected);
     });
@@ -90,7 +96,9 @@ describe('nullable', () => {
       const object2 = object1.extend({ b: z.string() });
       const schema = z.object({ b: object2.nullable() }).nullable();
 
-      const result = createSchema(schema, createOutputOpenapi3State(), ['nullable']);
+      const result = createSchema(schema, createOutputOpenapi3State(), [
+        'nullable',
+      ]);
 
       expect(result).toEqual(expected);
     });
@@ -104,7 +112,9 @@ describe('nullable', () => {
 
       const schema = z.enum(['a']).nullable();
 
-      const result = createSchema(schema, createOutputOpenapi3State(), ['nullable']);
+      const result = createSchema(schema, createOutputOpenapi3State(), [
+        'nullable',
+      ]);
 
       expect(result).toEqual(expected);
     });
@@ -115,7 +125,7 @@ describe('nullable', () => {
       const expected: oas31.SchemaObject = {
         type: ['string', 'null'],
       };
-      
+
       const schema = z.string().nullable();
 
       const result = createSchema(schema, createOutputState(), ['nullable']);
@@ -134,7 +144,7 @@ describe('nullable', () => {
           },
         ],
       };
-      
+
       const registered = z.string().openapi({ ref: 'a' });
       const schema = registered.optional().nullable();
 
@@ -169,7 +179,7 @@ describe('nullable', () => {
           },
         ],
       };
-      
+
       const schema = z
         .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
         .nullable();
@@ -196,7 +206,7 @@ describe('nullable', () => {
         },
         required: ['b'],
       };
-      
+
       const object1 = z.object({ a: z.string() }).openapi({ ref: 'a' });
       const object2 = object1.extend({ b: z.string() });
       const schema = z.object({ b: object2.nullable() }).nullable();
@@ -211,7 +221,7 @@ describe('nullable', () => {
         type: ['string', 'null'],
         enum: ['a', null],
       };
-      
+
       const schema = z.enum(['a']).nullable();
 
       const result = createSchema(schema, createOutputState(), ['nullable']);
@@ -224,7 +234,7 @@ describe('nullable', () => {
         type: ['string', 'null'],
         enum: ['a', null],
       };
-      
+
       const schema = z.literal('a').nullable();
 
       const result = createSchema(schema, createOutputState(), ['nullable']);

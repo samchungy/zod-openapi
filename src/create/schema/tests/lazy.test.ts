@@ -1,10 +1,11 @@
 import '../../../entries/extend';
-import { type ZodLazy, type ZodObject, type ZodType, z } from 'zod';
+import assert from 'assert';
+
+import { type ZodLazy, type ZodType, z } from 'zod';
 
 import { createSchema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
-import assert from 'assert';
 
 describe('lazy', () => {
   it('throws an error when a lazy schema has no ref', () => {

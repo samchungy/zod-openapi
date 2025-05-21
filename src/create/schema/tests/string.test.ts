@@ -1,8 +1,8 @@
 import '../../../entries/extend';
 import { type ZodString, z } from 'zod';
-import type { oas31 } from '../../../openapi3-ts/dist';
 
 import { createSchema } from '..';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import {
   createOutputOpenapi3State,
   createOutputState,
@@ -198,7 +198,9 @@ describe('string', () => {
       contentEncoding: 'base64',
     };
 
-    const result = createSchema(z.string().base64(), createOutputState(), ['string']);
+    const result = createSchema(z.string().base64(), createOutputState(), [
+      'string',
+    ]);
 
     expect(result).toStrictEqual(expected);
   });
@@ -211,7 +213,7 @@ describe('string', () => {
     const result = createSchema(
       z.string().base64(),
       createOutputOpenapi3State(),
-      ['string']
+      ['string'],
     );
 
     expect(result).toStrictEqual(expected);

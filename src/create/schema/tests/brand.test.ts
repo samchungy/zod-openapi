@@ -16,7 +16,7 @@ describe('brand', () => {
       },
       required: ['name'],
     };
-    
+
     const schema = z.object({ name: z.string() }).brand<'Cat'>();
 
     const result = createSchema(schema, createOutputState(), ['brand']);

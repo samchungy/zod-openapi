@@ -1,8 +1,8 @@
 import '../../../entries/extend';
 import { z } from 'zod';
-import type { oas31 } from '../../../openapi3-ts/dist';
 
 import { createSchema } from '..';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import {
   createOutputOpenapi3State,
   createOutputState,
@@ -52,7 +52,9 @@ describe('record', () => {
     };
     const schema = z.record(z.enum(['a', 'b']), z.string());
 
-    const result = createSchema(schema, createOutputOpenapi3State(), ['record']);
+    const result = createSchema(schema, createOutputOpenapi3State(), [
+      'record',
+    ]);
 
     expect(result).toEqual(expected);
   });
@@ -77,7 +79,9 @@ describe('record', () => {
       additionalProperties: false,
     };
 
-    const result = createSchema(schema, createOutputOpenapi3State(), ['record']);
+    const result = createSchema(schema, createOutputOpenapi3State(), [
+      'record',
+    ]);
 
     expect(result).toEqual(expected);
   });
@@ -105,7 +109,9 @@ describe('record', () => {
       additionalProperties: false,
     };
 
-    const result = createSchema(schema, createOutputOpenapi3State(), ['record']);
+    const result = createSchema(schema, createOutputOpenapi3State(), [
+      'record',
+    ]);
 
     expect(result).toEqual(expected);
   });
@@ -135,7 +141,9 @@ describe('record', () => {
       additionalProperties: false,
     };
 
-    const result = createSchema(schema, createOutputOpenapi3State(), ['record']);
+    const result = createSchema(schema, createOutputOpenapi3State(), [
+      'record',
+    ]);
 
     expect(result).toEqual(expected);
   });

@@ -11,7 +11,7 @@ describe('default', () => {
       type: 'string',
       default: 'a',
     };
-    
+
     const schema = z.string().default('a');
 
     const result = createSchema(schema, createOutputState(), ['default']);
@@ -28,7 +28,7 @@ describe('default', () => {
       ],
       default: 'a',
     };
-    
+
     const schema = z.string().openapi({ ref: 'ref' }).optional().default('a');
 
     const result = createSchema(schema, createOutputState(), ['default']);

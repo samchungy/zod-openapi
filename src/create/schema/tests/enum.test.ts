@@ -11,7 +11,7 @@ describe('enum', () => {
       type: 'string',
       enum: ['a', 'b'],
     };
-    
+
     const schema = z.enum(['a', 'b']);
 
     const result = createSchema(schema, createOutputState(), ['enum']);

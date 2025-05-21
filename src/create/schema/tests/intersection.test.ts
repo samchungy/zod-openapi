@@ -17,7 +17,7 @@ describe('intersection', () => {
         },
       ],
     };
-    
+
     const schema = z.intersection(z.string(), z.number());
 
     const result = createSchema(schema, createOutputState(), ['intersection']);
@@ -36,7 +36,9 @@ describe('intersection', () => {
       }),
     );
 
-    const result = createSchema(andSchema, createOutputState(), ['intersection']);
+    const result = createSchema(andSchema, createOutputState(), [
+      'intersection',
+    ]);
 
     expect(result).toEqual<oas31.SchemaObject>({
       allOf: [
@@ -78,7 +80,7 @@ describe('intersection', () => {
     const result = createSchema(
       schema.and(schema2).and(schema3),
       createOutputState(),
-      ['intersection']
+      ['intersection'],
     );
 
     expect(result).toEqual<oas31.SchemaObject>({

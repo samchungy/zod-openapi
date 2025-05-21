@@ -16,7 +16,7 @@ describe('literal', () => {
         type: 'string',
         const: 'a',
       };
-      
+
       const schema = z.literal('a');
 
       const result = createSchema(schema, state, ['literal']);
@@ -30,7 +30,7 @@ describe('literal', () => {
         type: 'number',
         const: 2,
       };
-      
+
       const schema = z.literal(2);
 
       const result = createSchema(schema, state, ['literal']);
@@ -44,7 +44,7 @@ describe('literal', () => {
         type: 'boolean',
         const: true,
       };
-      
+
       const schema = z.literal(true);
 
       const result = createSchema(schema, state, ['literal']);
@@ -57,7 +57,7 @@ describe('literal', () => {
       const expected: oas31.SchemaObject = {
         type: 'null',
       };
-      
+
       const schema = z.literal(null);
 
       const result = createSchema(schema, state, ['literal']);
@@ -73,7 +73,7 @@ describe('literal', () => {
         type: 'string',
         enum: ['a'],
       };
-      
+
       const schema = z.literal('a');
 
       const result = createSchema(schema, state, ['literal']);
@@ -87,7 +87,7 @@ describe('literal', () => {
         type: 'number',
         enum: [2],
       };
-      
+
       const schema = z.literal(2);
 
       const result = createSchema(schema, state, ['literal']);
@@ -101,7 +101,7 @@ describe('literal', () => {
         type: 'boolean',
         enum: [true],
       };
-      
+
       const schema = z.literal(true);
 
       const result = createSchema(schema, state, ['literal']);
@@ -114,7 +114,7 @@ describe('literal', () => {
       const expected: oas31.SchemaObject = {
         type: 'null',
       };
-      
+
       const schema = z.literal(null);
 
       const result = createSchema(schema, state, ['literal']);

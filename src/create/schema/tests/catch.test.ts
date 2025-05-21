@@ -11,7 +11,7 @@ describe('catch', () => {
       type: 'string',
       default: 'bob',
     };
-    
+
     const schema = z.string().catch('bob');
 
     const result = createSchema(schema, createOutputState(), ['catch']);

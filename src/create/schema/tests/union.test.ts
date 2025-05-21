@@ -1,8 +1,8 @@
 import '../../../entries/extend';
 import { z } from 'zod';
-import type { oas31 } from '../../../openapi3-ts/dist';
 
 import { createSchema } from '..';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
 
 describe('union', () => {
@@ -60,7 +60,7 @@ describe('union', () => {
     const result = createSchema(
       schema,
       createOutputState(undefined, { unionOneOf: true }),
-      ['union']
+      ['union'],
     );
 
     expect(result).toEqual(expected);
@@ -84,7 +84,7 @@ describe('union', () => {
     const result = createSchema(
       schema,
       createOutputState(undefined, { unionOneOf: true }),
-      ['union']
+      ['union'],
     );
 
     expect(result).toEqual(expected);

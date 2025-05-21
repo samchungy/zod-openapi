@@ -15,7 +15,7 @@ describe('object', () => {
       },
       required: ['a'],
     };
-    
+
     const schema = z.object({
       a: z.string(),
       b: z.string().optional(),
@@ -37,7 +37,7 @@ describe('object', () => {
       required: ['a'],
       additionalProperties: false,
     };
-    
+
     const schema = z.strictObject({
       a: z.string(),
     });
@@ -58,7 +58,7 @@ describe('object', () => {
       required: ['a'],
       additionalProperties: true,
     };
-    
+
     const schema = z
       .object({
         a: z.string(),
@@ -79,7 +79,7 @@ describe('object', () => {
       required: ['a'],
       additionalProperties: { type: 'boolean' },
     };
-    
+
     const schema = z
       .object({
         a: z.string(),
@@ -316,7 +316,7 @@ describe('extend', () => {
       },
       required: ['obj1', 'obj2'],
     };
-    
+
     const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
     const object2 = object1.extend({ b: z.string() });
     const schema = z.object({
@@ -344,7 +344,7 @@ describe('extend', () => {
       },
       required: ['obj1', 'obj2'],
     };
-    
+
     const object1 = z
       .object({ a: z.string() })
       .catchall(z.boolean())
@@ -375,7 +375,7 @@ describe('extend', () => {
       },
       required: ['obj1', 'obj2'],
     };
-    
+
     const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
     const object2 = object1.extend({ b: z.number() }).catchall(z.boolean());
     const schema = z.object({
@@ -415,7 +415,7 @@ describe('extend', () => {
       },
       required: ['obj1', 'obj2'],
     };
-    
+
     const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
     const object2 = object1.extend({ a: z.number() });
     const schema = z.object({
@@ -441,7 +441,7 @@ describe('extend', () => {
       },
       required: ['a', 'b'],
     };
-    
+
     const zodDate = z
       .union([
         z.custom<Date>((val: unknown) => val instanceof Date),

@@ -11,7 +11,7 @@ describe('date', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
     };
-    
+
     const schema = z.date();
 
     const result = createSchema(schema, createOutputState(), ['date']);
@@ -24,7 +24,7 @@ describe('date', () => {
       type: 'string',
       format: 'date-time',
     };
-    
+
     const schema = z.date();
     const documentOptions: CreateDocumentOptions = {
       defaultDateSchema: {
@@ -36,7 +36,7 @@ describe('date', () => {
     const result = createSchema(
       schema,
       createOutputState(undefined, documentOptions),
-      ['date']
+      ['date'],
     );
 
     expect(result).toEqual(expected);
@@ -46,7 +46,7 @@ describe('date', () => {
     const expected: oas31.SchemaObject = {
       type: 'number',
     };
-    
+
     const schema = z.date();
     const documentOptions: CreateDocumentOptions = {
       defaultDateSchema: {
@@ -57,7 +57,7 @@ describe('date', () => {
     const result = createSchema(
       schema,
       createOutputState(undefined, documentOptions),
-      ['date']
+      ['date'],
     );
 
     expect(result).toEqual(expected);
