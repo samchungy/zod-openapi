@@ -1,22 +1,19 @@
 import '../../../entries/extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
+import { createSchema } from '..';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
 
-import { createManualTypeSchema } from './manual';
-
-describe('createManualTypeSchema', () => {
+describe('manual', () => {
   it('creates a simple string schema for an optional string', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'string',
-      },
+    const expected: oas31.SchemaObject = {
+      type: 'string',
     };
+
     const schema = z.unknown().openapi({ type: 'string' });
 
-    const result = createManualTypeSchema(schema, createOutputState());
+    const result = createSchema(schema, createOutputState(), ['manual']);
 
     expect(result).toEqual(expected);
   });

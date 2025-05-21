@@ -1,35 +1,30 @@
 import '../../../entries/extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
+import { createSchema } from '..';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
 import type { CreateDocumentOptions } from '../../document';
 
-import { createDateSchema } from './date';
-
-describe('createDateSchema', () => {
+describe('date', () => {
   it('creates a string schema', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'string',
-      },
+    const expected: oas31.SchemaObject = {
+      type: 'string',
     };
+
     const schema = z.date();
 
-    const result = createDateSchema(schema, createOutputState());
+    const result = createSchema(schema, createOutputState(), ['date']);
 
     expect(result).toEqual(expected);
   });
 
   it('sets a custom format', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'string',
-        format: 'date-time',
-      },
+    const expected: oas31.SchemaObject = {
+      type: 'string',
+      format: 'date-time',
     };
+
     const schema = z.date();
     const documentOptions: CreateDocumentOptions = {
       defaultDateSchema: {
@@ -38,21 +33,20 @@ describe('createDateSchema', () => {
       },
     };
 
-    const result = createDateSchema(
+    const result = createSchema(
       schema,
       createOutputState(undefined, documentOptions),
+      ['date'],
     );
 
     expect(result).toEqual(expected);
   });
 
   it('sets a custom type', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'number',
-      },
+    const expected: oas31.SchemaObject = {
+      type: 'number',
     };
+
     const schema = z.date();
     const documentOptions: CreateDocumentOptions = {
       defaultDateSchema: {
@@ -60,9 +54,10 @@ describe('createDateSchema', () => {
       },
     };
 
-    const result = createDateSchema(
+    const result = createSchema(
       schema,
       createOutputState(undefined, documentOptions),
+      ['date'],
     );
 
     expect(result).toEqual(expected);

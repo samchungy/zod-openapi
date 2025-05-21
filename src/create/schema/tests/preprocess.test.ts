@@ -1,25 +1,21 @@
 import '../../../entries/extend';
 import { z } from 'zod';
 
-import type { Schema } from '..';
+import { createSchema } from '..';
+import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
 
-import { createPreprocessSchema } from './preprocess';
-
-describe('createPreprocessSchema', () => {
+describe('preprocess', () => {
   it('returns a schema with preprocess', () => {
-    const expected: Schema = {
-      type: 'schema',
-      schema: {
-        type: 'string',
-      },
+    const expected: oas31.SchemaObject = {
+      type: 'string',
     };
     const schema = z.preprocess(
       (arg) => (typeof arg === 'string' ? arg.split(',') : arg),
       z.string(),
     );
 
-    const result = createPreprocessSchema(schema, createOutputState());
+    const result = createSchema(schema, createOutputState(), ['preprocess']);
 
     expect(result).toEqual(expected);
   });
