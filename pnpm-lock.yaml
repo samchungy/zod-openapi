@@ -33,8 +33,8 @@ importers:
         specifier: 2.8.0
         version: 2.8.0
       zod:
-        specifier: 3.25.7
-        version: 3.25.7
+        specifier: 3.25.17
+        version: 3.25.17
 
 packages:
 
@@ -5924,8 +5924,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.25.7:
-    resolution: {integrity: sha512-YGdT1cVRmKkOg6Sq7vY7IkxdphySKnXhaUmFI4r4FcuFVNgpCb9tZfNwXbT6BPjD5oz0nubFsoo9pIqKrDcCvg==}
+  zod@3.25.17:
+    resolution: {integrity: sha512-8hQzQ/kMOIFbwOgPrm9Sf9rtFHpFUMy4HvN0yEB0spw14aYi0uT5xG5CE2DB9cd51GWNsz+DNO7se1kztHMKnw==}
 
 snapshots:
 
@@ -11815,7 +11815,7 @@ snapshots:
       tsconfig-seek: 2.0.0
       tsx: 4.18.0
       typescript: 5.8.2
-      zod: 3.25.7
+      zod: 3.25.17
     transitivePeerDependencies:
       - '@babel/core'
       - '@jest/transform'
@@ -12661,4 +12661,4 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.25.7: {}
+  zod@3.25.17: {}
