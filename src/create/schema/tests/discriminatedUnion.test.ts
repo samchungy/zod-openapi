@@ -191,7 +191,7 @@ describe('discriminatedUnion', () => {
       ],
     };
 
-    enum letters {
+    enum Letters {
       a = 'a',
       c = 'c',
     }
@@ -199,7 +199,7 @@ describe('discriminatedUnion', () => {
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.nativeEnum(letters),
+          type: z.nativeEnum(Letters),
         })
         .openapi({ ref: 'a' }),
       z
@@ -228,7 +228,7 @@ describe('discriminatedUnion', () => {
       ],
     };
 
-    enum mixed {
+    enum Mixed {
       a = 'a',
       c = 'c',
       d = 1,
@@ -237,7 +237,7 @@ describe('discriminatedUnion', () => {
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.nativeEnum(mixed),
+          type: z.nativeEnum(Mixed),
         })
         .openapi({ ref: 'a' }),
       z
