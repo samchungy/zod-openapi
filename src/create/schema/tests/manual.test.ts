@@ -1,5 +1,5 @@
 import '../../../entries/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { createSchema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';
@@ -11,7 +11,7 @@ describe('manual', () => {
       type: 'string',
     };
 
-    const schema = z.unknown().openapi({ type: 'string' });
+    const schema = z.unknown().meta({ type: 'string' });
 
     const result = createSchema(schema, createOutputState(), ['manual']);
 

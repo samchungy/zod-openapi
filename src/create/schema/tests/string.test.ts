@@ -1,5 +1,5 @@
 import '../../../entries/extend';
-import { type ZodString, z } from 'zod';
+import { type ZodString, z } from 'zod/v4';
 
 import { createSchema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';
@@ -167,25 +167,37 @@ describe('string', () => {
     expect(result).toStrictEqual(expected);
   });
 
+  it('creates a uri format string schema', () => {
+    const expected: oas31.SchemaObject = {
+      type: 'string',
+      format: 'uri',
+    };
+    const schema = z.url();
+
+    const result = createSchema(schema, createOutputState(), ['string']);
+
+    expect(result).toStrictEqual(expected);
+  });
+
   it.each`
-    zodString                             | format
-    ${z.string().uuid()}                  | ${'uuid'}
-    ${z.string().email()}                 | ${'email'}
-    ${z.string().url()}                   | ${'uri'}
-    ${z.string().datetime()}              | ${'date-time'}
-    ${z.string().date()}                  | ${'date'}
-    ${z.string().time()}                  | ${'time'}
-    ${z.string().duration()}              | ${'duration'}
-    ${z.string().ip({ version: 'v4' })}   | ${'ipv4'}
-    ${z.string().ip({ version: 'v6' })}   | ${'ipv6'}
-    ${z.string().cidr({ version: 'v4' })} | ${'ipv4'}
-    ${z.string().cidr({ version: 'v6' })} | ${'ipv6'}
+    zodString           | format
+    ${z.uuid()}         | ${'uuid'}
+    ${z.email()}        | ${'email'}
+    ${z.iso.datetime()} | ${'date-time'}
+    ${z.iso.date()}     | ${'date'}
+    ${z.iso.time()}     | ${'time'}
+    ${z.iso.duration()} | ${'duration'}
+    ${z.ipv4()}         | ${'ipv4'}
+    ${z.ipv6()}         | ${'ipv6'}
+    ${z.cidrv4()}       | ${'cidrv4'}
+    ${z.cidrv6()}       | ${'cidrv6'}
   `(
     'creates a string schema with $format',
     ({ zodString, format }: { zodString: ZodString; format: string }) => {
       const expected: oas31.SchemaObject = {
         type: 'string',
         format,
+        pattern: expect.any(String),
       };
       const result = createSchema(zodString, createOutputState(), ['string']);
       expect(result).toStrictEqual(expected);
@@ -196,6 +208,9 @@ describe('string', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
       contentEncoding: 'base64',
+      format: 'base64',
+      pattern:
+        '^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$',
     };
 
     const result = createSchema(z.string().base64(), createOutputState(), [
@@ -210,11 +225,9 @@ describe('string', () => {
       type: 'string',
     };
 
-    const result = createSchema(
-      z.string().base64(),
-      createOutputOpenapi3State(),
-      ['string'],
-    );
+    const result = createSchema(z.base64(), createOutputOpenapi3State(), [
+      'string',
+    ]);
 
     expect(result).toStrictEqual(expected);
   });

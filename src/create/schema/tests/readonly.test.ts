@@ -1,5 +1,5 @@
 import '../../../entries/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { createSchema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';

@@ -1,7 +1,7 @@
 import '../../../entries/extend';
 import assert from 'assert';
 
-import { type ZodLazy, type ZodType, z } from 'zod';
+import { z } from 'zod/v4';
 
 import { createSchema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';

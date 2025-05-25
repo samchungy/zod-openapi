@@ -1,5 +1,5 @@
 import '../../../entries/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { createSchema } from '..';
 import type { oas31 } from '../../../openapi3-ts/dist';
@@ -16,7 +16,7 @@ describe('record', () => {
         type: 'string',
       },
     };
-    const schema = z.record(z.string());
+    const schema = z.record(z.string(), z.string());
 
     const result = createSchema(schema, createOutputState(), ['record']);
 
@@ -27,6 +27,7 @@ describe('record', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       propertyNames: {
+        format: 'regex',
         type: 'string',
         pattern: '^foo',
       },
@@ -95,10 +96,7 @@ describe('record', () => {
       .transform((val) => val.toUpperCase())
       .pipe(basicEnum);
 
-    const schema = z.record(
-      complexSchema,
-      z.string().openapi({ ref: 'value' }),
-    );
+    const schema = z.record(complexSchema, z.string().meta({ id: 'value' }));
 
     const expected: oas31.SchemaObject = {
       type: 'object',
@@ -124,7 +122,7 @@ describe('record', () => {
       .length(1)
       .transform((val) => val.toUpperCase())
       .pipe(basicEnum)
-      .openapi({ ref: 'key' });
+      .meta({ id: 'key' });
 
     const schema = z.record(complexSchema, z.string());
 
@@ -158,7 +156,7 @@ describe('record', () => {
         type: 'string',
       },
     };
-    const complexSchema = z.string().regex(/^foo/).openapi({ ref: 'key' });
+    const complexSchema = z.string().regex(/^foo/).meta({ id: 'key' });
 
     const schema = z.record(complexSchema, z.string());
 
@@ -177,7 +175,7 @@ describe('record', () => {
         type: 'string',
       },
     };
-    const complexSchema = z.string().regex(/^foo/).openapi({ ref: 'key' });
+    const complexSchema = z.string().regex(/^foo/).meta({ id: 'key' });
 
     const schema = z.record(complexSchema, z.string());
 
