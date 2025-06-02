@@ -80,7 +80,7 @@
     "openapi3-ts": "4.4.0",
     "skuba": "11.0.1-fix-node16-compatibility-20250523051131",
     "yaml": "2.8.0",
-    "zod": "3.25.23"
+    "zod": "3.25.46"
   },
   "peerDependencies": {
     "zod": "^3.21.4"
