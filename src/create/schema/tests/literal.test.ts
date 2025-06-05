@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -55,6 +54,7 @@ describe('literal', () => {
     it('creates a null const schema', () => {
       const state = createOutputState();
       const expected: oas31.SchemaObject = {
+        const: null,
         type: 'null',
       };
 
@@ -71,7 +71,7 @@ describe('literal', () => {
       const state = createOutputOpenapi3State();
       const expected: oas31.SchemaObject = {
         type: 'string',
-        enum: ['a'],
+        const: 'a',
       };
 
       const schema = z.literal('a');
@@ -85,7 +85,7 @@ describe('literal', () => {
       const state = createOutputOpenapi3State();
       const expected: oas31.SchemaObject = {
         type: 'number',
-        enum: [2],
+        const: 2,
       };
 
       const schema = z.literal(2);
@@ -99,7 +99,7 @@ describe('literal', () => {
       const state = createOutputOpenapi3State();
       const expected: oas31.SchemaObject = {
         type: 'boolean',
-        enum: [true],
+        const: true,
       };
 
       const schema = z.literal(true);
@@ -112,6 +112,7 @@ describe('literal', () => {
     it('creates a null enum schema', () => {
       const state = createOutputOpenapi3State();
       const expected: oas31.SchemaObject = {
+        const: null,
         type: 'null',
       };
 

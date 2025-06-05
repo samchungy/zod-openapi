@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -20,8 +19,6 @@ describe('tuple', () => {
           type: 'number',
         },
       ],
-      minItems: 2,
-      maxItems: 2,
     };
     const schema = z.tuple([z.string(), z.number()]);
 
@@ -55,8 +52,7 @@ describe('tuple', () => {
   it('creates an empty array schema', () => {
     const expected: oas31.SchemaObject = {
       type: 'array',
-      minItems: 0,
-      maxItems: 0,
+      prefixItems: [],
     };
     const schema = z.tuple([]);
 

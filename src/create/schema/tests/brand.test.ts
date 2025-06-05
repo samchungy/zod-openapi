@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -14,6 +13,7 @@ describe('brand', () => {
           type: 'string',
         },
       },
+      additionalProperties: false,
       required: ['name'],
     };
 

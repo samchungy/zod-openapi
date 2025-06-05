@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';

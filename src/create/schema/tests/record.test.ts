@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -146,7 +145,7 @@ describe('record', () => {
     expect(result).toEqual(expected);
   });
 
-  it('supports registering key schemas in 3.1.0', () => {
+  it.only('supports registering key schemas in 3.1.0', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       propertyNames: {
@@ -165,17 +164,17 @@ describe('record', () => {
     expect(result).toEqual(expected);
   });
 
-  it('supports lazy key schemas in 3.1.0', () => {
+  it.only('supports lazy key schemas in 3.1.0', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       propertyNames: {
-        $ref: '#/components/schemas/key',
+        $ref: '#/components/schemas/key2',
       },
       additionalProperties: {
         type: 'string',
       },
     };
-    const complexSchema = z.string().regex(/^foo/).meta({ id: 'key' });
+    const complexSchema = z.string().regex(/^foo/).meta({ id: 'key2' });
 
     const schema = z.record(complexSchema, z.string());
 

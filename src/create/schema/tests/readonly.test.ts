@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -9,6 +8,7 @@ describe('readonly', () => {
   it('creates a simple string schema for a readonly string', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
+      readOnly: true,
     };
     const schema = z.string().readonly();
 

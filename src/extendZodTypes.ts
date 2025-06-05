@@ -1,9 +1,16 @@
-import type { $output } from 'zod/v4';
+import type { $output, core, toJSONSchema } from 'zod/v4';
 
 import type { oas31 } from './openapi3-ts/dist';
 
+export type Override = NonNullable<
+  NonNullable<Parameters<typeof toJSONSchema>[1]>['override']
+>;
+
+export type OverrideParams = NonNullable<Parameters<Override>[0]>;
+
 declare module 'zod/v4' {
-  interface GlobalMeta extends Omit<oas31.SchemaObject, 'examples'> {
+  interface GlobalMeta
+    extends Omit<oas31.SchemaObject, 'examples' | 'example'> {
     /**
      * Used to set metadata for a parameter
      */
@@ -24,8 +31,8 @@ declare module 'zod/v4' {
       id?: string;
     };
     /**
-     * Used to set the output of a ZodUnion to be `oneOf` instead of `anyOf`
+     * Used to override the default JSON Schema generation behavior.
      */
-    unionOneOf?: boolean;
+    override?: Override;
   }
 }

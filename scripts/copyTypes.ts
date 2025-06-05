@@ -38,7 +38,14 @@ async function copyDTs(src: string, dest: string): Promise<void> {
         const patched = contents
           .replace(', SpecificationExtension }', ' }')
           .replaceAll(/.*export declare function.*\n/g, '');
-        await fs.writeFile(destination, Buffer.from(patched));
+
+        const openapi31Patch = filePath.includes('openapi31')
+          ? patched.replace(
+              'export interface SchemaObject extends ISpecificationExtension {\n',
+              'export interface SchemaObject extends ISpecificationExtension {\n    $ref?: string;\n',
+            )
+          : patched;
+        await fs.writeFile(destination, Buffer.from(openapi31Patch));
         continue;
       }
       if (contents.includes('export declare function getExtension')) {

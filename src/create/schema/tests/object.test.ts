@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -14,6 +13,7 @@ describe('object', () => {
         b: { type: 'string' },
       },
       required: ['a'],
+      additionalProperties: false,
     };
 
     const schema = z.object({
@@ -56,14 +56,12 @@ describe('object', () => {
         },
       },
       required: ['a'],
-      additionalProperties: true,
+      additionalProperties: {},
     };
 
-    const schema = z
-      .object({
-        a: z.string(),
-      })
-      .passthrough();
+    const schema = z.looseObject({
+      a: z.string(),
+    });
 
     const result = createSchema(schema, createOutputState(), ['object']);
 
@@ -133,6 +131,7 @@ describe('object', () => {
         a: { type: 'string', default: 'a' },
       },
       required: ['a'],
+      additionalProperties: false,
     };
 
     const result = createSchema(schema, createOutputState(), ['object']);
@@ -150,6 +149,7 @@ describe('object', () => {
         a: { type: 'string', default: 'a' },
       },
       required: ['a'],
+      additionalProperties: false,
     };
 
     const result = createSchema(schema, createOutputState(), ['object']);
@@ -190,8 +190,8 @@ describe('required', () => {
     });
 
     it('does not create an required array', () => {
-      const ref = z.string().openapi({ ref: 'ref' });
-      const oref = z.string().optional().openapi({ ref: 'oref' });
+      const ref = z.string().meta({ id: 'ref' });
+      const oref = z.string().optional().meta({ id: 'oref' });
       const schema = z.object({
         a: z.literal(undefined),
         b: z.never(),
@@ -258,8 +258,8 @@ describe('required', () => {
     });
 
     it('does not create an required array', () => {
-      const ref = z.string().openapi({ ref: 'ref' });
-      const oref = z.string().optional().openapi({ ref: 'oref' });
+      const ref = z.string().meta({ id: 'ref1' });
+      const oref = z.string().optional().meta({ id: 'oref1' });
       const schema = z.object({
         a: z.literal(undefined),
         b: z.never(),
@@ -291,8 +291,8 @@ describe('required', () => {
           f: { type: 'number' },
           g: { anyOf: [{ type: 'string' }] },
           h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
-          i: { $ref: '#/components/schemas/ref' },
-          j: { $ref: '#/components/schemas/oref' },
+          i: { $ref: '#/components/schemas/ref1' },
+          j: { $ref: '#/components/schemas/oref1' },
           k: {},
           l: { type: 'string' },
           m: { type: 'string', default: 'a' },
@@ -317,7 +317,7 @@ describe('extend', () => {
       required: ['obj1', 'obj2'],
     };
 
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
+    const object1 = z.object({ a: z.string() }).meta({ id: 'obj1' });
     const object2 = object1.extend({ b: z.string() });
     const schema = z.object({
       obj1: object1,
@@ -348,7 +348,7 @@ describe('extend', () => {
     const object1 = z
       .object({ a: z.string() })
       .catchall(z.boolean())
-      .openapi({ ref: 'obj1' });
+      .meta({ id: 'obj1' });
     const object2 = object1.extend({ b: z.number() });
     const schema = z.object({
       obj1: object1,
@@ -363,9 +363,9 @@ describe('extend', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       properties: {
-        obj1: { $ref: '#/components/schemas/obj1' },
+        obj1: { $ref: '#/components/schemas/obj11' },
         obj2: {
-          allOf: [{ $ref: '#/components/schemas/obj1' }],
+          allOf: [{ $ref: '#/components/schemas/obj11' }],
           properties: { b: { type: 'number' } },
           required: ['b'],
           additionalProperties: {
@@ -376,7 +376,7 @@ describe('extend', () => {
       required: ['obj1', 'obj2'],
     };
 
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
+    const object1 = z.object({ a: z.string() }).meta({ id: 'obj11' });
     const object2 = object1.extend({ b: z.number() }).catchall(z.boolean());
     const schema = z.object({
       obj1: object1,
@@ -388,7 +388,7 @@ describe('extend', () => {
   });
 
   it('auto registers the base of an extended object', () => {
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
+    const object1 = z.object({ a: z.string() }).meta({ id: 'obj111' });
     const object2 = object1.extend({ b: z.string() });
     const schema = z.object({
       obj1: object1,
@@ -398,7 +398,7 @@ describe('extend', () => {
     const state = createOutputState();
     createSchema(schema, state, ['object']);
 
-    expect(state.components.schemas.get(object1)?.ref).toBe('obj1');
+    expect(state.components.schemas.get(object1)?.ref).toBe('obj111');
     expect(state.components.schemas.get(object1)?.type).toBe('complete');
   });
 
@@ -406,7 +406,7 @@ describe('extend', () => {
     const expected: oas31.SchemaObject = {
       type: 'object',
       properties: {
-        obj1: { $ref: '#/components/schemas/obj1' },
+        obj1: { $ref: '#/components/schemas/obj1111' },
         obj2: {
           type: 'object',
           properties: { a: { type: 'number' } },
@@ -416,7 +416,7 @@ describe('extend', () => {
       required: ['obj1', 'obj2'],
     };
 
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
+    const object1 = z.object({ a: z.string() }).meta({ id: 'obj1111' });
     const object2 = object1.extend({ a: z.number() });
     const schema = z.object({
       obj1: object1,
@@ -447,7 +447,7 @@ describe('extend', () => {
         z.custom<Date>((val: unknown) => val instanceof Date),
         z.string().transform((str: string): Date => new Date(str)), // ignore validation
       ])
-      .openapi({
+      .meta({
         type: 'string',
         format: 'date',
       });

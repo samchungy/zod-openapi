@@ -205,6 +205,7 @@ export interface ReferenceObject {
 }
 export type SchemaObjectType = 'integer' | 'number' | 'string' | 'boolean' | 'object' | 'null' | 'array';
 export interface SchemaObject extends ISpecificationExtension {
+    $ref?: string;
     discriminator?: DiscriminatorObject;
     readOnly?: boolean;
     writeOnly?: boolean;

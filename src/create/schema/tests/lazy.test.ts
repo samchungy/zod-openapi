@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import assert from 'assert';
 
 import { z } from 'zod/v4';

@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -62,7 +61,7 @@ describe('nativeEnum', () => {
       Right = 'Right',
     }
 
-    const schema = z.nativeEnum(Direction);
+    const schema = z.enum(Direction);
 
     const result = createSchema(schema, createOutputState(), ['nativeEnum']);
 

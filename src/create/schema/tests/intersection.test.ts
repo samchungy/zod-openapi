@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -50,6 +49,7 @@ describe('intersection', () => {
             },
           },
           required: ['a'],
+          additionalProperties: false,
         },
         {
           type: 'object',
@@ -59,6 +59,7 @@ describe('intersection', () => {
             },
           },
           required: ['b'],
+          additionalProperties: false,
         },
       ],
     });
@@ -93,6 +94,7 @@ describe('intersection', () => {
             },
           },
           required: ['a'],
+          additionalProperties: false,
         },
         {
           type: 'object',
@@ -102,6 +104,7 @@ describe('intersection', () => {
             },
           },
           required: ['b'],
+          additionalProperties: false,
         },
         {
           type: 'object',
@@ -111,6 +114,7 @@ describe('intersection', () => {
             },
           },
           required: ['c'],
+          additionalProperties: false,
         },
       ],
     });

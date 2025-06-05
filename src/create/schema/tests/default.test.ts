@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -21,15 +20,11 @@ describe('default', () => {
 
   it('adds a default property to a registered schema', () => {
     const expected: oas31.SchemaObject = {
-      allOf: [
-        {
-          $ref: '#/components/schemas/ref',
-        },
-      ],
+      $ref: '#/components/schemas/ref',
       default: 'a',
     };
 
-    const schema = z.string().openapi({ ref: 'ref' }).optional().default('a');
+    const schema = z.string().meta({ id: 'ref' }).default('a');
 
     const result = createSchema(schema, createOutputState(), ['default']);
 

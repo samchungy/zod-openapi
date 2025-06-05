@@ -1,4 +1,3 @@
-import '../../../entries/extend';
 import { type ZodString, z } from 'zod/v4';
 
 import { createSchema } from '..';
@@ -36,7 +35,7 @@ describe('string', () => {
   it('creates a string schema with a startsWith pattern', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
-      pattern: '^hello',
+      pattern: '^hello.*',
     };
     const schema = z.string().startsWith('hello');
 
@@ -48,7 +47,7 @@ describe('string', () => {
   it('creates a string schema with an endsWith pattern', () => {
     const expected: oas31.SchemaObject = {
       type: 'string',
-      pattern: 'hello$',
+      pattern: '.*hello$',
     };
     const schema = z.string().endsWith('hello');
 
@@ -95,23 +94,20 @@ describe('string', () => {
 
   it('creates a string schema with multiple patterns and length checks', () => {
     const expected: oas31.SchemaObject = {
+      type: 'string',
+      minLength: 10,
       allOf: [
         {
-          type: 'string',
-          pattern: '^foo',
-          minLength: 10,
-        },
-        {
-          type: 'string',
-          pattern: 'foo$',
-        },
-        {
-          type: 'string',
-          pattern: '^hello',
-        },
-        {
-          type: 'string',
           pattern: 'hello',
+        },
+        {
+          pattern: '^hello.*',
+        },
+        {
+          pattern: '^foo',
+        },
+        {
+          pattern: 'foo$',
         },
       ],
     };
