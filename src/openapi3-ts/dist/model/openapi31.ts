@@ -59,6 +59,9 @@ export interface ComponentsObject extends ISpecificationExtension {
     callbacks?: {
         [callback: string]: CallbackObject | ReferenceObject;
     };
+    pathItems?: {
+        [pathItem: string]: PathItemObject | ReferenceObject;
+    };
 }
 export interface PathsObject extends ISpecificationExtension {
     [path: string]: PathItemObject;

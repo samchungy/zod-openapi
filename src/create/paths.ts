@@ -97,10 +97,12 @@ export const createPathItem = (
   pathItem: ZodOpenApiPathItemObject,
   registry: ComponentRegistry,
   path: string[],
-): oas31.PathItemObject => {
+): oas31.PathItemObject | oas31.ReferenceObject => {
   const pathItemObject: oas31.PathItemObject = {};
 
-  for (const [key, value] of Object.entries(pathItem)) {
+  const { id, ...rest } = pathItem;
+
+  for (const [key, value] of Object.entries(rest)) {
     if (
       key === 'get' ||
       key === 'put' ||
@@ -137,6 +139,15 @@ export const createPathItem = (
     pathItemObject[key as keyof PathItemObject] = value;
   }
 
+  if (id) {
+    const ref: oas31.ReferenceObject = {
+      $ref: `#/components/pathItems/${id}`,
+    };
+    registry.pathItems.ids.set(id, pathItemObject);
+    registry.pathItems.seen.set(pathItem, ref);
+    return ref;
+  }
+
   return pathItemObject;
 };
 
@@ -160,7 +171,7 @@ export const createPaths = (
     pathsObject[singlePath] = createPathItem(pathItemObject, registry, [
       ...path,
       singlePath,
-    ]);
+    ]) as oas31.PathsObject;
   }
 
   return pathsObject;

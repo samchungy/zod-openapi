@@ -130,9 +130,9 @@ export const createSchemas = <
   const globalsInSchemas = new Map<string, string>();
 
   for (const [name, { zodType }] of Object.entries(schemas)) {
-    const meta = globalRegistry.get(zodType);
-    if (meta?.id) {
-      globalsInSchemas.set(name, meta.id);
+    const id = globalRegistry.get(zodType)?.id;
+    if (id) {
+      globalsInSchemas.set(name, id);
     }
 
     schemaRegistry.add(zodType, { id: name });
@@ -216,6 +216,14 @@ export const createSchemas = <
         return `"#/components/schemas/${globalInSchema}"`;
       }
 
+      const manualSchema = registry.schemas.manual.get(match);
+      if (manualSchema) {
+        componentsToReplace.set(match, manualSchema.key);
+        dynamicComponent.set(match, manualSchema.key);
+        manualSchema.io[io].used = true;
+        return `"#/components/schemas/${manualSchema.key}"`;
+      }
+
       // This schema is not registered but is a dynamic component
       const componentName = `__schema${registry.schemas.dynamicSchemaCount++}`;
       componentsToReplace.set(match, componentName);
@@ -226,7 +234,16 @@ export const createSchemas = <
 
   const patchedJsonSchema = JSON.parse(patched) as typeof jsonSchema;
   const components = patchedJsonSchema.schemas.__shared?.$defs ?? {};
-  delete patchedJsonSchema.schemas.__shared;
+
+  for (const [key, value] of registry.schemas.manual) {
+    if (value.io[io].used) {
+      dynamicComponent.set(key, value.key);
+    }
+  }
+
+  for (const [key, value] of globalsInSchemas) {
+    dynamicComponent.set(key, value);
+  }
 
   for (const [key, value] of dynamicComponent) {
     const component = patchedJsonSchema.schemas[key];
@@ -257,6 +274,7 @@ export const createSchemas = <
   }
 
   if (renamedComponents.size === 0) {
+    delete patchedJsonSchema.schemas.__shared;
     return {
       schemas: patchedJsonSchema.schemas as Record<
         keyof T,
@@ -279,12 +297,17 @@ export const createSchemas = <
   );
 
   const renamedJsonSchema = JSON.parse(renamedStringified) as typeof jsonSchema;
-
+  const renamedJsonSchemaComponents =
+    renamedJsonSchema.schemas.__shared?.$defs ?? {};
+  delete renamedJsonSchema.schemas.__shared;
   return {
     schemas: renamedJsonSchema.schemas as Record<
       keyof T,
       oas31.SchemaObject | oas31.ReferenceObject
     >,
-    components: components as Record<string, oas31.SchemaObject>,
+    components: renamedJsonSchemaComponents as Record<
+      string,
+      oas31.SchemaObject
+    >,
   };
 };

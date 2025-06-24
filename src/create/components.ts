@@ -1,4 +1,4 @@
-import type { $ZodType } from 'zod/v4/core';
+import { type $ZodType, globalRegistry } from 'zod/v4/core';
 
 import type { oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType } from '../zod';
@@ -6,12 +6,15 @@ import { isAnyZodType } from '../zod';
 import { createCallback } from './callbacks';
 import type {
   CreateDocumentOptions,
+  ZodOpenApiCallbackObject,
   ZodOpenApiComponentsObject,
+  ZodOpenApiPathItemObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
 } from './document';
 import { createHeader } from './headers';
 import { createParameter } from './parameters';
+import { createPathItem } from './paths';
 import { createRequestBody } from './requestBody';
 import { createResponse } from './responses';
 import { createSchemas } from './schema';
@@ -23,7 +26,18 @@ export interface ComponentRegistry {
   schemas: {
     dynamicSchemaCount: number;
     input: {
-      seen: WeakMap<$ZodType, oas31.SchemaObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        $ZodType,
+        | {
+            type: 'manual';
+            id: string;
+            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          }
+        | {
+            type: 'schema';
+            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          }
+      >;
       schemas: Map<
         string,
         {
@@ -33,7 +47,18 @@ export interface ComponentRegistry {
       >;
     };
     output: {
-      seen: WeakMap<$ZodType, oas31.SchemaObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        $ZodType,
+        | {
+            type: 'manual';
+            id: string;
+            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          }
+        | {
+            type: 'schema';
+            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          }
+      >;
       schemas: Map<
         string,
         {
@@ -46,9 +71,16 @@ export interface ComponentRegistry {
     manual: Map<
       string,
       {
+        key: string;
         io: {
-          input?: true;
-          output?: true;
+          input: {
+            used?: true;
+            schemaObject: oas31.SchemaObject;
+          };
+          output: {
+            used?: true;
+            schemaObject: oas31.SchemaObject;
+          };
         };
         zodType: $ZodType;
       }
@@ -84,8 +116,15 @@ export interface ComponentRegistry {
   callbacks: {
     ids: Map<string, oas31.CallbackObject | oas31.ReferenceObject>;
     seen: WeakMap<
-      oas31.CallbackObject,
+      ZodOpenApiCallbackObject,
       oas31.CallbackObject | oas31.ReferenceObject
+    >;
+  };
+  pathItems: {
+    ids: Map<string, oas31.PathItemObject | oas31.ReferenceObject>;
+    seen: WeakMap<
+      ZodOpenApiPathItemObject,
+      oas31.PathItemObject | oas31.ReferenceObject
     >;
   };
 }
@@ -114,7 +153,18 @@ export const createRegistry = (
         const seenSchema = registry.schemas[io].seen.get(schema);
 
         if (seenSchema) {
-          return seenSchema;
+          if (seenSchema.type === 'manual') {
+            const manualSchema = registry.schemas.manual.get(seenSchema.id);
+            if (!manualSchema) {
+              throw new Error(
+                `Manual schema "${key}" not found in registry for ${io} IO.`,
+              );
+            }
+
+            manualSchema.io[io].used = true;
+          }
+
+          return seenSchema.schemaObject;
         }
 
         const schemaObject: oas31.SchemaObject = {};
@@ -123,7 +173,7 @@ export const createRegistry = (
           schemaObject,
           zodType: schema,
         });
-        registry.schemas[io].seen.set(schema, schemaObject);
+        registry.schemas[io].seen.set(schema, { type: 'schema', schemaObject });
 
         return schemaObject;
       },
@@ -148,12 +198,17 @@ export const createRegistry = (
       ids: new Map(),
       seen: new WeakMap(),
     },
+    pathItems: {
+      ids: new Map(),
+      seen: new WeakMap(),
+    },
   };
 
   registerSchemas(components?.schemas, registry);
   registerParameters(components?.parameters, registry);
   registerHeaders(components?.headers, registry);
   registerResponses(components?.responses, registry);
+  registerPathItems(components?.pathItems, registry);
   registerRequestBodies(components?.requestBodies, registry);
   registerCallbacks(components?.callbacks, registry);
 
@@ -176,18 +231,35 @@ const registerSchemas = (
     if (isAnyZodType(schema)) {
       const inputSchemaObject: oas31.SchemaObject = {};
       const outputSchemaObject: oas31.SchemaObject = {};
-      registry.schemas.input.schemas.set(`components > schemas > ${key}`, {
+      const identifier = `components > schemas > ${key}`;
+      registry.schemas.input.schemas.set(identifier, {
         zodType: schema,
         schemaObject: inputSchemaObject,
       });
-      registry.schemas.input.seen.set(schema, inputSchemaObject);
-      registry.schemas.output.schemas.set(`components > schemas > ${key}`, {
+      registry.schemas.input.seen.set(schema, {
+        type: 'manual',
+        schemaObject: inputSchemaObject,
+        id: identifier,
+      });
+      registry.schemas.output.schemas.set(identifier, {
         zodType: schema,
         schemaObject: outputSchemaObject,
       });
-      registry.schemas.output.seen.set(schema, outputSchemaObject);
-      registry.schemas.manual.set(key, {
-        io: {},
+      registry.schemas.output.seen.set(schema, {
+        type: 'manual',
+        schemaObject: outputSchemaObject,
+        id: identifier,
+      });
+      registry.schemas.manual.set(identifier, {
+        key,
+        io: {
+          input: {
+            schemaObject: inputSchemaObject,
+          },
+          output: {
+            schemaObject: outputSchemaObject,
+          },
+        },
         zodType: schema,
       });
       continue;
@@ -331,11 +403,29 @@ const registerCallbacks = (
     }
 
     const path = ['components', 'callbacks', key];
-
     const callbackObject = createCallback(schema, registry, path);
-
     registry.callbacks.ids.set(key, callbackObject);
     registry.callbacks.seen.set(schema, callbackObject);
+  }
+};
+
+const registerPathItems = (
+  pathItems: ZodOpenApiComponentsObject['pathItems'],
+  registry: ComponentRegistry,
+): void => {
+  if (!pathItems) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(pathItems)) {
+    if (registry.pathItems.ids.has(key)) {
+      throw new Error(`PathItem "${key}" is already registered`);
+    }
+    const path = ['components', 'pathItems', key];
+    const pathItemObject = createPathItem(schema, registry, path);
+    registry.pathItems.ids.set(key, pathItemObject);
+    registry.pathItems.seen.set(schema, pathItemObject);
+    continue;
   }
 };
 
@@ -362,12 +452,23 @@ export const createIOSchemas = (ctx: {
   }
 };
 
+const createManualSchemas = (registry: ComponentRegistry) => {
+  for (const [, value] of registry.schemas.manual) {
+    if (!value.io.input.used && !value.io.output.used) {
+      const io = globalRegistry.get(value.zodType)?.unusedIO ?? 'output';
+      const schema = value.io[io].schemaObject;
+      registry.schemas.ids.set(value.key, schema);
+    }
+  }
+};
+
 export const createComponents = (
   registry: ComponentRegistry,
   opts: CreateDocumentOptions,
 ) => {
   createIOSchemas({ registry, io: 'input', opts });
   createIOSchemas({ registry, io: 'output', opts });
+  createManualSchemas(registry);
 
   const components: oas31.ComponentsObject = {};
 
@@ -388,6 +489,9 @@ export const createComponents = (
   }
   if (registry.callbacks.ids.size > 0) {
     components.callbacks = Object.fromEntries(registry.callbacks.ids);
+  }
+  if (registry.pathItems.ids.size > 0) {
+    components.pathItems = Object.fromEntries(registry.pathItems.ids);
   }
 
   return components;

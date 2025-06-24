@@ -85,6 +85,10 @@ export interface ZodOpenApiPathItemObject
   head?: ZodOpenApiOperationObject;
   patch?: ZodOpenApiOperationObject;
   trace?: ZodOpenApiOperationObject;
+  /**
+   * Used to register this path item as a component.
+   */
+  id?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
@@ -115,7 +119,13 @@ export type ZodOpenApiRequestBody =
 export interface ZodOpenApiComponentsObject
   extends Omit<
     oas31.ComponentsObject,
-    'schemas' | 'responses' | 'requestBodies' | 'headers' | 'parameters'
+    | 'schemas'
+    | 'responses'
+    | 'requestBodies'
+    | 'headers'
+    | 'parameters'
+    | 'pathItems'
+    | 'callbacks'
   > {
   parameters?: Record<string, ZodOpenApiParameterObject>;
   schemas?: Record<string, ZodOpenApiSchemaObject>;
@@ -123,6 +133,7 @@ export interface ZodOpenApiComponentsObject
   headers?: Record<string, ZodOpenApiHeaderObject>;
   responses?: Record<string, ZodOpenApiResponseObject>;
   callbacks?: Record<string, ZodOpenApiCallbackObject>;
+  pathItems?: Record<string, ZodOpenApiPathItemObject>;
 }
 
 export type ZodOpenApiVersion = OpenApiVersion;

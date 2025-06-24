@@ -40,10 +40,22 @@ async function copyDTs(src: string, dest: string): Promise<void> {
           .replaceAll(/.*export declare function.*\n/g, '');
 
         const openapi31Patch = filePath.includes('openapi31')
-          ? patched.replace(
-              'export interface SchemaObject extends ISpecificationExtension {\n',
-              'export interface SchemaObject extends ISpecificationExtension {\n    $ref?: string;\n',
-            )
+          ? patched
+              .replace(
+                'export interface SchemaObject extends ISpecificationExtension {\n',
+                'export interface SchemaObject extends ISpecificationExtension {\n    $ref?: string;\n',
+              )
+              .replace(
+                `    callbacks?: {
+        [callback: string]: CallbackObject | ReferenceObject;
+    };`,
+                `    callbacks?: {
+        [callback: string]: CallbackObject | ReferenceObject;
+    };
+    pathItems?: {
+        [pathItem: string]: PathItemObject | ReferenceObject;
+    };`,
+              )
           : patched;
         await fs.writeFile(destination, Buffer.from(openapi31Patch));
         continue;
