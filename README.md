@@ -33,12 +33,18 @@ pnpm install zod zod-openapi
 
 Use the `.meta()` method to add metadata to a Zod schema. It accepts an object with the following options:
 
-| Option     | Description                                                                                   |
-| ---------- | --------------------------------------------------------------------------------------------- |
-| `id`       | Registers a schema as a reusable OpenAPI component.                                           |
-| `header`   | Adds metadata for [response headers](#response-headers).                                      |
-| `param`    | Adds metadata for [request parameters](#parameters).                                          |
-| `override` | Allows you to override the rendered OpenAPI schema. This takes either an object or a function |
+| Option     | Description                                                                                                      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| `id`       | Registers a schema as a reusable OpenAPI component.                                                              |
+| `header`   | Adds metadata for [response headers](#response-headers).                                                         |
+| `param`    | Adds metadata for [request parameters](#parameters).                                                             |
+| `override` | Allows you to override the rendered OpenAPI schema. This takes either an object or a function                    |
+| `outputId` | Allows you to set a different ID for the output schema. This is useful when the input and output schemas differ. |
+| `unusedIO` | Allows you to set the `io` for an unused schema added to the components section. Defaults to `output`            |
+
+`````typescript
+
+````typescript
 
 ### `createDocument`
 
@@ -87,7 +93,7 @@ const document = createDocument({
     },
   },
 });
-```
+`````
 
 <details>
   <summary>Creates the following object:</summary>
