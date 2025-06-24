@@ -664,7 +664,7 @@ Output:
 }
 ```
 
-Unless you explicitly are using `z.looseObject()`s or `z.strictObject()`s throughout your codebase you will likely run into issues where the input and output schemas differ. This library will do a best effort to check equality using a simple JSON.stringify() === JSON.stringify() check. If your registered schema contains dynamically created components, this will always fail.
+Unless you are strictly using `z.looseObject()`s or `z.strictObject()`s throughout your codebase you will likely run into issues where the input and output schemas differ. This library will do a best effort to check equality using a simple JSON.stringify() === JSON.stringify() check. If your registered schema contains dynamically created components, this will always fail.
 
 If the schemas are not equal, it will automatically handle this by outputting the `output` schema with an `Output` suffix.
 
