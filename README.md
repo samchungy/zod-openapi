@@ -3,7 +3,7 @@
   <h1 align="center">zod-openapi</h1>
 </p>
 <p align="center">
-A TypeScript library for using <a href="https://github.com/colinhacks/zod">Zod</a> schemas to generate OpenAPI v3.x documentation.
+A TypeScript library which uses <a href="https://github.com/colinhacks/zod">Zod</a> schemas to generate OpenAPI v3.x documentation.
 </p>
 <div align="center">
 <a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/></a>
