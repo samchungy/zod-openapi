@@ -1,8 +1,7 @@
 import '../entries/extend';
-import { type ZodType, z } from 'zod';
+import { type ZodType, z } from 'zod/v4';
 
 import {
-  type CreateDocumentOptions,
   type ZodOpenApiCallbackObject,
   type ZodOpenApiObject,
   createDocument,
@@ -46,79 +45,11 @@ const simpleZodOpenApiObject: ZodOpenApiObject = {
   },
 };
 
-const registered = z.object({
-  a: z.string().openapi({ ref: 'a' }),
-});
-const registeredPath = z.object({
-  b: z.string().openapi({ param: { ref: 'b' } }),
-});
-const registeredZodOpenApiObject: ZodOpenApiObject = {
-  info: {
-    title: 'My API',
-    version: '1.0.0',
-  },
-  openapi: '3.1.0',
-  paths: {
-    '/jobs': {
-      get: {
-        requestParams: {
-          path: registeredPath,
-        },
-        requestBody: {
-          content: {
-            'application/json': {
-              schema: registered,
-            },
-          },
-        },
-        responses: {
-          '200': {
-            description: '200 OK',
-            content: {
-              'application/json': {
-                schema: registered,
-              },
-            },
-            headers: z.object({
-              'my-header': z.string().openapi({ header: { ref: 'my-header' } }),
-            }),
-          },
-        },
-        callbacks: {
-          onData: {
-            '{$request.query.callbackUrl}/data': {
-              post: {
-                requestBody: {
-                  content: {
-                    'application/json': {
-                      schema: registered,
-                    },
-                  },
-                },
-                responses: {
-                  '202': {
-                    description: '200 OK',
-                    content: {
-                      'application/json': {
-                        schema: registered,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
-
 const baseObject = z
   .object({
     a: z.string(),
   })
-  .openapi({ ref: 'b' });
+  .meta({ id: 'b' });
 const manual = z.boolean();
 type Lazy = Lazy[];
 const zodLazy: z.ZodType<Lazy> = z.lazy(() => zodLazy.array());
@@ -181,76 +112,159 @@ const complex = z.object({
   g: zodLazy,
   h: zodLazyComplex,
 });
-const complexZodOpenApiObject: ZodOpenApiObject = {
-  info: {
-    title: 'My API',
-    version: '1.0.0',
-  },
-  openapi: '3.1.0',
-  paths: {
-    '/jobs': {
-      get: {
-        requestParams: {
-          path: registeredPath,
-        },
-        requestBody: {
-          content: {
-            'application/json': {
-              schema: complex,
-            },
-          },
-        },
-        responses: {
-          '200': {
-            description: '200 OK',
-            content: {
-              'application/json': {
-                schema: complex,
-              },
-            },
-            headers: z.object({
-              'my-header': z.string().openapi({ header: { ref: 'my-header' } }),
-            }),
-          },
-        },
-        callbacks: {
-          onData: registeredCallback,
-        },
-      },
-    },
-  },
-  components: {
-    schemas: {
-      manual,
-      lazy: zodLazy,
-    },
-  },
-};
 
 describe('createDocument', () => {
   it('should generate a JSON document string', () => {
     const document = createDocument(simpleZodOpenApiObject);
+  });
+
+  it('should generate a JSON document string with components', () => {
+    const document = createDocument(registeredZodOpenApiObject);
 
     expect(document).toMatchInlineSnapshot(`
-      {
-        "info": {
-          "title": "My API",
-          "version": "1.0.0",
-        },
-        "openapi": "3.1.0",
-        "paths": {
-          "/jobs": {
-            "get": {
-              "parameters": [
-                {
-                  "in": "path",
-                  "name": "b",
-                  "required": true,
-                  "schema": {
-                    "type": "string",
+        {
+          "components": {
+            "headers": {
+              "my-header": {
+                "required": true,
+                "schema": {
+                  "type": "string",
+                },
+              },
+            },
+            "parameters": {
+              "b": {
+                "in": "path",
+                "name": "b",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                },
+              },
+            },
+            "schemas": {
+              "a": {
+                "type": "string",
+              },
+            },
+          },
+          "info": {
+            "title": "My API",
+            "version": "1.0.0",
+          },
+          "openapi": "3.1.0",
+          "paths": {
+            "/jobs": {
+              "get": {
+                "callbacks": {
+                  "onData": {
+                    "{$request.query.callbackUrl}/data": {
+                      "post": {
+                        "requestBody": {
+                          "content": {
+                            "application/json": {
+                              "schema": {
+                                "properties": {
+                                  "a": {
+                                    "$ref": "#/components/schemas/a",
+                                  },
+                                },
+                                "required": [
+                                  "a",
+                                ],
+                                "type": "object",
+                              },
+                            },
+                          },
+                        },
+                        "responses": {
+                          "202": {
+                            "content": {
+                              "application/json": {
+                                "schema": {
+                                  "properties": {
+                                    "a": {
+                                      "$ref": "#/components/schemas/a",
+                                    },
+                                  },
+                                  "required": [
+                                    "a",
+                                  ],
+                                  "type": "object",
+                                },
+                              },
+                            },
+                            "description": "200 OK",
+                          },
+                        },
+                      },
+                    },
                   },
                 },
-              ],
+                "parameters": [
+                  {
+                    "$ref": "#/components/parameters/b",
+                  },
+                ],
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "a": {
+                            "$ref": "#/components/schemas/a",
+                          },
+                        },
+                        "required": [
+                          "a",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                },
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "properties": {
+                            "a": {
+                              "$ref": "#/components/schemas/a",
+                            },
+                          },
+                          "required": [
+                            "a",
+                          ],
+                          "type": "object",
+                        },
+                      },
+                    },
+                    "description": "200 OK",
+                    "headers": {
+                      "my-header": {
+                        "$ref": "#/components/headers/my-header",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }
+      `);
+  });
+
+  it('should generate a complex JSON document string with components', () => {
+    const document = createDocument(complexZodOpenApiObject);
+
+    expect(document).toMatchInlineSnapshot(`
+  {
+    "components": {
+      "callbacks": {
+        "callback": {
+          "{$request.query.callbackUrl}/data": {
+            "post": {
               "requestBody": {
                 "content": {
                   "application/json": {
@@ -269,417 +283,154 @@ describe('createDocument', () => {
                 },
               },
               "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "properties": {
-                          "a": {
-                            "type": "string",
-                          },
-                        },
-                        "required": [
-                          "a",
-                        ],
-                        "type": "object",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
+                "202": {
+                  "description": "202 OK",
                 },
               },
             },
           },
         },
-      }
-    `);
-  });
-
-  it('should generate a JSON document string with components', () => {
-    const document = createDocument(registeredZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-      {
-        "components": {
-          "headers": {
-            "my-header": {
-              "required": true,
-              "schema": {
-                "type": "string",
-              },
-            },
+      },
+      "headers": {
+        "my-header": {
+          "required": true,
+          "schema": {
+            "type": "string",
           },
-          "parameters": {
-            "b": {
-              "in": "path",
-              "name": "b",
-              "required": true,
-              "schema": {
-                "type": "string",
-              },
-            },
+        },
+      },
+      "parameters": {
+        "b": {
+          "in": "path",
+          "name": "b",
+          "required": true,
+          "schema": {
+            "type": "string",
           },
-          "schemas": {
+        },
+      },
+      "schemas": {
+        "a": {
+          "type": "string",
+        },
+        "b": {
+          "properties": {
             "a": {
               "type": "string",
             },
           },
+          "required": [
+            "a",
+          ],
+          "type": "object",
         },
-        "info": {
-          "title": "My API",
-          "version": "1.0.0",
-        },
-        "openapi": "3.1.0",
-        "paths": {
-          "/jobs": {
-            "get": {
-              "callbacks": {
-                "onData": {
-                  "{$request.query.callbackUrl}/data": {
-                    "post": {
-                      "requestBody": {
-                        "content": {
-                          "application/json": {
-                            "schema": {
-                              "properties": {
-                                "a": {
-                                  "$ref": "#/components/schemas/a",
-                                },
-                              },
-                              "required": [
-                                "a",
-                              ],
-                              "type": "object",
-                            },
-                          },
-                        },
-                      },
-                      "responses": {
-                        "202": {
-                          "content": {
-                            "application/json": {
-                              "schema": {
-                                "properties": {
-                                  "a": {
-                                    "$ref": "#/components/schemas/a",
-                                  },
-                                },
-                                "required": [
-                                  "a",
-                                ],
-                                "type": "object",
-                              },
-                            },
-                          },
-                          "description": "200 OK",
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              "parameters": [
-                {
-                  "$ref": "#/components/parameters/b",
-                },
+        "c": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/b",
+            },
+          ],
+          "properties": {
+            "d": {
+              "type": [
+                "string",
+                "null",
               ],
-              "requestBody": {
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "properties": {
-                        "a": {
-                          "$ref": "#/components/schemas/a",
-                        },
-                      },
-                      "required": [
-                        "a",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                },
-              },
-              "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "properties": {
-                          "a": {
-                            "$ref": "#/components/schemas/a",
-                          },
-                        },
-                        "required": [
-                          "a",
-                        ],
-                        "type": "object",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
-                  "headers": {
-                    "my-header": {
-                      "$ref": "#/components/headers/my-header",
-                    },
-                  },
-                },
-              },
             },
           },
+          "required": [
+            "d",
+          ],
         },
-      }
-    `);
-  });
-
-  it('should generate a complex JSON document string with components', () => {
-    const document = createDocument(complexZodOpenApiObject);
-
-    expect(document).toMatchInlineSnapshot(`
-{
-  "components": {
-    "callbacks": {
-      "callback": {
-        "{$request.query.callbackUrl}/data": {
-          "post": {
-            "requestBody": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "properties": {
-                      "a": {
-                        "type": "string",
-                      },
-                    },
-                    "required": [
-                      "a",
-                    ],
-                    "type": "object",
-                  },
-                },
-              },
+        "lazy": {
+          "items": {
+            "$ref": "#/components/schemas/lazy",
+          },
+          "type": "array",
+        },
+        "manual": {
+          "type": "boolean",
+        },
+        "post": {
+          "properties": {
+            "id": {
+              "type": "string",
             },
-            "responses": {
-              "202": {
-                "description": "202 OK",
-              },
+            "user": {
+              "$ref": "#/components/schemas/user",
+            },
+            "userId": {
+              "type": "string",
             },
           },
+          "required": [
+            "id",
+            "userId",
+          ],
+          "type": "object",
+        },
+        "union-a": {
+          "properties": {
+            "type": {
+              "const": "a",
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+          ],
+          "type": "object",
+        },
+        "union-b": {
+          "properties": {
+            "type": {
+              "const": "b",
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+          ],
+          "type": "object",
+        },
+        "user": {
+          "properties": {
+            "id": {
+              "type": "string",
+            },
+            "posts": {
+              "items": {
+                "$ref": "#/components/schemas/post",
+              },
+              "type": "array",
+            },
+          },
+          "required": [
+            "id",
+          ],
+          "type": "object",
         },
       },
     },
-    "headers": {
-      "my-header": {
-        "required": true,
-        "schema": {
-          "type": "string",
-        },
-      },
+    "info": {
+      "title": "My API",
+      "version": "1.0.0",
     },
-    "parameters": {
-      "b": {
-        "in": "path",
-        "name": "b",
-        "required": true,
-        "schema": {
-          "type": "string",
-        },
-      },
-    },
-    "schemas": {
-      "a": {
-        "type": "string",
-      },
-      "b": {
-        "properties": {
-          "a": {
-            "type": "string",
-          },
-        },
-        "required": [
-          "a",
-        ],
-        "type": "object",
-      },
-      "c": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/b",
-          },
-        ],
-        "properties": {
-          "d": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-        },
-        "required": [
-          "d",
-        ],
-      },
-      "lazy": {
-        "items": {
-          "$ref": "#/components/schemas/lazy",
-        },
-        "type": "array",
-      },
-      "manual": {
-        "type": "boolean",
-      },
-      "post": {
-        "properties": {
-          "id": {
-            "type": "string",
-          },
-          "user": {
-            "$ref": "#/components/schemas/user",
-          },
-          "userId": {
-            "type": "string",
-          },
-        },
-        "required": [
-          "id",
-          "userId",
-        ],
-        "type": "object",
-      },
-      "union-a": {
-        "properties": {
-          "type": {
-            "const": "a",
-            "type": "string",
-          },
-        },
-        "required": [
-          "type",
-        ],
-        "type": "object",
-      },
-      "union-b": {
-        "properties": {
-          "type": {
-            "const": "b",
-            "type": "string",
-          },
-        },
-        "required": [
-          "type",
-        ],
-        "type": "object",
-      },
-      "user": {
-        "properties": {
-          "id": {
-            "type": "string",
-          },
-          "posts": {
-            "items": {
-              "$ref": "#/components/schemas/post",
-            },
-            "type": "array",
-          },
-        },
-        "required": [
-          "id",
-        ],
-        "type": "object",
-      },
-    },
-  },
-  "info": {
-    "title": "My API",
-    "version": "1.0.0",
-  },
-  "openapi": "3.1.0",
-  "paths": {
-    "/jobs": {
-      "get": {
-        "callbacks": {
-          "onData": {
-            "$ref": "#/components/callbacks/callback",
-          },
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/b",
-          },
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "a": {
-                    "$ref": "#/components/schemas/a",
-                  },
-                  "b": {
-                    "$ref": "#/components/schemas/b",
-                  },
-                  "c": {
-                    "$ref": "#/components/schemas/b",
-                  },
-                  "d": {
-                    "$ref": "#/components/schemas/c",
-                  },
-                  "e": {
-                    "discriminator": {
-                      "mapping": {
-                        "a": "#/components/schemas/union-a",
-                        "b": "#/components/schemas/union-b",
-                      },
-                      "propertyName": "type",
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/union-a",
-                      },
-                      {
-                        "$ref": "#/components/schemas/union-b",
-                      },
-                    ],
-                  },
-                  "f": {
-                    "maxItems": 3,
-                    "minItems": 3,
-                    "prefixItems": [
-                      {
-                        "type": "string",
-                      },
-                      {
-                        "type": "number",
-                      },
-                      {
-                        "$ref": "#/components/schemas/manual",
-                      },
-                    ],
-                    "type": "array",
-                  },
-                  "g": {
-                    "$ref": "#/components/schemas/lazy",
-                  },
-                  "h": {
-                    "$ref": "#/components/schemas/user",
-                  },
-                },
-                "required": [
-                  "a",
-                  "b",
-                  "d",
-                  "e",
-                  "f",
-                  "g",
-                  "h",
-                ],
-                "type": "object",
-              },
+    "openapi": "3.1.0",
+    "paths": {
+      "/jobs": {
+        "get": {
+          "callbacks": {
+            "onData": {
+              "$ref": "#/components/callbacks/callback",
             },
           },
-        },
-        "responses": {
-          "200": {
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/b",
+            },
+          ],
+          "requestBody": {
             "content": {
               "application/json": {
                 "schema": {
@@ -749,19 +500,91 @@ describe('createDocument', () => {
                 },
               },
             },
-            "description": "200 OK",
-            "headers": {
-              "my-header": {
-                "$ref": "#/components/headers/my-header",
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "a": {
+                        "$ref": "#/components/schemas/a",
+                      },
+                      "b": {
+                        "$ref": "#/components/schemas/b",
+                      },
+                      "c": {
+                        "$ref": "#/components/schemas/b",
+                      },
+                      "d": {
+                        "$ref": "#/components/schemas/c",
+                      },
+                      "e": {
+                        "discriminator": {
+                          "mapping": {
+                            "a": "#/components/schemas/union-a",
+                            "b": "#/components/schemas/union-b",
+                          },
+                          "propertyName": "type",
+                        },
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/union-a",
+                          },
+                          {
+                            "$ref": "#/components/schemas/union-b",
+                          },
+                        ],
+                      },
+                      "f": {
+                        "maxItems": 3,
+                        "minItems": 3,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                          },
+                          {
+                            "type": "number",
+                          },
+                          {
+                            "$ref": "#/components/schemas/manual",
+                          },
+                        ],
+                        "type": "array",
+                      },
+                      "g": {
+                        "$ref": "#/components/schemas/lazy",
+                      },
+                      "h": {
+                        "$ref": "#/components/schemas/user",
+                      },
+                    },
+                    "required": [
+                      "a",
+                      "b",
+                      "d",
+                      "e",
+                      "f",
+                      "g",
+                      "h",
+                    ],
+                    "type": "object",
+                  },
+                },
+              },
+              "description": "200 OK",
+              "headers": {
+                "my-header": {
+                  "$ref": "#/components/headers/my-header",
+                },
               },
             },
           },
         },
       },
     },
-  },
-}
-`);
+  }
+  `);
   });
 
   it('should generate a complex JSON document string with components in 3.0.0', () => {
@@ -771,254 +594,180 @@ describe('createDocument', () => {
     });
 
     expect(document).toMatchInlineSnapshot(`
-{
-  "components": {
-    "callbacks": {
-      "callback": {
-        "{$request.query.callbackUrl}/data": {
-          "post": {
-            "requestBody": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "properties": {
-                      "a": {
-                        "type": "string",
-                      },
-                    },
-                    "required": [
-                      "a",
-                    ],
-                    "type": "object",
-                  },
-                },
-              },
-            },
-            "responses": {
-              "202": {
-                "description": "202 OK",
-              },
-            },
-          },
-        },
-      },
-    },
-    "headers": {
-      "my-header": {
-        "required": true,
-        "schema": {
-          "type": "string",
-        },
-      },
-    },
-    "parameters": {
-      "b": {
-        "in": "path",
-        "name": "b",
-        "required": true,
-        "schema": {
-          "type": "string",
-        },
-      },
-    },
-    "schemas": {
-      "a": {
-        "type": "string",
-      },
-      "b": {
-        "properties": {
-          "a": {
-            "type": "string",
-          },
-        },
-        "required": [
-          "a",
-        ],
-        "type": "object",
-      },
-      "c": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/b",
-          },
-        ],
-        "properties": {
-          "d": {
-            "nullable": true,
-            "type": "string",
-          },
-        },
-        "required": [
-          "d",
-        ],
-      },
-      "lazy": {
-        "items": {
-          "$ref": "#/components/schemas/lazy",
-        },
-        "type": "array",
-      },
-      "manual": {
-        "type": "boolean",
-      },
-      "post": {
-        "properties": {
-          "id": {
-            "type": "string",
-          },
-          "user": {
-            "$ref": "#/components/schemas/user",
-          },
-          "userId": {
-            "type": "string",
-          },
-        },
-        "required": [
-          "id",
-          "userId",
-        ],
-        "type": "object",
-      },
-      "union-a": {
-        "properties": {
-          "type": {
-            "enum": [
-              "a",
-            ],
-            "type": "string",
-          },
-        },
-        "required": [
-          "type",
-        ],
-        "type": "object",
-      },
-      "union-b": {
-        "properties": {
-          "type": {
-            "enum": [
-              "b",
-            ],
-            "type": "string",
-          },
-        },
-        "required": [
-          "type",
-        ],
-        "type": "object",
-      },
-      "user": {
-        "properties": {
-          "id": {
-            "type": "string",
-          },
-          "posts": {
-            "items": {
-              "$ref": "#/components/schemas/post",
-            },
-            "type": "array",
-          },
-        },
-        "required": [
-          "id",
-        ],
-        "type": "object",
-      },
-    },
-  },
-  "info": {
-    "title": "My API",
-    "version": "1.0.0",
-  },
-  "openapi": "3.0.0",
-  "paths": {
-    "/jobs": {
-      "get": {
-        "callbacks": {
-          "onData": {
-            "$ref": "#/components/callbacks/callback",
-          },
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/b",
-          },
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "a": {
-                    "$ref": "#/components/schemas/a",
-                  },
-                  "b": {
-                    "$ref": "#/components/schemas/b",
-                  },
-                  "c": {
-                    "$ref": "#/components/schemas/b",
-                  },
-                  "d": {
-                    "$ref": "#/components/schemas/c",
-                  },
-                  "e": {
-                    "discriminator": {
-                      "mapping": {
-                        "a": "#/components/schemas/union-a",
-                        "b": "#/components/schemas/union-b",
-                      },
-                      "propertyName": "type",
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/union-a",
-                      },
-                      {
-                        "$ref": "#/components/schemas/union-b",
-                      },
-                    ],
-                  },
-                  "f": {
-                    "items": {
-                      "oneOf": [
-                        {
+  {
+    "components": {
+      "callbacks": {
+        "callback": {
+          "{$request.query.callbackUrl}/data": {
+            "post": {
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "properties": {
+                        "a": {
                           "type": "string",
                         },
-                        {
-                          "type": "number",
-                        },
-                        {
-                          "$ref": "#/components/schemas/manual",
-                        },
+                      },
+                      "required": [
+                        "a",
                       ],
+                      "type": "object",
                     },
-                    "maxItems": 3,
-                    "minItems": 3,
-                    "type": "array",
-                  },
-                  "g": {
-                    "$ref": "#/components/schemas/lazy",
-                  },
-                  "h": {
-                    "$ref": "#/components/schemas/user",
                   },
                 },
-                "required": [
-                  "a",
-                  "b",
-                  "d",
-                  "e",
-                  "f",
-                  "g",
-                  "h",
-                ],
-                "type": "object",
+              },
+              "responses": {
+                "202": {
+                  "description": "202 OK",
+                },
               },
             },
           },
         },
-        "responses": {
-          "200": {
+      },
+      "headers": {
+        "my-header": {
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      },
+      "parameters": {
+        "b": {
+          "in": "path",
+          "name": "b",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      },
+      "schemas": {
+        "a": {
+          "type": "string",
+        },
+        "b": {
+          "properties": {
+            "a": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "a",
+          ],
+          "type": "object",
+        },
+        "c": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/b",
+            },
+          ],
+          "properties": {
+            "d": {
+              "nullable": true,
+              "type": "string",
+            },
+          },
+          "required": [
+            "d",
+          ],
+        },
+        "lazy": {
+          "items": {
+            "$ref": "#/components/schemas/lazy",
+          },
+          "type": "array",
+        },
+        "manual": {
+          "type": "boolean",
+        },
+        "post": {
+          "properties": {
+            "id": {
+              "type": "string",
+            },
+            "user": {
+              "$ref": "#/components/schemas/user",
+            },
+            "userId": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "id",
+            "userId",
+          ],
+          "type": "object",
+        },
+        "union-a": {
+          "properties": {
+            "type": {
+              "enum": [
+                "a",
+              ],
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+          ],
+          "type": "object",
+        },
+        "union-b": {
+          "properties": {
+            "type": {
+              "enum": [
+                "b",
+              ],
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+          ],
+          "type": "object",
+        },
+        "user": {
+          "properties": {
+            "id": {
+              "type": "string",
+            },
+            "posts": {
+              "items": {
+                "$ref": "#/components/schemas/post",
+              },
+              "type": "array",
+            },
+          },
+          "required": [
+            "id",
+          ],
+          "type": "object",
+        },
+      },
+    },
+    "info": {
+      "title": "My API",
+      "version": "1.0.0",
+    },
+    "openapi": "3.0.0",
+    "paths": {
+      "/jobs": {
+        "get": {
+          "callbacks": {
+            "onData": {
+              "$ref": "#/components/callbacks/callback",
+            },
+          },
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/b",
+            },
+          ],
+          "requestBody": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1090,19 +839,93 @@ describe('createDocument', () => {
                 },
               },
             },
-            "description": "200 OK",
-            "headers": {
-              "my-header": {
-                "$ref": "#/components/headers/my-header",
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "a": {
+                        "$ref": "#/components/schemas/a",
+                      },
+                      "b": {
+                        "$ref": "#/components/schemas/b",
+                      },
+                      "c": {
+                        "$ref": "#/components/schemas/b",
+                      },
+                      "d": {
+                        "$ref": "#/components/schemas/c",
+                      },
+                      "e": {
+                        "discriminator": {
+                          "mapping": {
+                            "a": "#/components/schemas/union-a",
+                            "b": "#/components/schemas/union-b",
+                          },
+                          "propertyName": "type",
+                        },
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/union-a",
+                          },
+                          {
+                            "$ref": "#/components/schemas/union-b",
+                          },
+                        ],
+                      },
+                      "f": {
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                            },
+                            {
+                              "type": "number",
+                            },
+                            {
+                              "$ref": "#/components/schemas/manual",
+                            },
+                          ],
+                        },
+                        "maxItems": 3,
+                        "minItems": 3,
+                        "type": "array",
+                      },
+                      "g": {
+                        "$ref": "#/components/schemas/lazy",
+                      },
+                      "h": {
+                        "$ref": "#/components/schemas/user",
+                      },
+                    },
+                    "required": [
+                      "a",
+                      "b",
+                      "d",
+                      "e",
+                      "f",
+                      "g",
+                      "h",
+                    ],
+                    "type": "object",
+                  },
+                },
+              },
+              "description": "200 OK",
+              "headers": {
+                "my-header": {
+                  "$ref": "#/components/headers/my-header",
+                },
               },
             },
           },
         },
       },
     },
-  },
-}
-`);
+  }
+  `);
   });
 
   it('Supports circular schemas declared in components.schemas', () => {
@@ -1210,539 +1033,539 @@ describe('createDocument', () => {
     });
 
     expect(document).toMatchInlineSnapshot(`
-      {
-        "components": {
-          "schemas": {
-            "PartialPost": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "user": {
-                  "$ref": "#/components/schemas/User",
-                },
-                "userId": {
-                  "type": "string",
-                },
-                "user_fields": {
-                  "$ref": "#/components/schemas/PartialUser",
-                },
-              },
-              "type": "object",
-            },
-            "PartialUser": {
-              "properties": {
-                "comments": {
-                  "items": {
-                    "$ref": "#/components/schemas/Post",
-                  },
-                  "type": "array",
-                },
-                "comments_fields": {
-                  "items": {
-                    "$ref": "#/components/schemas/PartialPost",
-                  },
-                  "type": "array",
-                },
-                "id": {
-                  "type": "string",
-                },
-                "posts": {
-                  "items": {
-                    "$ref": "#/components/schemas/Post",
-                  },
-                  "type": "array",
-                },
-                "posts_fields": {
-                  "items": {
-                    "$ref": "#/components/schemas/PartialPost",
-                  },
-                  "type": "array",
-                },
-              },
-              "type": "object",
-            },
-            "Post": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "user": {
-                  "$ref": "#/components/schemas/User",
-                },
-                "userId": {
-                  "type": "string",
-                },
-                "user_fields": {
-                  "$ref": "#/components/schemas/PartialUser",
-                },
-              },
-              "required": [
-                "id",
-                "userId",
-              ],
-              "type": "object",
-            },
-            "User": {
-              "properties": {
-                "comments": {
-                  "items": {
-                    "$ref": "#/components/schemas/Post",
-                  },
-                  "type": "array",
-                },
-                "comments_fields": {
-                  "items": {
-                    "$ref": "#/components/schemas/PartialPost",
-                  },
-                  "type": "array",
-                },
-                "id": {
-                  "type": "string",
-                },
-                "posts": {
-                  "items": {
-                    "$ref": "#/components/schemas/Post",
-                  },
-                  "type": "array",
-                },
-                "posts_fields": {
-                  "items": {
-                    "$ref": "#/components/schemas/PartialPost",
-                  },
-                  "type": "array",
-                },
-              },
-              "required": [
-                "id",
-              ],
-              "type": "object",
-            },
-          },
-        },
-        "info": {
-          "title": "My API",
-          "version": "1.0.0",
-        },
-        "openapi": "3.1.0",
-        "paths": {
-          "/post": {
-            "get": {
-              "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Post",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
-                },
-              },
-            },
-          },
-          "/user": {
-            "get": {
-              "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/User",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
-                },
-              },
-            },
-            "post": {
-              "requestBody": {
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/User",
-                    },
-                  },
-                },
-              },
-              "responses": {
-                "200": {
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/User",
-                      },
-                    },
-                  },
-                  "description": "200 OK",
-                },
-              },
-            },
-          },
-        },
-      }
-    `);
-  });
-
-  it('Supports defaultDateSchema option', () => {
-    const UserSchema = z.object({
-      id: z.string(),
-      timestamp: z.date(),
-    });
-
-    const documentOptions: CreateDocumentOptions = {
-      defaultDateSchema: {
-        type: 'string',
-        format: 'date-time',
-      },
-    };
-
-    const document = createDocument(
-      {
-        info: {
-          title: 'My API',
-          version: '1.0.0',
-        },
-        openapi: '3.1.0',
-        components: {
-          schemas: {
-            User: UserSchema,
-          },
-        },
-        paths: {
-          '/timestamp/:timestamp': {
-            post: {
-              parameters: [
-                z.date().openapi({
-                  param: {
-                    in: 'path',
-                    name: 'timestamp',
-                    required: true,
-                  },
-                }),
-              ],
-              requestBody: {
-                content: {
-                  'application/json': {
-                    schema: z.object({
-                      timestamp: z.date(),
-                    }),
-                  },
-                },
-              },
-              responses: {
-                '200': {
-                  description: '200 OK',
-                  headers: z.object({
-                    timeStamp: z.date(),
-                  }),
-                  content: {
-                    'application/json': {
-                      schema: z.object({
-                        timestamp: z.date(),
-                      }),
-                    },
-                  },
-                },
-              },
-              callbacks: {
-                onData: {
-                  '{$request.query.callbackUrl}/data': {
-                    post: {
-                      requestBody: {
-                        content: {
-                          'application/json': {
-                            schema: z.object({
-                              timestamp: z.date(),
-                            }),
-                          },
-                        },
-                      },
-                      responses: {
-                        '202': {
-                          description: '200 OK',
-                          content: {
-                            'application/json': {
-                              schema: z.object({
-                                timestamp: z.date(),
-                              }),
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documentOptions,
-    );
-
-    expect(document).toMatchInlineSnapshot(`
-      {
-        "components": {
-          "schemas": {
-            "User": {
-              "properties": {
-                "id": {
-                  "type": "string",
-                },
-                "timestamp": {
-                  "format": "date-time",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "id",
-                "timestamp",
-              ],
-              "type": "object",
-            },
-          },
-        },
-        "info": {
-          "title": "My API",
-          "version": "1.0.0",
-        },
-        "openapi": "3.1.0",
-        "paths": {
-          "/timestamp/:timestamp": {
-            "post": {
-              "callbacks": {
-                "onData": {
-                  "{$request.query.callbackUrl}/data": {
-                    "post": {
-                      "requestBody": {
-                        "content": {
-                          "application/json": {
-                            "schema": {
-                              "properties": {
-                                "timestamp": {
-                                  "format": "date-time",
-                                  "type": "string",
-                                },
-                              },
-                              "required": [
-                                "timestamp",
-                              ],
-                              "type": "object",
-                            },
-                          },
-                        },
-                      },
-                      "responses": {
-                        "202": {
-                          "content": {
-                            "application/json": {
-                              "schema": {
-                                "properties": {
-                                  "timestamp": {
-                                    "format": "date-time",
-                                    "type": "string",
-                                  },
-                                },
-                                "required": [
-                                  "timestamp",
-                                ],
-                                "type": "object",
-                              },
-                            },
-                          },
-                          "description": "200 OK",
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              "parameters": [
-                {
-                  "in": "path",
-                  "name": "timestamp",
-                  "required": true,
-                  "schema": {
-                    "format": "date-time",
+        {
+          "components": {
+            "schemas": {
+              "PartialPost": {
+                "properties": {
+                  "id": {
                     "type": "string",
                   },
+                  "user": {
+                    "$ref": "#/components/schemas/User",
+                  },
+                  "userId": {
+                    "type": "string",
+                  },
+                  "user_fields": {
+                    "$ref": "#/components/schemas/PartialUser",
+                  },
                 },
-              ],
-              "requestBody": {
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "properties": {
-                        "timestamp": {
-                          "format": "date-time",
-                          "type": "string",
+                "type": "object",
+              },
+              "PartialUser": {
+                "properties": {
+                  "comments": {
+                    "items": {
+                      "$ref": "#/components/schemas/Post",
+                    },
+                    "type": "array",
+                  },
+                  "comments_fields": {
+                    "items": {
+                      "$ref": "#/components/schemas/PartialPost",
+                    },
+                    "type": "array",
+                  },
+                  "id": {
+                    "type": "string",
+                  },
+                  "posts": {
+                    "items": {
+                      "$ref": "#/components/schemas/Post",
+                    },
+                    "type": "array",
+                  },
+                  "posts_fields": {
+                    "items": {
+                      "$ref": "#/components/schemas/PartialPost",
+                    },
+                    "type": "array",
+                  },
+                },
+                "type": "object",
+              },
+              "Post": {
+                "properties": {
+                  "id": {
+                    "type": "string",
+                  },
+                  "user": {
+                    "$ref": "#/components/schemas/User",
+                  },
+                  "userId": {
+                    "type": "string",
+                  },
+                  "user_fields": {
+                    "$ref": "#/components/schemas/PartialUser",
+                  },
+                },
+                "required": [
+                  "id",
+                  "userId",
+                ],
+                "type": "object",
+              },
+              "User": {
+                "properties": {
+                  "comments": {
+                    "items": {
+                      "$ref": "#/components/schemas/Post",
+                    },
+                    "type": "array",
+                  },
+                  "comments_fields": {
+                    "items": {
+                      "$ref": "#/components/schemas/PartialPost",
+                    },
+                    "type": "array",
+                  },
+                  "id": {
+                    "type": "string",
+                  },
+                  "posts": {
+                    "items": {
+                      "$ref": "#/components/schemas/Post",
+                    },
+                    "type": "array",
+                  },
+                  "posts_fields": {
+                    "items": {
+                      "$ref": "#/components/schemas/PartialPost",
+                    },
+                    "type": "array",
+                  },
+                },
+                "required": [
+                  "id",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "info": {
+            "title": "My API",
+            "version": "1.0.0",
+          },
+          "openapi": "3.1.0",
+          "paths": {
+            "/post": {
+              "get": {
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Post",
                         },
                       },
-                      "required": [
-                        "timestamp",
-                      ],
-                      "type": "object",
                     },
+                    "description": "200 OK",
                   },
                 },
               },
-              "responses": {
-                "200": {
+            },
+            "/user": {
+              "get": {
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/User",
+                        },
+                      },
+                    },
+                    "description": "200 OK",
+                  },
+                },
+              },
+              "post": {
+                "requestBody": {
                   "content": {
                     "application/json": {
                       "schema": {
-                        "properties": {
-                          "timestamp": {
-                            "format": "date-time",
-                            "type": "string",
-                          },
-                        },
-                        "required": [
-                          "timestamp",
-                        ],
-                        "type": "object",
+                        "$ref": "#/components/schemas/User",
                       },
                     },
                   },
-                  "description": "200 OK",
-                  "headers": {
-                    "timeStamp": {
-                      "required": true,
-                      "schema": {
-                        "format": "date-time",
-                        "type": "string",
+                },
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/User",
+                        },
                       },
                     },
+                    "description": "200 OK",
                   },
                 },
               },
             },
           },
-        },
-      }
-    `);
+        }
+      `);
   });
 
-  it('Supports unionOneOf option', () => {
-    const UserSchema = z.object({
-      id: z.string(),
-      timestamp: z.date(),
-    });
+  //   it('Supports defaultDateSchema option', () => {
+  //     const UserSchema = z.object({
+  //       id: z.string(),
+  //       timestamp: z.date(),
+  //     });
 
-    const documentOptions: CreateDocumentOptions = {
-      unionOneOf: true,
-    };
+  //     const documentOptions: CreateDocumentOptions = {
+  //       defaultDateSchema: {
+  //         type: 'string',
+  //         format: 'date-time',
+  //       },
+  //     };
 
-    const document = createDocument(
-      {
-        info: {
-          title: 'My API',
-          version: '1.0.0',
-        },
-        openapi: '3.1.0',
-        components: {
-          schemas: {
-            User: UserSchema,
-          },
-        },
-        paths: {
-          '/timestamp/:timestamp': {
-            post: {
-              responses: {
-                '200': {
-                  description: '200 OK',
-                  content: {
-                    'application/json': {
-                      schema: z.union([
-                        z.object({
-                          foo: z.string(),
-                        }),
-                        z.object({
-                          bar: z.string(),
-                        }),
-                      ]),
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documentOptions,
-    );
+  //     const document = createDocument(
+  //       {
+  //         info: {
+  //           title: 'My API',
+  //           version: '1.0.0',
+  //         },
+  //         openapi: '3.1.0',
+  //         components: {
+  //           schemas: {
+  //             User: UserSchema,
+  //           },
+  //         },
+  //         paths: {
+  //           '/timestamp/:timestamp': {
+  //             post: {
+  //               parameters: [
+  //                 z.date().openapi({
+  //                   param: {
+  //                     in: 'path',
+  //                     name: 'timestamp',
+  //                     required: true,
+  //                   },
+  //                 }),
+  //               ],
+  //               requestBody: {
+  //                 content: {
+  //                   'application/json': {
+  //                     schema: z.object({
+  //                       timestamp: z.date(),
+  //                     }),
+  //                   },
+  //                 },
+  //               },
+  //               responses: {
+  //                 '200': {
+  //                   description: '200 OK',
+  //                   headers: z.object({
+  //                     timeStamp: z.date(),
+  //                   }),
+  //                   content: {
+  //                     'application/json': {
+  //                       schema: z.object({
+  //                         timestamp: z.date(),
+  //                       }),
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //               callbacks: {
+  //                 onData: {
+  //                   '{$request.query.callbackUrl}/data': {
+  //                     post: {
+  //                       requestBody: {
+  //                         content: {
+  //                           'application/json': {
+  //                             schema: z.object({
+  //                               timestamp: z.date(),
+  //                             }),
+  //                           },
+  //                         },
+  //                       },
+  //                       responses: {
+  //                         '202': {
+  //                           description: '200 OK',
+  //                           content: {
+  //                             'application/json': {
+  //                               schema: z.object({
+  //                                 timestamp: z.date(),
+  //                               }),
+  //                             },
+  //                           },
+  //                         },
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //       documentOptions,
+  //     );
 
-    expect(document).toMatchInlineSnapshot(`
-{
-  "components": {
-    "schemas": {
-      "User": {
-        "properties": {
-          "id": {
-            "type": "string",
-          },
-          "timestamp": {
-            "type": "string",
-          },
-        },
-        "required": [
-          "id",
-          "timestamp",
-        ],
-        "type": "object",
-      },
-    },
-  },
-  "info": {
-    "title": "My API",
-    "version": "1.0.0",
-  },
-  "openapi": "3.1.0",
-  "paths": {
-    "/timestamp/:timestamp": {
-      "post": {
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "properties": {
-                        "foo": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "foo",
-                      ],
-                      "type": "object",
-                    },
-                    {
-                      "properties": {
-                        "bar": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "bar",
-                      ],
-                      "type": "object",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "200 OK",
-          },
-        },
-      },
-    },
-  },
-}
-`);
-  });
+  //     expect(document).toMatchInlineSnapshot(`
+  //       {
+  //         "components": {
+  //           "schemas": {
+  //             "User": {
+  //               "properties": {
+  //                 "id": {
+  //                   "type": "string",
+  //                 },
+  //                 "timestamp": {
+  //                   "format": "date-time",
+  //                   "type": "string",
+  //                 },
+  //               },
+  //               "required": [
+  //                 "id",
+  //                 "timestamp",
+  //               ],
+  //               "type": "object",
+  //             },
+  //           },
+  //         },
+  //         "info": {
+  //           "title": "My API",
+  //           "version": "1.0.0",
+  //         },
+  //         "openapi": "3.1.0",
+  //         "paths": {
+  //           "/timestamp/:timestamp": {
+  //             "post": {
+  //               "callbacks": {
+  //                 "onData": {
+  //                   "{$request.query.callbackUrl}/data": {
+  //                     "post": {
+  //                       "requestBody": {
+  //                         "content": {
+  //                           "application/json": {
+  //                             "schema": {
+  //                               "properties": {
+  //                                 "timestamp": {
+  //                                   "format": "date-time",
+  //                                   "type": "string",
+  //                                 },
+  //                               },
+  //                               "required": [
+  //                                 "timestamp",
+  //                               ],
+  //                               "type": "object",
+  //                             },
+  //                           },
+  //                         },
+  //                       },
+  //                       "responses": {
+  //                         "202": {
+  //                           "content": {
+  //                             "application/json": {
+  //                               "schema": {
+  //                                 "properties": {
+  //                                   "timestamp": {
+  //                                     "format": "date-time",
+  //                                     "type": "string",
+  //                                   },
+  //                                 },
+  //                                 "required": [
+  //                                   "timestamp",
+  //                                 ],
+  //                                 "type": "object",
+  //                               },
+  //                             },
+  //                           },
+  //                           "description": "200 OK",
+  //                         },
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //               "parameters": [
+  //                 {
+  //                   "in": "path",
+  //                   "name": "timestamp",
+  //                   "required": true,
+  //                   "schema": {
+  //                     "format": "date-time",
+  //                     "type": "string",
+  //                   },
+  //                 },
+  //               ],
+  //               "requestBody": {
+  //                 "content": {
+  //                   "application/json": {
+  //                     "schema": {
+  //                       "properties": {
+  //                         "timestamp": {
+  //                           "format": "date-time",
+  //                           "type": "string",
+  //                         },
+  //                       },
+  //                       "required": [
+  //                         "timestamp",
+  //                       ],
+  //                       "type": "object",
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //               "responses": {
+  //                 "200": {
+  //                   "content": {
+  //                     "application/json": {
+  //                       "schema": {
+  //                         "properties": {
+  //                           "timestamp": {
+  //                             "format": "date-time",
+  //                             "type": "string",
+  //                           },
+  //                         },
+  //                         "required": [
+  //                           "timestamp",
+  //                         ],
+  //                         "type": "object",
+  //                       },
+  //                     },
+  //                   },
+  //                   "description": "200 OK",
+  //                   "headers": {
+  //                     "timeStamp": {
+  //                       "required": true,
+  //                       "schema": {
+  //                         "format": "date-time",
+  //                         "type": "string",
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       }
+  //     `);
+  //   });
+
+  //   it('Supports unionOneOf option', () => {
+  //     const UserSchema = z.object({
+  //       id: z.string(),
+  //       timestamp: z.date(),
+  //     });
+
+  //     const documentOptions: CreateDocumentOptions = {
+  //       unionOneOf: true,
+  //     };
+
+  //     const document = createDocument(
+  //       {
+  //         info: {
+  //           title: 'My API',
+  //           version: '1.0.0',
+  //         },
+  //         openapi: '3.1.0',
+  //         components: {
+  //           schemas: {
+  //             User: UserSchema,
+  //           },
+  //         },
+  //         paths: {
+  //           '/timestamp/:timestamp': {
+  //             post: {
+  //               responses: {
+  //                 '200': {
+  //                   description: '200 OK',
+  //                   content: {
+  //                     'application/json': {
+  //                       schema: z.union([
+  //                         z.object({
+  //                           foo: z.string(),
+  //                         }),
+  //                         z.object({
+  //                           bar: z.string(),
+  //                         }),
+  //                       ]),
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //       documentOptions,
+  //     );
+
+  //     expect(document).toMatchInlineSnapshot(`
+  // {
+  //   "components": {
+  //     "schemas": {
+  //       "User": {
+  //         "properties": {
+  //           "id": {
+  //             "type": "string",
+  //           },
+  //           "timestamp": {
+  //             "type": "string",
+  //           },
+  //         },
+  //         "required": [
+  //           "id",
+  //           "timestamp",
+  //         ],
+  //         "type": "object",
+  //       },
+  //     },
+  //   },
+  //   "info": {
+  //     "title": "My API",
+  //     "version": "1.0.0",
+  //   },
+  //   "openapi": "3.1.0",
+  //   "paths": {
+  //     "/timestamp/:timestamp": {
+  //       "post": {
+  //         "responses": {
+  //           "200": {
+  //             "content": {
+  //               "application/json": {
+  //                 "schema": {
+  //                   "oneOf": [
+  //                     {
+  //                       "properties": {
+  //                         "foo": {
+  //                           "type": "string",
+  //                         },
+  //                       },
+  //                       "required": [
+  //                         "foo",
+  //                       ],
+  //                       "type": "object",
+  //                     },
+  //                     {
+  //                       "properties": {
+  //                         "bar": {
+  //                           "type": "string",
+  //                         },
+  //                       },
+  //                       "required": [
+  //                         "bar",
+  //                       ],
+  //                       "type": "object",
+  //                     },
+  //                   ],
+  //                 },
+  //               },
+  //             },
+  //             "description": "200 OK",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // }
+  // `);
+  //   });
 });

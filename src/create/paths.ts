@@ -1,176 +1,167 @@
+import type { $ZodType } from 'zod/v4/core';
+
 import type { oas31 } from '../openapi3-ts/dist';
+import type { PathItemObject } from '../openapi3-ts/oas31';
 
 import { createCallbacks } from './callbacks';
-import {
-  type ComponentsObject,
-  createComponentRequestBodyRef,
-} from './components';
-import { createContent } from './content';
+import type { ComponentRegistry } from './components';
 import type {
-  CreateDocumentOptions,
   ZodOpenApiOperationObject,
   ZodOpenApiPathItemObject,
   ZodOpenApiPathsObject,
-  ZodOpenApiRequestBodyObject,
 } from './document';
-import { createParametersObject } from './parameters';
+import { createManualParameters, createParameters } from './parameters';
+import { createRequestBody } from './requestBody';
 import { createResponses } from './responses';
 import { isISpecificationExtension } from './specificationExtension';
 
-export const createRequestBody = (
-  requestBodyObject: ZodOpenApiRequestBodyObject | undefined,
-  components: ComponentsObject,
-  subpath: string[],
-  documentOptions?: CreateDocumentOptions,
-): oas31.ReferenceObject | oas31.RequestBodyObject | undefined => {
-  if (!requestBodyObject) {
-    return undefined;
-  }
-
-  const component = components.requestBodies.get(requestBodyObject);
-  if (component && component.type === 'complete') {
-    return {
-      $ref: createComponentRequestBodyRef(component.ref),
-    };
-  }
-
-  const { ref: reqBodyRef, ...cleanRequestBody } = requestBodyObject;
-
-  const ref = reqBodyRef ?? component?.ref;
-
-  const requestBody: oas31.RequestBodyObject = {
-    ...cleanRequestBody,
-    content: createContent(
-      cleanRequestBody.content,
-      components,
-      'input',
-      [...subpath, 'content'],
-      documentOptions,
-    ),
-  };
-
-  if (ref) {
-    components.requestBodies.set(requestBodyObject, {
-      type: 'complete',
-      ref,
-      requestBodyObject: requestBody,
-    });
-    return {
-      $ref: createComponentRequestBodyRef(ref),
-    };
-  }
-
-  return requestBody;
-};
-
 const createOperation = (
   operationObject: ZodOpenApiOperationObject,
-  components: ComponentsObject,
-  subpath: string[],
-  documentOptions?: CreateDocumentOptions,
+  registry: ComponentRegistry,
+  path: string[],
 ): oas31.OperationObject | undefined => {
-  const { parameters, requestParams, requestBody, responses, ...rest } =
-    operationObject;
-
-  const maybeParameters = createParametersObject(
+  const {
     parameters,
     requestParams,
-    components,
-    [...subpath, 'parameters'],
-    documentOptions,
+    requestBody,
+    responses,
+    callbacks,
+    ...rest
+  } = operationObject;
+  const operation: oas31.OperationObject = rest;
+
+  const maybeManualParameters = createManualParameters(
+    parameters,
+    {
+      registry,
+      io: 'input',
+    },
+    [...path, 'parameters'],
   );
+
+  const maybeRequestParams = createParameters(
+    requestParams,
+    {
+      registry,
+      io: 'input',
+    },
+    [...path, 'requestParams'],
+  );
+
+  if (maybeRequestParams || maybeManualParameters) {
+    operation.parameters = [
+      ...(maybeRequestParams ?? []),
+      ...(maybeManualParameters ?? []),
+    ];
+  }
 
   const maybeRequestBody = createRequestBody(
-    operationObject.requestBody,
-    components,
-    [...subpath, 'request body'],
-    documentOptions,
+    requestBody,
+    {
+      registry,
+      io: 'input',
+    },
+    [...path, 'requestBody'],
   );
+
+  if (maybeRequestBody) {
+    operation.requestBody = maybeRequestBody;
+  }
 
   const maybeResponses = createResponses(
-    operationObject.responses,
-    components,
-    [...subpath, 'responses'],
-    documentOptions,
+    responses,
+    {
+      registry,
+      io: 'output',
+    },
+    [...path, 'responses'],
   );
 
-  const maybeCallbacks = createCallbacks(
-    operationObject.callbacks,
-    components,
-    [...subpath, 'callbacks'],
-    documentOptions,
-  );
+  if (maybeResponses) {
+    operation.responses = maybeResponses;
+  }
 
-  return {
-    ...rest,
-    ...(maybeParameters && { parameters: maybeParameters }),
-    ...(maybeRequestBody && { requestBody: maybeRequestBody }),
-    ...(maybeResponses && { responses: maybeResponses }),
-    ...(maybeCallbacks && { callbacks: maybeCallbacks }),
-  };
+  const maybeCallbacks = createCallbacks(callbacks, registry, [
+    ...path,
+    'callbacks',
+  ]);
+
+  if (maybeCallbacks) {
+    operation.callbacks = maybeCallbacks;
+  }
+
+  return operation;
 };
 
 export const createPathItem = (
-  pathObject: ZodOpenApiPathItemObject,
-  components: ComponentsObject,
+  pathItem: ZodOpenApiPathItemObject,
+  registry: ComponentRegistry,
   path: string[],
-  documentOptions?: CreateDocumentOptions,
-): oas31.PathItemObject =>
-  Object.entries(pathObject).reduce<oas31.PathItemObject>(
-    (acc, [key, value]) => {
-      if (!value) {
-        return acc;
-      }
+): oas31.PathItemObject => {
+  const pathItemObject: oas31.PathItemObject = {};
 
-      if (
-        key === 'get' ||
-        key === 'put' ||
-        key === 'post' ||
-        key === 'delete' ||
-        key === 'options' ||
-        key === 'head' ||
-        key === 'patch' ||
-        key === 'trace'
-      ) {
-        acc[key] = createOperation(
-          value as ZodOpenApiOperationObject,
-          components,
-          [...path, key],
-          documentOptions,
-        );
-        return acc;
-      }
+  for (const [key, value] of Object.entries(pathItem)) {
+    if (
+      key === 'get' ||
+      key === 'put' ||
+      key === 'post' ||
+      key === 'delete' ||
+      key === 'options' ||
+      key === 'head' ||
+      key === 'patch' ||
+      key === 'trace'
+    ) {
+      pathItemObject[key] = createOperation(
+        value as ZodOpenApiOperationObject,
+        registry,
+        [...path, key],
+      );
+      continue;
+    }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      acc[key as keyof typeof pathObject] = value;
-      return acc;
-    },
-    {},
-  );
+    if (key === 'parameters') {
+      pathItemObject[key] = createManualParameters(
+        value as
+          | Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>
+          | undefined,
+        {
+          registry,
+          io: 'input',
+        },
+        [...path, key],
+      );
+      continue;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    pathItemObject[key as keyof PathItemObject] = value;
+  }
+
+  return pathItemObject;
+};
 
 export const createPaths = (
-  pathsObject: ZodOpenApiPathsObject | undefined,
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
+  paths: ZodOpenApiPathsObject | undefined,
+  registry: ComponentRegistry,
+  path: string[],
 ): oas31.PathsObject | undefined => {
-  if (!pathsObject) {
+  if (!paths) {
     return undefined;
   }
 
-  return Object.entries(pathsObject).reduce<oas31.PathsObject>(
-    (acc, [path, pathItemObject]): oas31.PathsObject => {
-      if (isISpecificationExtension(path)) {
-        acc[path] = pathItemObject;
-        return acc;
-      }
-      acc[path] = createPathItem(
-        pathItemObject,
-        components,
-        [path],
-        documentOptions,
-      );
-      return acc;
-    },
-    {},
-  );
+  const pathsObject: oas31.PathsObject = {};
+
+  for (const [singlePath, pathItemObject] of Object.entries(paths)) {
+    if (isISpecificationExtension(singlePath)) {
+      pathsObject[singlePath] = pathItemObject;
+      continue;
+    }
+
+    pathsObject[singlePath] = createPathItem(pathItemObject, registry, [
+      ...path,
+      singlePath,
+    ]);
+  }
+
+  return pathsObject;
 };

@@ -143,7 +143,11 @@ describe('string', () => {
       minLength: 1,
     };
 
-    const schema = z.string().nonempty();
+    const schema = z.string().nonempty().meta({
+      param: {
+        examples,
+      },
+    });
 
     const result = createSchema(schema, createOutputState(), ['string']);
 

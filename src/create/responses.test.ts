@@ -1,53 +1,57 @@
-import '../entries/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import type { oas31 } from '../openapi3-ts/dist';
 
-import { getDefaultComponents } from './components';
+import { createRegistry } from './components';
+import type { ZodOpenApiResponsesObject } from './document';
 import { createResponses } from './responses';
 
 describe('createResponses', () => {
   it('creates a response', () => {
-    const expected: oas31.ResponsesObject = {
+    const responses: ZodOpenApiResponsesObject = {
+      'x-test': 'foo',
       '200': {
         description: '200 OK',
         content: {
           'application/json': {
-            schema: {
-              properties: {
-                a: {
-                  type: 'string',
-                },
-              },
-              required: ['a'],
-              type: 'object',
-            },
+            schema: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+        headers: z.object({
+          'X-Custom-Header': z.string().describe('A custom header'),
+        }),
+      },
+    };
+
+    const registry = createRegistry();
+
+    const result = createResponses(
+      responses,
+      {
+        registry,
+        io: 'output',
+      },
+      ['test'],
+    );
+
+    expect(result).toEqual<oas31.ResponsesObject>({
+      'x-test': 'foo',
+      '200': {
+        description: '200 OK',
+        content: {
+          'application/json': {
+            schema: {},
           },
         },
         headers: {
-          a: {
-            $ref: '#/components/headers/a',
+          'X-Custom-Header': {
+            description: 'A custom header',
+            schema: {},
           },
         },
       },
-    };
-    const result = createResponses(
-      {
-        '200': {
-          description: '200 OK',
-          content: {
-            'application/json': {
-              schema: z.object({ a: z.string() }),
-            },
-          },
-          headers: z.object({
-            a: z.string().openapi({ header: { ref: 'a' } }),
-          }),
-        },
-      },
-      getDefaultComponents(),
-      ['previous'],
-    );
-    expect(result).toStrictEqual(expected);
+    });
   });
 });

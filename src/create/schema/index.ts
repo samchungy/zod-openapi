@@ -2,11 +2,12 @@ import {
   type GlobalMeta,
   type core,
   globalRegistry,
-  registry,
   toJSONSchema,
+  registry as zodRegistry,
 } from 'zod/v4';
 
-import type { oas31 } from '../..';
+import type { CreateDocumentOptions, oas31 } from '../..';
+import type { ComponentRegistry } from '../components';
 
 type Override = NonNullable<
   NonNullable<Parameters<typeof toJSONSchema>[1]>['override']
@@ -78,19 +79,29 @@ const override: Override = (ctx) => {
   }
 };
 
-export type CreateSchemaOpts = {
-  // Our own internal counter for creating unique dynamic component names
-  dynamicComponentCounter: number;
-  components: Record<string, oas31.SchemaObject>;
-  io: 'input' | 'output';
+const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
+  delete jsonSchema.param;
+  delete jsonSchema.header;
+  delete jsonSchema.unusedIO;
+  delete jsonSchema.override;
+  delete jsonSchema.outputId;
 };
 
-export const createSchema = (schema: core.$ZodType, opts: CreateSchemaOpts) => {
+export const createSchema = (
+  schema: core.$ZodType,
+  ctx: {
+    registry: ComponentRegistry;
+    io: 'input' | 'output';
+    opts: CreateDocumentOptions;
+  },
+) => {
   const schemas = {
-    createSchema: schema,
+    createSchema: {
+      zodType: schema,
+    },
   };
 
-  const jsonSchemas = createSchemas(schemas, opts);
+  const jsonSchemas = createSchemas(schemas, ctx);
 
   return {
     schema: jsonSchemas.schemas.createSchema,
@@ -98,47 +109,52 @@ export const createSchema = (schema: core.$ZodType, opts: CreateSchemaOpts) => {
   };
 };
 
-export const createSchemas = <T extends Record<string, core.$ZodType>>(
+export const createSchemas = <
+  T extends Record<string, { zodType: core.$ZodType }>,
+>(
   schemas: T,
-  opts: CreateSchemaOpts,
+  {
+    registry,
+    io,
+    opts,
+  }: {
+    registry: ComponentRegistry;
+    io: 'input' | 'output';
+    opts: CreateDocumentOptions;
+  },
 ): {
   schemas: Record<keyof T, oas31.SchemaObject | oas31.ReferenceObject>;
   components: Record<string, oas31.SchemaObject>;
 } => {
-  const schemaRegistry = registry<GlobalMeta>();
+  const schemaRegistry = zodRegistry<GlobalMeta>();
+  const globalsInSchemas = new Map<string, string>();
 
-  // Schemas may already be registered in the global registry
-  // This is required so that the generated schema contains the correct $refs
-  // and allows us to map that back to the consumer provided ids.
-  const keyIdMap: Record<string, keyof T> = {};
-  // Keep tracks of global registry ids so we can determine if a ref is a dynamically generated one
-  const idSet = new Set<string>();
-
-  for (const [name, schema] of Object.entries(schemas)) {
-    const id = globalRegistry.get(schema)?.id;
-    if (id) {
-      schemaRegistry.add(schema, { id });
-      idSet.add(id);
-      keyIdMap[id] = name;
-      continue;
+  for (const [name, { zodType }] of Object.entries(schemas)) {
+    const meta = globalRegistry.get(zodType);
+    if (meta?.id) {
+      globalsInSchemas.set(name, meta.id);
     }
-    schemaRegistry.add(schema, { id: name });
-    keyIdMap[name] = name;
-    idSet.add(name);
+
+    schemaRegistry.add(zodType, { id: name });
   }
 
-  // Our schema is recursively referenced but is not named via the schemaX convention
-  const customDynamicComponents: Record<string, string> = {};
-  const componentsToReplace: Record<string, string> = {};
-
+  const outputIds = new Map<string, string>();
   const jsonSchema = toJSONSchema(schemaRegistry, {
     override(ctx) {
       const meta = (ctx.zodSchema as ZodTypeWithMeta).meta();
+      if (meta?.outputId && meta?.id) {
+        // If the schema has an outputId, we need to replace it later
+        outputIds.set(meta.id, meta.outputId);
+      }
+
       if (ctx.jsonSchema.$ref) {
         return;
       }
 
       override(ctx);
+      if (typeof opts.override === 'function') {
+        opts.override(ctx);
+      }
       if (typeof meta?.override === 'function') {
         meta.override(ctx);
         delete ctx.jsonSchema.override;
@@ -150,85 +166,122 @@ export const createSchemas = <T extends Record<string, core.$ZodType>>(
 
       delete ctx.jsonSchema.$schema;
       delete ctx.jsonSchema.id;
+      deleteZodOpenApiMeta(ctx.jsonSchema);
     },
-    io: opts.io,
+    io,
     unrepresentable: 'any',
-    uri: (id) => {
-      if (id !== '__shared' && !idSet.has(id)) {
-        const schemaName = `schema${opts.dynamicComponentCounter++}`;
-        customDynamicComponents[id] = schemaName;
-        componentsToReplace[id] = schemaName;
-        return `#components/schemas/__shared#/$defs/${schemaName}`;
-      }
-
-      return `#/components/schemas/${id}`;
-    },
+    uri: (id) => `#/components/schemas/${id}`,
   });
+
+  const sharedDefs = jsonSchema.schemas.__shared?.$defs ?? {};
+
+  const componentsToReplace = new Map<string, string>();
+  for (const [key, value] of Object.entries(sharedDefs)) {
+    // If the key is a Zod dynamic schema, replace it with our own component name
+    if (/^schema\d+$/.exec(key)) {
+      const componentName = `__schema${registry.schemas.dynamicSchemaCount++}`;
+      componentsToReplace.set(`__shared#/$defs/${key}`, componentName);
+      delete sharedDefs[key];
+      sharedDefs[componentName] = value;
+      continue;
+    }
+
+    componentsToReplace.set(`__shared#/$defs/${key}`, key);
+  }
 
   for (const value of Object.values(jsonSchema.schemas)) {
     delete value.$schema;
     delete value.id;
   }
 
-  // Re-map our recursively referenced schema
-  for (const [key, newKey] of Object.entries(customDynamicComponents)) {
-    const value = jsonSchema.schemas[key] as core.JSONSchema.JSONSchema;
-    delete jsonSchema.schemas[key];
-    jsonSchema.schemas[newKey] = value;
-    keyIdMap[key] = newKey;
-  }
-
-  const sharedDefs = jsonSchema.schemas.__shared?.$defs ?? {};
-
-  for (const [key, value] of Object.entries(sharedDefs)) {
-    // dynamic schema
-    if (/^schema\d+$/.exec(key)) {
-      const componentName = `__schema${opts.dynamicComponentCounter++}`;
-      componentsToReplace[key] = componentName;
-      delete sharedDefs[key];
-      sharedDefs[componentName] = value;
-      continue;
-    }
-    componentsToReplace[key] = key;
-  }
-
+  const dynamicComponent = new Map<string, string>();
   const patched = JSON.stringify(jsonSchema).replace(
-    /"#\/components\/schemas\/__shared#\/\$defs\/([^"]+)"/g,
-    (_, p1: string) => {
+    /"#\/components\/schemas\/([^"]+)"/g,
+    (_, match: string) => {
       // If the value is a dynamic component, replace it with the component name
-      const component = componentsToReplace[p1];
-      if (!component) {
-        throw new Error(`Component not found for ${p1}`);
+      const replacement = componentsToReplace.get(match);
+      if (replacement) {
+        return `"#/components/schemas/${replacement}"`;
       }
-      return `"#/components/schemas/${component}"`;
+
+      const component = registry.schemas.ids.get(match);
+      if (component) {
+        return `"#/components/schemas/${match}`;
+      }
+
+      const globalInSchema = globalsInSchemas.get(match);
+      if (globalInSchema) {
+        componentsToReplace.set(match, globalInSchema);
+        dynamicComponent.set(match, globalInSchema);
+        return `"#/components/schemas/${globalInSchema}"`;
+      }
+
+      // This schema is not registered but is a dynamic component
+      const componentName = `__schema${registry.schemas.dynamicSchemaCount++}`;
+      componentsToReplace.set(match, componentName);
+      dynamicComponent.set(match, componentName);
+      return `"#/components/schemas/${componentName}"`;
     },
   );
 
   const patchedJsonSchema = JSON.parse(patched) as typeof jsonSchema;
-
   const components = patchedJsonSchema.schemas.__shared?.$defs ?? {};
   delete patchedJsonSchema.schemas.__shared;
 
-  for (const [key, value] of Object.entries(patchedJsonSchema.schemas)) {
-    const mappedKey = keyIdMap[key] as string | undefined;
+  for (const [key, value] of dynamicComponent) {
+    const component = patchedJsonSchema.schemas[key];
+    patchedJsonSchema.schemas[key] = {
+      $ref: `#/components/schemas/${value}`,
+    };
+    components[value] = component as core.JSONSchema.JSONSchema;
+  }
 
-    if (!mappedKey) {
-      throw new Error(`Mapped key not found for ${key}`);
-    }
+  // Check if we have components already in the registry
+  // This is fairly likely given schemas may be reused between request schemas and response schemas
+  const renamedComponents = new Map<string, string>();
+  for (const [key, value] of Object.entries(components)) {
+    const registeredComponent = registry.schemas.ids.get(key);
+    if (registeredComponent) {
+      if (JSON.stringify(registeredComponent) === JSON.stringify(value)) {
+        continue;
+      }
 
-    // This is actually a component
-    if (mappedKey !== key) {
-      components[mappedKey] = value;
-      patchedJsonSchema.schemas[mappedKey] = {
-        $ref: `#/components/schemas/${mappedKey}`,
-      };
-      delete patchedJsonSchema.schemas[key];
-      continue;
+      // Rename the component as they do not output the same thing
+      const newName =
+        outputIds.get(key) ??
+        `${key}${io.charAt(0).toUpperCase()}${io.slice(1)}`;
+      renamedComponents.set(key, newName);
+      components[newName] = value;
+      delete components[key];
     }
   }
 
+  if (renamedComponents.size === 0) {
+    return {
+      schemas: patchedJsonSchema.schemas as Record<
+        keyof T,
+        oas31.SchemaObject | oas31.ReferenceObject
+      >,
+      components: components as Record<string, oas31.SchemaObject>,
+    };
+  }
+
+  // For all the components, replace the keys with the new names
+  const renamedStringified = JSON.stringify(patchedJsonSchema).replace(
+    /"#\/components\/schemas\/([^"]+)"/g,
+    (_, match: string) => {
+      const newName = renamedComponents.get(match);
+      if (newName) {
+        return `"#/components/schemas/${newName}"`;
+      }
+      return `"#/components/schemas/${match}"`;
+    },
+  );
+
+  const renamedJsonSchema = JSON.parse(renamedStringified) as typeof jsonSchema;
+
   return {
-    schemas: patchedJsonSchema.schemas as Record<
+    schemas: renamedJsonSchema.schemas as Record<
       keyof T,
       oas31.SchemaObject | oas31.ReferenceObject
     >,

@@ -1,338 +1,171 @@
-import '../entries/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import type { oas31 } from '../openapi3-ts/dist';
 
-import { getDefaultComponents } from './components';
-import { createBaseParameter, createParametersObject } from './parameters';
+import { createRegistry } from './components';
+import type { ZodOpenApiParameters } from './document';
+import {
+  createManualParameters,
+  createParameter,
+  createParameters,
+} from './parameters';
 
-describe('createBaseParameter', () => {
-  it('should create base parameters from a zod string', () => {
-    const expectedResult: oas31.BaseParameterObject = {
-      schema: {
-        type: 'string',
-      },
-      required: true,
+describe('createParameters', () => {
+  it('should create a parameter object with a schema', () => {
+    const requestParams: ZodOpenApiParameters = {
+      query: z.object({
+        search: z.string().describe('Search term'),
+      }),
+      cookie: z.object({
+        sessionId: z.string().optional().describe('Session ID'),
+      }),
+      header: z.object({
+        'X-Custom-Header': z.string().describe('A custom header'),
+      }),
+      path: z.object({
+        userId: z.string().describe('User ID'),
+      }),
     };
-    const result = createBaseParameter(z.string(), getDefaultComponents(), [
-      'query',
-    ]);
 
-    expect(result).toStrictEqual(expectedResult);
-  });
+    const registry = createRegistry();
 
-  it('should create optional base parameters from a zod string', () => {
-    const expectedResult: oas31.BaseParameterObject = {
-      schema: {
-        type: 'string',
+    const parameters = createParameters(
+      requestParams,
+      {
+        registry,
+        io: 'input',
       },
-    };
-    const result = createBaseParameter(
-      z.string().optional(),
-      getDefaultComponents(),
-      ['query'],
+      ['test'],
     );
 
-    expect(result).toStrictEqual(expectedResult);
+    expect(parameters).toEqual<oas31.ParameterObject[]>([
+      {
+        in: 'query',
+        name: 'search',
+        description: 'Search term',
+        schema: {},
+        required: true,
+      },
+      {
+        in: 'cookie',
+        name: 'sessionId',
+        description: 'Session ID',
+        schema: {},
+      },
+      {
+        in: 'header',
+        name: 'X-Custom-Header',
+        description: 'A custom header',
+        schema: {},
+        required: true,
+      },
+      {
+        in: 'path',
+        name: 'userId',
+        description: 'User ID',
+        schema: {},
+        required: true,
+      },
+    ]);
   });
 });
 
-describe('createParametersObject', () => {
-  it('should create a parameters object using parameters', () => {
-    const expectedResult: oas31.OperationObject['parameters'] = [
-      {
-        in: 'header',
-        name: 'd',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-    ];
-    const result = createParametersObject(
-      [z.string().openapi({ param: { in: 'header', name: 'd' } })],
-      {},
-      getDefaultComponents(),
-      ['header'],
-    );
+describe('createParameter', () => {
+  it('should create a parameter object', () => {
+    const zodSchema = z.string().describe('A custom parameter');
 
-    expect(result).toStrictEqual(expectedResult);
-  });
+    const registry = createRegistry();
 
-  it('should create a parameters object using requestParams', () => {
-    const expectedResult: oas31.OperationObject['parameters'] = [
-      {
-        in: 'path',
-        name: 'b',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
+    const parameter = createParameter(
+      zodSchema,
       {
         in: 'query',
-        name: 'a',
-        schema: {
-          type: 'string',
-        },
-        required: true,
+        name: 'search',
       },
       {
-        in: 'cookie',
-        name: 'c',
-        schema: {
-          type: 'string',
-        },
-        required: true,
+        registry,
+        io: 'input',
       },
-      {
-        in: 'header',
-        name: 'd',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-    ];
-    const result = createParametersObject(
-      [],
-      {
-        path: z.object({ b: z.string() }),
-        query: z.object({ a: z.string() }),
-        cookie: z.object({ c: z.string() }),
-        header: z.object({ d: z.string() }),
-      },
-      getDefaultComponents(),
-      ['parameters'],
+      ['test', 'parameter'],
     );
 
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('should combine parameters with requestParams', () => {
-    const expectedResult: oas31.OperationObject['parameters'] = [
-      {
-        in: 'query',
-        name: 'a',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-      {
-        in: 'cookie',
-        name: 'c',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-      {
-        in: 'header',
-        name: 'd',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-      {
-        in: 'path',
-        name: 'b',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-    ];
-    const result = createParametersObject(
-      [
-        {
-          in: 'query',
-          name: 'a',
-          schema: {
-            type: 'string',
-          },
-          required: true,
-        },
-        {
-          in: 'cookie',
-          name: 'c',
-          schema: {
-            type: 'string',
-          },
-          required: true,
-        },
-        {
-          in: 'header',
-          name: 'd',
-          schema: {
-            type: 'string',
-          },
-          required: true,
-        },
-      ],
-      {
-        path: z.object({ b: z.string() }),
-      },
-      getDefaultComponents(),
-      ['parameters'],
-    );
-
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('should create refs using requestParams', () => {
-    const expectedResult: oas31.OperationObject['parameters'] = [
-      {
-        $ref: '#/components/parameters/a',
-      },
-      {
-        $ref: '#/components/parameters/b',
-      },
-      {
-        $ref: '#/components/parameters/c',
-      },
-      {
-        $ref: '#/components/parameters/d',
-      },
-    ];
-    const result = createParametersObject(
-      [],
-      {
-        path: z.object({ a: z.string().openapi({ param: { ref: 'a' } }) }),
-        query: z.object({ b: z.string().openapi({ param: { ref: 'b' } }) }),
-        cookie: z.object({ c: z.string().openapi({ param: { ref: 'c' } }) }),
-        header: z.object({ d: z.string().openapi({ param: { ref: 'd' } }) }),
-      },
-      getDefaultComponents(),
-      ['parameters'],
-    );
-
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('should create refs using parameters', () => {
-    const expectedResult: oas31.OperationObject['parameters'] = [
-      {
-        $ref: '#/components/parameters/a',
-      },
-    ];
-    const result = createParametersObject(
-      [z.string().openapi({ param: { ref: 'a', name: 'a', in: 'header' } })],
-      {},
-      getDefaultComponents(),
-      ['parameters'],
-    );
-
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('should extract the description from the underlying schema', () => {
-    const expectedResult: oas31.BaseParameterObject = {
-      schema: {
-        type: 'string',
-        description: 'foo',
-      },
-      description: 'foo',
+    expect(parameter).toEqual<oas31.ParameterObject>({
+      in: 'query',
+      name: 'search',
+      description: 'A custom parameter',
+      schema: {},
       required: true,
-    };
-    const result = createBaseParameter(
-      z.string().describe('foo'),
-      getDefaultComponents(),
-      ['query'],
-    );
-
-    expect(result).toStrictEqual(expectedResult);
+    });
   });
 
-  it('should allow overriding the description using .openapi.param in the underlying schema', () => {
-    const expectedResult: oas31.BaseParameterObject = {
-      schema: {
-        type: 'string',
-        description: 'foo',
+  it('should create a parameter object with meta', () => {
+    const zodSchema = z.string().meta({
+      param: {
+        in: 'query',
+        name: 'search',
       },
-      description: 'boo',
-      required: true,
-    };
-    const result = createBaseParameter(
-      z
-        .string()
-        .describe('foo')
-        .openapi({ param: { description: 'boo' } }),
-      getDefaultComponents(),
-      ['query'],
+    });
+
+    const registry = createRegistry();
+
+    const parameter = createParameter(
+      zodSchema,
+      undefined,
+      {
+        registry,
+        io: 'input',
+      },
+      ['test', 'parameter'],
     );
 
-    expect(result).toStrictEqual(expectedResult);
+    expect(parameter).toEqual<oas31.ParameterObject>({
+      in: 'query',
+      name: 'search',
+      schema: {},
+      required: true,
+    });
   });
+});
 
-  it('should support wrapped ZodObject schema', () => {
-    const expectedResult: oas31.OperationObject['parameters'] = [
+describe('createManualParmaeters', () => {
+  it('should create manual parameters from an array of Zod types', () => {
+    const zodSchema1 = z.string().meta({
+      param: {
+        in: 'query',
+        name: 'test > parameters > 0',
+      },
+    });
+    const zodSchema2 = z.string().meta({
+      param: {
+        in: 'query',
+        name: 'test > parameters > 1',
+      },
+    });
+
+    const registry = createRegistry();
+
+    const parameters = createManualParameters(
+      [zodSchema1, zodSchema2],
       {
-        in: 'path',
-        name: 'b',
-        schema: {
-          type: 'string',
-        },
+        registry,
+        io: 'input',
+      },
+      ['test'],
+    );
+
+    expect(parameters).toEqual<oas31.ParameterObject[]>([
+      {
+        in: 'query',
+        name: 'test > parameters > 0',
+        schema: {},
         required: true,
       },
       {
         in: 'query',
-        name: 'a',
-        schema: {
-          type: 'string',
-        },
+        name: 'test > parameters > 1',
+        schema: {},
         required: true,
       },
-      {
-        in: 'cookie',
-        name: 'c',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-      {
-        in: 'header',
-        name: 'd',
-        schema: {
-          type: 'string',
-        },
-        required: true,
-      },
-    ];
-    const result = createParametersObject(
-      [],
-      {
-        path: z
-          .lazy(() =>
-            z.object({ b: z.string() }).pipe(z.object({ b: z.string() })),
-          )
-          .brand('test')
-          .transform((x) => x),
-        query: z
-          .lazy(() =>
-            z.object({ a: z.string() }).pipe(z.object({ a: z.string() })),
-          )
-          .brand('test')
-          .transform((x) => x),
-        cookie: z
-          .lazy(() =>
-            z.object({ c: z.string() }).pipe(z.object({ c: z.string() })),
-          )
-          .brand('test')
-          .transform((x) => x),
-        header: z
-          .lazy(() =>
-            z.object({ d: z.string() }).pipe(z.object({ d: z.string() })),
-          )
-          .brand('test')
-          .transform((x) => x),
-      },
-      getDefaultComponents(),
-      ['parameters'],
-    );
-
-    expect(result).toStrictEqual(expectedResult);
+    ]);
   });
 });

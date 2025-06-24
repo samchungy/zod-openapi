@@ -59,16 +59,12 @@ z.string().openapi({ description: 'Hello world!', example: 'hello world' });
 
 Use the `.openapi()` method to add metadata to a Zod schema. It accepts an object with the following options:
 
-| Option            | Description                                                                                                               |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `OpenAPI Options` | Accepts any option available for a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/).         |
-| `effectType`      | Overrides the creation type for a [Zod Effect](#zod-effects).                                                             |
-| `header`          | Adds metadata for [response headers](#response-headers).                                                                  |
-| `param`           | Adds metadata for [request parameters](#parameters).                                                                      |
-| `ref`             | Registers a schema as a reusable OpenAPI component.                                                                       |
-| `refType`         | Defines the creation type for a component not explicitly referenced in the document.                                      |
-| `type`            | Overrides the generated type. If provided, no metadata will be generated.                                                 |
-| `unionOneOf`      | Forces a `oneOf` instead of `anyOf` for unions. See [CreateDocumentOptions](#CreateDocumentOptions) for a global setting. |
+| Option            | Description                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `OpenAPI Options` | Accepts any option available for a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/). |
+| `header`          | Adds metadata for [response headers](#response-headers).                                                          |
+| `param`           | Adds metadata for [request parameters](#parameters).                                                              |
+| `id`              | Registers a schema as a reusable OpenAPI component.                                                               |
 
 ### `createDocument`
 

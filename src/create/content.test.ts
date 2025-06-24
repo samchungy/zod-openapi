@@ -1,110 +1,44 @@
-import '../entries/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import type { oas31 } from '../openapi3-ts/dist';
 
-import { getDefaultComponents } from './components';
+import { createRegistry } from './components';
 import { createContent } from './content';
 
 describe('createContent', () => {
-  it('should create schema from Zod Objects', () => {
-    const expectedResult: oas31.ContentObject = {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            a: {
-              type: 'string',
-            },
-          },
-          required: ['a'],
-        },
-      },
-    };
-
-    const result = createContent(
+  it('should create a content object with a media type', () => {
+    const zodSchema = z.object({
+      name: z.string(),
+      age: z.number(),
+    });
+    const registry = createRegistry();
+    const content: oas31.ContentObject = createContent(
       {
         'application/json': {
-          schema: z.object({ a: z.string() }),
+          schema: zodSchema,
         },
       },
-      getDefaultComponents(),
-      'output',
-      ['/job', 'post'],
-    );
-
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('should preserve non Zod Objects', () => {
-    const expectedResult: oas31.ContentObject = {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            a: {
-              type: 'string',
-            },
-          },
-          required: ['a'],
-        },
-      },
-    };
-
-    const result = createContent(
       {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              a: {
-                type: 'string',
-              },
-            },
-            required: ['a'],
-          },
-        },
+        registry,
+        io: 'output',
       },
-      getDefaultComponents(),
-      'output',
-      ['/job', 'post'],
+      ['test'],
     );
 
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('should preserve additional properties', () => {
-    const expectedResult: oas31.ContentObject = {
+    expect(content).toEqual<oas31.ContentObject>({
       'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            a: {
-              type: 'string',
-            },
-          },
-          required: ['a'],
-        },
-        example: {
-          a: '123',
-        },
+        schema: {},
       },
-    };
+    });
 
-    const result = createContent(
-      {
-        'application/json': {
-          schema: z.object({ a: z.string() }),
-          example: {
-            a: '123',
-          },
-        },
-      },
-      getDefaultComponents(),
-      'output',
-      ['/job', 'post'],
+    expect(content['application/json']?.schema).toEqual(
+      registry.schemas.output.seen.get(zodSchema),
     );
-
-    expect(result).toStrictEqual(expectedResult);
+    expect(
+      registry.schemas.output.schemas.get('test > application/json'),
+    ).toEqual({
+      schemaObject: {},
+      zodType: zodSchema,
+    });
   });
 });

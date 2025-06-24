@@ -24,19 +24,11 @@ describe('date', () => {
       format: 'date-time',
     };
 
-    const schema = z.date();
-    const documentOptions: CreateDocumentOptions = {
-      defaultDateSchema: {
-        type: 'string',
-        format: 'date-time',
-      },
-    };
+    const schema = z.date().meta({
+      format: 'date-time',
+    });
 
-    const result = createSchema(
-      schema,
-      createOutputState(undefined, documentOptions),
-      ['date'],
-    );
+    const result = createSchema(schema, createOutputState(undefined), ['date']);
 
     expect(result).toEqual(expected);
   });
@@ -46,7 +38,11 @@ describe('date', () => {
       type: 'number',
     };
 
-    const schema = z.date();
+    const schema = z.date().meta({
+      override: {
+        type: 'number',
+      },
+    });
     const documentOptions: CreateDocumentOptions = {
       defaultDateSchema: {
         type: 'number',
