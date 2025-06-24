@@ -29,42 +29,16 @@ pnpm install zod zod-openapi
 
 ## Usage
 
-### Extending Zod
+### `.meta()`
 
-This package extends Zod by adding an `.openapi()` method. Call this at the top of your entry point(s). You can apply this extension in two ways:
+Use the `.meta()` method to add metadata to a Zod schema. It accepts an object with the following options:
 
-#### Subpath Import
-
-```ts
-import 'zod-openapi/extend';
-import { z } from 'zod';
-
-z.string().openapi({ description: 'Hello world!', example: 'Hello world' });
-```
-
-#### Manual Extension
-
-This method is useful if you have a specific instance of Zod or a Zod instance from another library that you want to extend.
-
-```typescript
-import { z } from 'zod';
-import { extendZodWithOpenApi } from 'zod-openapi';
-
-extendZodWithOpenApi(z);
-
-z.string().openapi({ description: 'Hello world!', example: 'hello world' });
-```
-
-### `.openapi()`
-
-Use the `.openapi()` method to add metadata to a Zod schema. It accepts an object with the following options:
-
-| Option            | Description                                                                                                       |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `OpenAPI Options` | Accepts any option available for a [SchemaObject](https://swagger.io/docs/specification/data-models/data-types/). |
-| `header`          | Adds metadata for [response headers](#response-headers).                                                          |
-| `param`           | Adds metadata for [request parameters](#parameters).                                                              |
-| `id`              | Registers a schema as a reusable OpenAPI component.                                                               |
+| Option     | Description                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| `id`       | Registers a schema as a reusable OpenAPI component.                                           |
+| `header`   | Adds metadata for [response headers](#response-headers).                                      |
+| `param`    | Adds metadata for [request parameters](#parameters).                                          |
+| `override` | Allows you to override the rendered OpenAPI schema. This takes either an object or a function |
 
 ### `createDocument`
 
@@ -78,7 +52,7 @@ import { createDocument } from 'zod-openapi';
 const jobId = z.string().openapi({
   description: 'A unique identifier for a job',
   example: '12345',
-  ref: 'jobId',
+  id: 'jobId',
 });
 
 const title = z.string().openapi({
@@ -200,9 +174,12 @@ const document = createDocument({
 
 ```typescript
 const document = createDocument(details, {
-  defaultDateSchema: { type: 'string', format: 'date-time' }, // defaults to { type: 'string' }
-  unionOneOf: true, // defaults to false. Forces all ZodUnions to output oneOf instead of anyOf. An `.openapi()` `unionOneOf` value takes precedence over this one.
-  enforceDiscriminatedUnionComponents: true, // defaults to false. Throws an error if a Discriminated Union member is not registered as a component.
+  override: ({ jsonSchema, zodSchema }) => {
+    if (jsonSchema.anyOf) {
+      ctx.jsonSchema.oneOf = ctx.jsonSchema.anyOf;
+      delete ctx.jsonSchema.anyOf;
+    }
+  },
 });
 ```
 
@@ -218,7 +195,7 @@ import { createSchema } from 'zod-openapi';
 const jobId = z.string().openapi({
   description: 'A unique identifier for a job',
   example: '12345',
-  ref: 'jobId',
+  id: 'jobId',
 });
 
 const title = z.string().openapi({
@@ -420,7 +397,7 @@ If we take the example in `createDocument` and instead create `title` as follows
 const title = z.string().openapi({
   description: 'Job title',
   example: 'My job',
-  ref: 'jobTitle', // <- new field
+  id: 'jobTitle', // <- new field
 });
 ```
 
@@ -468,30 +445,6 @@ createDocument({
 });
 ```
 
-Unfortunately, as a limitation of this library, you should attach an `.openapi()` field or `.describe()` to the schema that you are passing into the components or you will not reap the full benefits of component generation.
-
-```ts
-// ❌ Avoid this
-const title = z.string();
-
-// ✅ Recommended ways
-const title = z.string().describe('Job title');
-const title = z.string().openapi({
-  description: 'Job title',
-  example: 'My job',
-});
-
-createDocument({
-  components: {
-    schemas: {
-      jobTitle: title,
-    },
-  },
-});
-```
-
-Overall, I recommend utilising the auto registering components over manual registration.
-
 #### Parameters
 
 Query, Path, Header & Cookie parameters can be similarly registered:
@@ -501,7 +454,7 @@ Query, Path, Header & Cookie parameters can be similarly registered:
 const jobId = z.string().openapi({
   description: 'Job ID',
   example: '1234',
-  param: { ref: 'jobRef' },
+  param: { id: 'jobRef' },
 });
 
 createDocument({
@@ -522,7 +475,7 @@ createDocument({
 const jobId = z.string().openapi({
   description: 'Job ID',
   example: '1234',
-  param: { in: 'header', name: 'jobId', ref: 'jobRef' },
+  param: { in: 'header', name: 'jobId', id: 'jobRef' },
 });
 
 createDocument({
@@ -559,7 +512,7 @@ Response headers can be similarly registered:
 const header = z.string().openapi({
   description: 'Job ID',
   example: '1234',
-  header: { ref: 'some-header' },
+  header: { id: 'some-header' },
 });
 
 // or
@@ -590,7 +543,7 @@ const response: ZodOpenApiResponseObject = {
       schema: z.object({ a: z.string() }),
     },
   },
-  ref: 'some-response',
+  id: 'some-response',
 };
 
 //or
@@ -619,7 +572,7 @@ Callbacks can also be registered
 
 ```typescript
 const callback: ZodOpenApiCallbackObject = {
-  ref: 'some-callback'
+  id: 'some-callback'
   post: {
     responses: {
       200: {
@@ -660,99 +613,77 @@ createDocument({
 });
 ```
 
-### Zod Effects
+### Zod Types
 
-`.transform()`, `.catch()`, `.default()` and `.pipe()` are complicated because they all comprise of two different types that we could generate (input & output).
+Zod types are composed of two different parts: the input and the output. This library decides which type to create based on if it is used in a request or response context.
 
-We attempt to determine what type of schema to create based on the following contexts:
+Input:
 
-_Input_: Request Bodies, Request Parameters, Headers
+- Request Parameters (query, path, header, cookie)
+- Request Body
 
-_Output_: Responses, Response Headers
+Output:
 
-As an example:
+- Response Body
+- Response Headers
+
+In general, you want to avoid using a registered input schema in an output context and vice versa. This is because the rendered input and output schemas of a simple Zod schema will differ, even with a simple Zod schema like `z.object()`.
 
 ```ts
-z.object({
-  a: z.string().default('a'),
+const schema = z.object({
+  name: z.string(),
 });
 ```
 
-In a request context, this would render the following OpenAPI schema:
+Input:
 
-```yaml
-type: 'object'
-properties:
-  - a:
-    type: 'string'
-    default: 'a'
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "required": ["name"]
+}
 ```
 
-or the following for a response:
+Output:
 
-```yaml
-type: 'object'
-properties:
-  - a:
-    type: 'string'
-    default: 'a'
-required:
-  - a
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "required": ["name"],
+  "additionalProperties": false
+}
 ```
 
-Note how the response schema created an extra `required` field. This means, if you were to register a Zod schema with `.default()` as a component and use it in both a request or response, your schema would be invalid. Zod OpenAPI keeps track of this usage and will throw an error if this occurs.
+Unless you explicitly are using `z.looseObject()`s or `z.strictObject()`s throughout your codebase you will likely run into issues where the input and output schemas differ. This library will do a best effort to check equality using a simple JSON.stringify() === JSON.stringify() check. If your registered schema contains dynamically created components, this will always fail.
 
-#### EffectType
+If the schemas are not equal, it will automatically handle this by outputting the `output` schema with an `Output` suffix.
+
+You can override this by setting the `outputId` field with the `.meta()` method.
 
 ```ts
-z.string().transform((str) => str.trim());
+const schema = z
+  .object({
+    name: z.string(),
+  })
+  .meta({ id: 'MyObject', outputId: 'MyObjectResponse' });
 ```
-
-Whilst the TypeScript compiler can understand that the result is still a `string`, unfortunately we cannot introspect this as your transform function may be far more complicated than this example. To address this, you can set the `effectType` on the schema to `same`, `input` or `output`.
-
-`same` - This informs Zod OpenAPI to pick either the input schema or output schema to generate with because they should be the same.
-
-```ts
-z.string()
-  .transform((str) => str.trim())
-  .openapi({ effectType: 'same' });
-```
-
-If the transform were to drift from this, you will receive a TypeScript error:
-
-```ts
-z.string()
-  .transform((str) => str.length)
-  .openapi({ effectType: 'same' });
-//           ~~~~~~~~~~
-//           Type 'same' is not assignable to type 'CreationType | undefined'.ts(2322)
-```
-
-`input` or `output` - This tells Zod OpenAPI to pick a specific schema to create whenever we run into this schema, regardless of it is a request or response schema.
-
-```ts
-z.string()
-  .transform((str) => str.length)
-  .openapi({ effectType: 'input' });
-```
-
-#### Preprocess
-
-`.preprocess()` will always return the `output` type even if we are creating an input schema. If a different input type is required you can achieve this with a `.transform()` combined with a `.pipe()` or simply declare a manual `type` in `.openapi()`.
-
-#### Component Effects
-
-If you are adding a ZodSchema directly to the `components` section which is not referenced anywhere in the document, additional context may be required to create either an input or output schema. You can do this by setting the `refType` field to `input` or `output` in `.openapi()`. This defaults to `output` by default.
 
 ## Supported OpenAPI Versions
 
 Currently the following versions of OpenAPI are supported
 
-- `3.0.0`
-- `3.0.1`
-- `3.0.2`
-- `3.0.3`
 - `3.1.0`
+- `3.1.1`
 
 Setting the `openapi` field will change how the some of the components are rendered.
 
@@ -779,72 +710,6 @@ As an example `z.string().nullable()` will be rendered differently
 {
   "type": ["string", "null"]
 }
-```
-
-## Supported Zod Schema
-
-- ZodAny
-- ZodArray
-  - `minItems`/`maxItems` mapping for `.length()`, `.min()`, `.max()`
-- ZodBigInt
-  - `integer` `type` and `int64` `format` mapping
-- ZodBoolean
-- ZodBranded
-- ZodCatch
-  - Treated as ZodDefault
-- ZodCustom
-- ZodDate
-  - `type` is mapped as `string` by default
-- ZodDefault
-- ZodDiscriminatedUnion
-  - `discriminator` mapping when all schemas in the union are [registered](#creating-components). The discriminator must be a `ZodLiteral`, `ZodEnum` or `ZodNativeEnum` with string values. Only values wrapped in `ZodBranded`, `ZodReadOnly` and `ZodCatch` are supported.
-- ZodEffects
-  - `transform` support for request schemas. See [Zod Effects](#zod-effects) for how to enable response schema support
-  - `pre-process` support. We assume that the input type is the same as the output type. Otherwise pipe and transform can be used instead.
-  - `refine` full support
-- ZodEnum
-- ZodIntersection
-- ZodLazy
-  - The recursive schema within the ZodLazy or the ZodLazy _**must**_ be registered as a component. See [Creating Components](#creating-components) for more information.
-- ZodLiteral
-- ZodNativeEnum
-  - supporting `string`, `number` and combined enums.
-- ZodNever
-- ZodNull
-- ZodNullable
-- ZodNumber
-  - `integer` `type` mapping for `.int()`
-  - `exclusiveMin`/`min`/`exclusiveMax`/`max` mapping for `.min()`, `.max()`, `lt()`, `gt()`, `.positive()`, `.negative()`, `.nonnegative()`, `.nonpositive()`.
-  - `multipleOf` mapping for `.multipleOf()`
-- ZodObject
-  - `additionalProperties` mapping for `.catchall()`, `.strict()`
-  - `allOf` mapping for `.extend()` when the base object is registered and does not have `catchall()`, `strict()` and extension does not override a field.
-- ZodOptional
-- ZodPipeline
-  - See [Zod Effects](#zod-effects) for more information.
-- ZodReadonly
-- ZodRecord
-- ZodSet
-  - Treated as an array with `uniqueItems` (you may need to add a pre-process to convert it to a set)
-- ZodString
-  - `format` mapping for `.url()`, `.uuid()`, `.email()`, `.datetime()`, `.date()`, `.time()`, `.duration()`, `.ip({ version: 'v4' })`, `.ip({ version: 'v6' })`, `.cidr({ version: 'v4' })`, `.cidr({ version: 'v6' })`
-  - `minLength`/`maxLength` mapping for `.length()`, `.min()`, `.max()`
-  - `pattern` mapping for `.regex()`, `.startsWith()`, `.endsWith()`, `.includes()`
-  - `contentEncoding` mapping for `.base64()` for OpenAPI 3.1.0+
-- ZodTuple
-  - `items` mapping for `.rest()`
-  - `prefixItems` mapping for OpenAPI 3.1.0+
-- ZodUndefined
-- ZodUnion
-  - By default it outputs an `anyOf` schema. Use `unionOneOf` to change this to output `oneOf` instead.
-- ZodUnknown
-
-If this library cannot determine a type for a Zod Schema, it will throw an error. To avoid this, declare a manual `type` in the `.openapi()` section of that schema.
-
-eg.
-
-```typescript
-z.custom().openapi({ type: 'string' });
 ```
 
 ## Examples
