@@ -7,7 +7,7 @@ import {
 } from 'zod/v4';
 
 import type { CreateDocumentOptions, oas31 } from '../..';
-import type { ComponentRegistry } from '../components';
+import { type ComponentRegistry, createRegistry } from '../components';
 
 type Override = NonNullable<
   NonNullable<Parameters<typeof toJSONSchema>[1]>['override']
@@ -87,12 +87,21 @@ const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
   delete jsonSchema.outputId;
 };
 
+export interface CreateSchemaResult {
+  schema: oas31.SchemaObject | oas31.ReferenceObject;
+  components: Record<string, oas31.SchemaObject>;
+}
+
 export const createSchema = (
   schema: core.$ZodType,
   ctx: {
-    registry: ComponentRegistry;
+    registry?: ComponentRegistry;
     io: 'input' | 'output';
-    opts: CreateDocumentOptions;
+    opts?: CreateDocumentOptions;
+  } = {
+    registry: createRegistry(),
+    io: 'output',
+    opts: {},
   },
 ) => {
   const schemas = {
@@ -101,7 +110,18 @@ export const createSchema = (
     },
   };
 
-  const jsonSchemas = createSchemas(schemas, ctx);
+  ctx.registry ??= createRegistry();
+  ctx.opts ??= {};
+  ctx.io ??= 'output';
+
+  const jsonSchemas = createSchemas(
+    schemas,
+    ctx as {
+      registry: ComponentRegistry;
+      io: 'input' | 'output';
+      opts: CreateDocumentOptions;
+    },
+  );
 
   return {
     schema: jsonSchemas.schemas.createSchema,
