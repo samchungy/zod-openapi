@@ -80,6 +80,13 @@ const override: Override = (ctx) => {
       ctx.jsonSchema.type = 'string';
       break;
     }
+    case 'literal': {
+      if (def.values.includes(undefined)) {
+        throw new Error(
+          'Zod literal schemas cannot contain undefined values. Use z.undefined() instead.',
+        );
+      }
+    }
   }
 };
 

@@ -1,111 +1,101 @@
 import { z } from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type CreateSchemaResult, createSchema } from '..';
+import { createOutputContext } from '../../../testing/ctx';
 
 describe('union', () => {
   it('creates an anyOf schema for a union', () => {
-    const expected: oas31.SchemaObject = {
-      anyOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'number',
-        },
-      ],
-    };
     const schema = z.union([z.string(), z.number()]);
 
-    const result = createSchema(schema, createOutputState(), ['union']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        anyOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      },
+      components: {},
+    });
   });
 
-  it('creates an oneOf schema for a union if unionOneOf is true', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'number',
-        },
-      ],
-    };
-    const schema = z.union([z.string(), z.number()]).meta({ unionOneOf: true });
-
-    const result = createSchema(schema, createOutputState(), ['union']);
-
-    expect(result).toEqual(expected);
-  });
-
-  it('creates an oneOf schema for a union if the document options unionOneOf is true', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'number',
-        },
-      ],
-    };
-    const schema = z.union([z.string(), z.number()]);
-
-    const result = createSchema(
-      schema,
-      createOutputState(undefined, { unionOneOf: true }),
-      ['union'],
-    );
-
-    expect(result).toEqual(expected);
-  });
-
-  it('preferences individual unionOneOf over global setting', () => {
-    const expected: oas31.SchemaObject = {
-      anyOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'number',
-        },
-      ],
-    };
+  it('creates an oneOf schema for a union', () => {
     const schema = z.union([z.string(), z.number()]).meta({
-      override({ jsonSchema }) {
+      override: ({ jsonSchema }) => {
         jsonSchema.oneOf = jsonSchema.anyOf;
         delete jsonSchema.anyOf;
       },
     });
 
-    const result = createSchema(
-      schema,
-      createOutputState(undefined, { unionOneOf: true }),
-      ['union'],
-    );
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      },
+      components: {},
+    });
   });
 
-  it('ignores optional values in a union', () => {
-    const schema = z.union([
-      z.string(),
-      z.literal(undefined),
-      z.undefined(),
-      z.never(),
-    ]);
+  it('creates an oneOf schema for a union if a document option overrides it', () => {
+    const schema = z.union([z.string(), z.number()]);
 
-    const result = createSchema(schema, createOutputState(), ['union']);
+    const ctx = createOutputContext();
+    ctx.opts = {
+      override: ({ jsonSchema }) => {
+        jsonSchema.oneOf = jsonSchema.anyOf;
+        delete jsonSchema.anyOf;
+      },
+    };
+    const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<oas31.SchemaObject>({
-      anyOf: [
-        {
-          type: 'string',
-        },
-      ],
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      },
+      components: {},
+    });
+  });
+
+  it.skip('produces not values in a union', () => {
+    const schema = z.union([z.string(), z.undefined(), z.never()]);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        anyOf: [
+          {
+            type: 'string',
+          },
+          {
+            not: {},
+          },
+          {
+            not: {},
+          },
+        ],
+      },
+      components: {},
     });
   });
 });

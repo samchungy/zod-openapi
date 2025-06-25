@@ -1,138 +1,69 @@
 import { z } from 'zod/v4';
 
 import { type CreateSchemaResult, createSchema } from '..';
-import { createOutputContext } from '../../../testing/ctx';
 
 describe('literal', () => {
-  describe('OpenAPI 3.1.0', () => {
-    it('creates a string const schema', () => {
-      const schema = z.literal('a');
+  it('creates a string const schema', () => {
+    const schema = z.literal('a');
 
-      const result = createSchema(schema);
+    const result = createSchema(schema);
 
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          type: 'string',
-          const: 'a',
-        },
-        components: {},
-      });
-    });
-
-    it('creates a number const schema', () => {
-      const schema = z.literal(2);
-
-      const result = createSchema(schema);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          type: 'number',
-          const: 2,
-        },
-        components: {},
-      });
-    });
-
-    it('creates a boolean const schema', () => {
-      const schema = z.literal(true);
-
-      const result = createSchema(schema);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          type: 'boolean',
-          const: true,
-        },
-        components: {},
-      });
-    });
-
-    it('creates a null const schema', () => {
-      const schema = z.literal(null);
-
-      const result = createSchema(schema);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          const: null,
-          type: 'null',
-        },
-        components: {},
-      });
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        const: 'a',
+      },
+      components: {},
     });
   });
 
-  describe('OpenAPI 3.0.0', () => {
-    it('creates a string enum schema', () => {
-      const ctx = createOutputContext();
-      // Set the context for OpenAPI 3.0.0
-      ctx.io = 'openapi3' as any;
+  it('creates a number const schema', () => {
+    const schema = z.literal(2);
 
-      const schema = z.literal('a');
+    const result = createSchema(schema);
 
-      const result = createSchema(schema, ctx);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          type: 'string',
-          const: 'a',
-        },
-        components: {},
-      });
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'number',
+        const: 2,
+      },
+      components: {},
     });
+  });
 
-    it('creates a number enum schema', () => {
-      const ctx = createOutputContext();
-      // Set the context for OpenAPI 3.0.0
-      ctx.io = 'openapi3' as any;
+  it('creates a boolean const schema', () => {
+    const schema = z.literal(true);
 
-      const schema = z.literal(2);
+    const result = createSchema(schema);
 
-      const result = createSchema(schema, ctx);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          type: 'number',
-          const: 2,
-        },
-        components: {},
-      });
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'boolean',
+        const: true,
+      },
+      components: {},
     });
+  });
 
-    it('creates a boolean enum schema', () => {
-      const ctx = createOutputContext();
-      // Set the context for OpenAPI 3.0.0
-      ctx.io = 'openapi3' as any;
+  it('creates a null const schema', () => {
+    const schema = z.literal(null);
 
-      const schema = z.literal(true);
+    const result = createSchema(schema);
 
-      const result = createSchema(schema, ctx);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          type: 'boolean',
-          const: true,
-        },
-        components: {},
-      });
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        const: null,
+        type: 'null',
+      },
+      components: {},
     });
+  });
 
-    it('creates a null enum schema', () => {
-      const ctx = createOutputContext();
-      // Set the context for OpenAPI 3.0.0
-      ctx.io = 'openapi3' as any;
+  it('does not support undefined as a literal', () => {
+    const schema = z.literal(undefined);
 
-      const schema = z.literal(null);
-
-      const result = createSchema(schema, ctx);
-
-      expect(result).toEqual<CreateSchemaResult>({
-        schema: {
-          const: null,
-          type: 'null',
-        },
-        components: {},
-      });
-    });
+    expect(() => createSchema(schema)).toThrow(
+      'Zod literal schemas cannot contain undefined values. Use z.undefined() instead.',
+    );
   });
 });

@@ -1,116 +1,106 @@
 import { type ZodString, z } from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import {
-  createOutputOpenapi3State,
-  createOutputState,
-} from '../../../testing/state';
+import { type CreateSchemaResult, createSchema } from '..';
 
 describe('string', () => {
   it('creates a simple string schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-    };
-
     const schema = z.string();
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with a regex pattern', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      pattern: '^hello',
-    };
     const schema = z.string().regex(/^hello/);
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        pattern: '^hello',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with a startsWith pattern', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      pattern: '^hello.*',
-    };
     const schema = z.string().startsWith('hello');
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        pattern: '^hello.*',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with an endsWith pattern', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      pattern: '.*hello$',
-    };
     const schema = z.string().endsWith('hello');
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        pattern: '.*hello$',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with an includes pattern', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      pattern: 'hello',
-    };
     const schema = z.string().includes('hello');
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        pattern: 'hello',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with an includes starting at index pattern', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      pattern: '^.{5}hello',
-    };
     const schema = z.string().includes('hello', { position: 5 });
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        pattern: '^.{5}hello',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with an includes starting at index 0', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      pattern: '^hello',
-    };
     const schema = z.string().includes('hello', { position: 0 });
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        pattern: '^.{0}hello',
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with multiple patterns and length checks', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      minLength: 10,
-      allOf: [
-        {
-          pattern: 'hello',
-        },
-        {
-          pattern: '^hello.*',
-        },
-        {
-          pattern: '^foo',
-        },
-        {
-          pattern: 'foo$',
-        },
-      ],
-    };
     const schema = z
       .string()
       .min(10)
@@ -119,64 +109,87 @@ describe('string', () => {
       .regex(/^foo/)
       .regex(/foo$/);
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        minLength: 10,
+        allOf: [
+          {
+            pattern: 'hello',
+          },
+          {
+            pattern: '^hello.*',
+          },
+          {
+            pattern: '^foo',
+          },
+          {
+            pattern: 'foo$',
+          },
+        ],
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with min and max', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      minLength: 0,
-      maxLength: 1,
-    };
     const schema = z.string().min(0).max(1);
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        minLength: 0,
+        maxLength: 1,
+      },
+      components: {},
+    });
   });
 
   it('creates a string schema with nonempty', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      minLength: 1,
-    };
+    const schema = z.string().nonempty();
 
-    const schema = z.string().nonempty().meta({
-      param: {
-        examples,
+    const result = createSchema(schema);
+
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        minLength: 1,
       },
+      components: {},
     });
-
-    const result = createSchema(schema, createOutputState(), ['string']);
-
-    expect(result).toStrictEqual(expected);
   });
 
   it('creates a string schema with a set length', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      minLength: 1,
-      maxLength: 1,
-    };
     const schema = z.string().length(1);
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 1,
+      },
+      components: {},
+    });
   });
 
   it('creates a uri format string schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      format: 'uri',
-    };
     const schema = z.url();
 
-    const result = createSchema(schema, createOutputState(), ['string']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        format: 'uri',
+      },
+      components: {},
+    });
   });
 
   it.each`
@@ -194,41 +207,35 @@ describe('string', () => {
   `(
     'creates a string schema with $format',
     ({ zodString, format }: { zodString: ZodString; format: string }) => {
-      const expected: oas31.SchemaObject = {
-        type: 'string',
-        format,
-        pattern: expect.any(String),
-      };
-      const result = createSchema(zodString, createOutputState(), ['string']);
-      expect(result).toStrictEqual(expected);
+      const result = createSchema(zodString);
+
+      expect(result).toEqual<CreateSchemaResult>(
+        expect.objectContaining({
+          schema: expect.objectContaining({
+            type: 'string',
+            format,
+            pattern: expect.any(String),
+          }),
+          components: {},
+        }),
+      );
     },
   );
 
-  it('supports contentEncoding in 3.1.0', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      contentEncoding: 'base64',
-      format: 'base64',
-      pattern:
-        '^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$',
-    };
+  it('supports contentEncoding', () => {
+    const schema = z.string().base64();
 
-    const result = createSchema(z.string().base64(), createOutputState(), [
-      'string',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
-  });
-
-  it('does not support contentEncoding in 3.0.0', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-    };
-
-    const result = createSchema(z.base64(), createOutputOpenapi3State(), [
-      'string',
-    ]);
-
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+        contentEncoding: 'base64',
+        format: 'base64',
+        pattern:
+          '^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$',
+      },
+      components: {},
+    });
   });
 });
