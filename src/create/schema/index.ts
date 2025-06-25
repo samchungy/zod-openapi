@@ -49,6 +49,10 @@ const override: Override = (ctx) => {
             def.options[Number(index)] as core.$ZodObject
           )._zod.propValues[def.discriminator];
 
+          if (!discriminatorValues?.size) {
+            return;
+          }
+
           for (const value of [...(discriminatorValues ?? [])]) {
             if (typeof value !== 'string') {
               return;
@@ -96,7 +100,7 @@ export const createSchema = (
   schema: core.$ZodType,
   ctx: {
     registry?: ComponentRegistry;
-    io: 'input' | 'output';
+    io?: 'input' | 'output';
     opts?: CreateDocumentOptions;
   } = {
     registry: createRegistry(),
@@ -104,27 +108,26 @@ export const createSchema = (
     opts: {},
   },
 ) => {
-  const schemas = {
-    createSchema: {
-      zodType: schema,
-    },
-  };
-
   ctx.registry ??= createRegistry();
   ctx.opts ??= {};
   ctx.io ??= 'output';
 
-  const jsonSchemas = createSchemas(
-    schemas,
-    ctx as {
-      registry: ComponentRegistry;
-      io: 'input' | 'output';
-      opts: CreateDocumentOptions;
-    },
+  const registrySchemas = Object.fromEntries(
+    ctx.registry.schemas[ctx.io].schemas,
   );
+  const schemas = {
+    zodOpenApiCreateSchema: { zodType: schema },
+  };
+  Object.assign(schemas, registrySchemas);
+
+  const jsonSchemas = createSchemas(schemas, {
+    registry: ctx.registry,
+    io: ctx.io,
+    opts: ctx.opts,
+  });
 
   return {
-    schema: jsonSchemas.schemas.createSchema,
+    schema: jsonSchemas.schemas.zodOpenApiCreateSchema,
     components: jsonSchemas.components,
   };
 };
@@ -173,10 +176,10 @@ export const createSchemas = <
 
       override(ctx);
       if (typeof opts.override === 'function') {
-        opts.override(ctx);
+        opts.override({ ...ctx, io });
       }
       if (typeof meta?.override === 'function') {
-        meta.override(ctx);
+        meta.override({ ...ctx, io });
         delete ctx.jsonSchema.override;
       }
       if (typeof meta?.override === 'object' && meta.override !== null) {

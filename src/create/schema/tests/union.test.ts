@@ -1,7 +1,6 @@
 import { z } from 'zod/v4';
 
 import { createSchema } from '..';
-import type { OverrideParams } from '../../../zod';
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createOutputState } from '../../../testing/state';
 

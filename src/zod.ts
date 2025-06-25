@@ -3,9 +3,11 @@ import type { $ZodType } from 'zod/v4/core';
 
 import type { oas31 } from './openapi3-ts/dist';
 
-export type Override = core.JSONSchemaGenerator['override'];
-
-export type OverrideParams = NonNullable<Parameters<Override>[0]>;
+export type Override = (ctx: {
+  zodSchema: $ZodType;
+  jsonSchema: core.JSONSchema.JSONSchema;
+  io: 'input' | 'output';
+}) => void;
 
 export const isAnyZodType = (schema: unknown): schema is $ZodType =>
   typeof schema === 'object' && schema !== null && '_zod' in schema;

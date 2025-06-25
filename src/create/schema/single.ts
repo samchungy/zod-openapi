@@ -13,7 +13,7 @@ import { type SchemaState, createSchema as internalCreateSchema } from '.';
 
 export interface SchemaResult {
   schema: oas30.SchemaObject | oas31.SchemaObject | oas31.ReferenceObject;
-  components?:
+  components:
     | Record<
         string,
         oas30.SchemaObject | oas31.SchemaObject | oas31.ReferenceObject

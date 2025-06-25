@@ -1,19 +1,19 @@
 import { z } from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type CreateSchemaResult, createSchema } from '..';
 
 describe('bigint', () => {
   it('creates a int64 schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'integer',
-      format: 'int64',
-    };
     const schema = z.bigint();
 
-    const result = createSchema(schema, createOutputState(), ['bigint']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'integer',
+        format: 'int64',
+      },
+      components: {},
+    });
   });
 });
