@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '..';
+import { type CreateSchemaResult, createSchema } from '../schema';
 
 describe('catch', () => {
   it('creates a default string schema for a string with a catch', () => {

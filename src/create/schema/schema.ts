@@ -6,14 +6,10 @@ import {
   registry as zodRegistry,
 } from 'zod/v4';
 
-import type { CreateDocumentOptions, oas31 } from '../..';
+import type { CreateDocumentOptions, Override, oas31 } from '../..';
 import { type ComponentRegistry, createRegistry } from '../components';
 
-type Override = NonNullable<
-  NonNullable<Parameters<typeof toJSONSchema>[1]>['override']
->;
-
-type ZodTypeWithMeta = Parameters<Override>[0]['zodSchema'] & {
+type ZodTypeWithMeta = core.$ZodTypes & {
   meta: () => GlobalMeta | undefined;
 };
 
@@ -82,10 +78,42 @@ const override: Override = (ctx) => {
     }
     case 'literal': {
       if (def.values.includes(undefined)) {
+        break;
+      }
+      break;
+    }
+  }
+};
+
+const validate: Override = (ctx) => {
+  if (Object.keys(ctx.jsonSchema).length) {
+    return;
+  }
+
+  const def = ctx.zodSchema._zod.def;
+  switch (def.type) {
+    case 'any': {
+      break;
+    }
+    case 'unknown': {
+      break;
+    }
+    case 'pipe': {
+      if (ctx.io === 'output') {
+        // For some reason transform calls pipe and the meta ends up on the pipe instead of the transform
         throw new Error(
-          'Zod literal schemas cannot contain undefined values. Use z.undefined() instead.',
+          'Zod transform schemas are not supported in output schemas. Please use `.overwrite()` or wrap the schema in a `.pipe()`',
         );
       }
+      break;
+    }
+    case 'literal': {
+      if (def.values.includes(undefined)) {
+        throw new Error(
+          'Zod literal schemas cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
+        );
+      }
+      break;
     }
   }
 };
@@ -181,12 +209,14 @@ export const createSchemas = <
         return;
       }
 
-      override(ctx);
+      const enrichedContext = { ...ctx, io };
+
+      override(enrichedContext);
       if (typeof opts.override === 'function') {
-        opts.override({ ...ctx, io });
+        opts.override(enrichedContext);
       }
       if (typeof meta?.override === 'function') {
-        meta.override({ ...ctx, io });
+        meta.override(enrichedContext);
         delete ctx.jsonSchema.override;
       }
       if (typeof meta?.override === 'object' && meta.override !== null) {
@@ -197,6 +227,8 @@ export const createSchemas = <
       delete ctx.jsonSchema.$schema;
       delete ctx.jsonSchema.id;
       deleteZodOpenApiMeta(ctx.jsonSchema);
+
+      validate(enrichedContext);
     },
     io,
     unrepresentable: 'any',
@@ -264,6 +296,7 @@ export const createSchemas = <
 
   const patchedJsonSchema = JSON.parse(patched) as typeof jsonSchema;
   const components = patchedJsonSchema.schemas.__shared?.$defs ?? {};
+  patchedJsonSchema.schemas.__shared ??= { $defs: components };
 
   for (const [key, value] of registry.schemas.manual) {
     if (value.io[io].used) {

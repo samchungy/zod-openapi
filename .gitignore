@@ -28,5 +28,4 @@ yarn-error.log
 # managed by crackle
 /api
 /dist
-/extend
 # end managed by crackle

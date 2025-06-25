@@ -12,7 +12,7 @@ export const createCallback = (
   callbackObject: ZodOpenApiCallbackObject,
   registry: ComponentRegistry,
   path: string[],
-): oas31.CallbackObject | oas31.ReferenceObject => {
+): ZodOpenApiCallbackObject | oas31.ReferenceObject => {
   const seenCallback = registry.callbacks.seen.get(callbackObject);
   if (seenCallback) {
     return seenCallback;

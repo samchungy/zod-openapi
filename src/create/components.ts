@@ -17,7 +17,7 @@ import { createParameter } from './parameters';
 import { createPathItem } from './paths';
 import { createRequestBody } from './requestBody';
 import { createResponse } from './responses';
-import { createSchemas } from './schema';
+import { createSchemas } from './schema/schema';
 
 export interface ComponentRegistry {
   /**
@@ -114,10 +114,10 @@ export interface ComponentRegistry {
     seen: WeakMap<$ZodType, oas31.ParameterObject | oas31.ReferenceObject>;
   };
   callbacks: {
-    ids: Map<string, oas31.CallbackObject | oas31.ReferenceObject>;
+    ids: Map<string, ZodOpenApiCallbackObject | oas31.ReferenceObject>;
     seen: WeakMap<
       ZodOpenApiCallbackObject,
-      oas31.CallbackObject | oas31.ReferenceObject
+      ZodOpenApiCallbackObject | oas31.ReferenceObject
     >;
   };
   pathItems: {
@@ -264,7 +264,7 @@ const registerSchemas = (
       });
       continue;
     }
-    registry.schemas.ids.set(key, schema);
+    registry.schemas.ids.set(key, schema as oas31.SchemaObject);
   }
 };
 
@@ -298,7 +298,7 @@ const registerParameters = (
     }
 
     // Raw OpenAPI Parameter we should just blindly insert into the components
-    registry.parameters.ids.set(key, schema);
+    registry.parameters.ids.set(key, schema as oas31.ParameterObject);
   }
 };
 
@@ -327,7 +327,7 @@ const registerHeaders = (
       registry.headers.seen.set(schema, headerObject);
       continue;
     }
-    registry.headers.ids.set(key, schema);
+    registry.headers.ids.set(key, schema as oas31.HeaderObject);
   }
 };
 

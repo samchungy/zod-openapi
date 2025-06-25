@@ -24,6 +24,7 @@ describe('createHeaders', () => {
 
     expect(headers).toEqual<oas31.HeadersObject>({
       'X-Custom-Header': {
+        required: true,
         schema: {},
       },
     });
@@ -46,6 +47,7 @@ describe('createHeader', () => {
     );
 
     expect(header).toEqual<oas31.HeaderObject>({
+      required: true,
       description: 'A custom header',
       schema: {},
     });
@@ -68,6 +70,7 @@ describe('createHeader', () => {
     );
 
     expect(header).toEqual<oas31.HeaderObject>({
+      required: true,
       deprecated: true,
       schema: {},
     });

@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { createSchema } from '..';
+import { createSchema } from '../schema';
 import type { SchemaResult } from '../single';
 
 describe('optional', () => {
@@ -9,7 +9,7 @@ describe('optional', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<SchemaResult>({
+    expect(result).toEqual<CreateSchemaResult>({
       schema: {
         type: 'string',
       },

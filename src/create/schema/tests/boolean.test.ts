@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '..';
+import { type CreateSchemaResult, createSchema } from '../schema';
 
 describe('boolean', () => {
   it('creates a boolean schema', () => {

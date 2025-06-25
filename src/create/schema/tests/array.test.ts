@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '..';
+import { type CreateSchemaResult, createSchema } from '../schema';
 import { createOutputContext } from '../../../testing/ctx';
 import type { SchemaResult } from '../single';
 
@@ -26,7 +26,7 @@ describe('array', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<SchemaResult>({
+    expect(result).toEqual<CreateSchemaResult>({
       schema: {
         type: 'array',
         items: {

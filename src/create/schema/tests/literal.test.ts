@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '..';
+import { type CreateSchemaResult, createSchema } from '../schema';
 
 describe('literal', () => {
   it('creates a string const schema', () => {
@@ -63,7 +63,7 @@ describe('literal', () => {
     const schema = z.literal(undefined);
 
     expect(() => createSchema(schema)).toThrow(
-      'Zod literal schemas cannot contain undefined values. Use z.undefined() instead.',
+      'Zod literal schemas cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
     );
   });
 });

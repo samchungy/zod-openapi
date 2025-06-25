@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '..';
+import { type CreateSchemaResult, createSchema } from '../schema';
 
 describe('nativeEnum', () => {
   it('creates a string schema from a string enum', () => {
@@ -59,8 +59,7 @@ describe('nativeEnum', () => {
 
     expect(result).toEqual<CreateSchemaResult>({
       schema: {
-        type: ['string', 'number'],
-        enum: ['Right', 0, 1, 2],
+        enum: [0, 1, 2, 'Right'],
       },
       components: {},
     });

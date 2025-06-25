@@ -48,6 +48,7 @@ describe('createResponses', () => {
         headers: {
           'X-Custom-Header': {
             description: 'A custom header',
+            required: true,
             schema: {},
           },
         },

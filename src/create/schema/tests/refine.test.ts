@@ -1,17 +1,18 @@
 import { z } from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
+import { type CreateSchemaResult, createSchema } from '../schema';
 
 describe('refine', () => {
   it('returns a schema when creating an output schema with preprocess', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-    };
     const schema = z.string().refine((check) => typeof check === 'string');
 
     const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<CreateSchemaResult>({
+      schema: {
+        type: 'string',
+      },
+      components: {},
+    });
   });
 });

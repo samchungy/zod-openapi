@@ -1,15 +1,14 @@
 import type { core } from 'zod/v4';
-import type { $ZodType } from 'zod/v4/core';
 
 import type { oas31 } from './openapi3-ts/dist';
 
 export type Override = (ctx: {
-  zodSchema: $ZodType;
-  jsonSchema: core.JSONSchema.JSONSchema;
+  zodSchema: core.$ZodTypes;
+  jsonSchema: core.JSONSchema.BaseSchema;
   io: 'input' | 'output';
 }) => void;
 
-export const isAnyZodType = (schema: unknown): schema is $ZodType =>
+export const isAnyZodType = (schema: unknown): schema is core.$ZodTypes =>
   typeof schema === 'object' && schema !== null && '_zod' in schema;
 
 declare module 'zod/v4' {

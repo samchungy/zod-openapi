@@ -32,7 +32,7 @@ describe('createContent', () => {
     });
 
     expect(content['application/json']?.schema).toEqual(
-      registry.schemas.output.seen.get(zodSchema),
+      registry.schemas.output.seen.get(zodSchema)?.schemaObject,
     );
     expect(
       registry.schemas.output.schemas.get('test > application/json'),
