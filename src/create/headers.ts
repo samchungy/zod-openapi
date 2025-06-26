@@ -79,5 +79,5 @@ export const createHeaders = (
     return headersObject;
   }
 
-  return headers;
+  return headers as oas31.HeadersObject;
 };
