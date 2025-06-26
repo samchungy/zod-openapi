@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="zod-openapi.svg" width="200px" align="center" alt="zod-openapi logo" />
+  <img src="zod-openapi.png" width="200px" align="center" alt="zod-openapi logo" />
   <h1 align="center">zod-openapi</h1>
 </p>
 <p align="center">
@@ -41,10 +41,6 @@ Use the `.meta()` method to add metadata to a Zod schema. It accepts an object w
 | `override` | Allows you to override the rendered OpenAPI schema. This takes either an object or a function                    |
 | `outputId` | Allows you to set a different ID for the output schema. This is useful when the input and output schemas differ. |
 | `unusedIO` | Allows you to set the `io` for an unused schema added to the components section. Defaults to `output`            |
-
-`````typescript
-
-````typescript
 
 ### `createDocument`
 
@@ -93,7 +89,7 @@ const document = createDocument({
     },
   },
 });
-`````
+```
 
 <details>
   <summary>Creates the following object:</summary>
