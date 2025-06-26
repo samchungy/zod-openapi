@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('null', () => {
   it('creates a null schema', () => {
@@ -8,7 +8,7 @@ describe('null', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'null',
       },

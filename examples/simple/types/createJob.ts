@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { JobIdSchema, JobTitleSchema } from './common';
 
@@ -13,19 +13,12 @@ export const CreateJobRequestSchema = z
      */
     title: JobTitleSchema,
   })
-  .openapi({
+  .meta({
     description: 'Create Job Request',
   });
 
-/**
- * Create Job Response
- */
 export const CreateJobResponseSchema = z
   .object({
-    /**
-     * A unique identifier for a job
-     * @example "4dd643ff-7ec7-4666-9c88-50b7d3da34e4"
-     */
     id: JobIdSchema,
   })
-  .openapi({ description: 'Create Job Response' });
+  .meta({ description: 'Create Job Response' });

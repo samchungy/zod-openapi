@@ -5,7 +5,7 @@
     "removeComments": false,
     "target": "ES2022",
     "module": "Node16",
-    "moduleResolution": "Node16",
+    "moduleResolution": "Node16"
   },
   "exclude": ["lib*/**/*", "crackle.config.ts", "dist", "api", "extend"],
   "extends": "skuba/config/tsconfig.json"

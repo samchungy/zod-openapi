@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
 import { createOutputContext } from '../../../testing/ctx';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('union', () => {
   it('creates an anyOf schema for a union', () => {
@@ -9,7 +9,7 @@ describe('union', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {
@@ -34,7 +34,7 @@ describe('union', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         oneOf: [
           {
@@ -61,7 +61,7 @@ describe('union', () => {
     };
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         oneOf: [
           {
@@ -81,7 +81,7 @@ describe('union', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {

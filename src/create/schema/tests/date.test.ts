@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('date', () => {
   it('creates a string schema', () => {
@@ -8,7 +8,7 @@ describe('date', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
       },
@@ -23,7 +23,7 @@ describe('date', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         format: 'date-time',
@@ -41,7 +41,7 @@ describe('date', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'number',
       },

@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('intersection', () => {
   it('creates an intersection schema', () => {
@@ -8,7 +8,7 @@ describe('intersection', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         allOf: [
           {
@@ -36,7 +36,7 @@ describe('intersection', () => {
 
     const result = createSchema(andSchema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         allOf: [
           {
@@ -80,7 +80,7 @@ describe('intersection', () => {
 
     const result = createSchema(schema.and(schema2).and(schema3));
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         allOf: [
           {

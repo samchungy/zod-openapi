@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createInputContext } from '../../../testing/ctx';
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('transform', () => {
   describe('input', () => {
@@ -13,7 +13,7 @@ describe('transform', () => {
 
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'string',
         },
@@ -39,7 +39,7 @@ describe('transform', () => {
 
       const result = createSchema(schema);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'number',
         } as oas31.SchemaObject,

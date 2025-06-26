@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
 import { createOutputContext } from '../../../testing/ctx';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('nullable', () => {
   it('creates a simple nullable string schema', () => {
@@ -9,7 +9,7 @@ describe('nullable', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {
@@ -32,7 +32,7 @@ describe('nullable', () => {
 
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {
@@ -58,7 +58,7 @@ describe('nullable', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {
@@ -103,7 +103,7 @@ describe('nullable', () => {
 
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       components: {},
       schema: {
         anyOf: [
@@ -139,7 +139,7 @@ describe('nullable', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {
@@ -160,7 +160,7 @@ describe('nullable', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         anyOf: [
           {

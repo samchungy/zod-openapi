@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
 import { createInputContext, createOutputContext } from '../../../testing/ctx';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('object', () => {
   it('creates a simple object with required and optionals', () => {
@@ -12,7 +12,7 @@ describe('object', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -33,7 +33,7 @@ describe('object', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -55,7 +55,7 @@ describe('object', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -79,7 +79,7 @@ describe('object', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -102,7 +102,7 @@ describe('object', () => {
 
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -123,7 +123,7 @@ describe('object', () => {
 
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -142,7 +142,7 @@ describe('object', () => {
     const ctx = createOutputContext();
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -163,7 +163,7 @@ describe('object', () => {
     const ctx = createOutputContext();
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         properties: {
@@ -194,7 +194,7 @@ describe('required', () => {
       const ctx = createOutputContext();
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'object',
           properties: {
@@ -239,7 +239,7 @@ describe('required', () => {
       const ctx = createOutputContext();
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'object',
           properties: {
@@ -282,7 +282,7 @@ describe('required', () => {
       ctx.io = 'input' as any;
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'object',
           properties: {
@@ -327,7 +327,7 @@ describe('required', () => {
       const ctx = createInputContext();
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'object',
           properties: {

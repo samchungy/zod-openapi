@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
 import { createInputContext } from '../../../testing/ctx';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('pipeline', () => {
   describe('input', () => {
@@ -11,7 +11,7 @@ describe('pipeline', () => {
       const ctx = createInputContext();
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'string',
         },
@@ -28,7 +28,7 @@ describe('pipeline', () => {
       const ctx = createInputContext();
       const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'string',
         },
@@ -43,7 +43,7 @@ describe('pipeline', () => {
 
       const result = createSchema(schema);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'string',
         },
@@ -59,7 +59,7 @@ describe('pipeline', () => {
 
       const result = createSchema(schema);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'number',
         },
@@ -72,7 +72,7 @@ describe('pipeline', () => {
 
       const result = createSchema(schema);
 
-      expect(result).toEqual<CreateSchemaResult>({
+      expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'string',
         },

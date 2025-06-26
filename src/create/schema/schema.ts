@@ -6,117 +6,11 @@ import {
   registry as zodRegistry,
 } from 'zod/v4';
 
-import type { CreateDocumentOptions, Override, oas31 } from '../..';
+import type { CreateDocumentOptions, oas31 } from '../..';
 import { type ComponentRegistry, createRegistry } from '../components';
 
-type ZodTypeWithMeta = core.$ZodTypes & {
-  meta: () => GlobalMeta | undefined;
-};
-
-const override: Override = (ctx) => {
-  const def = ctx.zodSchema._zod.def;
-  switch (def.type) {
-    case 'bigint': {
-      ctx.jsonSchema.type = 'integer';
-      ctx.jsonSchema.format = 'int64';
-      break;
-    }
-    case 'union': {
-      if ('discriminator' in def && typeof def.discriminator === 'string') {
-        ctx.jsonSchema.oneOf = ctx.jsonSchema.anyOf;
-        delete ctx.jsonSchema.anyOf;
-
-        ctx.jsonSchema.type = 'object';
-        ctx.jsonSchema.discriminator = {
-          propertyName: def.discriminator,
-        } as oas31.DiscriminatorObject;
-
-        const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
-        for (const [index, obj] of Object.entries(
-          ctx.jsonSchema.oneOf as core.JSONSchema.BaseSchema[],
-        )) {
-          const ref = obj.$ref;
-
-          if (!ref) {
-            return;
-          }
-
-          const discriminatorValues = (
-            def.options[Number(index)] as core.$ZodObject
-          )._zod.propValues[def.discriminator];
-
-          if (!discriminatorValues?.size) {
-            return;
-          }
-
-          for (const value of [...(discriminatorValues ?? [])]) {
-            if (typeof value !== 'string') {
-              return;
-            }
-            mapping[value] = ref;
-          }
-        }
-
-        (ctx.jsonSchema.discriminator as oas31.DiscriminatorObject).mapping =
-          mapping;
-      }
-
-      const meta = (ctx.zodSchema as ZodTypeWithMeta).meta();
-
-      if (typeof meta?.unionOneOf === 'boolean') {
-        if (meta.unionOneOf) {
-          ctx.jsonSchema.oneOf = ctx.jsonSchema.anyOf;
-          delete ctx.jsonSchema.anyOf;
-        }
-        delete ctx.jsonSchema.unionOneOf;
-      }
-      break;
-    }
-    case 'date': {
-      ctx.jsonSchema.type = 'string';
-      break;
-    }
-    case 'literal': {
-      if (def.values.includes(undefined)) {
-        break;
-      }
-      break;
-    }
-  }
-};
-
-const validate: Override = (ctx) => {
-  if (Object.keys(ctx.jsonSchema).length) {
-    return;
-  }
-
-  const def = ctx.zodSchema._zod.def;
-  switch (def.type) {
-    case 'any': {
-      break;
-    }
-    case 'unknown': {
-      break;
-    }
-    case 'pipe': {
-      if (ctx.io === 'output') {
-        // For some reason transform calls pipe and the meta ends up on the pipe instead of the transform
-        throw new Error(
-          'Zod transform schemas are not supported in output schemas. Please use `.overwrite()` or wrap the schema in a `.pipe()`',
-        );
-      }
-      break;
-    }
-    case 'literal': {
-      if (def.values.includes(undefined)) {
-        throw new Error(
-          'Zod literal schemas cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
-        );
-      }
-      break;
-    }
-  }
-};
+import { override, validate } from './override';
+import { renameComponents } from './rename';
 
 const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
   delete jsonSchema.param;
@@ -126,10 +20,14 @@ const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
   delete jsonSchema.outputId;
 };
 
-export interface CreateSchemaResult {
+export interface SchemaResult {
   schema: oas31.SchemaObject | oas31.ReferenceObject;
   components: Record<string, oas31.SchemaObject>;
 }
+
+type ZodTypeWithMeta = core.$ZodTypes & {
+  meta: () => GlobalMeta | undefined;
+};
 
 export const createSchema = (
   schema: core.$ZodType,
@@ -236,6 +134,7 @@ export const createSchemas = <
   });
 
   const sharedDefs = jsonSchema.schemas.__shared?.$defs ?? {};
+  jsonSchema.schemas.__shared ??= { $defs: sharedDefs };
 
   const componentsToReplace = new Map<string, string>();
   for (const [key, value] of Object.entries(sharedDefs)) {
@@ -316,25 +215,11 @@ export const createSchemas = <
     components[value] = component as core.JSONSchema.JSONSchema;
   }
 
-  // Check if we have components already in the registry
-  // This is fairly likely given schemas may be reused between request schemas and response schemas
-  const renamedComponents = new Map<string, string>();
-  for (const [key, value] of Object.entries(components)) {
-    const registeredComponent = registry.schemas.ids.get(key);
-    if (registeredComponent) {
-      if (JSON.stringify(registeredComponent) === JSON.stringify(value)) {
-        continue;
-      }
-
-      // Rename the component as they do not output the same thing
-      const newName =
-        outputIds.get(key) ??
-        `${key}${io.charAt(0).toUpperCase()}${io.slice(1)}`;
-      renamedComponents.set(key, newName);
-      components[newName] = value;
-      delete components[key];
-    }
-  }
+  const renamedComponents = renameComponents(components, outputIds, {
+    registry,
+    io,
+    opts,
+  });
 
   if (renamedComponents.size === 0) {
     delete patchedJsonSchema.schemas.__shared;
@@ -363,6 +248,7 @@ export const createSchemas = <
   const renamedJsonSchemaComponents =
     renamedJsonSchema.schemas.__shared?.$defs ?? {};
   delete renamedJsonSchema.schemas.__shared;
+
   return {
     schemas: renamedJsonSchema.schemas as Record<
       keyof T,

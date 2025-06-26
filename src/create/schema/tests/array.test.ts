@@ -1,8 +1,7 @@
 import { z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
 import { createOutputContext } from '../../../testing/ctx';
-import type { SchemaResult } from '../single';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('array', () => {
   it('creates simple arrays', () => {
@@ -10,7 +9,7 @@ describe('array', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'array',
         items: {
@@ -26,7 +25,7 @@ describe('array', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'array',
         items: {
@@ -44,7 +43,7 @@ describe('array', () => {
 
     const result = createSchema(schema, createOutputContext());
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'array',
         items: {

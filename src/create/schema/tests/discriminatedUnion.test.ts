@@ -3,7 +3,7 @@ import { z } from 'zod/v4';
 import { createOutputContext } from '../../../testing/ctx';
 import { createRegistry } from '../../components';
 import type { ZodOpenApiComponentsObject } from '../../document';
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('discriminatedUnion', () => {
   it('creates a oneOf schema with a discriminator', () => {
@@ -18,7 +18,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         oneOf: [
           {
@@ -70,7 +70,7 @@ describe('discriminatedUnion', () => {
     const ctx = createOutputContext();
     const result = createSchema(schema, ctx);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         oneOf: [
           {
@@ -132,7 +132,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         oneOf: [
           {
@@ -201,7 +201,7 @@ describe('discriminatedUnion', () => {
       registry: createRegistry(components),
     });
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         oneOf: [
@@ -269,7 +269,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         discriminator: {
           mapping: {
@@ -338,7 +338,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         discriminator: {
@@ -395,7 +395,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         oneOf: [
@@ -452,7 +452,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         discriminator: {
@@ -517,7 +517,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         discriminator: {
@@ -642,7 +642,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         discriminator: {
@@ -701,7 +701,7 @@ describe('discriminatedUnion', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'object',
         discriminator: {

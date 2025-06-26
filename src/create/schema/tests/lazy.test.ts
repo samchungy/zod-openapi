@@ -1,6 +1,6 @@
 import { type ZodLazy, type ZodType, z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('lazy', () => {
   it('creates a dynamic component', () => {
@@ -9,7 +9,7 @@ describe('lazy', () => {
 
     const result = createSchema(lazy as z.ZodLazy<any>);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         $ref: '#/components/schemas/__schema0',
       },
@@ -32,7 +32,7 @@ describe('lazy', () => {
 
     const result = createSchema(lazy as ZodLazy<any>);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         $ref: '#/components/schemas/lazy',
       },
@@ -75,7 +75,7 @@ describe('lazy', () => {
 
     const result = createSchema(UserSchema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         $ref: '#/components/schemas/user',
       },
@@ -144,7 +144,7 @@ describe('lazy', () => {
 
     const result = createSchema(PostSchema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         $ref: '#/components/schemas/post2',
       },

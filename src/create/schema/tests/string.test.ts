@@ -1,6 +1,6 @@
 import { type ZodString, z } from 'zod/v4';
 
-import { type CreateSchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('string', () => {
   it('creates a simple string schema', () => {
@@ -8,7 +8,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
       },
@@ -21,7 +21,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         pattern: '^hello',
@@ -35,7 +35,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         pattern: '^hello.*',
@@ -49,7 +49,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         pattern: '.*hello$',
@@ -63,7 +63,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         pattern: 'hello',
@@ -77,7 +77,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         pattern: '^.{5}hello',
@@ -91,7 +91,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         pattern: '^.{0}hello',
@@ -111,7 +111,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         minLength: 10,
@@ -139,7 +139,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         minLength: 0,
@@ -154,7 +154,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         minLength: 1,
@@ -168,7 +168,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         minLength: 1,
@@ -183,7 +183,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         format: 'uri',
@@ -209,7 +209,7 @@ describe('string', () => {
     ({ zodString, format }: { zodString: ZodString; format: string }) => {
       const result = createSchema(zodString);
 
-      expect(result).toEqual<CreateSchemaResult>(
+      expect(result).toEqual<SchemaResult>(
         expect.objectContaining({
           schema: expect.objectContaining({
             type: 'string',
@@ -227,7 +227,7 @@ describe('string', () => {
 
     const result = createSchema(schema);
 
-    expect(result).toEqual<CreateSchemaResult>({
+    expect(result).toEqual<SchemaResult>({
       schema: {
         type: 'string',
         contentEncoding: 'base64',
