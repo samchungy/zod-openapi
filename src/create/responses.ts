@@ -26,11 +26,6 @@ export const createResponse = (
 
   const responseObject: oas31.ResponseObject = rest;
 
-  if (id) {
-    ctx.registry.responses.ids.set(id, responseObject);
-  }
-  ctx.registry.responses.seen.set(response, responseObject);
-
   const maybeHeaders = createHeaders(headers, ctx, [...path, 'headers']);
   if (maybeHeaders) {
     responseObject.headers = maybeHeaders;
@@ -39,6 +34,17 @@ export const createResponse = (
   if (content) {
     responseObject.content = createContent(content, ctx, [...path, 'content']);
   }
+
+  if (id) {
+    const ref: oas31.ReferenceObject = {
+      $ref: `#/components/responses/${id}`,
+    };
+    ctx.registry.responses.ids.set(id, responseObject);
+    ctx.registry.responses.seen.set(response, ref);
+    return ref;
+  }
+
+  ctx.registry.responses.seen.set(response, responseObject);
 
   return responseObject;
 };

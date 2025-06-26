@@ -63,18 +63,7 @@ paths:
               additionalProperties: false
       responses:
         "201":
-          description: Successful creation
-          content:
-            application/json:
-              schema:
-                description: Create Job Response
-                type: object
-                properties:
-                  id:
-                    $ref: "#/components/schemas/jobId"
-                required:
-                  - id
-                additionalProperties: false
+          $ref: "#/components/responses/CreateJobResponse"
 components:
   schemas:
     jobTitle:
@@ -88,3 +77,17 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+  responses:
+    CreateJobResponse:
+      description: Successful creation
+      content:
+        application/json:
+          schema:
+            description: Create Job Response
+            type: object
+            properties:
+              id:
+                $ref: "#/components/schemas/jobId"
+            required:
+              - id
+            additionalProperties: false

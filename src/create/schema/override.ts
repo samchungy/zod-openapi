@@ -37,7 +37,7 @@ export const override: Override = (ctx) => {
 
           const discriminatorValues = (
             def.options[Number(index)] as core.$ZodObject
-          )._zod.propValues[def.discriminator];
+          )._zod.propValues?.[def.discriminator];
 
           if (!discriminatorValues?.size) {
             return;

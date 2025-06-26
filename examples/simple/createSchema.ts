@@ -42,6 +42,7 @@ const createJobOperation: ZodOpenApiOperationObject = {
   },
   responses: {
     '201': {
+      id: 'CreateJobResponse',
       description: 'Successful creation',
       content: {
         'application/json': {

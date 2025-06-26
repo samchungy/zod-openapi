@@ -148,6 +148,8 @@ export const createPathItem = (
     return ref;
   }
 
+  registry.pathItems.seen.set(pathItem, pathItemObject);
+
   return pathItemObject;
 };
 

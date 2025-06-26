@@ -423,19 +423,7 @@ describe('createDocument', () => {
           },
           "responses": {
             "200": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/registeredResponseSchema",
-                  },
-                },
-              },
-              "description": "User found",
-              "headers": {
-                "X-RateLimit-Limit": {
-                  "$ref": "#/components/headers/registeredHeader",
-                },
-              },
+              "$ref": "#/components/responses/registeredResponse",
             },
           },
         },
