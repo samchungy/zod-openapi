@@ -192,6 +192,9 @@ describe('required', () => {
       });
 
       const ctx = createOutputContext();
+      ctx.opts.allowEmptySchema = {
+        custom: true,
+      };
       const result = createSchema(schema, ctx);
 
       expect(result).toEqual<SchemaResult>({
@@ -278,8 +281,10 @@ describe('required', () => {
         f: z.custom((r) => r !== undefined),
       });
 
-      const ctx = createOutputContext();
-      ctx.io = 'input' as any;
+      const ctx = createInputContext();
+      ctx.opts.allowEmptySchema = {
+        custom: true,
+      };
       const result = createSchema(schema, ctx);
 
       expect(result).toEqual<SchemaResult>({

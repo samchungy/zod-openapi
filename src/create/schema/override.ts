@@ -1,6 +1,6 @@
 import type { GlobalMeta, core } from 'zod/v4';
 
-import type { oas31 } from '../..';
+import type { CreateDocumentOptions, oas31 } from '../..';
 import type { Override } from '../../zod';
 
 type ZodTypeWithMeta = core.$ZodTypes & {
@@ -79,18 +79,30 @@ export const override: Override = (ctx) => {
   }
 };
 
-export const validate: Override = (ctx) => {
+export const validate = (
+  ctx: {
+    zodSchema: core.$ZodTypes;
+    jsonSchema: core.JSONSchema.BaseSchema;
+    io: 'input' | 'output';
+  },
+  opts: CreateDocumentOptions,
+) => {
   if (Object.keys(ctx.jsonSchema).length) {
     return;
   }
 
   const def = ctx.zodSchema._zod.def;
+
+  if (opts.allowEmptySchema?.[def.type]) {
+    return;
+  }
+
   switch (def.type) {
     case 'any': {
-      break;
+      return;
     }
     case 'unknown': {
-      break;
+      return;
     }
     case 'pipe': {
       if (ctx.io === 'output') {
@@ -98,6 +110,12 @@ export const validate: Override = (ctx) => {
         throw new Error(
           'Zod transform schemas are not supported in output schemas. Please use `.overwrite()` or wrap the schema in a `.pipe()`',
         );
+      }
+      return;
+    }
+    case 'transform': {
+      if (ctx.io === 'output') {
+        return;
       }
       break;
     }
@@ -107,7 +125,11 @@ export const validate: Override = (ctx) => {
           'Zod literal schemas cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
         );
       }
-      break;
+      return;
     }
   }
+
+  throw new Error(
+    `Zod schema of type \`${def.type}\` cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\``,
+  );
 };

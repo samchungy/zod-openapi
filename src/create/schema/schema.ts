@@ -126,7 +126,7 @@ export const createSchemas = <
       delete ctx.jsonSchema.id;
       deleteZodOpenApiMeta(ctx.jsonSchema);
 
-      validate(enrichedContext);
+      validate(enrichedContext, opts);
     },
     io,
     unrepresentable: 'any',

@@ -1,5 +1,5 @@
 import type { ZodType, ZodTypeDef } from 'zod';
-import type { $ZodType } from 'zod/v4/core';
+import type { $ZodType, $ZodTypes } from 'zod/v4/core';
 
 import type { OpenApiVersion } from '../openapi';
 import type { oas31 } from '../openapi3-ts/dist';
@@ -157,11 +157,14 @@ export type ZodObjectInputType<
 
 export type ZodObjectInput = $ZodType<unknown, Record<string, unknown>>;
 
+type OverrideType = $ZodTypes['_zod']['def']['type'];
+
 export interface CreateDocumentOptions {
   /**
    * Use to override the rendered schema
    */
   override?: Override;
+  allowEmptySchema?: Partial<Record<OverrideType, true>>;
 }
 
 export const createDocument = (
