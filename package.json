@@ -27,11 +27,19 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.ts"
+      }
     },
     "./api": {
       "import": "./dist/api.mjs",
-      "require": "./dist/api.js"
+      "require": "./dist/api.js",
+      "types": {
+        "import": "./dist/api.d.mts",
+        "require": "./dist/api.d.ts"
+      }
     },
     "./package.json": "./package.json"
   },
