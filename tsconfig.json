@@ -7,6 +7,6 @@
     "module": "Node16",
     "moduleResolution": "Node16"
   },
-  "exclude": ["lib*/**/*", "tsdown.config.mts", "dist", "api", "extend"],
+  "exclude": ["lib*/**/*", "tsdown.config.mjs", "dist", "api", "extend"],
   "extends": "skuba/config/tsconfig.json"
 }
