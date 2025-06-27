@@ -27,19 +27,11 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": {
-        "import": "./dist/index.d.mts",
-        "require": "./dist/index.d.ts"
-      }
+      "require": "./dist/index.js"
     },
     "./api": {
       "import": "./dist/api.mjs",
-      "require": "./dist/api.js",
-      "types": {
-        "import": "./dist/api.d.mts",
-        "require": "./dist/api.d.ts"
-      }
+      "require": "./dist/api.js"
     },
     "./package.json": "./package.json"
   },
@@ -47,7 +39,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "api"
   ],
   "scripts": {
     "build": "pnpm copy:types && tsdown",
