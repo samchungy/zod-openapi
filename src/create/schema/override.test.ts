@@ -32,4 +32,19 @@ describe('validate', () => {
       'Zod schema of type `map` cannot be represented in OpenAPI. Please assign it metadata with `.meta()`',
     );
   });
+
+  it('allows an empty schema for a transform output when allowEmptySchemas is set', () => {
+    const schema = z.string().transform((str) => str.length);
+
+    validate(
+      {
+        zodSchema: schema,
+        jsonSchema: {},
+        io: 'output',
+      },
+      {
+        allowEmptySchema: { pipe: { output: true } },
+      },
+    );
+  });
 });

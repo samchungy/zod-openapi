@@ -378,7 +378,7 @@ const registerPathItems = (
   }
 };
 
-export const createIOSchemas = (ctx: {
+const createIOSchemas = (ctx: {
   registry: ComponentRegistry;
   io: 'input' | 'output';
   opts: CreateDocumentOptions;

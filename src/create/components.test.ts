@@ -869,4 +869,57 @@ describe('createComponents', () => {
       },
     });
   });
+
+  it('should use the id as the response component name if a schema is not used in a request', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ id: 'autoResponse' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const responseBody = createResponse(
+      {
+        description: 'A response with an auto registered schema',
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      {
+        registry,
+        io: 'output',
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(responseBody).toEqual<oas31.ResponseObject>({
+      description: 'A response with an auto registered schema',
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoResponse',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      autoResponse: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
 });

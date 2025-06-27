@@ -164,7 +164,16 @@ export interface CreateDocumentOptions {
    * Use to override the rendered schema
    */
   override?: Override;
-  allowEmptySchema?: Partial<Record<OverrideType, true>>;
+  allowEmptySchema?: Partial<
+    Record<
+      OverrideType,
+      | true
+      | {
+          input?: true;
+          output?: true;
+        }
+    >
+  >;
 }
 
 export const createDocument = (

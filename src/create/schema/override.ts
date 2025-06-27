@@ -93,7 +93,8 @@ export const validate = (
 
   const def = ctx.zodSchema._zod.def;
 
-  if (opts.allowEmptySchema?.[def.type]) {
+  const allowEmptySchema = opts.allowEmptySchema?.[def.type];
+  if (allowEmptySchema === true || allowEmptySchema?.[ctx.io]) {
     return;
   }
 
