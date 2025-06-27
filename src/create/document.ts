@@ -1,4 +1,3 @@
-import type { ZodType, ZodTypeDef } from 'zod';
 import type { $ZodType, $ZodTypes } from 'zod/v4/core';
 
 import type { OpenApiVersion } from '../openapi';
@@ -148,12 +147,6 @@ export interface ZodOpenApiObject
   webhooks?: ZodOpenApiPathsObject;
   components?: ZodOpenApiComponentsObject;
 }
-
-export type ZodObjectInputType<
-  Output = unknown,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Record<string, unknown>,
-> = ZodType<Output, Def, Input>;
 
 export type ZodObjectInput = $ZodType<unknown, Record<string, unknown>>;
 

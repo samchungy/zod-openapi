@@ -48,7 +48,7 @@ Generates an OpenAPI documentation object.
 
 ```typescript
 import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { createDocument } from 'zod-openapi';
 
 const jobId = z.string().openapi({
@@ -191,7 +191,7 @@ Creates an OpenAPI Schema Object along with any registered components. OpenAPI 3
 
 ```typescript
 import 'zod-openapi/extend';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { createSchema } from 'zod-openapi';
 
 const jobId = z.string().openapi({
