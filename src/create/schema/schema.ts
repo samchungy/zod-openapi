@@ -1,4 +1,10 @@
-import { type GlobalMeta, type core, object, toJSONSchema } from 'zod/v4';
+import {
+  type GlobalMeta,
+  type core,
+  object,
+  registry,
+  toJSONSchema,
+} from 'zod/v4';
 import type { $ZodType } from 'zod/v4/core';
 
 import type { CreateDocumentOptions, oas31 } from '../..';
@@ -70,15 +76,22 @@ export const createSchemas = <
 ): {
   schemas: Record<keyof T, oas31.SchemaObject | oas31.ReferenceObject>;
   components: Record<string, oas31.SchemaObject>;
+  manual: Record<string, oas31.SchemaObject>;
 } => {
   const entries: Record<string, $ZodType> = {};
   for (const [name, { zodType }] of Object.entries(schemas)) {
     entries[name] = zodType;
   }
-  const schemaRegistry = object(entries);
+  const zodRegistry = registry<GlobalMeta>();
+  zodRegistry.add(object(entries), {
+    id: 'zodOpenApiCreateSchema',
+  });
+  for (const [id, { zodType }] of ctx.registry.schemas.manual) {
+    zodRegistry.add(zodType, { id });
+  }
 
   const outputIds = new Map<string, string>();
-  const jsonSchema = toJSONSchema(schemaRegistry, {
+  const jsonSchema = toJSONSchema(zodRegistry, {
     override(context) {
       const meta = (context.zodSchema as ZodTypeWithMeta).meta();
       if (meta?.outputId && meta?.id) {
@@ -114,12 +127,18 @@ export const createSchemas = <
     unrepresentable: 'any',
     reused: ctx.opts.reused,
     cycles: ctx.opts.cycles,
+    uri: (id) =>
+      id === '__shared'
+        ? `#ZOD_OPENAPI/${id}`
+        : `#ZOD_OPENAPI/__shared#/$defs/${id}`,
   });
 
-  const components = jsonSchema.$defs ?? {};
+  const components = jsonSchema.schemas.__shared?.$defs ?? {};
+  jsonSchema.schemas.__shared ??= { $defs: components };
+
   const dynamicComponents = new Map<string, string>();
   for (const [key, value] of Object.entries(components)) {
-    if (/^__schema\d+$/.test(key)) {
+    if (/^schema\d+$/.test(key)) {
       const newName = `__schema${ctx.registry.schemas.dynamicSchemaCount++}`;
       dynamicComponents.set(key, `"#/components/schemas/${newName}"`);
       if (newName !== key) {
@@ -129,9 +148,10 @@ export const createSchemas = <
     }
   }
 
+  const manualUsed: Record<string, true> = {};
   const parsedJsonSchema = JSON.parse(
     JSON.stringify(jsonSchema).replace(
-      /"#\/\$defs\/([^"]+)"/g,
+      /"#ZOD_OPENAPI\/__shared#\/\$defs\/([^"]+)"/g,
       (_, match: string) => {
         const dynamic = dynamicComponents.get(match);
         if (dynamic) {
@@ -139,42 +159,52 @@ export const createSchemas = <
         }
         const manualComponent = ctx.registry.schemas.manual.get(match);
         if (manualComponent) {
-          manualComponent.io[ctx.io].used++;
+          manualUsed[match] = true;
         }
         return `"#/components/schemas/${match}"`;
       },
     ),
-  ) as core.JSONSchema.JSONSchema;
+  ) as typeof jsonSchema;
 
-  for (const [key, value] of ctx.registry.schemas.manual) {
-    if (
-      value.io[ctx.io].used === 1 &&
-      parsedJsonSchema.properties?.[value.identifier] &&
-      parsedJsonSchema.$defs?.[key]
-    ) {
-      parsedJsonSchema.properties[value.identifier] =
-        parsedJsonSchema.$defs[key];
-      delete parsedJsonSchema.$defs[key];
+  const parsedComponents = parsedJsonSchema.schemas.__shared?.$defs ?? {};
+  parsedJsonSchema.schemas.__shared ??= { $defs: parsedComponents };
+
+  for (const [key] of ctx.registry.schemas.manual) {
+    const manualComponent = parsedJsonSchema.schemas[key];
+    if (!manualComponent) {
       continue;
+    }
+    delete manualComponent.$schema;
+    delete manualComponent.id;
+
+    if (manualUsed[key]) {
+      delete manualComponent.$schema;
+      delete manualComponent.id;
+      if (parsedComponents[key]) {
+        throw new Error(
+          `Component "${key}" is already registered as a component in the registry`,
+        );
+      }
+      parsedComponents[key] = manualComponent;
     }
   }
 
-  const renamedComponents = renameComponents(
-    parsedJsonSchema.$defs ?? {},
-    outputIds,
-    ctx,
-  );
+  const componentsToRename = renameComponents(parsedComponents, outputIds, ctx);
 
-  if (!renamedComponents.size) {
+  if (!componentsToRename.size) {
+    const parsedSchemas =
+      parsedJsonSchema.schemas.zodOpenApiCreateSchema?.properties;
+
+    delete parsedJsonSchema.schemas.zodOpenApiCreateSchema;
+    delete parsedJsonSchema.schemas.__shared;
+
     return {
-      schemas: parsedJsonSchema.properties as Record<
+      schemas: parsedSchemas as Record<
         keyof T,
         oas31.SchemaObject | oas31.ReferenceObject
       >,
-      components: (parsedJsonSchema.$defs ?? {}) as Record<
-        string,
-        oas31.SchemaObject
-      >,
+      components: parsedComponents as Record<string, oas31.SchemaObject>,
+      manual: parsedJsonSchema.schemas as Record<string, oas31.SchemaObject>,
     };
   }
 
@@ -182,7 +212,7 @@ export const createSchemas = <
     JSON.stringify(parsedJsonSchema).replace(
       /"#\/components\/schemas\/([^"]+)"/g,
       (_, match: string) => {
-        const replacement = renamedComponents.get(match);
+        const replacement = componentsToRename.get(match);
         if (replacement) {
           return `"#/components/schemas/${replacement}"`;
         }
@@ -190,16 +220,20 @@ export const createSchemas = <
         return `"#/components/schemas/${match}"`;
       },
     ),
-  ) as core.JSONSchema.JSONSchema;
+  ) as typeof jsonSchema;
+
+  const renamedSchemas =
+    renamedJsonSchema.schemas.zodOpenApiCreateSchema?.properties;
+  const renamedComponents = renamedJsonSchema.schemas.__shared?.$defs ?? {};
+  delete renamedJsonSchema.schemas.zodOpenApiCreateSchema;
+  delete renamedJsonSchema.schemas.__shared;
 
   return {
-    schemas: renamedJsonSchema.properties as Record<
+    schemas: renamedSchemas as Record<
       keyof T,
       oas31.SchemaObject | oas31.ReferenceObject
     >,
-    components: (renamedJsonSchema.$defs ?? {}) as Record<
-      string,
-      oas31.SchemaObject
-    >,
+    components: renamedComponents as Record<string, oas31.SchemaObject>,
+    manual: renamedJsonSchema.schemas as Record<string, oas31.SchemaObject>,
   };
 };

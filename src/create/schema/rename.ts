@@ -23,6 +23,10 @@ export const renameComponents = (
 ) => {
   const componentsToRename = new Map<string, string>();
 
+  if (ctx.io === 'input') {
+    return componentsToRename;
+  }
+
   // Create a dependency map
   const componentDependencies = new Map<string, ComponentDependencies>();
   const stringifiedComponents = new Map<string, string>();

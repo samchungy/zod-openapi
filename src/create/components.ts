@@ -4,7 +4,6 @@ import type { oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType } from '../zod';
 
 import { createCallback } from './callbacks';
-import { registerSchemas } from './componentsSideEffects';
 import type {
   CreateDocumentOptions,
   ZodOpenApiCallbackObject,
@@ -44,16 +43,13 @@ export interface ComponentRegistry {
     manual: Map<
       string,
       {
-        identifier: string;
-        io: {
-          input: {
-            used: number;
-            schemaObject: oas31.SchemaObject;
-          };
-          output: {
-            used: number;
-            schemaObject: oas31.SchemaObject;
-          };
+        input: {
+          used?: true;
+          schemaObject: oas31.SchemaObject;
+        };
+        output: {
+          used?: true;
+          schemaObject: oas31.SchemaObject;
         };
         zodType: $ZodType;
       }
@@ -161,6 +157,40 @@ export const createRegistry = (
   registerCallbacks(components?.callbacks, registry);
 
   return registry;
+};
+
+const registerSchemas = (
+  schemas: ZodOpenApiComponentsObject['schemas'],
+  registry: ComponentRegistry,
+): void => {
+  if (!schemas) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(schemas)) {
+    if (registry.schemas.ids.has(key)) {
+      throw new Error(`Schema "${key}" is already registered`);
+    }
+
+    if (isAnyZodType(schema)) {
+      const id = globalRegistry.get(schema)?.id ?? key;
+      registry.schemas.manual.set(id, {
+        input: {
+          schemaObject: {},
+        },
+        output: {
+          schemaObject: {},
+        },
+        zodType: schema,
+      });
+      continue;
+    }
+
+    registry.schemas.ids.set(
+      key,
+      schema as oas31.SchemaObject | oas31.ReferenceObject,
+    );
+  }
 };
 
 const registerParameters = (
@@ -329,7 +359,7 @@ const createIOSchemas = (ctx: {
   io: 'input' | 'output';
   opts: CreateDocumentOptions;
 }) => {
-  const { schemas, components } = createSchemas(
+  const { schemas, components, manual } = createSchemas(
     Object.fromEntries(ctx.registry.schemas[ctx.io]),
     ctx,
   );
@@ -345,13 +375,26 @@ const createIOSchemas = (ctx: {
       Object.assign(ioSchema.schemaObject, schema);
     }
   }
+
+  for (const [key, value] of Object.entries(manual)) {
+    const manualSchema = ctx.registry.schemas.manual.get(key);
+    if (!manualSchema) {
+      continue;
+    }
+
+    if (components[key]) {
+      manualSchema[ctx.io].used = true;
+    }
+
+    Object.assign(manualSchema[ctx.io].schemaObject, value);
+  }
 };
 
 const createManualSchemas = (registry: ComponentRegistry) => {
   for (const [key, value] of registry.schemas.manual) {
-    if (value.io.input.used === 1) {
+    if (!value.input.used) {
       const io = globalRegistry.get(value.zodType)?.unusedIO ?? 'output';
-      const schema = value.io[io].schemaObject;
+      const schema = value[io].schemaObject;
       registry.schemas.ids.set(key, schema);
     }
   }

@@ -1,8 +1,42 @@
 import { type ZodLazy, type ZodType, z } from 'zod/v4';
 
+import { createRegistry } from '../../components';
 import { type SchemaResult, createSchema } from '../schema';
 
 describe('lazy', () => {
+  it('supports the new lazy syntax', () => {
+    const lazy = z.object({
+      id: z.string(),
+      get a() {
+        return lazy;
+      },
+    });
+
+    const registry = createRegistry();
+
+    const result = createSchema(lazy, { registry });
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/__schema0',
+      },
+      components: {
+        __schema0: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            a: {
+              $ref: '#/components/schemas/__schema0',
+            },
+          },
+          additionalProperties: false,
+          required: ['id', 'a'],
+        },
+      },
+    });
+  });
   it('creates a dynamic component', () => {
     type Lazy = Lazy[];
     const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());

@@ -20,10 +20,7 @@
     "url": "git+ssh://git@github.com/samchungy/zod-openapi.git"
   },
   "license": "MIT",
-  "sideEffects": [
-    "dist/create/componentsSideEffects.mjs",
-    "dist/create/componentsSideEffects.js"
-  ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
