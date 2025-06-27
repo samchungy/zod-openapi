@@ -3,7 +3,7 @@ import type { $ZodType, $ZodTypes } from 'zod/v4/core';
 
 import type { OpenApiVersion } from '../openapi';
 import type { oas31 } from '../openapi3-ts/dist';
-import type { Override } from '../zod';
+import type { Override } from '../types';
 
 import { createComponents, createRegistry } from './components';
 import { createPaths } from './paths';
