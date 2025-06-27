@@ -4,6 +4,7 @@ import type { oas31 } from '../openapi3-ts/dist';
 import { isAnyZodType } from '../zod';
 
 import { createCallback } from './callbacks';
+import { registerSchemas } from './componentsSideEffects';
 import type {
   CreateDocumentOptions,
   ZodOpenApiCallbackObject,
@@ -160,61 +161,6 @@ export const createRegistry = (
   registerCallbacks(components?.callbacks, registry);
 
   return registry;
-};
-
-const registerSchemas = (
-  schemas: ZodOpenApiComponentsObject['schemas'],
-  registry: ComponentRegistry,
-): void => {
-  if (!schemas) {
-    return;
-  }
-
-  for (const [key, schema] of Object.entries(schemas)) {
-    if (registry.schemas.ids.has(key)) {
-      throw new Error(`Schema "${key}" is already registered`);
-    }
-
-    if (isAnyZodType(schema)) {
-      const inputSchemaObject: oas31.SchemaObject = {};
-      const outputSchemaObject: oas31.SchemaObject = {};
-      const identifier = `components > schemas > ${key}`;
-      registry.schemas.input.set(identifier, {
-        zodType: schema,
-        schemaObject: inputSchemaObject,
-      });
-      registry.schemas.output.set(identifier, {
-        zodType: schema,
-        schemaObject: outputSchemaObject,
-      });
-      registry.schemas.manual.set(key, {
-        identifier,
-        io: {
-          input: {
-            schemaObject: inputSchemaObject,
-            used: 0,
-          },
-          output: {
-            schemaObject: outputSchemaObject,
-            used: 0,
-          },
-        },
-        zodType: schema,
-      });
-
-      const meta = globalRegistry.get(schema);
-      if (meta?.id) {
-        continue;
-      }
-
-      globalRegistry.add(schema, {
-        ...meta,
-        id: key,
-      });
-      continue;
-    }
-    registry.schemas.ids.set(key, schema as oas31.SchemaObject);
-  }
 };
 
 const registerParameters = (

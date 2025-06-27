@@ -8,7 +8,7 @@ A TypeScript library which uses <a href="https://github.com/colinhacks/zod">Zod<
 <div align="center">
 <a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/></a>
 <a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/dm/zod-openapi"/></a>
-<a href="https://nodejs.org/en/"><img src="https://img.shields.io/badge/node-%3E%3D%2018-brightgreen"/></a>
+<a href="https://nodejs.org/en/"><img src="https://img.shields.io/node/v/zod-openapi"/></a>
 <a href="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/test.yml/badge.svg"/></a>
 <a href="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml"><img src="https://github.com/samchungy/zod-openapi/actions/workflows/release.yml/badge.svg"/></a>
 <a href="https://github.com/seek-oss/skuba"><img src="https://img.shields.io/badge/🤿%20skuba-powered-009DC4"/></a>

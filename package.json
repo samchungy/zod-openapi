@@ -21,38 +21,21 @@
   },
   "license": "MIT",
   "sideEffects": [
-    "dist/extend.*",
-    "dist/side-effects/**",
-    "src/entries/extend.ts"
+    "dist/create/componentsSideEffects.mjs",
+    "dist/create/componentsSideEffects.js"
   ],
   "exports": {
     ".": {
-      "types": {
-        "import": "./dist/index.d.mts",
-        "require": "./dist/index.d.ts"
-      },
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.js"
     },
     "./api": {
-      "types": {
-        "import": "./dist/api.d.mts",
-        "require": "./dist/api.d.ts"
-      },
       "import": "./dist/api.mjs",
-      "require": "./dist/api.cjs"
-    },
-    "./extend": {
-      "types": {
-        "import": "./dist/extend.d.mts",
-        "require": "./dist/extend.d.ts"
-      },
-      "import": "./dist/extend.mjs",
-      "require": "./dist/extend.cjs"
+      "require": "./dist/api.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
@@ -61,7 +44,7 @@
     "extend"
   ],
   "scripts": {
-    "build": "pnpm copy:types && crackle package",
+    "build": "pnpm copy:types && tsdown",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
@@ -73,12 +56,12 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.1",
-    "@crackle/cli": "0.16.0",
     "@redocly/cli": "1.34.3",
     "@types/node": "22.15.21",
     "eslint-plugin-zod-openapi": "1.0.0",
     "openapi3-ts": "4.5.0",
     "skuba": "11.0.1",
+    "tsdown": "0.12.9",
     "yaml": "2.8.0",
     "zod": "3.25.67"
   },
@@ -87,7 +70,7 @@
   },
   "packageManager": "pnpm@10.11.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9.0"
   },
   "publishConfig": {
     "provenance": true,
