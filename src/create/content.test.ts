@@ -31,12 +31,7 @@ describe('createContent', () => {
       },
     });
 
-    expect(content['application/json']?.schema).toEqual(
-      registry.schemas.output.seen.get(zodSchema)?.schemaObject,
-    );
-    expect(
-      registry.schemas.output.schemas.get('test > application/json'),
-    ).toEqual({
+    expect(registry.schemas.output.get('test > application/json')).toEqual({
       schemaObject: {},
       zodType: zodSchema,
     });

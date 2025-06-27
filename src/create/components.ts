@@ -25,60 +25,32 @@ export interface ComponentRegistry {
    */
   schemas: {
     dynamicSchemaCount: number;
-    input: {
-      seen: WeakMap<
-        $ZodType,
-        | {
-            type: 'manual';
-            id: string;
-            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-          }
-        | {
-            type: 'schema';
-            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-          }
-      >;
-      schemas: Map<
-        string,
-        {
-          zodType: $ZodType;
-          schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-        }
-      >;
-    };
-    output: {
-      seen: WeakMap<
-        $ZodType,
-        | {
-            type: 'manual';
-            id: string;
-            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-          }
-        | {
-            type: 'schema';
-            schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-          }
-      >;
-      schemas: Map<
-        string,
-        {
-          zodType: $ZodType;
-          schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-        }
-      >;
-    };
+    input: Map<
+      string,
+      {
+        zodType: $ZodType;
+        schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+      }
+    >;
+    output: Map<
+      string,
+      {
+        zodType: $ZodType;
+        schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+      }
+    >;
     ids: Map<string, oas31.SchemaObject | oas31.ReferenceObject>;
     manual: Map<
       string,
       {
-        key: string;
+        identifier: string;
         io: {
           input: {
-            used?: true;
+            used: number;
             schemaObject: oas31.SchemaObject;
           };
           output: {
-            used?: true;
+            used: number;
             schemaObject: oas31.SchemaObject;
           };
         };
@@ -135,14 +107,8 @@ export const createRegistry = (
   const registry: ComponentRegistry = {
     schemas: {
       dynamicSchemaCount: 0,
-      input: {
-        seen: new WeakMap(),
-        schemas: new Map(),
-      },
-      output: {
-        seen: new WeakMap(),
-        schemas: new Map(),
-      },
+      input: new Map(),
+      output: new Map(),
       ids: new Map(),
       manual: new Map(),
       setSchema: (
@@ -150,31 +116,12 @@ export const createRegistry = (
         schema: $ZodType,
         io: 'input' | 'output',
       ): oas31.SchemaObject | oas31.ReferenceObject => {
-        const seenSchema = registry.schemas[io].seen.get(schema);
-
-        if (seenSchema) {
-          if (seenSchema.type === 'manual') {
-            const manualSchema = registry.schemas.manual.get(seenSchema.id);
-            if (!manualSchema) {
-              throw new Error(
-                `Manual schema "${key}" not found in registry for ${io} IO.`,
-              );
-            }
-
-            manualSchema.io[io].used = true;
-          }
-
-          return seenSchema.schemaObject;
-        }
-
         const schemaObject: oas31.SchemaObject = {};
 
-        registry.schemas[io].schemas.set(key, {
+        registry.schemas[io].set(key, {
           schemaObject,
           zodType: schema,
         });
-        registry.schemas[io].seen.set(schema, { type: 'schema', schemaObject });
-
         return schemaObject;
       },
     },
@@ -232,35 +179,37 @@ const registerSchemas = (
       const inputSchemaObject: oas31.SchemaObject = {};
       const outputSchemaObject: oas31.SchemaObject = {};
       const identifier = `components > schemas > ${key}`;
-      registry.schemas.input.schemas.set(identifier, {
+      registry.schemas.input.set(identifier, {
         zodType: schema,
         schemaObject: inputSchemaObject,
       });
-      registry.schemas.input.seen.set(schema, {
-        type: 'manual',
-        schemaObject: inputSchemaObject,
-        id: identifier,
-      });
-      registry.schemas.output.schemas.set(identifier, {
+      registry.schemas.output.set(identifier, {
         zodType: schema,
         schemaObject: outputSchemaObject,
       });
-      registry.schemas.output.seen.set(schema, {
-        type: 'manual',
-        schemaObject: outputSchemaObject,
-        id: identifier,
-      });
-      registry.schemas.manual.set(identifier, {
-        key,
+      registry.schemas.manual.set(key, {
+        identifier,
         io: {
           input: {
             schemaObject: inputSchemaObject,
+            used: 0,
           },
           output: {
             schemaObject: outputSchemaObject,
+            used: 0,
           },
         },
         zodType: schema,
+      });
+
+      const meta = globalRegistry.get(schema);
+      if (meta?.id) {
+        continue;
+      }
+
+      globalRegistry.add(schema, {
+        ...meta,
+        id: key,
       });
       continue;
     }
@@ -435,7 +384,7 @@ export const createIOSchemas = (ctx: {
   opts: CreateDocumentOptions;
 }) => {
   const { schemas, components } = createSchemas(
-    Object.fromEntries(ctx.registry.schemas[ctx.io].schemas),
+    Object.fromEntries(ctx.registry.schemas[ctx.io]),
     ctx,
   );
 
@@ -444,7 +393,7 @@ export const createIOSchemas = (ctx: {
   }
 
   for (const [key, schema] of Object.entries(schemas)) {
-    const ioSchema = ctx.registry.schemas[ctx.io].schemas.get(key);
+    const ioSchema = ctx.registry.schemas[ctx.io].get(key);
 
     if (ioSchema) {
       Object.assign(ioSchema.schemaObject, schema);
@@ -453,11 +402,11 @@ export const createIOSchemas = (ctx: {
 };
 
 const createManualSchemas = (registry: ComponentRegistry) => {
-  for (const [, value] of registry.schemas.manual) {
-    if (!value.io.input.used && !value.io.output.used) {
+  for (const [key, value] of registry.schemas.manual) {
+    if (value.io.input.used === 1) {
       const io = globalRegistry.get(value.zodType)?.unusedIO ?? 'output';
       const schema = value.io[io].schemaObject;
-      registry.schemas.ids.set(value.key, schema);
+      registry.schemas.ids.set(key, schema);
     }
   }
 };

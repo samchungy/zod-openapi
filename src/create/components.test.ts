@@ -157,12 +157,12 @@ describe('createComponents', () => {
   });
 
   it('should handle a manual schema component which is referenced in an nested schema', () => {
-    const manual = z.object({
+    const manual2 = z.object({
       id: z.string(),
     });
     const registry = createRegistry({
       schemas: {
-        manual,
+        manual2,
       },
     });
     const opts = {};
@@ -172,7 +172,7 @@ describe('createComponents', () => {
         content: {
           'application/json': {
             schema: z.object({
-              a: manual,
+              a: manual2,
             }),
           },
         },
@@ -193,7 +193,7 @@ describe('createComponents', () => {
             type: 'object',
             properties: {
               a: {
-                $ref: '#/components/schemas/manual',
+                $ref: '#/components/schemas/manual2',
               },
             },
             required: ['a'],
@@ -203,7 +203,7 @@ describe('createComponents', () => {
     });
 
     expect(components.schemas).toEqual({
-      manual: {
+      manual2: {
         type: 'object',
         properties: {
           id: {
@@ -216,12 +216,12 @@ describe('createComponents', () => {
   });
 
   it('should handle a manual schema component which is referenced in both a request and response', () => {
-    const manual = z.object({
+    const manual3 = z.object({
       id: z.string(),
     });
     const registry = createRegistry({
       schemas: {
-        manual,
+        manual3,
       },
     });
     const opts = {};
@@ -231,7 +231,7 @@ describe('createComponents', () => {
         content: {
           'application/json': {
             schema: z.object({
-              a: manual,
+              a: manual3,
             }),
           },
         },
@@ -248,7 +248,7 @@ describe('createComponents', () => {
         content: {
           'application/json': {
             schema: z.object({
-              b: manual,
+              b: manual3,
             }),
           },
         },
@@ -269,7 +269,7 @@ describe('createComponents', () => {
             type: 'object',
             properties: {
               a: {
-                $ref: '#/components/schemas/manual',
+                $ref: '#/components/schemas/manual3',
               },
             },
             required: ['a'],
@@ -285,7 +285,7 @@ describe('createComponents', () => {
             type: 'object',
             properties: {
               b: {
-                $ref: '#/components/schemas/manualOutput',
+                $ref: '#/components/schemas/manual3Output',
               },
             },
             required: ['b'],
@@ -296,7 +296,7 @@ describe('createComponents', () => {
     });
 
     expect(components.schemas).toEqual({
-      manual: {
+      manual3: {
         type: 'object',
         properties: {
           id: {
@@ -305,7 +305,7 @@ describe('createComponents', () => {
         },
         required: ['id'],
       },
-      manualOutput: {
+      manual3Output: {
         type: 'object',
         properties: {
           id: {
@@ -319,12 +319,12 @@ describe('createComponents', () => {
   });
 
   it('should handle a manual schema component which is not referenced in any request and response', () => {
-    const manual = z.object({
+    const manual4 = z.object({
       id: z.string(),
     });
     const registry = createRegistry({
       schemas: {
-        manual,
+        manual4,
       },
     });
     const opts = {};
@@ -332,7 +332,7 @@ describe('createComponents', () => {
     const components = createComponents(registry, opts);
 
     expect(components.schemas).toEqual({
-      manual: {
+      manual4: {
         type: 'object',
         properties: {
           id: {
@@ -346,14 +346,14 @@ describe('createComponents', () => {
   });
 
   it('should handle a manual schema component which is not referenced in any request and response but has an reusedIO set', () => {
-    const manual = z
+    const manual5 = z
       .object({
         id: z.string(),
       })
       .meta({ unusedIO: 'input' });
     const registry = createRegistry({
       schemas: {
-        manual,
+        manual5,
       },
     });
     const opts = {};
@@ -361,7 +361,7 @@ describe('createComponents', () => {
     const components = createComponents(registry, opts);
 
     expect(components.schemas).toEqual({
-      manual: {
+      manual5: {
         type: 'object',
         properties: {
           id: {
