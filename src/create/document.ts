@@ -161,19 +161,39 @@ type OverrideType = $ZodTypes['_zod']['def']['type'];
 
 export interface CreateDocumentOptions {
   /**
-   * Use to override the rendered schema
+   * Use this to allowlist empty schemas to be created for given types
+   * - `true` — Allow empty schemas for input and output
+   * - `{ input: true, output: true }` — Allow empty schemas for input and output
+   * - `{ input: true }` — Allow empty schemas for input only
+   * - `{ output: true }` — Allow empty schemas for output only
    */
-  override?: Override;
   allowEmptySchema?: Partial<
     Record<
       OverrideType,
       | true
-      | {
-          input?: true;
-          output?: true;
-        }
+      | Partial<{
+          input: true;
+          output: true;
+        }>
     >
   >;
+
+  /**
+   * Use to override the rendered schema
+   * - `{ type: 'string' }` — Override the schema type to be a string using an object
+   * - `(ctx) => { ctx.jsonSchema.type = 'string'; }` — Override the schema type to be a string using a function
+   */
+  override?: Override;
+  /**
+   * How to handle reused schemas.
+   * - `"ref"` — Reused schemas will be rendered as references
+   * - `"inline"` — Default. Reused schemas will be inlined into the document
+   */
+  reused?: 'ref' | 'inline';
+  /** How to handle cycles.
+   * - `"ref"` — Default. Cycles will be broken using $defs
+   * - `"throw"` — Cycles will throw an error if encountered */
+  cycles?: 'ref' | 'throw';
 }
 
 export const createDocument = (

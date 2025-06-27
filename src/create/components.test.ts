@@ -3,6 +3,7 @@ import { type ZodType, z } from 'zod/v4';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import { createComponents, createRegistry } from './components';
+import type { CreateDocumentOptions } from './document';
 import { createRequestBody } from './requestBody';
 import { createResponse } from './responses';
 
@@ -921,5 +922,118 @@ describe('createComponents', () => {
         additionalProperties: false,
       },
     });
+  });
+
+  it('should create reused schemas as dynamic components', () => {
+    const zodSchema = z.object({
+      id: z.string(),
+    });
+
+    const registry = createRegistry();
+
+    const opts: CreateDocumentOptions = {
+      reused: 'ref',
+      cycles: 'ref',
+    };
+
+    const requestBody = createRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      {
+        registry,
+        io: 'input',
+      },
+      ['test'],
+    );
+
+    const requestBody2 = createRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      {
+        registry,
+        io: 'input',
+      },
+      ['test2'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/__schema0',
+          },
+        },
+      },
+    });
+
+    expect(requestBody2).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/__schema0',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      __schema0: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    });
+  });
+
+  it('should throw when cycles is set to "throw" and a cycle is detected', () => {
+    const zodSchema = z.object({
+      id: z.string(),
+      get cycle() {
+        return zodSchema;
+      },
+    });
+
+    const registry = createRegistry();
+    const opts: CreateDocumentOptions = {
+      reused: 'ref',
+      cycles: 'throw',
+    };
+
+    createRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      {
+        registry,
+        io: 'input',
+      },
+      ['test'],
+    );
+
+    expect(() => {
+      createComponents(registry, opts);
+    }).toThrowErrorMatchingInlineSnapshot(`
+"Cycle detected: #/properties/test > content > application/json/properties/cycle/<root>
+
+Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs."
+`);
   });
 });

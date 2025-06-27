@@ -112,6 +112,8 @@ export const createSchemas = <
     },
     io: ctx.io,
     unrepresentable: 'any',
+    reused: ctx.opts.reused,
+    cycles: ctx.opts.cycles,
   });
 
   const components = jsonSchema.$defs ?? {};
