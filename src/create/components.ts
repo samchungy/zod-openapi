@@ -29,6 +29,7 @@ export interface ComponentRegistry {
         {
           zodType: $ZodType;
           schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          path: string[];
         }
       >;
       output: Map<
@@ -36,6 +37,7 @@ export interface ComponentRegistry {
         {
           zodType: $ZodType;
           schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          path: string[];
         }
       >;
       ids: Map<string, oas31.SchemaObject | oas31.ReferenceObject>;
@@ -194,6 +196,7 @@ export const createRegistry = (
       registry.components.schemas[io].set(path.join(' > '), {
         schemaObject,
         zodType: schema,
+        path,
       });
       return schemaObject;
     },
