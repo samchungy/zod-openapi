@@ -6,7 +6,7 @@
 
 #### Runtime Changes
 
-In v5, you no longer need to import `'zod-openapi/extend'` or call `extendZodOpenApi()`. The library has been completely redesigned to eliminate the need for monkey-patching Zod or making any runtime modifications. This makes zod-openapi completely side-effect free and allows you to use it directly in your projects without any preliminary setup steps.
+In v5, you no longer need to import `'zod-openapi/extend'` or call `extendZodWithOpenApi()`. The library has been completely redesigned to eliminate the need for monkey-patching Zod or making any runtime modifications. This makes zod-openapi completely side-effect free and allows you to use it directly in your projects without any preliminary setup steps.
 
 #### Schema Generation
 
