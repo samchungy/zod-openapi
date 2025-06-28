@@ -22,7 +22,7 @@ describe('rename', () => {
 
     const registry = createRegistry();
 
-    registry.schemas.ids.set('User', {
+    registry.components.schemas.ids.set('User', {
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -108,7 +108,7 @@ describe('rename', () => {
 
     const registry = createRegistry();
 
-    registry.schemas.ids.set('User', {
+    registry.components.schemas.ids.set('User', {
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -157,7 +157,7 @@ describe('rename', () => {
 
     const registry = createRegistry();
 
-    registry.schemas.ids.set('User', {
+    registry.components.schemas.ids.set('User', {
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -167,7 +167,7 @@ describe('rename', () => {
       additionalProperties: false,
     });
 
-    registry.schemas.ids.set('Name', {
+    registry.components.schemas.ids.set('Name', {
       type: 'string',
     });
 
@@ -216,7 +216,7 @@ describe('rename', () => {
 
     const registry = createRegistry();
 
-    registry.schemas.ids.set('User', {
+    registry.components.schemas.ids.set('User', {
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -226,7 +226,7 @@ describe('rename', () => {
       additionalProperties: false,
     });
 
-    registry.schemas.ids.set('Name', {
+    registry.components.schemas.ids.set('Name', {
       type: 'string',
     });
 
@@ -283,7 +283,7 @@ describe('rename', () => {
 
     const registry = createRegistry();
 
-    registry.schemas.ids.set('User', {
+    registry.components.schemas.ids.set('User', {
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -294,7 +294,7 @@ describe('rename', () => {
       additionalProperties: false,
     });
 
-    registry.schemas.ids.set('Name', {
+    registry.components.schemas.ids.set('Name', {
       type: 'string',
     });
 

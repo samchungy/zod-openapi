@@ -4,11 +4,7 @@ import type { oas31 } from '../openapi3-ts/dist';
 
 import { createRegistry } from './components';
 import type { ZodOpenApiParameters } from './document';
-import {
-  createManualParameters,
-  createParameter,
-  createParameters,
-} from './parameters';
+import { createManualParameters, createParameters } from './parameters';
 
 describe('createParameters', () => {
   it('should create a parameter object with a schema', () => {
@@ -29,14 +25,7 @@ describe('createParameters', () => {
 
     const registry = createRegistry();
 
-    const parameters = createParameters(
-      requestParams,
-      {
-        registry,
-        io: 'input',
-      },
-      ['test'],
-    );
+    const parameters = createParameters(requestParams, registry, ['test']);
 
     expect(parameters).toEqual<oas31.ParameterObject[]>([
       {
@@ -76,18 +65,12 @@ describe('createParameter', () => {
 
     const registry = createRegistry();
 
-    const parameter = createParameter(
-      zodSchema,
-      {
+    const parameter = registry.addParameter(zodSchema, ['test', 'parameter'], {
+      location: {
         in: 'query',
         name: 'search',
       },
-      {
-        registry,
-        io: 'input',
-      },
-      ['test', 'parameter'],
-    );
+    });
 
     expect(parameter).toEqual<oas31.ParameterObject>({
       in: 'query',
@@ -108,15 +91,7 @@ describe('createParameter', () => {
 
     const registry = createRegistry();
 
-    const parameter = createParameter(
-      zodSchema,
-      undefined,
-      {
-        registry,
-        io: 'input',
-      },
-      ['test', 'parameter'],
-    );
+    const parameter = registry.addParameter(zodSchema, ['test', 'parameter']);
 
     expect(parameter).toEqual<oas31.ParameterObject>({
       in: 'query',
@@ -146,10 +121,7 @@ describe('createManualParmaeters', () => {
 
     const parameters = createManualParameters(
       [zodSchema1, zodSchema2],
-      {
-        registry,
-        io: 'input',
-      },
+      registry,
       ['test'],
     );
 

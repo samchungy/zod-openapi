@@ -1,52 +1,8 @@
 import type { oas31 } from '../openapi3-ts/dist';
 
 import type { ComponentRegistry } from './components';
-import type {
-  ZodOpenApiCallbackObject,
-  ZodOpenApiPathItemObject,
-} from './document';
-import { createPathItem } from './paths';
+import type { ZodOpenApiCallbackObject } from './document';
 import { isISpecificationExtension } from './specificationExtension';
-
-export const createCallback = (
-  callbackObject: ZodOpenApiCallbackObject,
-  registry: ComponentRegistry,
-  path: string[],
-): ZodOpenApiCallbackObject | oas31.ReferenceObject => {
-  const seenCallback = registry.callbacks.seen.get(callbackObject);
-  if (seenCallback) {
-    return seenCallback;
-  }
-
-  const { id, ...rest } = callbackObject;
-
-  const callback: oas31.CallbackObject = {};
-  for (const [name, pathItem] of Object.entries(rest)) {
-    if (isISpecificationExtension(name)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      callback[name] = pathItem;
-      continue;
-    }
-
-    callback[name] = createPathItem(
-      pathItem as ZodOpenApiPathItemObject,
-      registry,
-      [...path, name],
-    );
-  }
-
-  if (id) {
-    const ref: oas31.ReferenceObject = {
-      $ref: `#/components/callbacks/${id}`,
-    };
-    registry.callbacks.ids.set(id, callback);
-    registry.callbacks.seen.set(callbackObject, ref);
-    return ref;
-  }
-
-  registry.callbacks.seen.set(callbackObject, callback);
-  return callback;
-};
 
 export const createCallbacks = (
   callbacks: oas31.CallbackObject | undefined,
@@ -65,9 +21,8 @@ export const createCallbacks = (
       continue;
     }
 
-    callbacksObject[name] = createCallback(
+    callbacksObject[name] = registry.addCallback(
       value as ZodOpenApiCallbackObject,
-      registry,
       [...path, name],
     );
   }

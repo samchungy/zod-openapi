@@ -3,9 +3,14 @@ import { type ZodType, z } from 'zod/v4';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import { createComponents, createRegistry } from './components';
-import type { CreateDocumentOptions } from './document';
-import { createRequestBody } from './requestBody';
-import { createResponse } from './responses';
+import type {
+  CreateDocumentOptions,
+  ZodOpenApiHeaderObject,
+  ZodOpenApiParameterObject,
+  ZodOpenApiPathItemObject,
+  ZodOpenApiRequestBodyObject,
+  ZodOpenApiResponseObject,
+} from './document';
 
 describe('createComponents', () => {
   it('should create a schema for dynamic input types', () => {
@@ -26,7 +31,7 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
@@ -34,24 +39,16 @@ describe('createComponents', () => {
           },
         },
       },
-      {
-        registry,
-        io: 'input',
-      },
       ['test'],
     );
 
-    const nestedRequestBody = createRequestBody(
+    const nestedRequestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: nestedSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test', 'nested'],
     );
@@ -117,17 +114,13 @@ describe('createComponents', () => {
     });
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: manual,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test'],
     );
@@ -168,7 +161,7 @@ describe('createComponents', () => {
     });
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
@@ -177,10 +170,6 @@ describe('createComponents', () => {
             }),
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test'],
     );
@@ -227,7 +216,7 @@ describe('createComponents', () => {
     });
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
@@ -237,15 +226,12 @@ describe('createComponents', () => {
           },
         },
       },
-      {
-        registry,
-        io: 'input',
-      },
       ['test'],
     );
 
-    const responseBody = createRequestBody(
+    const responseBody = registry.addResponse(
       {
+        description: 'foo',
         content: {
           'application/json': {
             schema: z.object({
@@ -253,10 +239,6 @@ describe('createComponents', () => {
             }),
           },
         },
-      },
-      {
-        registry,
-        io: 'output',
       },
       ['test'],
     );
@@ -280,6 +262,7 @@ describe('createComponents', () => {
     });
 
     expect(responseBody).toEqual<oas31.RequestBodyObject>({
+      description: 'foo',
       content: {
         'application/json': {
           schema: {
@@ -384,17 +367,13 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test'],
     );
@@ -434,32 +413,25 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test'],
     );
 
-    const responseBody = createRequestBody(
+    const responseBody = registry.addResponse(
       {
+        description: 'foo',
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'output',
       },
       ['test'],
     );
@@ -484,6 +456,7 @@ describe('createComponents', () => {
           },
         },
       },
+      description: 'foo',
     });
 
     expect(components.schemas).toEqual({
@@ -522,32 +495,25 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test'],
     );
 
-    const responseBody = createRequestBody(
+    const responseBody = registry.addResponse(
       {
+        description: 'foo',
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'output',
       },
       ['test'],
     );
@@ -564,7 +530,8 @@ describe('createComponents', () => {
       },
     });
 
-    expect(responseBody).toEqual<oas31.RequestBodyObject>({
+    expect(responseBody).toEqual<oas31.ResponseObject>({
+      description: 'foo',
       content: {
         'application/json': {
           schema: {
@@ -629,7 +596,7 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
@@ -637,14 +604,10 @@ describe('createComponents', () => {
           },
         },
       },
-      {
-        registry,
-        io: 'input',
-      },
       ['test'],
     );
 
-    const response = createResponse(
+    const response = registry.addResponse(
       {
         description: 'A complex lazy schema',
         content: {
@@ -652,10 +615,6 @@ describe('createComponents', () => {
             schema: zodLazyComplex,
           },
         },
-      },
-      {
-        registry,
-        io: 'output',
       },
       ['test'],
     );
@@ -767,7 +726,7 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
@@ -775,14 +734,10 @@ describe('createComponents', () => {
           },
         },
       },
-      {
-        registry,
-        io: 'input',
-      },
       ['test'],
     );
 
-    const response = createResponse(
+    const response = registry.addResponse(
       {
         description: 'A complex lazy schema',
         content: {
@@ -790,10 +745,6 @@ describe('createComponents', () => {
             schema: zodLazyComplex,
           },
         },
-      },
-      {
-        registry,
-        io: 'output',
       },
       ['test'],
     );
@@ -881,7 +832,7 @@ describe('createComponents', () => {
     const registry = createRegistry();
     const opts = {};
 
-    const responseBody = createResponse(
+    const responseBody = registry.addResponse(
       {
         description: 'A response with an auto registered schema',
         content: {
@@ -889,10 +840,6 @@ describe('createComponents', () => {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'output',
       },
       ['test'],
     );
@@ -936,32 +883,24 @@ describe('createComponents', () => {
       cycles: 'ref',
     };
 
-    const requestBody = createRequestBody(
+    const requestBody = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test'],
     );
 
-    const requestBody2 = createRequestBody(
+    const requestBody2 = registry.addRequestBody(
       {
         content: {
           'application/json': {
             schema: zodSchema,
           },
         },
-      },
-      {
-        registry,
-        io: 'input',
       },
       ['test2'],
     );
@@ -1013,7 +952,7 @@ describe('createComponents', () => {
       cycles: 'throw',
     };
 
-    createRequestBody(
+    registry.addRequestBody(
       {
         content: {
           'application/json': {
@@ -1021,19 +960,409 @@ describe('createComponents', () => {
           },
         },
       },
-      {
-        registry,
-        io: 'input',
-      },
       ['test'],
     );
 
     expect(() => {
       createComponents(registry, opts);
     }).toThrowErrorMatchingInlineSnapshot(`
-"Cycle detected: #/properties/test > content > application/json/properties/cycle/<root>
+"Cycle detected: #/properties/test > content > application/json > schema/properties/cycle/<root>
 
 Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs."
 `);
+  });
+});
+
+describe('addResponse', () => {
+  it('should register a response with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualResponse: ZodOpenApiResponseObject = {
+      description: 'A response with a manual ID',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+    };
+
+    const response = registry.addResponse(manualResponse, ['test'], {
+      manualId: 'manualResponse',
+    });
+
+    const response2 = registry.addResponse(manualResponse, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(response).toEqual({
+      $ref: '#/components/responses/manualResponse',
+    });
+
+    expect(response2).toEqual({
+      $ref: '#/components/responses/manualResponse',
+    });
+  });
+
+  it('should register a response with an id', () => {
+    const autoResponse: ZodOpenApiResponseObject = {
+      id: 'autoResponse',
+      description: 'A response with an auto ID',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+    };
+
+    const registry = createRegistry();
+
+    const response = registry.addResponse(autoResponse, ['test']);
+
+    const response2 = registry.addResponse(autoResponse, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(response).toEqual({
+      $ref: '#/components/responses/autoResponse',
+    });
+
+    expect(response2).toEqual({
+      $ref: '#/components/responses/autoResponse',
+    });
+  });
+});
+
+describe('addCallback', () => {
+  it('should register a callback with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualCallback: oas31.CallbackObject = {
+      '/path': {
+        post: {
+          summary: 'Example callback',
+          responses: {
+            '200': {
+              description: 'Success',
+              content: {
+                'application/json': {
+                  schema: z.object({
+                    message: z.string(),
+                  }),
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const callback = registry.addCallback(manualCallback, ['test'], {
+      manualId: 'manualCallback',
+    });
+
+    const callback2 = registry.addCallback(manualCallback, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(callback).toEqual({
+      $ref: '#/components/callbacks/manualCallback',
+    });
+
+    expect(callback2).toEqual({
+      $ref: '#/components/callbacks/manualCallback',
+    });
+  });
+
+  it('should register a callback with an id', () => {
+    const autoCallback: oas31.CallbackObject = {
+      id: 'autoCallback',
+      '/path': {
+        post: {
+          summary: 'Example callback',
+          responses: {
+            '200': {
+              description: 'Success',
+              content: {
+                'application/json': {
+                  schema: z.object({
+                    message: z.string(),
+                  }),
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const registry = createRegistry();
+
+    const callback = registry.addCallback(autoCallback, ['test']);
+
+    const callback2 = registry.addCallback(autoCallback, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(callback).toEqual({
+      $ref: '#/components/callbacks/autoCallback',
+    });
+
+    expect(callback2).toEqual({
+      $ref: '#/components/callbacks/autoCallback',
+    });
+  });
+});
+
+describe('addParameter', () => {
+  it('should register a parameter with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualParameter: ZodOpenApiParameterObject = z.string().meta({
+      param: {
+        name: 'test',
+        in: 'query',
+      },
+      description: 'A manual parameter',
+    });
+
+    const parameter = registry.addParameter(manualParameter, ['test'], {
+      manualId: 'manualParameter',
+    });
+
+    const parameter2 = registry.addParameter(manualParameter, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(parameter).toEqual({
+      $ref: '#/components/parameters/manualParameter',
+    });
+
+    expect(parameter2).toEqual({
+      $ref: '#/components/parameters/manualParameter',
+    });
+  });
+
+  it('should register a parameter with an id', () => {
+    const autoParameter: ZodOpenApiParameterObject = z.string().meta({
+      param: {
+        name: 'test',
+        in: 'query',
+        id: 'autoParameter',
+      },
+      description: 'An auto parameter',
+    });
+
+    const registry = createRegistry();
+
+    const parameter = registry.addParameter(autoParameter, ['test']);
+
+    const parameter2 = registry.addParameter(autoParameter, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(parameter).toEqual({
+      $ref: '#/components/parameters/autoParameter',
+    });
+
+    expect(parameter2).toEqual({
+      $ref: '#/components/parameters/autoParameter',
+    });
+  });
+});
+
+describe('addRequestBody', () => {
+  it('should register a request body with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualRequestBody: ZodOpenApiRequestBodyObject = {
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+      description: 'A manual request body',
+    };
+
+    const requestBody = registry.addRequestBody(manualRequestBody, ['test'], {
+      manualId: 'manualRequestBody',
+    });
+
+    const requestBody2 = registry.addRequestBody(manualRequestBody, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(requestBody).toEqual({
+      $ref: '#/components/requestBodies/manualRequestBody',
+    });
+
+    expect(requestBody2).toEqual({
+      $ref: '#/components/requestBodies/manualRequestBody',
+    });
+  });
+
+  it('should register a request body with an id', () => {
+    const autoRequestBody: ZodOpenApiRequestBodyObject = {
+      id: 'autoRequestBody',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+      description: 'An auto request body',
+    };
+
+    const registry = createRegistry();
+
+    const requestBody = registry.addRequestBody(autoRequestBody, ['test']);
+
+    const requestBody2 = registry.addRequestBody(autoRequestBody, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(requestBody).toEqual({
+      $ref: '#/components/requestBodies/autoRequestBody',
+    });
+
+    expect(requestBody2).toEqual({
+      $ref: '#/components/requestBodies/autoRequestBody',
+    });
+  });
+});
+
+describe('addPathItem', () => {
+  it('should register a path item with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualPathItem: ZodOpenApiPathItemObject = {
+      get: {
+        summary: 'A manual path item',
+        responses: {
+          '200': {
+            description: 'Success',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  message: z.string(),
+                }),
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const pathItem = registry.addPathItem(manualPathItem, ['test'], {
+      manualId: 'manualPathItem',
+    });
+
+    const pathItem2 = registry.addPathItem(manualPathItem, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(pathItem).toEqual({
+      $ref: '#/components/pathItems/manualPathItem',
+    });
+
+    expect(pathItem2).toEqual({
+      $ref: '#/components/pathItems/manualPathItem',
+    });
+  });
+
+  it('should register a path item with an id', () => {
+    const autoPathItem: ZodOpenApiPathItemObject = {
+      id: 'autoPathItem',
+      get: {
+        summary: 'An auto path item',
+        responses: {
+          '200': {
+            description: 'Success',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  message: z.string(),
+                }),
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const registry = createRegistry();
+
+    const pathItem = registry.addPathItem(autoPathItem, ['test']);
+
+    const pathItem2 = registry.addPathItem(autoPathItem, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(pathItem).toEqual({
+      $ref: '#/components/pathItems/autoPathItem',
+    });
+
+    expect(pathItem2).toEqual({
+      $ref: '#/components/pathItems/autoPathItem',
+    });
+  });
+});
+
+describe('addHeader', () => {
+  it('should register a header with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualHeader: ZodOpenApiHeaderObject = z.string().meta({
+      header: {
+        description: 'A manual header',
+      },
+    });
+
+    const header = registry.addHeader(manualHeader, ['test'], {
+      manualId: 'manualHeader',
+    });
+
+    const header2 = registry.addHeader(manualHeader, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(header).toEqual({
+      $ref: '#/components/headers/manualHeader',
+    });
+
+    expect(header2).toEqual({
+      $ref: '#/components/headers/manualHeader',
+    });
+  });
+
+  it('should register a header with an id', () => {
+    const autoHeader: ZodOpenApiHeaderObject = z.string().meta({
+      header: {
+        description: 'An auto header',
+        id: 'autoHeader',
+      },
+    });
+
+    const registry = createRegistry();
+
+    const header = registry.addHeader(autoHeader, ['test']);
+
+    const header2 = registry.addHeader(autoHeader, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(header).toEqual({
+      $ref: '#/components/headers/autoHeader',
+    });
+
+    expect(header2).toEqual({
+      $ref: '#/components/headers/autoHeader',
+    });
   });
 });

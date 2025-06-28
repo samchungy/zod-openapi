@@ -110,11 +110,6 @@ export type ZodOpenApiSchemaObject =
   | oas31.SchemaObject
   | oas31.ReferenceObject;
 
-export type ZodOpenApiRequestBody =
-  | $ZodType
-  | oas31.RequestBodyObject
-  | oas31.ReferenceObject;
-
 export interface ZodOpenApiComponentsObject
   extends Omit<
     oas31.ComponentsObject,

@@ -15,12 +15,11 @@ export const createMediaTypeObject = (
   },
   path: string[],
 ): oas31.MediaTypeObject => {
-  const computedPath = path.join(' > ');
   if (isAnyZodType(mediaTypeObject.schema)) {
-    const schemaObject = ctx.registry.schemas.setSchema(
-      computedPath,
+    const schemaObject = ctx.registry.addSchema(
       mediaTypeObject.schema,
-      ctx.io,
+      [...path, 'schema'],
+      { io: ctx.io },
     );
     return {
       ...mediaTypeObject,

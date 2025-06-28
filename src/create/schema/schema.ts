@@ -46,7 +46,9 @@ export const createSchema = (
   ctx.opts ??= {};
   ctx.io ??= 'output';
 
-  const registrySchemas = Object.fromEntries(ctx.registry.schemas[ctx.io]);
+  const registrySchemas = Object.fromEntries(
+    ctx.registry.components.schemas[ctx.io],
+  );
   const schemas = {
     zodOpenApiCreateSchema: { zodType: schema },
   };
@@ -86,7 +88,7 @@ export const createSchemas = <
   zodRegistry.add(object(entries), {
     id: 'zodOpenApiCreateSchema',
   });
-  for (const [id, { zodType }] of ctx.registry.schemas.manual) {
+  for (const [id, { zodType }] of ctx.registry.components.schemas.manual) {
     zodRegistry.add(zodType, { id });
   }
 
@@ -139,7 +141,7 @@ export const createSchemas = <
   const dynamicComponents = new Map<string, string>();
   for (const [key, value] of Object.entries(components)) {
     if (/^schema\d+$/.test(key)) {
-      const newName = `__schema${ctx.registry.schemas.dynamicSchemaCount++}`;
+      const newName = `__schema${ctx.registry.components.schemas.dynamicSchemaCount++}`;
       dynamicComponents.set(key, `"#/components/schemas/${newName}"`);
       if (newName !== key) {
         components[newName] = value;
@@ -157,7 +159,8 @@ export const createSchemas = <
         if (dynamic) {
           return dynamic;
         }
-        const manualComponent = ctx.registry.schemas.manual.get(match);
+        const manualComponent =
+          ctx.registry.components.schemas.manual.get(match);
         if (manualComponent) {
           manualUsed[match] = true;
         }
@@ -169,7 +172,7 @@ export const createSchemas = <
   const parsedComponents = parsedJsonSchema.schemas.__shared?.$defs ?? {};
   parsedJsonSchema.schemas.__shared ??= { $defs: parsedComponents };
 
-  for (const [key] of ctx.registry.schemas.manual) {
+  for (const [key] of ctx.registry.components.schemas.manual) {
     const manualComponent = parsedJsonSchema.schemas[key];
     if (!manualComponent) {
       continue;

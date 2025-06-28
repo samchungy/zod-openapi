@@ -48,7 +48,7 @@ export const renameComponents = (
   }
 
   for (const [key] of stringifiedComponents) {
-    const registeredComponent = ctx.registry.schemas.ids.get(key);
+    const registeredComponent = ctx.registry.components.schemas.ids.get(key);
     if (!registeredComponent) {
       continue;
     }
@@ -90,7 +90,7 @@ const isDependencyPure = (
   }
 
   const stringified = stringifiedComponents.get(key);
-  const component = registry.schemas.ids.get(key);
+  const component = registry.components.schemas.ids.get(key);
 
   if (component && stringified !== JSON.stringify(component)) {
     dependencies.pure = false;

@@ -1,60 +1,15 @@
 import type { oas31 } from '../openapi3-ts/dist';
 
 import type { ComponentRegistry } from './components';
-import { createContent } from './content';
 import type {
   ZodOpenApiResponseObject,
   ZodOpenApiResponsesObject,
 } from './document';
-import { createHeaders } from './headers';
 import { isISpecificationExtension } from './specificationExtension';
-
-export const createResponse = (
-  response: ZodOpenApiResponseObject,
-  ctx: {
-    registry: ComponentRegistry;
-    io: 'input' | 'output';
-  },
-  path: string[],
-): oas31.ResponseObject | oas31.ReferenceObject => {
-  const seenResponse = ctx.registry.responses.seen.get(response);
-  if (seenResponse) {
-    return seenResponse;
-  }
-
-  const { content, headers, id, ...rest } = response;
-
-  const responseObject: oas31.ResponseObject = rest;
-
-  const maybeHeaders = createHeaders(headers, ctx, [...path, 'headers']);
-  if (maybeHeaders) {
-    responseObject.headers = maybeHeaders;
-  }
-
-  if (content) {
-    responseObject.content = createContent(content, ctx, [...path, 'content']);
-  }
-
-  if (id) {
-    const ref: oas31.ReferenceObject = {
-      $ref: `#/components/responses/${id}`,
-    };
-    ctx.registry.responses.ids.set(id, responseObject);
-    ctx.registry.responses.seen.set(response, ref);
-    return ref;
-  }
-
-  ctx.registry.responses.seen.set(response, responseObject);
-
-  return responseObject;
-};
 
 export const createResponses = (
   responses: ZodOpenApiResponsesObject | undefined,
-  ctx: {
-    registry: ComponentRegistry;
-    io: 'input' | 'output';
-  },
+  registry: ComponentRegistry,
   path: string[],
 ) => {
   if (!responses) {
@@ -80,9 +35,8 @@ export const createResponses = (
       continue;
     }
 
-    const responseObject = createResponse(
-      response as oas31.ResponseObject,
-      ctx,
+    const responseObject = registry.addResponse(
+      response as ZodOpenApiResponseObject,
       [...path, statusCode],
     );
 

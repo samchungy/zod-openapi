@@ -27,14 +27,7 @@ describe('createResponses', () => {
 
     const registry = createRegistry();
 
-    const result = createResponses(
-      responses,
-      {
-        registry,
-        io: 'output',
-      },
-      ['test'],
-    );
+    const result = createResponses(responses, registry, ['test']);
 
     expect(result).toEqual<oas31.ResponsesObject>({
       'x-test': 'foo',

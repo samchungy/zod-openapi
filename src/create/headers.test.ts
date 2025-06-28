@@ -3,7 +3,7 @@ import z from 'zod/v4';
 import type { oas31 } from '../openapi3-ts/dist';
 
 import { createRegistry } from './components';
-import { createHeader, createHeaders } from './headers';
+import { createHeaders } from './headers';
 
 describe('createHeaders', () => {
   it('should create a header object with a schema', () => {
@@ -15,10 +15,7 @@ describe('createHeaders', () => {
       z.object({
         'X-Custom-Header': zodSchema,
       }),
-      {
-        registry,
-        io: 'output',
-      },
+      registry,
       ['test'],
     );
 
@@ -37,14 +34,7 @@ describe('createHeader', () => {
 
     const registry = createRegistry();
 
-    const header = createHeader(
-      zodSchema,
-      {
-        registry,
-        io: 'output',
-      },
-      ['test', 'header'],
-    );
+    const header = registry.addHeader(zodSchema, ['test', 'header']);
 
     expect(header).toEqual<oas31.HeaderObject>({
       required: true,
@@ -52,7 +42,7 @@ describe('createHeader', () => {
       schema: {},
     });
 
-    expect(registry.headers.seen.get(zodSchema)).toEqual(header);
+    expect(registry.components.headers.seen.get(zodSchema)).toEqual(header);
   });
 
   it('should create a header object with meta', () => {
@@ -60,14 +50,7 @@ describe('createHeader', () => {
 
     const registry = createRegistry();
 
-    const header = createHeader(
-      zodSchema,
-      {
-        registry,
-        io: 'output',
-      },
-      ['test', 'header'],
-    );
+    const header = registry.addHeader(zodSchema, ['test', 'header']);
 
     expect(header).toEqual<oas31.HeaderObject>({
       required: true,
@@ -75,6 +58,6 @@ describe('createHeader', () => {
       schema: {},
     });
 
-    expect(registry.headers.seen.get(zodSchema)).toEqual(header);
+    expect(registry.components.headers.seen.get(zodSchema)).toEqual(header);
   });
 });
