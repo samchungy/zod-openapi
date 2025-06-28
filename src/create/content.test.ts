@@ -38,6 +38,7 @@ describe('createContent', () => {
     ).toEqual({
       schemaObject: {},
       zodType: zodSchema,
+      path: ['test', 'application/json', 'schema'],
     });
   });
 });
