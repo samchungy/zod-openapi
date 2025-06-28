@@ -20,6 +20,7 @@ export const renameComponents = (
     io: string;
     opts: CreateDocumentOptions;
   },
+  refPath: string,
 ) => {
   const componentsToRename = new Map<string, string>();
 
@@ -33,7 +34,8 @@ export const renameComponents = (
 
   for (const [key, value] of Object.entries(components)) {
     const stringified = JSON.stringify(value);
-    const matches = stringified.matchAll(/"#\/components\/schemas\/([^"]+)"/g);
+    const regex = new RegExp(`"${refPath}([^"]+)"`, 'g');
+    const matches = stringified.matchAll(regex);
     const dependencies = new Set<string>();
     for (const match of matches) {
       const dep = match[1] as string;

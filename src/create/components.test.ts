@@ -971,6 +971,53 @@ describe('createComponents', () => {
 Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs."
 `);
   });
+
+  it('supports an alternate schemaRefPath', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ id: 'alternateSchemaRefPath' });
+
+    const registry = createRegistry();
+
+    const opts: CreateDocumentOptions = {
+      schemaRefPath: '#/definitions/',
+    };
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/definitions/alternateSchemaRefPath',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      alternateSchemaRefPath: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    });
+  });
 });
 
 describe('addResponse', () => {

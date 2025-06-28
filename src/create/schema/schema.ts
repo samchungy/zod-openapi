@@ -80,6 +80,7 @@ export const createSchemas = <
   components: Record<string, oas31.SchemaObject>;
   manual: Record<string, oas31.SchemaObject>;
 } => {
+  const refPath = ctx.opts.schemaRefPath ?? '#/components/schemas/';
   const entries: Record<string, $ZodType> = {};
   for (const [name, { zodType }] of Object.entries(schemas)) {
     entries[name] = zodType;
@@ -142,7 +143,7 @@ export const createSchemas = <
   for (const [key, value] of Object.entries(components)) {
     if (/^schema\d+$/.test(key)) {
       const newName = `__schema${ctx.registry.components.schemas.dynamicSchemaCount++}`;
-      dynamicComponents.set(key, `"#/components/schemas/${newName}"`);
+      dynamicComponents.set(key, `"${refPath}${newName}"`);
       if (newName !== key) {
         components[newName] = value;
         delete components[key];
@@ -164,7 +165,7 @@ export const createSchemas = <
         if (manualComponent) {
           manualUsed[match] = true;
         }
-        return `"#/components/schemas/${match}"`;
+        return `"${refPath}${match}"`;
       },
     ),
   ) as typeof jsonSchema;
@@ -192,7 +193,12 @@ export const createSchemas = <
     }
   }
 
-  const componentsToRename = renameComponents(parsedComponents, outputIds, ctx);
+  const componentsToRename = renameComponents(
+    parsedComponents,
+    outputIds,
+    ctx,
+    refPath,
+  );
 
   if (!componentsToRename.size) {
     const parsedSchemas =
@@ -213,14 +219,14 @@ export const createSchemas = <
 
   const renamedJsonSchema = JSON.parse(
     JSON.stringify(parsedJsonSchema).replace(
-      /"#\/components\/schemas\/([^"]+)"/g,
+      new RegExp(`"${refPath}([^"]+)"`, 'g'),
       (_, match: string) => {
         const replacement = componentsToRename.get(match);
         if (replacement) {
-          return `"#/components/schemas/${replacement}"`;
+          return `"${refPath}${replacement}"`;
         }
 
-        return `"#/components/schemas/${match}"`;
+        return `"${refPath}${match}"`;
       },
     ),
   ) as typeof jsonSchema;

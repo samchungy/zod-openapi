@@ -32,11 +32,16 @@ describe('rename', () => {
       additionalProperties: false,
     });
 
-    const result = renameComponents(components, outputIds, {
-      registry,
-      io: 'output',
-      opts: {},
-    });
+    const result = renameComponents(
+      components,
+      outputIds,
+      {
+        registry,
+        io: 'output',
+        opts: {},
+      },
+      '#/components/schemas/',
+    );
 
     expect([...result.entries()]).toEqual([]);
 
@@ -70,11 +75,16 @@ describe('rename', () => {
 
     const registry = createRegistry();
 
-    const result = renameComponents(components, outputIds, {
-      registry,
-      io: 'output',
-      opts: {},
-    });
+    const result = renameComponents(
+      components,
+      outputIds,
+      {
+        registry,
+        io: 'output',
+        opts: {},
+      },
+      '#/components/schemas/',
+    );
 
     expect([...result.entries()]).toEqual([]);
 
@@ -116,11 +126,16 @@ describe('rename', () => {
       },
     });
 
-    const result = renameComponents(components, outputIds, {
-      registry,
-      io: 'output',
-      opts: {},
-    });
+    const result = renameComponents(
+      components,
+      outputIds,
+      {
+        registry,
+        io: 'output',
+        opts: {},
+      },
+      '#/components/schemas/',
+    );
 
     expect([...result.entries()]).toEqual([['User', 'UserOutput']]);
 
@@ -171,11 +186,16 @@ describe('rename', () => {
       type: 'string',
     });
 
-    const result = renameComponents(components, outputIds, {
-      registry,
-      io: 'output',
-      opts: {},
-    });
+    const result = renameComponents(
+      components,
+      outputIds,
+      {
+        registry,
+        io: 'output',
+        opts: {},
+      },
+      '#/components/schemas/',
+    );
 
     expect([...result.entries()]).toEqual([]);
 
@@ -230,11 +250,16 @@ describe('rename', () => {
       type: 'string',
     });
 
-    const result = renameComponents(components, outputIds, {
-      registry,
-      io: 'output',
-      opts: {},
-    });
+    const result = renameComponents(
+      components,
+      outputIds,
+      {
+        registry,
+        io: 'output',
+        opts: {},
+      },
+      '#/components/schemas/',
+    );
 
     expect([...result.entries()]).toEqual([
       ['User', 'UserOutput'],
@@ -298,11 +323,16 @@ describe('rename', () => {
       type: 'string',
     });
 
-    const result = renameComponents(components, outputIds, {
-      registry,
-      io: 'output',
-      opts: {},
-    });
+    const result = renameComponents(
+      components,
+      outputIds,
+      {
+        registry,
+        io: 'output',
+        opts: {},
+      },
+      '#/components/schemas/',
+    );
 
     expect([...result.entries()]).toEqual([
       ['User', 'UserOutput'],
