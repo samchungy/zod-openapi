@@ -1018,6 +1018,74 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
       },
     });
   });
+
+  it('allows shared schema between request and response', () => {
+    const zodSchema = z
+      .looseObject({
+        id: z.string(),
+      })
+      .meta({ id: 'sharedSchema' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const responseBody = registry.addResponse(
+      {
+        description: 'A response with a shared schema',
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/sharedSchema',
+          },
+        },
+      },
+    });
+
+    expect(responseBody).toEqual<oas31.ResponseObject>({
+      description: 'A response with a shared schema',
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/sharedSchema',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      sharedSchema: {
+        type: 'object',
+        additionalProperties: {},
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    });
+  });
 });
 
 describe('addResponse', () => {
