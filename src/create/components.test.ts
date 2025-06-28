@@ -1182,7 +1182,7 @@ describe('addParameter', () => {
 
     const parameter2 = registry.addParameter(manualParameter, ['test2']);
 
-    createComponents(registry, {});
+    const components = createComponents(registry, {});
 
     expect(parameter).toEqual({
       $ref: '#/components/parameters/manualParameter',
@@ -1190,6 +1190,41 @@ describe('addParameter', () => {
 
     expect(parameter2).toEqual({
       $ref: '#/components/parameters/manualParameter',
+    });
+
+    expect(
+      Object.fromEntries(registry.components.schemas.input.entries()),
+    ).toEqual({
+      'test > query > test > schema': {
+        schemaObject: {
+          type: 'string',
+          description: 'A manual parameter',
+        },
+        zodType: manualParameter,
+        source: {
+          path: ['test', 'query', 'test', 'schema'],
+          type: 'parameter',
+          location: {
+            in: 'query',
+            name: 'test',
+          },
+        },
+      },
+    });
+
+    expect(components).toEqual({
+      parameters: {
+        manualParameter: {
+          name: 'test',
+          in: 'query',
+          description: 'A manual parameter',
+          required: true,
+          schema: {
+            description: 'A manual parameter',
+            type: 'string',
+          },
+        },
+      },
     });
   });
 

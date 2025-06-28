@@ -19,7 +19,7 @@ export const createMediaTypeObject = (
     const schemaObject = ctx.registry.addSchema(
       mediaTypeObject.schema,
       [...path, 'schema'],
-      { io: ctx.io },
+      { io: ctx.io, source: { type: 'mediaType' } },
     );
     return {
       ...mediaTypeObject,

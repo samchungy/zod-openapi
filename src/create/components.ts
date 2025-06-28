@@ -20,6 +20,12 @@ import { createOperation } from './paths';
 import { createSchemas } from './schema/schema';
 import { isISpecificationExtension } from './specificationExtension';
 
+type SchemaSource =
+  | {
+      type: 'mediaType' | 'header';
+    }
+  | { type: 'parameter'; location: { in: string; name: string } };
+
 export interface ComponentRegistry {
   components: {
     schemas: {
@@ -29,7 +35,7 @@ export interface ComponentRegistry {
         {
           zodType: $ZodType;
           schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-          path: string[];
+          source: SchemaSource & { path: string[] };
         }
       >;
       output: Map<
@@ -37,7 +43,7 @@ export interface ComponentRegistry {
         {
           zodType: $ZodType;
           schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
-          path: string[];
+          source: SchemaSource & { path: string[] };
         }
       >;
       ids: Map<string, oas31.SchemaObject | oas31.ReferenceObject>;
@@ -96,8 +102,9 @@ export interface ComponentRegistry {
   addSchema: (
     schema: $ZodType,
     path: string[],
-    opts?: {
+    opts: {
       io: 'input' | 'output';
+      source: SchemaSource;
     },
   ) => oas31.SchemaObject | oas31.ReferenceObject;
 
@@ -189,14 +196,15 @@ export const createRegistry = (
       path,
       opts,
     ): oas31.SchemaObject | oas31.ReferenceObject => {
-      const io = opts?.io ?? 'output';
-
       const schemaObject: oas31.SchemaObject = {};
 
-      registry.components.schemas[io].set(path.join(' > '), {
+      registry.components.schemas[opts.io].set(path.join(' > '), {
         schemaObject,
         zodType: schema,
-        path,
+        source: {
+          path,
+          ...opts?.source,
+        },
       });
       return schemaObject;
     },
@@ -221,9 +229,14 @@ export const createRegistry = (
         );
       }
 
-      const schemaObject = registry.addSchema(parameter, [...path, 'schema'], {
-        io: 'input',
-      });
+      const schemaObject = registry.addSchema(
+        parameter,
+        [...path, inLocation, name, 'schema'],
+        {
+          io: 'input',
+          source: { type: 'parameter', location: { in: inLocation, name } },
+        },
+      );
 
       const { id: metaId, ...rest } = meta?.param ?? {};
 
@@ -246,7 +259,9 @@ export const createRegistry = (
 
       if (id) {
         if (registry.components.parameters.ids.has(id)) {
-          throw new Error(`Schema "${id}" is already registered`);
+          throw new Error(
+            `Schema "${id}" at ${path.join(' > ')} is already registered`,
+          );
         }
         const ref: oas31.ReferenceObject = {
           $ref: `#/components/parameters/${id}`,
@@ -286,6 +301,7 @@ export const createRegistry = (
 
       headerObject.schema = registry.addSchema(header, [...path, 'schema'], {
         io: 'output',
+        source: { type: 'header' },
       });
 
       if (id) {
