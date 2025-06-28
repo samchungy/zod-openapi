@@ -306,7 +306,9 @@ export const createRegistry = (
 
       if (id) {
         if (registry.components.schemas.ids.has(id)) {
-          throw new Error(`Schema "${id}" is already registered`);
+          throw new Error(
+            `Schema "${id}" at ${path.join(' > ')} is already registered`,
+          );
         }
         const ref: oas31.ReferenceObject = {
           $ref: `#/components/headers/${id}`,
@@ -345,7 +347,9 @@ export const createRegistry = (
 
       if (id) {
         if (registry.components.requestBodies.ids.has(id)) {
-          throw new Error(`RequestBody "${id}" is already registered`);
+          throw new Error(
+            `RequestBody "${id}" at ${path.join(' > ')} is already registered`,
+          );
         }
         const ref: oas31.ReferenceObject = {
           $ref: `#/components/requestBodies/${id}`,
@@ -416,7 +420,9 @@ export const createRegistry = (
 
       if (id) {
         if (registry.components.pathItems.ids.has(id)) {
-          throw new Error(`PathItem "${id}" is already registered`);
+          throw new Error(
+            `PathItem "${id}" at ${path.join(' > ')} is already registered`,
+          );
         }
         const ref: oas31.ReferenceObject = {
           $ref: `#/components/pathItems/${id}`,
@@ -464,7 +470,9 @@ export const createRegistry = (
 
       if (id) {
         if (registry.components.responses.ids.has(id)) {
-          throw new Error(`Response "${id}" is already registered`);
+          throw new Error(
+            `Response "${id}" at ${path.join(' > ')} is already registered`,
+          );
         }
 
         const ref: oas31.ReferenceObject = {
@@ -509,7 +517,9 @@ export const createRegistry = (
 
       if (id) {
         if (registry.components.callbacks.ids.has(id)) {
-          throw new Error(`Callback "${id}" is already registered`);
+          throw new Error(
+            `Callback "${id}" at ${path.join(' > ')} is already registered`,
+          );
         }
         const ref: oas31.ReferenceObject = {
           $ref: `#/components/callbacks/${id}`,
@@ -691,9 +701,6 @@ const createIOSchemas = (ctx: {
   );
 
   for (const [key, schema] of Object.entries(components)) {
-    if (ctx.registry.components.schemas.ids.has(key)) {
-      throw new Error(`Schema "${key}" is already registered`);
-    }
     ctx.registry.components.schemas.ids.set(key, schema);
   }
 
