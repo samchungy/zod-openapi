@@ -150,10 +150,10 @@ type OverrideType = $ZodTypes['_zod']['def']['type'];
 export interface CreateDocumentOptions {
   /**
    * Use this to allowlist empty schemas to be created for given types
-   * - `true` — Allow empty schemas for input and output
-   * - `{ input: true, output: true }` — Allow empty schemas for input and output
-   * - `{ input: true }` — Allow empty schemas for input only
-   * - `{ output: true }` — Allow empty schemas for output only
+   * - `{ [ZodType]: true}` — Allow empty schemas for input and output
+   * - `{ [ZodType]: { input: true, output: true } }` — Allow empty schemas for input and output
+   * - `{ [ZodType]: { input: true } }` — Allow empty schemas for input only
+   * - `{ [ZodType]: { output: true } }` — Allow empty schemas for output only
    */
   allowEmptySchema?: Partial<
     Record<

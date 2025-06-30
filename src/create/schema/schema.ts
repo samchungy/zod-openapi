@@ -7,7 +7,11 @@ import {
 } from 'zod/v4';
 import type { $ZodType } from 'zod/v4/core';
 
-import type { CreateDocumentOptions, oas31 } from '../..';
+import type {
+  CreateDocumentOptions,
+  ZodOpenApiComponentsObject,
+  oas31,
+} from '../..';
 import { type ComponentRegistry, createRegistry } from '../components';
 
 import { override, validate } from './override';
@@ -28,7 +32,7 @@ export const createSchema = (
     registry?: ComponentRegistry;
     io?: 'input' | 'output';
     opts?: CreateDocumentOptions & {
-      schemaComponents?: Record<string, oas31.SchemaObject>;
+      schemaComponents?: ZodOpenApiComponentsObject['schemas'];
     };
   } = {
     registry: createRegistry(),

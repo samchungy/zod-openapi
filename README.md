@@ -3,7 +3,7 @@
   <h1 align="center">zod-openapi</h1>
 </p>
 <p align="center">
-A TypeScript library which uses <a href="https://github.com/colinhacks/zod">Zod</a> schemas to generate OpenAPI v3.x documentation.
+A TypeScript library which uses <a href="https://github.com/colinhacks/zod">Zod</a> schemas to generate OpenAPI v3.1x documentation.
 </p>
 <div align="center">
 <a href="https://www.npmjs.com/package/zod-openapi"><img src="https://img.shields.io/npm/v/zod-openapi"/></a>
@@ -31,33 +31,41 @@ pnpm install zod zod-openapi
 
 ### `.meta()`
 
-Use the `.meta()` method to add metadata to a Zod schema. It accepts an object with the following options:
+Use the `.meta()` method to add OpenAPI metadata to a Zod schema. It accepts an object with the following options:
 
 | Option     | Description                                                                                                      |
 | ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | `id`       | Registers a schema as a reusable OpenAPI component.                                                              |
 | `header`   | Adds metadata for [response headers](#response-headers).                                                         |
 | `param`    | Adds metadata for [request parameters](#parameters).                                                             |
-| `override` | Allows you to override the rendered OpenAPI schema. This takes either an object or a function                    |
+| `override` | Allows you to override the rendered OpenAPI schema. This takes either an object or a function.                   |
 | `outputId` | Allows you to set a different ID for the output schema. This is useful when the input and output schemas differ. |
-| `unusedIO` | Allows you to set the `io` for an unused schema added to the components section. Defaults to `output`            |
+| `unusedIO` | Allows you to set the `io` for an unused schema added to the components section. Defaults to `output`.           |
+
+You can also set standard OpenAPI properties directly in the `.meta()` method, such as:
+
+```typescript
+z.string().meta({
+  description: 'A text field',
+  example: 'Example value',
+});
+```
 
 ### `createDocument`
 
 Generates an OpenAPI documentation object.
 
 ```typescript
-import 'zod-openapi/extend';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { createDocument } from 'zod-openapi';
 
-const jobId = z.string().openapi({
+const jobId = z.string().meta({
   description: 'A unique identifier for a job',
   example: '12345',
   id: 'jobId',
 });
 
-const title = z.string().openapi({
+const title = z.string().meta({
   description: 'Job title',
   example: 'My job',
 });
@@ -170,37 +178,45 @@ const document = createDocument({
   ```
 </details>
 
-#### CreateDocumentOptions
-
-`createDocument` takes an optional `CreateDocumentOptions` argument which can be used to modify how the document is created.
+`createDocument` takes an optional options argument which can be used to modify how the document is created
 
 ```typescript
-const document = createDocument(details, {
-  override: ({ jsonSchema, zodSchema }) => {
-    if (jsonSchema.anyOf) {
-      ctx.jsonSchema.oneOf = ctx.jsonSchema.anyOf;
-      delete ctx.jsonSchema.anyOf;
+createDocument(doc, {
+  override: ({ jsonSchema, zodSchema, io }) => {
+    // Customize the schema generation
+    if (io === 'output') {
+      jsonSchema.type = 'string';
     }
   },
 });
 ```
+
+#### CreateDocumentOptions
+
+| Option             | Type                | Default                   | Description                                                                                                       |
+| ------------------ | ------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `override`         | `Function`          | `undefined`               | Override rendered schema with a function``                                                                        |
+| `outputIdSuffix`   | `string`            | `'Output'`                | Suffix for output schema IDs when the schema is used in both a request and response                               |
+| `allowEmptySchema` | `boolean \| Object` | `false`                   | Control whether empty schemas are allowed.                                                                        |
+| `cycles`           | `'ref' \| 'throw'`  | `'ref'`                   | How to handle cycles in schemas.<br>- `'ref'` — Break cycles using $defs<br>- `'throw'` — Error on cycles         |
+| `reused`           | `'ref' \| 'inline'` | `'inline'`                | How to handle reused schemas.<br>- `'ref'` — Reused schemas as references<br>- `'inline'` — Inline reused schemas |
+| `schemaRefPath`    | `string`            | `'#/components/schemas/'` | Path prefix for schema references. Used when generating $ref values.                                              |
 
 ### `createSchema`
 
 Creates an OpenAPI Schema Object along with any registered components. OpenAPI 3.1.0 Schema Objects are fully compatible with JSON Schema.
 
 ```typescript
-import 'zod-openapi/extend';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { createSchema } from 'zod-openapi';
 
-const jobId = z.string().openapi({
+const jobId = z.string().meta({
   description: 'A unique identifier for a job',
   example: '12345',
   id: 'jobId',
 });
 
-const title = z.string().openapi({
+const title = z.string().meta({
   description: 'Job title',
   example: 'My job',
 });
@@ -245,16 +261,17 @@ const { schema, components } = createSchema(job);
 
 #### CreateSchemaOptions
 
-`createSchema` takes an optional `CreateSchemaOptions` parameter which can also take the same options as [CreateDocumentOptions](#createdocumentoptions) along with the following options:
+`createSchema` takes an optional `CreateSchemaOptions` parameter which includes all options from [CreateDocumentOptions](#createdocumentoptions) plus the following:
 
-```typescript
+````typescript
 const { schema, components } = createSchema(job, {
-  schemaType: 'input'; // This controls whether this should be rendered as a request (`input`) or response (`output`). Defaults to `output`
-  openapi: '3.0.0'; // OpenAPI version to use, defaults to `'3.1.0'`
-  components: { jobId: z.string() } // Additional components to use and create while rendering the schema
-  componentRefPath: '#/definitions/' // Defaults to #/components/schemas/
-})
-```
+  // Input/Output context - controls how schemas are generated
+  io: 'input', // 'input' for request bodies/params, 'output' for responses
+
+  // Component handling
+  schemaComponents: { jobId: z.string() }, // Pre-defined components to use
+  schemaComponentRefPath: '#/definitions/', // Custom path prefix for component references
+});
 
 ### Request Parameters
 
@@ -275,7 +292,7 @@ createDocument({
     },
   },
 });
-```
+````
 
 If you would like to declare parameters in a more traditional way you may also declare them using the [parameters](https://swagger.io/docs/specification/describing-parameters/) key. The definitions will then all be combined.
 
@@ -285,7 +302,7 @@ createDocument({
     '/jobs/{a}': {
       put: {
         parameters: [
-          z.string().openapi({
+          z.string().meta({
             param: {
               name: 'job-header',
               in: 'header',
@@ -396,7 +413,7 @@ If we take the example in `createDocument` and instead create `title` as follows
 ##### Auto Registering Schema
 
 ```typescript
-const title = z.string().openapi({
+const title = z.string().meta({
   description: 'Job title',
   example: 'My job',
   id: 'jobTitle', // <- new field
@@ -434,14 +451,14 @@ Another way to register schema instead of adding a `ref` is to add it to the com
 eg.
 
 ```typescript
-const title = z.string().openapi({
+const title = z.string().meta({
   description: 'Job title',
   example: 'My job',
 });
 createDocument({
   components: {
     schemas: {
-      jobTitle: title, // this will register this Zod Schema as jobTitle unless `ref` in `.openapi()` is specified on the type
+      jobTitle: title, // this will register this Zod Schema as jobTitle unless `id` in `.meta()` is specified on the type
     },
   },
 });
@@ -453,7 +470,7 @@ Query, Path, Header & Cookie parameters can be similarly registered:
 
 ```typescript
 // Easy auto registration
-const jobId = z.string().openapi({
+const jobId = z.string().meta({
   description: 'Job ID',
   example: '1234',
   param: { id: 'jobRef' },
@@ -474,7 +491,7 @@ createDocument({
 });
 
 // or more verbose auto registration
-const jobId = z.string().openapi({
+const jobId = z.string().meta({
   description: 'Job ID',
   example: '1234',
   param: { in: 'header', name: 'jobId', id: 'jobRef' },
@@ -490,8 +507,8 @@ createDocument({
   },
 });
 
-// or manual registeration
-const otherJobId = z.string().openapi({
+// or manual registration
+const otherJobId = z.string().meta({
   description: 'Job ID',
   example: '1234',
   param: { in: 'header', name: 'jobId' },
@@ -511,7 +528,7 @@ createDocument({
 Response headers can be similarly registered:
 
 ```typescript
-const header = z.string().openapi({
+const header = z.string().meta({
   description: 'Job ID',
   example: '1234',
   header: { id: 'some-header' },
@@ -519,7 +536,7 @@ const header = z.string().openapi({
 
 // or
 
-const jobIdHeader = z.string().openapi({
+const jobIdHeader = z.string().meta({
   description: 'Job ID',
   example: '1234',
 });
@@ -637,7 +654,7 @@ const schema = z.object({
 });
 ```
 
-Input:
+Input schemas (request bodies, parameters):
 
 ```json
 {
@@ -651,7 +668,7 @@ Input:
 }
 ```
 
-Output:
+Output schemas (responses):
 
 ```json
 {
@@ -666,25 +683,30 @@ Output:
 }
 ```
 
-Unless you are strictly using `z.looseObject()`s or `z.strictObject()`s throughout your codebase you will likely run into issues where the input and output schemas differ. This library will do a best effort to check equality using a simple JSON.stringify() === JSON.stringify() check. If your registered schema contains dynamically created components, this will always fail.
+When the same schema is referenced in both input and output contexts, the library generates two separate component schemas. This happens automatically when a schema with an ID is used in both contexts.
 
-If the schemas are not equal, it will automatically handle this by outputting the `output` schema with an `Output` suffix.
-
-You can override this by setting the `outputId` field with the `.meta()` method.
+You can customize the output schema name by providing an `outputId`:
 
 ```ts
 const schema = z
   .object({
     name: z.string(),
   })
-  .meta({ id: 'MyObject', outputId: 'MyObjectResponse' });
+  .meta({
+    id: 'MyObject',
+    outputId: 'MyObjectResponse', // Customize the output schema name
+  });
 ```
+
+You can also set a global suffix for output schemas or use `z.looseObject()` and `z.strictObject()` to have explicit control over the schema behavior.
+
+> **⚠️ Note:** If your registered schema contains dynamically created lazy components, they won't be reused between input and output schemas.
 
 ## Supported OpenAPI Versions
 
 Currently the following versions of OpenAPI are supported
 
-- `3.1.0`
+- `3.1.0` (minimum version)
 - `3.1.1`
 
 Setting the `openapi` field will change how the some of the components are rendered.
@@ -725,6 +747,10 @@ See the library in use in the [examples](./examples/) folder.
 - [fastify-zod-openapi](https://github.com/samchungy/fastify-zod-openapi) - Fastify plugin for zod-openapi. This includes type provider, Zod schema validation, Zod schema serialization and Swagger UI support.
 
 - [eslint-plugin-zod-openapi](https://github.com/samchungy/eslint-plugin-zod-openapi) - Eslint rules for zod-openapi. This includes features which can autogenerate Typescript comments for your Zod types based on your `description`, `example` and `deprecated` fields.
+
+## Version Information
+
+For information about changes and migration from v4 to v5, see the [v5 migration guide](./docs/v5.md).
 
 ## Comparisons
 
