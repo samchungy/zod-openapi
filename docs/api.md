@@ -1,25 +1,27 @@
-# 'zod-openapi/api'
+# 'zod-openapi/api' 📦
 
-## V5 Changes
+This guide explains the API changes in zod-openapi v5.
 
-### Breaking Changes
+## 🔄 V5 Changes
 
-#### Runtime Changes
+### 💥 Breaking Changes
 
-In v5, you no longer need to import `'zod-openapi/extend'` or call `extendZodWithOpenApi()`. The library has been completely redesigned to eliminate the need for monkey-patching Zod or making any runtime modifications. This makes zod-openapi completely side-effect free and allows you to use it directly in your projects without any preliminary setup steps.
+#### 📊 Schema Generation
 
-#### Schema Generation
+🔄 **New approach to schema generation**
 
-In v4, zod-openapi used a custom written walker to traverse Zod schemas which allowed us to render schemas immediately when requested:
+In v4, zod-openapi used a custom walker to traverse Zod schemas:
 
-- Functions like `createMediaTypeSchema` would directly return a complete schema object
-- Components would be inserted into the components object at creation time
+- Functions like `createMediaTypeSchema` would immediately return complete schemas
+- Components were inserted into the components object at creation time
 
-In v5, zod-openapi uses Zod's internal toJSONSchema which means we had to change we've our approach:
+In v5, we leverage Zod's native `toJSONSchema()` method with a new approach:
 
-- We now return an empty reference object initially
+- We initially return an empty reference object
 - The actual schema and components are populated when `createComponents()` is called
-- This enables more efficient schema generation and deduplication and automated lazy schema resolution
+- This enables more efficient schema generation, better deduplication, and automated lazy schema resolution
+
+**Code comparison:**
 
 **Before (v4):**
 
@@ -62,11 +64,13 @@ const components = createComponents(registry, docOpts);
 console.log(schema); // { type: 'string' } (now populated)
 ```
 
-Please reach out if you need any help migrating from v4 to v5.
+> 💡 Need help migrating from v4 to v5? Please reach out with any questions!
 
-#### Other Changes
+#### 🔄 Replaced Functions
 
-- `createParamOrRef` has been removed. Use `registry.addParameter()` instead.
-- `createMediaTypeSchema` has been removed. Use `registry.addSchema()` instead.
-- `getZodObject` has been removed. Use `unwrapZodObject` instead.
-- `getDefaultComponents` has been removed. Use `createRegistry()` instead.
+| ❌ Removed (v4)         | ✅ Replacement (v5)       |
+| ----------------------- | ------------------------- |
+| `createParamOrRef`      | `registry.addParameter()` |
+| `createMediaTypeSchema` | `registry.addSchema()`    |
+| `getZodObject`          | `unwrapZodObject`         |
+| `getDefaultComponents`  | `createRegistry()`        |

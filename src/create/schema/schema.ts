@@ -27,14 +27,18 @@ export const createSchema = (
   ctx: {
     registry?: ComponentRegistry;
     io?: 'input' | 'output';
-    opts?: CreateDocumentOptions;
+    opts?: CreateDocumentOptions & {
+      schemaComponents?: Record<string, oas31.SchemaObject>;
+    };
   } = {
     registry: createRegistry(),
     io: 'output',
     opts: {},
   },
 ) => {
-  ctx.registry ??= createRegistry();
+  ctx.registry ??= createRegistry({
+    schemas: ctx.opts?.schemaComponents,
+  });
   ctx.opts ??= {};
   ctx.io ??= 'output';
 
