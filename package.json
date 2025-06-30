@@ -54,7 +54,7 @@
     "@arethetypeswrong/cli": "0.18.1",
     "@redocly/cli": "1.34.3",
     "@types/node": "22.15.21",
-    "eslint-plugin-zod-openapi": "1.0.0",
+    "eslint-plugin-zod-openapi": "2.0.0-beta.1",
     "openapi3-ts": "4.5.0",
     "skuba": "11.0.1",
     "tsdown": "0.12.9",

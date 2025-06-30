@@ -18,8 +18,8 @@ importers:
         specifier: 22.15.21
         version: 22.15.21
       eslint-plugin-zod-openapi:
-        specifier: 1.0.0
-        version: 1.0.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
+        specifier: 2.0.0-beta.1
+        version: 2.0.0-beta.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
       openapi3-ts:
         specifier: 4.5.0
         version: 4.5.0
@@ -2159,8 +2159,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-plugin-zod-openapi@1.0.0:
-    resolution: {integrity: sha512-71sW4xfzqep8OunHXe5fvAcuO498zPRINVhmGsXf3aRWpW4Psbmx93IKTIqEIAqRdSl2fJLhsjBdvXgz14zoKw==}
+  eslint-plugin-zod-openapi@2.0.0-beta.1:
+    resolution: {integrity: sha512-ZBIcCMn6S4/aA0ihihyF9pkQNXpdCMcyXLC7rutrrEJexlh053oDP5Z8e0sbqD5SWlIbN5A+pQWjz9MVeoMYow==}
     engines: {node: '>=16.11'}
 
   eslint-scope@8.3.0:
@@ -7259,7 +7259,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-zod-openapi@1.0.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3):
+  eslint-plugin-zod-openapi@2.0.0-beta.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3):
     dependencies:
       '@typescript-eslint/utils': 8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
     transitivePeerDependencies:
