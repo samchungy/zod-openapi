@@ -40,7 +40,7 @@ declare module 'zod/v4' {
      */
     unusedIO?: 'input' | 'output';
     /**
-     * An alternate id to use for this schema in the event the schema is used in both input and output contexts.
+     * An alternate id to use for this schema in the event a registered schema is used in both a request and response schema.
      * If not specified, the id will be simply derived as the id of the schema plus an `Output` suffix. Please note that `id` must be set.
      */
     outputId?: string;

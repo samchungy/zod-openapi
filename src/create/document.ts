@@ -172,6 +172,15 @@ export interface CreateDocumentOptions {
    * - `(ctx) => { ctx.jsonSchema.type = 'string'; }` — Override the schema type to be a string using a function
    */
   override?: Override;
+
+  /**
+   * Suffix to append to the output ID of the schema.
+   * This is useful to avoid conflicts with other schemas that may have the same name.
+   * For example, if you have a schema named `Person`, you can set this to `Response` to get `PersonResponse`.
+   * If not set, the default suffix is `Output`.
+   * @default 'Output'
+   */
+  outputIdSuffix?: string;
   /**
    * How to handle reused schemas.
    * - `"ref"` — Reused schemas will be rendered as references

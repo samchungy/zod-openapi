@@ -65,7 +65,8 @@ export const renameComponents = (
     ) {
       continue;
     }
-    const newName = outputIds.get(key) ?? `${key}Output`;
+    const newName =
+      outputIds.get(key) ?? `${key}${ctx.opts.outputIdSuffix ?? 'Output'}`;
     componentsToRename.set(key, newName);
     components[newName] = components[key] as core.JSONSchema.JSONSchema;
     delete components[key];

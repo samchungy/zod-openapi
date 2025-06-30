@@ -13,14 +13,6 @@ import { type ComponentRegistry, createRegistry } from '../components';
 import { override, validate } from './override';
 import { renameComponents } from './rename';
 
-const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
-  delete jsonSchema.param;
-  delete jsonSchema.header;
-  delete jsonSchema.unusedIO;
-  delete jsonSchema.override;
-  delete jsonSchema.outputId;
-};
-
 export interface SchemaResult {
   schema: oas31.SchemaObject | oas31.ReferenceObject;
   components: Record<string, oas31.SchemaObject>;
@@ -64,6 +56,14 @@ export const createSchema = (
     schema: jsonSchemas.schemas.zodOpenApiCreateSchema,
     components: jsonSchemas.components,
   };
+};
+
+const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
+  delete jsonSchema.param;
+  delete jsonSchema.header;
+  delete jsonSchema.unusedIO;
+  delete jsonSchema.override;
+  delete jsonSchema.outputId;
 };
 
 export const createSchemas = <
