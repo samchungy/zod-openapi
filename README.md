@@ -632,6 +632,40 @@ createDocument({
 });
 ```
 
+#### Path Items
+
+Path Items can also be registered
+
+````typescript
+const pathItem: ZodOpenApiPathItemObject = {
+  id: 'some-path-item',
+  get: {
+    responses: {
+      200: {
+        description: '200 OK',
+        content: {
+          'application/json': {
+            schema: z.object({ a: z.string() }),
+          },
+        },
+      },
+    },
+  },
+};
+
+// or
+
+createDocument({
+  components: {
+    pathItems: {
+      'some-path-item': pathItem,
+    },
+  },
+});
+```
+
+
+
 ### Zod Types
 
 Zod types are composed of two different parts: the input and the output. This library decides which type to create based on if it is used in a request or response context.
@@ -652,7 +686,7 @@ In general, you want to avoid using a registered input schema in an output conte
 const schema = z.object({
   name: z.string(),
 });
-```
+````
 
 Input schemas (request bodies, parameters):
 
