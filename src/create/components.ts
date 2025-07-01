@@ -250,10 +250,10 @@ export const createRegistry = (
       const { id: metaId, ...rest } = meta?.param ?? {};
 
       const parameterObject: oas31.ParameterObject = {
-        ...rest,
-        name,
         in: inLocation,
+        name,
         schema: schemaObject,
+        ...rest,
       };
 
       if (isRequired(parameter, 'input')) {
