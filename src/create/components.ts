@@ -8,10 +8,13 @@ import type {
   CreateDocumentOptions,
   ZodOpenApiCallbackObject,
   ZodOpenApiComponentsObject,
+  ZodOpenApiExampleObject,
+  ZodOpenApiLinkObject,
   ZodOpenApiOperationObject,
   ZodOpenApiPathItemObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
+  ZodOpenApiSecuritySchemeObject,
 } from './document';
 import { createHeaders } from './headers';
 import { isRequired } from './object';
@@ -98,6 +101,27 @@ export interface ComponentRegistry {
         oas31.PathItemObject | oas31.ReferenceObject
       >;
     };
+    securitySchemes: {
+      ids: Map<string, oas31.SecuritySchemeObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiSecuritySchemeObject,
+        oas31.SecuritySchemeObject | oas31.ReferenceObject
+      >;
+    };
+    links: {
+      ids: Map<string, oas31.LinkObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiLinkObject,
+        oas31.LinkObject | oas31.ReferenceObject
+      >;
+    };
+    examples: {
+      ids: Map<string, oas31.ExampleObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiExampleObject,
+        oas31.ExampleObject | oas31.ReferenceObject
+      >;
+    };
   };
   addSchema: (
     schema: $ZodType,
@@ -152,6 +176,27 @@ export interface ComponentRegistry {
       manualId?: string;
     },
   ) => oas31.CallbackObject | oas31.ReferenceObject;
+  addSecurityScheme: (
+    securityScheme: ZodOpenApiSecuritySchemeObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.SecuritySchemeObject | oas31.ReferenceObject;
+  addLink: (
+    link: ZodOpenApiLinkObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.LinkObject | oas31.ReferenceObject;
+  addExample: (
+    example: ZodOpenApiExampleObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.ExampleObject | oas31.ReferenceObject;
 }
 
 export const createRegistry = (
@@ -187,6 +232,18 @@ export const createRegistry = (
         seen: new WeakMap(),
       },
       pathItems: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      securitySchemes: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      links: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      examples: {
         ids: new Map(),
         seen: new WeakMap(),
       },
@@ -545,6 +602,101 @@ export const createRegistry = (
       registry.components.callbacks.seen.set(callback, callbackObject);
       return callbackObject;
     },
+    addSecurityScheme: (securityScheme, path, opts) => {
+      const seenSecurityScheme =
+        registry.components.securitySchemes.seen.get(securityScheme);
+      if (seenSecurityScheme) {
+        return seenSecurityScheme;
+      }
+
+      const { id: metaId, ...rest } = securityScheme;
+      const securitySchemeObject: oas31.SecuritySchemeObject = rest;
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.securitySchemes.ids.has(id)) {
+          throw new Error(
+            `SecurityScheme "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/securitySchemes/${id}`,
+        };
+        registry.components.securitySchemes.ids.set(id, securitySchemeObject);
+        registry.components.securitySchemes.seen.set(securityScheme, ref);
+        return ref;
+      }
+
+      registry.components.securitySchemes.seen.set(
+        securityScheme,
+        securitySchemeObject,
+      );
+      return securitySchemeObject;
+    },
+    addLink: (link, path, opts) => {
+      const seenLink = registry.components.links.seen.get(link);
+      if (seenLink) {
+        return seenLink;
+      }
+
+      const { id: metaId, ...rest } = link;
+
+      const linkObject: oas31.LinkObject = rest;
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.links.ids.has(id)) {
+          throw new Error(
+            `Link "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/links/${id}`,
+        };
+        registry.components.links.ids.set(id, linkObject);
+        registry.components.links.seen.set(link, ref);
+        return ref;
+      }
+
+      registry.components.links.seen.set(link, linkObject);
+      return linkObject;
+    },
+    addExample: (
+      example,
+      path,
+      opts,
+    ): oas31.ExampleObject | oas31.ReferenceObject => {
+      const seenExample = registry.components.examples.seen.get(example);
+      if (seenExample) {
+        return seenExample;
+      }
+
+      const { id: metaId, ...rest } = example;
+
+      const exampleObject: oas31.ExampleObject = rest;
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.examples.ids.has(id)) {
+          throw new Error(
+            `Example "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/examples/${id}`,
+        };
+        registry.components.examples.ids.set(id, exampleObject);
+        registry.components.examples.seen.set(example, ref);
+        return ref;
+      }
+
+      registry.components.examples.seen.set(example, exampleObject);
+
+      return exampleObject;
+    },
   };
 
   registerSchemas(components?.schemas, registry);
@@ -554,6 +706,9 @@ export const createRegistry = (
   registerPathItems(components?.pathItems, registry);
   registerRequestBodies(components?.requestBodies, registry);
   registerCallbacks(components?.callbacks, registry);
+  registerSecuritySchemes(components?.securitySchemes, registry);
+  registerLinks(components?.links, registry);
+  registerExamples(components?.examples, registry);
 
   return registry;
 };
@@ -703,6 +858,52 @@ const registerPathItems = (
   }
 };
 
+const registerSecuritySchemes = (
+  securitySchemes: ZodOpenApiComponentsObject['securitySchemes'],
+  registry: ComponentRegistry,
+): void => {
+  if (!securitySchemes) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(securitySchemes)) {
+    registry.addSecurityScheme(schema, ['components', 'securitySchemes', key], {
+      manualId: key,
+    });
+  }
+};
+
+const registerLinks = (
+  links: ZodOpenApiComponentsObject['links'],
+  registry: ComponentRegistry,
+): void => {
+  if (!links) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(links)) {
+    registry.addLink(schema, ['components', 'links', key], {
+      manualId: key,
+    });
+  }
+};
+
+const registerExamples = (
+  examples: ZodOpenApiComponentsObject['examples'],
+  registry: ComponentRegistry,
+): void => {
+  if (!examples) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(examples)) {
+    registry.components.examples.ids.set(
+      key,
+      schema as oas31.ExampleObject | oas31.ReferenceObject,
+    );
+  }
+};
+
 const createIOSchemas = (ctx: {
   registry: ComponentRegistry;
   io: 'input' | 'output';
@@ -789,6 +990,17 @@ export const createComponents = (
     components.pathItems = Object.fromEntries(
       registry.components.pathItems.ids,
     );
+  }
+  if (registry.components.securitySchemes.ids.size > 0) {
+    components.securitySchemes = Object.fromEntries(
+      registry.components.securitySchemes.ids,
+    );
+  }
+  if (registry.components.links.ids.size > 0) {
+    components.links = Object.fromEntries(registry.components.links.ids);
+  }
+  if (registry.components.examples.ids.size > 0) {
+    components.examples = Object.fromEntries(registry.components.examples.ids);
   }
 
   return components;

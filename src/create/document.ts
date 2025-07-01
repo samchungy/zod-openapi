@@ -110,6 +110,24 @@ export type ZodOpenApiSchemaObject =
   | oas31.SchemaObject
   | oas31.ReferenceObject;
 
+export interface ZodOpenApiSecuritySchemeObject
+  extends oas31.SecuritySchemeObject {
+  /**
+   * Used to register this security scheme as a component.
+   */
+  id?: string;
+}
+
+export interface ZodOpenApiLinkObject extends oas31.LinkObject {
+  /** Use this field to auto register this link object as a component */
+  id?: string;
+}
+
+export interface ZodOpenApiExampleObject extends oas31.ExampleObject {
+  /** Use this field to auto register this example object as a component */
+  id?: string;
+}
+
 export interface ZodOpenApiComponentsObject
   extends Omit<
     oas31.ComponentsObject,
@@ -120,6 +138,8 @@ export interface ZodOpenApiComponentsObject
     | 'parameters'
     | 'pathItems'
     | 'callbacks'
+    | 'securitySchemes'
+    | 'examples'
   > {
   parameters?: Record<string, ZodOpenApiParameterObject>;
   schemas?: Record<string, ZodOpenApiSchemaObject>;
@@ -128,6 +148,9 @@ export interface ZodOpenApiComponentsObject
   responses?: Record<string, ZodOpenApiResponseObject>;
   callbacks?: Record<string, ZodOpenApiCallbackObject>;
   pathItems?: Record<string, ZodOpenApiPathItemObject>;
+  securitySchemes?: Record<string, ZodOpenApiSecuritySchemeObject>;
+  links?: Record<string, ZodOpenApiLinkObject>;
+  examples?: Record<string, ZodOpenApiExampleObject>;
 }
 
 export type ZodOpenApiVersion = OpenApiVersion;

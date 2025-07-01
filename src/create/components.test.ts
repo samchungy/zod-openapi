@@ -6,10 +6,12 @@ import { createComponents, createRegistry } from './components';
 import type {
   CreateDocumentOptions,
   ZodOpenApiHeaderObject,
+  ZodOpenApiLinkObject,
   ZodOpenApiParameterObject,
   ZodOpenApiPathItemObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
+  ZodOpenApiSecuritySchemeObject,
 } from './document';
 
 describe('createComponents', () => {
@@ -1534,6 +1536,179 @@ describe('addHeader', () => {
 
     expect(header2).toEqual({
       $ref: '#/components/headers/autoHeader',
+    });
+  });
+});
+
+describe('addSecurityScheme', () => {
+  it('should register a security scheme with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualSecurityScheme: oas31.SecuritySchemeObject = {
+      type: 'apiKey',
+      in: 'header',
+      name: 'X-API-Key',
+      description: 'A manual security scheme',
+    };
+
+    const securityScheme = registry.addSecurityScheme(
+      manualSecurityScheme,
+      ['test'],
+      {
+        manualId: 'manualSecurityScheme',
+      },
+    );
+
+    const securityScheme2 = registry.addSecurityScheme(manualSecurityScheme, [
+      'test2',
+    ]);
+
+    createComponents(registry, {});
+
+    expect(securityScheme).toEqual({
+      $ref: '#/components/securitySchemes/manualSecurityScheme',
+    });
+
+    expect(securityScheme2).toEqual({
+      $ref: '#/components/securitySchemes/manualSecurityScheme',
+    });
+  });
+
+  it('should register a security scheme with an id', () => {
+    const autoSecurityScheme: ZodOpenApiSecuritySchemeObject = {
+      id: 'autoSecurityScheme',
+      type: 'apiKey',
+      in: 'header',
+      name: 'X-API-Key',
+      description: 'An auto security scheme',
+    };
+
+    const registry = createRegistry();
+
+    const securityScheme = registry.addSecurityScheme(autoSecurityScheme, [
+      'test',
+    ]);
+
+    const securityScheme2 = registry.addSecurityScheme(autoSecurityScheme, [
+      'test2',
+    ]);
+
+    createComponents(registry, {});
+
+    expect(securityScheme).toEqual({
+      $ref: '#/components/securitySchemes/autoSecurityScheme',
+    });
+
+    expect(securityScheme2).toEqual({
+      $ref: '#/components/securitySchemes/autoSecurityScheme',
+    });
+  });
+});
+
+describe('addLink', () => {
+  it('should register a link with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualLink: oas31.LinkObject = {
+      operationRef: '#/paths/~1test/get',
+      description: 'A manual link',
+      parameters: {
+        id: '$request.body#/id',
+      },
+    };
+
+    const link = registry.addLink(manualLink, ['test'], {
+      manualId: 'manualLink',
+    });
+
+    const link2 = registry.addLink(manualLink, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(link).toEqual({
+      $ref: '#/components/links/manualLink',
+    });
+
+    expect(link2).toEqual({
+      $ref: '#/components/links/manualLink',
+    });
+  });
+
+  it('should register a link with an id', () => {
+    const autoLink: ZodOpenApiLinkObject = {
+      id: 'autoLink',
+      operationRef: '#/paths/~1test/get',
+      description: 'An auto link',
+      parameters: {
+        id: '$request.body#/id',
+      },
+    };
+
+    const registry = createRegistry();
+
+    const link = registry.addLink(autoLink, ['test']);
+
+    const link2 = registry.addLink(autoLink, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(link).toEqual({
+      $ref: '#/components/links/autoLink',
+    });
+
+    expect(link2).toEqual({
+      $ref: '#/components/links/autoLink',
+    });
+  });
+});
+
+describe('addExample', () => {
+  it('should register an example with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualExample: oas31.ExampleObject = {
+      summary: 'A manual example',
+      value: { message: 'Hello, world!' },
+    };
+
+    const example = registry.addExample(manualExample, ['test'], {
+      manualId: 'manualExample',
+    });
+
+    const example2 = registry.addExample(manualExample, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(example).toEqual({
+      $ref: '#/components/examples/manualExample',
+    });
+
+    expect(example2).toEqual({
+      $ref: '#/components/examples/manualExample',
+    });
+  });
+
+  it('should register an example with an id', () => {
+    const autoExample: oas31.ExampleObject = {
+      id: 'autoExample',
+      summary: 'An auto example',
+      value: { message: 'Hello, world!' },
+    };
+
+    const registry = createRegistry();
+
+    const example = registry.addExample(autoExample, ['test']);
+
+    const example2 = registry.addExample(autoExample, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(example).toEqual({
+      $ref: '#/components/examples/autoExample',
+    });
+
+    expect(example2).toEqual({
+      $ref: '#/components/examples/autoExample',
     });
   });
 });
