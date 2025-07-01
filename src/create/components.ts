@@ -16,7 +16,9 @@ import type {
   ZodOpenApiResponseObject,
   ZodOpenApiSecuritySchemeObject,
 } from './document';
+import { createExamples } from './examples';
 import { createHeaders } from './headers';
+import { createLinks } from './links';
 import { isRequired } from './object';
 import { createManualParameters } from './parameters';
 import { createOperation } from './paths';
@@ -304,7 +306,7 @@ export const createRegistry = (
         },
       );
 
-      const { id: metaId, ...rest } = meta?.param ?? {};
+      const { id: metaId, examples, ...rest } = meta?.param ?? {};
 
       const parameterObject: oas31.ParameterObject = {
         in: inLocation,
@@ -312,6 +314,17 @@ export const createRegistry = (
         schema: schemaObject,
         ...rest,
       };
+
+      const examplesObject = createExamples(examples, registry, [
+        ...path,
+        inLocation,
+        name,
+        'examples',
+      ]);
+
+      if (examplesObject) {
+        parameterObject.examples = examplesObject;
+      }
 
       if (isRequired(parameter, 'input')) {
         parameterObject.required = true;
@@ -516,7 +529,7 @@ export const createRegistry = (
         return seenResponse;
       }
 
-      const { content, headers, id: metaId, ...rest } = response;
+      const { content, headers, links, id: metaId, ...rest } = response;
 
       const responseObject: oas31.ResponseObject = rest;
 
@@ -534,6 +547,10 @@ export const createRegistry = (
           { registry, io: 'output' },
           [...path, 'content'],
         );
+      }
+
+      if (links) {
+        responseObject.links = createLinks(links, registry, [...path, 'links']);
       }
 
       const id = metaId ?? opts?.manualId;

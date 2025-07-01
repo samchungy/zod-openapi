@@ -6,28 +6,36 @@ import type {
   ZodOpenApiContentObject,
   ZodOpenApiMediaTypeObject,
 } from './document';
+import { createExamples } from './examples';
 
 export const createMediaTypeObject = (
-  mediaTypeObject: ZodOpenApiMediaTypeObject,
+  mediaType: ZodOpenApiMediaTypeObject,
   ctx: {
     registry: ComponentRegistry;
     io: 'input' | 'output';
   },
   path: string[],
 ): oas31.MediaTypeObject => {
-  if (isAnyZodType(mediaTypeObject.schema)) {
-    const schemaObject = ctx.registry.addSchema(
-      mediaTypeObject.schema,
-      [...path, 'schema'],
-      { io: ctx.io, source: { type: 'mediaType' } },
-    );
-    return {
-      ...mediaTypeObject,
-      schema: schemaObject,
-    };
+  const { schema, examples, ...rest } = mediaType;
+
+  const mediaTypeObject: oas31.MediaTypeObject = rest;
+
+  if (isAnyZodType(schema)) {
+    const schemaObject = ctx.registry.addSchema(schema, [...path, 'schema'], {
+      io: ctx.io,
+      source: { type: 'mediaType' },
+    });
+    mediaTypeObject.schema = schemaObject;
   }
 
-  return mediaTypeObject as oas31.MediaTypeObject;
+  if (examples) {
+    mediaTypeObject.examples = createExamples(examples, ctx.registry, [
+      ...path,
+      'examples',
+    ]);
+  }
+
+  return mediaTypeObject;
 };
 
 export const createContent = (

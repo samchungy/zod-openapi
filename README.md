@@ -263,7 +263,7 @@ const { schema, components } = createSchema(job);
 
 `createSchema` takes an optional `CreateSchemaOptions` parameter which includes all options from [CreateDocumentOptions](#createdocumentoptions) plus the following:
 
-````typescript
+```typescript
 const { schema, components } = createSchema(job, {
   // Input/Output context - controls how schemas are generated
   io: 'input', // 'input' for request bodies/params, 'output' for responses
@@ -272,6 +272,7 @@ const { schema, components } = createSchema(job, {
   schemaComponents: { jobId: z.string() }, // Pre-defined components to use
   schemaComponentRefPath: '#/definitions/', // Custom path prefix for component references
 });
+```
 
 ### Request Parameters
 
@@ -292,7 +293,7 @@ createDocument({
     },
   },
 });
-````
+```
 
 If you would like to declare parameters in a more traditional way you may also declare them using the [parameters](https://swagger.io/docs/specification/describing-parameters/) key. The definitions will then all be combined.
 
@@ -636,7 +637,7 @@ createDocument({
 
 Path Items can also be registered
 
-````typescript
+```typescript
 const pathItem: ZodOpenApiPathItemObject = {
   id: 'some-path-item',
   get: {
@@ -664,7 +665,88 @@ createDocument({
 });
 ```
 
+#### Security Schemes
 
+Security Schemes can be registered for authentication methods:
+
+```typescript
+createDocument({
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT Authentication',
+      },
+    },
+  },
+});
+```
+
+#### Links
+
+Links can be registered to describe relationships between operations:
+
+```typescript
+const link: ZodOpenApiLinkObject = {
+  id: 'getUserById',
+  operationId: 'getUser',
+  parameters: {
+    userId: '$request.path.id',
+  },
+  description: 'Link to get user by id',
+};
+
+// or
+
+createDocument({
+  components: {
+    links: {
+      getUserById: {
+        operationId: 'getUser',
+        parameters: {
+          userId: '$request.path.id',
+        },
+        description: 'Link to get user by id',
+      },
+    },
+  },
+});
+```
+
+#### Examples
+
+Examples can be registered to provide sample values for schemas:
+
+```typescript
+const example: ZodOpenApiExampleObject = {
+  id: 'userExample',
+  summary: 'A sample user',
+  value: {
+    id: '123',
+    name: 'Jane Doe',
+    email: 'jane@example.com',
+  },
+};
+
+// or
+
+createDocument({
+  components: {
+    examples: {
+      userExample: {
+        summary: 'A sample user',
+        value: {
+          id: '123',
+          name: 'Jane Doe',
+          email: 'jane@example.com',
+        },
+      },
+    },
+  },
+});
+```
 
 ### Zod Types
 
@@ -682,11 +764,11 @@ Output:
 
 In general, you want to avoid using a registered input schema in an output context and vice versa. This is because the rendered input and output schemas of a simple Zod schema will differ, even with a simple Zod schema like `z.object()`.
 
-```ts
+```typescript
 const schema = z.object({
   name: z.string(),
 });
-````
+```
 
 Input schemas (request bodies, parameters):
 

@@ -44,4 +44,42 @@ describe('createContent', () => {
       },
     });
   });
+
+  it('should create a content object with a media type and examples', () => {
+    const zodSchema = z.object({
+      name: z.string(),
+      age: z.number(),
+    });
+    const registry = createRegistry();
+    const content: oas31.ContentObject = createContent(
+      {
+        'application/json': {
+          schema: zodSchema,
+          examples: {
+            example1: {
+              summary: 'Example 1',
+              value: { name: 'John', age: 30 },
+            },
+          },
+        },
+      },
+      {
+        registry,
+        io: 'output',
+      },
+      ['test'],
+    );
+
+    expect(content).toEqual<oas31.ContentObject>({
+      'application/json': {
+        schema: {},
+        examples: {
+          example1: {
+            summary: 'Example 1',
+            value: { name: 'John', age: 30 },
+          },
+        },
+      },
+    });
+  });
 });

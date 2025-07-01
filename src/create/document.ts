@@ -27,9 +27,10 @@ export interface ZodOpenApiRequestBodyObject
 export type ZodOpenApiHeadersObject = ZodObjectInput | oas31.HeadersObject;
 
 export interface ZodOpenApiResponseObject
-  extends Omit<oas31.ResponseObject, 'content' | 'headers'> {
+  extends Omit<oas31.ResponseObject, 'content' | 'headers' | 'links'> {
   content?: ZodOpenApiContentObject;
   headers?: ZodOpenApiHeadersObject;
+  links?: ZodOpenApiLinksObject;
   /** Use this field to auto register this response object as a component */
   id?: string;
 }
@@ -123,10 +124,20 @@ export interface ZodOpenApiLinkObject extends oas31.LinkObject {
   id?: string;
 }
 
+export type ZodOpenApiLinksObject = Record<
+  string,
+  ZodOpenApiLinkObject | oas31.ReferenceObject
+>;
+
 export interface ZodOpenApiExampleObject extends oas31.ExampleObject {
   /** Use this field to auto register this example object as a component */
   id?: string;
 }
+
+export type ZodOpenApiExamplesObject = Record<
+  string,
+  ZodOpenApiExampleObject | oas31.ReferenceObject
+>;
 
 export interface ZodOpenApiComponentsObject
   extends Omit<
