@@ -1322,6 +1322,27 @@ describe('addParameter', () => {
       $ref: '#/components/parameters/autoParameter',
     });
   });
+
+  it('should not remember a manually set parameter', () => {
+    const registry = createRegistry();
+    const nonEmptySchema = z.string().nonempty();
+
+    const parameter1 = registry.addParameter(nonEmptySchema, ['test'], {
+      location: {
+        in: 'query',
+        name: 'test',
+      },
+    });
+
+    const parameter2 = registry.addParameter(nonEmptySchema, ['test2'], {
+      location: {
+        in: 'query',
+        name: 'test2',
+      },
+    });
+
+    expect(parameter1).not.toEqual(parameter2);
+  });
 });
 
 describe('addRequestBody', () => {

@@ -223,6 +223,15 @@ export const createRegistry = (
       const name = opts?.location?.name ?? meta?.param?.name;
       const inLocation = opts?.location?.in ?? meta?.param?.in;
 
+      if (
+        (opts?.location?.name && meta?.param?.name) ||
+        (opts?.location?.in && meta?.param?.in)
+      ) {
+        throw new Error(
+          `Parameter at ${path.join(' > ')} has both \`.meta({ param: { name, in } })\` and \`.meta({ param: { location: { in, name } } })\` information`,
+        );
+      }
+
       if (!name || !inLocation) {
         throw new Error(
           `Parameter at ${path.join(' > ')} is missing \`.meta({ param: { name, in } })\` information`,
@@ -269,6 +278,10 @@ export const createRegistry = (
         registry.components.parameters.seen.set(parameter, ref);
         registry.components.parameters.ids.set(id, parameterObject);
         return ref;
+      }
+
+      if (opts?.location?.name || opts?.location?.in) {
+        return parameterObject;
       }
 
       registry.components.parameters.seen.set(parameter, parameterObject);
