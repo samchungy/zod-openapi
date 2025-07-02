@@ -1,4 +1,5 @@
-import { type ZodLazy, type ZodType, z } from 'zod/v4';
+import * as z from 'zod/v4';
+import type { ZodLazy, ZodType } from 'zod/v4';
 
 import { createRegistry } from '../../components';
 import { type SchemaResult, createSchema } from '../schema';

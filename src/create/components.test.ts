@@ -1,4 +1,5 @@
-import { type ZodType, z } from 'zod/v4';
+import * as z from 'zod/v4';
+import type { ZodType } from 'zod/v4';
 
 import type { oas31 } from '../openapi3-ts/dist';
 

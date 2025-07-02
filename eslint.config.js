@@ -1,4 +1,5 @@
 const skuba = require('eslint-config-skuba');
+const importZod = require('eslint-plugin-import-zod');
 const zodOpenapi = require('eslint-plugin-zod-openapi');
 
 module.exports = [
@@ -6,6 +7,7 @@ module.exports = [
     ignores: ['src/openapi3-ts/*', '**/crackle.config.ts', 'api', 'extend'],
   },
   ...skuba,
+  ...importZod.configs.recommended,
   {
     plugins: {
       'zod-openapi': zodOpenapi,

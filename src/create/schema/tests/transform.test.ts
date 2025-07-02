@@ -1,4 +1,4 @@
-import { z } from 'zod/v4';
+import * as z from 'zod/v4';
 
 import type { oas31 } from '../../../openapi3-ts/dist';
 import { createInputContext } from '../../../testing/ctx';

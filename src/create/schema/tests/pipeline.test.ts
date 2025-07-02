@@ -1,4 +1,4 @@
-import { z } from 'zod/v4';
+import * as z from 'zod/v4';
 
 import { createInputContext } from '../../../testing/ctx';
 import { type SchemaResult, createSchema } from '../schema';

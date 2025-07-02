@@ -59,7 +59,7 @@ z.string().meta({
 Generates an OpenAPI documentation object.
 
 ```typescript
-import { z } from 'zod';
+import * as z from 'zod/v4';
 import { createDocument } from 'zod-openapi';
 
 const jobId = z.string().meta({
@@ -210,7 +210,7 @@ createDocument(doc, {
 Creates an OpenAPI Schema Object along with any registered components. OpenAPI 3.1.0 Schema Objects are fully compatible with JSON Schema.
 
 ```typescript
-import { z } from 'zod';
+import * as z from 'zod/v4';
 import { createSchema } from 'zod-openapi';
 
 const jobId = z.string().meta({

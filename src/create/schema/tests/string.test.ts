@@ -1,4 +1,5 @@
-import { type ZodString, z } from 'zod/v4';
+import * as z from 'zod/v4';
+import type { ZodString } from 'zod/v4';
 
 import { type SchemaResult, createSchema } from '../schema';
 
