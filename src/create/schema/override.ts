@@ -24,7 +24,7 @@ export const override: Override = (ctx) => {
 
         ctx.jsonSchema.discriminator = {
           propertyName: def.discriminator,
-        };
+        } as oas31.DiscriminatorObject;
 
         const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
         for (const [index, obj] of Object.entries(
