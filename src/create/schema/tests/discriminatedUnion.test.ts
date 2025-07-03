@@ -296,6 +296,12 @@ describe('discriminatedUnion', () => {
         type: 'object',
         discriminator: {
           propertyName: 'type',
+          mapping: {
+            1: '#/components/schemas/k',
+            a: '#/components/schemas/k',
+            b: '#/components/schemas/l',
+            c: '#/components/schemas/k',
+          },
         },
         oneOf: [
           {
@@ -843,8 +849,8 @@ describe('discriminatedUnion', () => {
         discriminator: {
           propertyName: 'type',
           mapping: {
-            one: '#/components/schemas/one',
-            two: '#/components/schemas/two',
+            1: '#/components/schemas/one',
+            2: '#/components/schemas/two',
           },
         },
       },
