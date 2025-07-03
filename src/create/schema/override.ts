@@ -21,9 +21,10 @@ export const override: Override = (ctx) => {
         delete ctx.jsonSchema.anyOf;
 
         ctx.jsonSchema.type = 'object';
+
         ctx.jsonSchema.discriminator = {
           propertyName: def.discriminator,
-        } as oas31.DiscriminatorObject;
+        };
 
         const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
         for (const [index, obj] of Object.entries(
@@ -32,6 +33,8 @@ export const override: Override = (ctx) => {
           const ref = obj.$ref;
 
           if (!ref) {
+            // redoc doesn't support discriminator values without a $ref
+            delete ctx.jsonSchema.discriminator;
             return;
           }
 
