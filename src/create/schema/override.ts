@@ -47,10 +47,14 @@ export const override: Override = (ctx) => {
           }
 
           for (const value of [...(discriminatorValues ?? [])]) {
-            if (typeof value !== 'string') {
+            if (
+              typeof value !== 'string' &&
+              typeof value !== 'number' &&
+              typeof value !== 'boolean'
+            ) {
               return;
             }
-            mapping[value] = ref;
+            mapping[String(value)] = ref;
           }
         }
 

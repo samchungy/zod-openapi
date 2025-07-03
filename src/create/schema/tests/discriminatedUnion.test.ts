@@ -750,4 +750,128 @@ describe('discriminatedUnion', () => {
       },
     });
   });
+
+  it('should allow boolean discriminators', () => {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal(true),
+        })
+        .meta({ id: 'true' }),
+      z
+        .object({
+          type: z.literal(false),
+        })
+        .meta({ id: 'false' }),
+    ]);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/true',
+          },
+          {
+            $ref: '#/components/schemas/false',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            true: '#/components/schemas/true',
+            false: '#/components/schemas/false',
+          },
+        },
+      },
+      components: {
+        true: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'boolean',
+              const: true,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        false: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'boolean',
+              const: false,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it('should allow number discriminators', () => {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal(1),
+        })
+        .meta({ id: 'one' }),
+      z
+        .object({
+          type: z.literal(2),
+        })
+        .meta({ id: 'two' }),
+    ]);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/one',
+          },
+          {
+            $ref: '#/components/schemas/two',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            one: '#/components/schemas/one',
+            two: '#/components/schemas/two',
+          },
+        },
+      },
+      components: {
+        one: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'number',
+              const: 1,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        two: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'number',
+              const: 2,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
+  });
 });
