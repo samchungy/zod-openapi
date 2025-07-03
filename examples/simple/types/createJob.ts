@@ -29,3 +29,14 @@ export const CreateJobResponseSchema = z
     id: JobIdSchema,
   })
   .meta({ description: 'Create Job Response' });
+
+export const discUnion = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal(true),
+    a: z.string(),
+  }),
+  z.object({
+    type: z.literal(false),
+    b: z.string(),
+  }),
+]);

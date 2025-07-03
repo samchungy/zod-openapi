@@ -6,53 +6,6 @@ import type { ZodOpenApiComponentsObject } from '../../document';
 import { type SchemaResult, createSchema } from '../schema';
 
 describe('discriminatedUnion', () => {
-  it('creates a oneOf schema with a discriminator', () => {
-    const schema = z.discriminatedUnion('type', [
-      z.object({
-        type: z.literal('a'),
-      }),
-      z.object({
-        type: z.literal('b'),
-      }),
-    ]);
-
-    const result = createSchema(schema);
-
-    expect(result).toEqual<SchemaResult>({
-      schema: {
-        oneOf: [
-          {
-            type: 'object',
-            properties: {
-              type: {
-                type: 'string',
-                const: 'a',
-              },
-            },
-            required: ['type'],
-            additionalProperties: false,
-          },
-          {
-            type: 'object',
-            properties: {
-              type: {
-                type: 'string',
-                const: 'b',
-              },
-            },
-            required: ['type'],
-            additionalProperties: false,
-          },
-        ],
-        type: 'object',
-        discriminator: {
-          propertyName: 'type',
-        },
-      },
-      components: {},
-    });
-  });
-
   it('creates a oneOf schema with discriminator mapping when schemas are registered', () => {
     const schema = z.discriminatedUnion('type', [
       z
@@ -739,6 +692,56 @@ describe('discriminatedUnion', () => {
             type: {
               type: 'string',
               const: 'b',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it('should delete the discriminator mapping if any of the values are not registered', () => {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal('foo'),
+        })
+        .meta({ id: 'y' }),
+      z.object({
+        type: z.literal('bar'),
+      }),
+    ]);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/y',
+          },
+          {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                const: 'bar',
+              },
+            },
+            required: ['type'],
+            additionalProperties: false,
+          },
+        ],
+      },
+      components: {
+        y: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'foo',
             },
           },
           required: ['type'],
