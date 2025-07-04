@@ -14,6 +14,7 @@ import type {
   ZodOpenApiResponseObject,
   ZodOpenApiSecuritySchemeObject,
 } from './document';
+import { createSchema } from './schema/schema';
 
 describe('createComponents', () => {
   it('should create a schema for dynamic input types', () => {
@@ -982,42 +983,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
       })
       .meta({ id: 'alternateSchemaRefPath' });
 
-    const registry = createRegistry();
-
-    const opts: CreateDocumentOptions = {
+    const { schema, components } = createSchema(zodSchema, {
       schemaRefPath: '#/definitions/',
-    };
-
-    const requestBody = registry.addRequestBody(
-      {
-        content: {
-          'application/json': {
-            schema: zodSchema,
-          },
-        },
-      },
-      ['test'],
-    );
-
-    const components = createComponents(registry, opts);
-
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
-      content: {
-        'application/json': {
-          schema: {
-            $ref: '#/definitions/alternateSchemaRefPath',
-          },
-        },
-      },
     });
 
-    expect(components.schemas).toEqual({
+    expect(schema).toEqual({
+      $ref: '#/definitions/alternateSchemaRefPath',
+    });
+
+    expect(components).toEqual({
       alternateSchemaRefPath: {
         type: 'object',
         properties: {
           id: { type: 'string' },
         },
         required: ['id'],
+        additionalProperties: false,
       },
     });
   });
