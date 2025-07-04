@@ -606,6 +606,10 @@ describe('discriminatedUnion', () => {
         type: 'object',
         discriminator: {
           propertyName: 'type',
+          mapping: {
+            u: '#/components/schemas/u',
+            v: '#/components/schemas/v',
+          },
         },
         oneOf: [
           {

@@ -31,9 +31,15 @@ export const createSchema = (
   ctx: {
     registry?: ComponentRegistry;
     io?: 'input' | 'output';
-    opts?: CreateDocumentOptions & {
-      schemaComponents?: ZodOpenApiComponentsObject['schemas'];
-    };
+    opts?: CreateDocumentOptions;
+    /**
+     * The registry schemas to use for the schema components.
+     */
+    schemaComponents?: ZodOpenApiComponentsObject['schemas'];
+    /**
+     * The $ref path to use for a schema component. Defaults to `#/components/schemas/`
+     */
+    schemaRefPath?: string;
   } = {
     registry: createRegistry(),
     io: 'output',
@@ -41,7 +47,7 @@ export const createSchema = (
   },
 ) => {
   ctx.registry ??= createRegistry({
-    schemas: ctx.opts?.schemaComponents,
+    schemas: ctx.schemaComponents,
   });
   ctx.opts ??= {};
   ctx.io ??= 'output';
@@ -57,7 +63,7 @@ export const createSchema = (
   const jsonSchemas = createSchemas(schemas, {
     registry: ctx.registry,
     io: ctx.io,
-    opts: ctx.opts,
+    opts: { ...ctx.opts, schemaRefPath: ctx.schemaRefPath },
   });
 
   return {
@@ -81,7 +87,9 @@ export const createSchemas = <
   ctx: {
     registry: ComponentRegistry;
     io: 'input' | 'output';
-    opts: CreateDocumentOptions;
+    opts: CreateDocumentOptions & {
+      schemaRefPath?: string;
+    };
   },
 ): {
   schemas: Record<keyof T, oas31.SchemaObject | oas31.ReferenceObject>;

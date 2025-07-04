@@ -76,7 +76,7 @@ describe('union', () => {
     });
   });
 
-  it.skip('produces not values in a union', () => {
+  it('produces not values in a union', () => {
     const schema = z.union([z.string(), z.undefined(), z.never()]);
 
     const result = createSchema(schema);

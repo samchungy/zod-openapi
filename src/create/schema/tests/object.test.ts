@@ -113,8 +113,7 @@ describe('object', () => {
     });
   });
 
-  // colinhacks/zod#4769
-  it.skip('considers ZodCatch in an input state', () => {
+  it('considers ZodCatch in an input state', () => {
     const schema = z.object({
       a: z.string().catch('a'),
     });
@@ -217,12 +216,11 @@ describe('required', () => {
       });
     });
 
-    it.skip('does not create an required array', () => {
+    it('does not create an required array', () => {
       const ref = z.string().meta({ id: 'ref' });
       const oref = z.string().optional().meta({ id: 'oref' });
       const schema = z.object({
-        a: z.literal(undefined),
-        b: z.never(),
+        b: z.never().optional(),
         c: z.undefined(),
         d: z.string().optional(),
         e: z.string().nullish(),
@@ -231,7 +229,7 @@ describe('required', () => {
         h: z.union([z.string(), z.number().optional()]),
         i: ref.optional(),
         j: oref,
-        k: z.custom<string | undefined>(),
+        k: z.custom<string | undefined>().meta({ type: 'string' }).optional(),
         l: z
           .string()
           .optional()
@@ -246,14 +244,16 @@ describe('required', () => {
         schema: {
           type: 'object',
           properties: {
+            b: { not: {} },
+            c: { not: {} },
             d: { type: 'string' },
             e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
             f: { type: 'number' },
-            g: { anyOf: [{ type: 'string' }] },
+            g: { anyOf: [{ type: 'string' }, { not: {} }] },
             h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
             i: { $ref: '#/components/schemas/ref' },
             j: { $ref: '#/components/schemas/oref' },
-            k: {},
+            k: { type: 'string' },
             l: { type: 'number' },
           },
           additionalProperties: false,
@@ -304,13 +304,11 @@ describe('required', () => {
       });
     });
 
-    // colinhacks/zod#4768
-    it.skip('does not create an required array', () => {
+    it('does not create an required array', () => {
       const ref = z.string().meta({ id: 'ref1' });
       const oref = z.string().optional().meta({ id: 'oref1' });
       const schema = z.object({
-        a: z.literal(undefined),
-        b: z.never(),
+        b: z.never().optional(),
         c: z.undefined(),
         d: z.string().optional(),
         e: z.string().nullish(),
@@ -319,7 +317,7 @@ describe('required', () => {
         h: z.union([z.string(), z.number().optional()]),
         i: ref.optional(),
         j: oref,
-        k: z.custom<string | undefined>(),
+        k: z.custom<string | undefined>().meta({ type: 'string' }).optional(),
         l: z
           .string()
           .optional()
@@ -330,22 +328,28 @@ describe('required', () => {
       });
 
       const ctx = createInputContext();
+      ctx.opts.allowEmptySchema = {
+        custom: true,
+      };
       const result = createSchema(schema, ctx);
 
       expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'object',
           properties: {
+            b: { not: {} },
+            c: { not: {} },
             d: { type: 'string' },
-            e: { type: ['string', 'null'] },
+            e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
             f: { type: 'number' },
-            g: { anyOf: [{ type: 'string' }] },
+            g: { anyOf: [{ type: 'string' }, { not: {} }] },
             h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
             i: { $ref: '#/components/schemas/ref1' },
             j: { $ref: '#/components/schemas/oref1' },
-            k: {},
+            k: { type: 'string' },
             l: { type: 'string' },
             m: { type: 'string', default: 'a' },
+            n: { not: {} },
           },
         },
         components: {
