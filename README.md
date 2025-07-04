@@ -196,14 +196,14 @@ createDocument(doc, {
 
 #### CreateDocumentOptions
 
-| Option             | Type                | Default                   | Description                                                                                                       |
-| ------------------ | ------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `override`         | `Function`          | `undefined`               | Override rendered schema with a function``                                                                        |
-| `outputIdSuffix`   | `string`            | `'Output'`                | Suffix for output schema IDs when the schema is used in both a request and response                               |
-| `allowEmptySchema` | `boolean \| Object` | `false`                   | Control whether empty schemas are allowed.                                                                        |
-| `cycles`           | `'ref' \| 'throw'`  | `'ref'`                   | How to handle cycles in schemas.<br>- `'ref'` — Break cycles using $defs<br>- `'throw'` — Error on cycles         |
-| `reused`           | `'ref' \| 'inline'` | `'inline'`                | How to handle reused schemas.<br>- `'ref'` — Reused schemas as references<br>- `'inline'` — Inline reused schemas |
-| `schemaRefPath`    | `string`            | `'#/components/schemas/'` | Path prefix for schema references. Used when generating $ref values.                                              |
+| Option             | Type                | Default     | Description                                                                                                       |
+| ------------------ | ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `override`         | `Function`          | `undefined` | Override rendered schema with a function``                                                                        |
+| `outputIdSuffix`   | `string`            | `'Output'`  | Suffix for output schema IDs when the schema is used in both a request and response                               |
+| `allowEmptySchema` | `Object`            | `undefined` | Control whether empty schemas are allowed.                                                                        |
+| `cycles`           | `'ref' \| 'throw'`  | `'ref'`     | How to handle cycles in schemas.<br>- `'ref'` — Break cycles using $defs<br>- `'throw'` — Error on cycles         |
+| `reused`           | `'ref' \| 'inline'` | `'inline'`  | How to handle reused schemas.<br>- `'ref'` — Reused schemas as references<br>- `'inline'` — Inline reused schemas |
+|                    |
 
 ### `createSchema`
 
@@ -270,10 +270,10 @@ const { schema, components } = createSchema(job);
 const { schema, components } = createSchema(job, {
   // Input/Output context - controls how schemas are generated
   io: 'input', // 'input' for request bodies/params, 'output' for responses
-
   // Component handling
   schemaComponents: { jobId: z.string() }, // Pre-defined components to use
   schemaComponentRefPath: '#/definitions/', // Custom path prefix for component references
+  opts: {}, // Create Document Options,
 });
 ```
 

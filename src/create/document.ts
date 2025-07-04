@@ -225,10 +225,6 @@ export interface CreateDocumentOptions {
    * - `"ref"` — Default. Cycles will be broken using $defs
    * - `"throw"` — Cycles will throw an error if encountered */
   cycles?: 'ref' | 'throw';
-  /**
-   * The $ref path to use for a schema component. Defaults to `#/components/schemas/`
-   */
-  schemaRefPath?: string;
 }
 
 export const createDocument = (
