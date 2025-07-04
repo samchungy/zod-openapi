@@ -9,6 +9,7 @@ import type { $ZodType } from 'zod/v4/core';
 
 import type {
   CreateDocumentOptions,
+  ZodOpenApiBaseMetadata,
   ZodOpenApiComponentsObject,
   oas31,
 } from '../..';
@@ -72,12 +73,26 @@ export const createSchema = (
   };
 };
 
+const zodOpenApiMetadataFields: Array<keyof ZodOpenApiBaseMetadata> = [
+  'param',
+  'header',
+  'unusedIO',
+  'override',
+  'outputId',
+] as const;
+
 const deleteZodOpenApiMeta = (jsonSchema: core.JSONSchema.JSONSchema) => {
-  delete jsonSchema.param;
-  delete jsonSchema.header;
-  delete jsonSchema.unusedIO;
-  delete jsonSchema.override;
-  delete jsonSchema.outputId;
+  zodOpenApiMetadataFields.forEach((field) => {
+    delete jsonSchema[field];
+  });
+};
+
+const deleteInvalidJsonSchemaFields = (
+  jsonSchema: core.JSONSchema.JSONSchema,
+) => {
+  // Remove fields that are not valid in OpenAPI 3.1
+  delete jsonSchema.$schema;
+  delete jsonSchema.id;
 };
 
 export const createSchemas = <
@@ -137,8 +152,7 @@ export const createSchemas = <
         delete context.jsonSchema.override;
       }
 
-      delete context.jsonSchema.$schema;
-      delete context.jsonSchema.id;
+      deleteInvalidJsonSchemaFields(context.jsonSchema);
       deleteZodOpenApiMeta(context.jsonSchema);
       validate(enrichedContext, ctx.opts);
     },
@@ -194,12 +208,9 @@ export const createSchemas = <
     if (!manualComponent) {
       continue;
     }
-    delete manualComponent.$schema;
-    delete manualComponent.id;
+    deleteInvalidJsonSchemaFields(manualComponent);
 
     if (manualUsed[key]) {
-      delete manualComponent.$schema;
-      delete manualComponent.id;
       if (parsedComponents[key]) {
         throw new Error(
           `Component "${key}" is already registered as a component in the registry`,

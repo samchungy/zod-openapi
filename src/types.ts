@@ -9,7 +9,7 @@ export type Override = (ctx: {
   io: 'input' | 'output';
 }) => void;
 
-export interface ZodOpenApiMetadata extends core.JSONSchemaMeta {
+export interface ZodOpenApiBaseMetadata {
   /**
    * Used to set metadata for a parameter
    */
@@ -44,7 +44,11 @@ export interface ZodOpenApiMetadata extends core.JSONSchemaMeta {
    * If not specified, the id will be simply derived as the id of the schema plus an `Output` suffix. Please note that `id` must be set.
    */
   outputId?: string;
+}
 
+export interface ZodOpenApiMetadata
+  extends ZodOpenApiBaseMetadata,
+    core.JSONSchemaMeta {
   examples?: unknown[];
   example?: unknown;
 }
