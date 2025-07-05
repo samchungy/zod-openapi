@@ -183,9 +183,10 @@ const document = createDocument({
 ```typescript
 createDocument(doc, {
   override: ({ jsonSchema, zodSchema, io }) => {
-    // Customize the schema generation
-    if (io === 'output') {
+    const def = zodSchema._zod.def;
+    if (def.type === 'date' && io === 'output') {
       jsonSchema.type = 'string';
+      jsonSchema.format = 'date-time';
     }
   },
 });
