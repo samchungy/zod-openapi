@@ -12,6 +12,7 @@
     "zod-openapi"
   ],
   "homepage": "https://github.com/samchungy/zod-openapi#readme",
+  "funding": "https://github.com/samchungy/zod-openapi?sponsor=1",
   "bugs": {
     "url": "https://github.com/samchungy/zod-openapi/issues"
   },
