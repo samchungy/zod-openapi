@@ -1,38 +1,37 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('default', () => {
   it('creates a default string schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      default: 'a',
-    };
-
     const schema = z.string().default('a');
 
-    const result = createSchema(schema, createOutputState(), ['default']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'string',
+        default: 'a',
+      },
+      components: {},
+    });
   });
 
   it('adds a default property to a registered schema', () => {
-    const expected: oas31.SchemaObject = {
-      allOf: [
-        {
-          $ref: '#/components/schemas/ref',
+    const schema = z.string().meta({ id: 'ref' }).default('a');
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/ref',
+        default: 'a',
+      },
+      components: {
+        ref: {
+          type: 'string',
         },
-      ],
-      default: 'a',
-    };
-
-    const schema = z.string().openapi({ ref: 'ref' }).optional().default('a');
-
-    const result = createSchema(schema, createOutputState(), ['default']);
-
-    expect(result).toEqual(expected);
+      },
+    });
   });
 });

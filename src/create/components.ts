@@ -1,686 +1,1024 @@
-import type { ZodType } from 'zod';
+import { type $ZodType, globalRegistry } from 'zod/v4/core';
 
-import type { oas30, oas31 } from '../openapi3-ts/dist';
-import { isAnyZodType } from '../zodType';
+import type { oas31 } from '../openapi3-ts/dist';
+import { isAnyZodType } from '../zod';
 
-import { createCallback } from './callbacks';
+import { createContent } from './content';
 import type {
   CreateDocumentOptions,
   ZodOpenApiCallbackObject,
   ZodOpenApiComponentsObject,
+  ZodOpenApiExampleObject,
+  ZodOpenApiLinkObject,
+  ZodOpenApiOperationObject,
+  ZodOpenApiPathItemObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
-  ZodOpenApiVersion,
+  ZodOpenApiSecuritySchemeObject,
 } from './document';
-import { createParamOrRef } from './parameters';
-import { createRequestBody } from './paths';
-import { createHeaderOrRef, createResponse } from './responses';
-import { type SchemaState, createSchema } from './schema';
+import { createExamples } from './examples';
+import { createHeaders } from './headers';
+import { createLinks } from './links';
+import { isRequired } from './object';
+import { createManualParameters } from './parameters';
+import { createOperation } from './paths';
+import { createSchemas } from './schema/schema';
+import { isISpecificationExtension } from './specificationExtension';
 
-export type CreationType = 'input' | 'output';
+type SchemaSource =
+  | {
+      type: 'mediaType' | 'header';
+    }
+  | { type: 'parameter'; location: { in: string; name: string } };
 
-type BaseEffect = {
-  zodType: ZodType;
-  path: string[];
-};
-export type ComponentEffect = BaseEffect & {
-  type: 'component';
-};
-
-export type SchemaEffect = BaseEffect & {
-  type: 'schema';
-  creationType: CreationType;
-};
-
-export type Effect = ComponentEffect | SchemaEffect;
-
-export type ResolvedEffect = {
-  creationType: CreationType;
-  path: string[];
-  zodType: ZodType;
-  component?: {
-    ref: string;
-    zodType: ZodType;
-    path: string[];
+export interface ComponentRegistry {
+  components: {
+    schemas: {
+      dynamicSchemaCount: number;
+      input: Map<
+        string,
+        {
+          zodType: $ZodType;
+          schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          source: SchemaSource & { path: string[] };
+        }
+      >;
+      output: Map<
+        string,
+        {
+          zodType: $ZodType;
+          schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          source: SchemaSource & { path: string[] };
+        }
+      >;
+      ids: Map<string, oas31.SchemaObject | oas31.ReferenceObject>;
+      manual: Map<
+        string,
+        {
+          input: {
+            used?: true;
+            schemaObject: oas31.SchemaObject;
+          };
+          output: {
+            used?: true;
+            schemaObject: oas31.SchemaObject;
+          };
+          zodType: $ZodType;
+        }
+      >;
+    };
+    headers: {
+      ids: Map<string, oas31.HeaderObject | oas31.ReferenceObject>;
+      seen: WeakMap<$ZodType, oas31.HeaderObject | oas31.ReferenceObject>;
+    };
+    requestBodies: {
+      ids: Map<string, oas31.RequestBodyObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiRequestBodyObject,
+        oas31.RequestBodyObject | oas31.ReferenceObject
+      >;
+    };
+    responses: {
+      ids: Map<string, oas31.ResponseObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiResponseObject,
+        oas31.ResponseObject | oas31.ReferenceObject
+      >;
+    };
+    parameters: {
+      ids: Map<string, oas31.ParameterObject | oas31.ReferenceObject>;
+      seen: WeakMap<$ZodType, oas31.ParameterObject | oas31.ReferenceObject>;
+    };
+    callbacks: {
+      ids: Map<string, ZodOpenApiCallbackObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiCallbackObject,
+        ZodOpenApiCallbackObject | oas31.ReferenceObject
+      >;
+    };
+    pathItems: {
+      ids: Map<string, oas31.PathItemObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiPathItemObject,
+        oas31.PathItemObject | oas31.ReferenceObject
+      >;
+    };
+    securitySchemes: {
+      ids: Map<string, oas31.SecuritySchemeObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiSecuritySchemeObject,
+        oas31.SecuritySchemeObject | oas31.ReferenceObject
+      >;
+    };
+    links: {
+      ids: Map<string, oas31.LinkObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiLinkObject,
+        oas31.LinkObject | oas31.ReferenceObject
+      >;
+    };
+    examples: {
+      ids: Map<string, oas31.ExampleObject | oas31.ReferenceObject>;
+      seen: WeakMap<
+        ZodOpenApiExampleObject,
+        oas31.ExampleObject | oas31.ReferenceObject
+      >;
+    };
   };
-};
+  addSchema: (
+    schema: $ZodType,
+    path: string[],
+    opts: {
+      io: 'input' | 'output';
+      source: SchemaSource;
+    },
+  ) => oas31.SchemaObject | oas31.ReferenceObject;
 
-export interface CompleteSchemaComponent extends BaseSchemaComponent {
-  type: 'complete';
-  schemaObject:
-    | oas31.SchemaObject
-    | oas31.ReferenceObject
-    | oas30.SchemaObject
-    | oas30.ReferenceObject;
-  /** Set when the created schemaObject is specific to a particular effect */
-  effects?: Effect[];
-  resolvedEffect?: ResolvedEffect;
+  addHeader: (
+    header: $ZodType,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.HeaderObject | oas31.ReferenceObject;
+  addParameter: (
+    parameter: $ZodType,
+    path: string[],
+    opts?: {
+      location?: { in: oas31.ParameterLocation; name: string };
+      manualId?: string;
+    },
+  ) => oas31.ParameterObject | oas31.ReferenceObject;
+  addRequestBody: (
+    requestBody: ZodOpenApiRequestBodyObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.RequestBodyObject | oas31.ReferenceObject;
+  addPathItem: (
+    pathItem: ZodOpenApiPathItemObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.PathItemObject | oas31.ReferenceObject;
+
+  addResponse: (
+    response: ZodOpenApiResponseObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.ResponseObject | oas31.ReferenceObject;
+  addCallback: (
+    callback: ZodOpenApiCallbackObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.CallbackObject | oas31.ReferenceObject;
+  addSecurityScheme: (
+    securityScheme: ZodOpenApiSecuritySchemeObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.SecuritySchemeObject | oas31.ReferenceObject;
+  addLink: (
+    link: ZodOpenApiLinkObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.LinkObject | oas31.ReferenceObject;
+  addExample: (
+    example: ZodOpenApiExampleObject,
+    path: string[],
+    opts?: {
+      manualId?: string;
+    },
+  ) => oas31.ExampleObject | oas31.ReferenceObject;
 }
 
-/**
- *
- */
-export interface ManualSchemaComponent extends BaseSchemaComponent {
-  type: 'manual';
-}
+export const createRegistry = (
+  components?: ZodOpenApiComponentsObject,
+): ComponentRegistry => {
+  const registry: ComponentRegistry = {
+    components: {
+      schemas: {
+        dynamicSchemaCount: 0,
+        input: new Map(),
+        output: new Map(),
+        ids: new Map(),
+        manual: new Map(),
+      },
+      headers: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      requestBodies: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      responses: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      parameters: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      callbacks: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      pathItems: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      securitySchemes: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      links: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+      examples: {
+        ids: new Map(),
+        seen: new WeakMap(),
+      },
+    },
+    addSchema: (
+      schema,
+      path,
+      opts,
+    ): oas31.SchemaObject | oas31.ReferenceObject => {
+      const schemaObject: oas31.SchemaObject = {};
 
-export interface InProgressSchemaComponent extends BaseSchemaComponent {
-  type: 'in-progress';
-}
+      registry.components.schemas[opts.io].set(path.join(' > '), {
+        schemaObject,
+        zodType: schema,
+        source: {
+          path,
+          ...opts?.source,
+        },
+      });
+      return schemaObject;
+    },
+    addParameter: (
+      parameter,
+      path,
+      opts,
+    ): oas31.ParameterObject | oas31.ReferenceObject => {
+      const seenParameter = registry.components.parameters.seen.get(parameter);
+      if (seenParameter) {
+        return seenParameter as oas31.ParameterObject;
+      }
 
-interface BaseSchemaComponent {
-  ref: string;
-}
+      const meta = globalRegistry.get(parameter);
 
-export type SchemaComponent =
-  | CompleteSchemaComponent
-  | ManualSchemaComponent
-  | InProgressSchemaComponent;
+      const name = opts?.location?.name ?? meta?.param?.name;
+      const inLocation = opts?.location?.in ?? meta?.param?.in;
 
-export type SchemaComponentMap = Map<ZodType, SchemaComponent>;
+      if (
+        (opts?.location?.name && meta?.param?.name) ||
+        (opts?.location?.in && meta?.param?.in)
+      ) {
+        throw new Error(
+          `Parameter at ${path.join(' > ')} has both \`.meta({ param: { name, in } })\` and \`.meta({ param: { location: { in, name } } })\` information`,
+        );
+      }
 
-export interface CompleteParameterComponent extends BaseParameterComponent {
-  type: 'complete';
-  paramObject:
-    | oas31.ParameterObject
-    | oas31.ReferenceObject
-    | oas30.ParameterObject
-    | oas30.ReferenceObject;
-}
+      if (!name || !inLocation) {
+        throw new Error(
+          `Parameter at ${path.join(' > ')} is missing \`.meta({ param: { name, in } })\` information`,
+        );
+      }
 
-export interface PartialParameterComponent extends BaseParameterComponent {
-  type: 'manual';
-}
+      const schemaObject = registry.addSchema(
+        parameter,
+        [...path, inLocation, name, 'schema'],
+        {
+          io: 'input',
+          source: { type: 'parameter', location: { in: inLocation, name } },
+        },
+      );
 
-interface BaseParameterComponent {
-  ref: string;
-  in: oas31.ParameterLocation;
-  name: string;
-}
+      const { id: metaId, examples, ...rest } = meta?.param ?? {};
 
-export type ParameterComponent =
-  | CompleteParameterComponent
-  | PartialParameterComponent;
+      const parameterObject: oas31.ParameterObject = {
+        in: inLocation,
+        name,
+        schema: schemaObject,
+        ...rest,
+      };
 
-export type ParameterComponentMap = Map<ZodType, ParameterComponent>;
+      const examplesObject = createExamples(examples, registry, [
+        ...path,
+        inLocation,
+        name,
+        'examples',
+      ]);
 
-export interface CompleteHeaderComponent extends BaseHeaderComponent {
-  type: 'complete';
-  headerObject:
-    | oas31.HeaderObject
-    | oas31.ReferenceObject
-    | oas30.HeaderObject
-    | oas30.ReferenceObject;
-}
+      if (examplesObject) {
+        parameterObject.examples = examplesObject;
+      }
 
-export interface PartialHeaderComponent extends BaseHeaderComponent {
-  type: 'manual';
-}
+      if (isRequired(parameter, 'input')) {
+        parameterObject.required = true;
+      }
 
-interface BaseHeaderComponent {
-  ref: string;
-}
+      if (!parameterObject.description && meta?.description) {
+        parameterObject.description = meta.description;
+      }
 
-export type HeaderComponent = CompleteHeaderComponent | PartialHeaderComponent;
+      const id = metaId ?? opts?.manualId;
 
-export type HeaderComponentMap = Map<ZodType, HeaderComponent>;
+      if (id) {
+        if (registry.components.parameters.ids.has(id)) {
+          throw new Error(
+            `Schema "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/parameters/${id}`,
+        };
+        registry.components.parameters.seen.set(parameter, ref);
+        registry.components.parameters.ids.set(id, parameterObject);
+        return ref;
+      }
 
-interface BaseResponseComponent {
-  ref: string;
-}
+      if (opts?.location?.name || opts?.location?.in) {
+        return parameterObject;
+      }
 
-export interface CompleteResponseComponent extends BaseResponseComponent {
-  type: 'complete';
-  responseObject:
-    | oas31.ResponseObject
-    | oas31.ReferenceObject
-    | oas30.ResponseObject
-    | oas30.ReferenceObject;
-}
+      registry.components.parameters.seen.set(parameter, parameterObject);
+      return parameterObject;
+    },
+    addHeader: (
+      header,
+      path,
+      opts,
+    ): oas31.HeaderObject | oas31.ReferenceObject => {
+      const seenHeader = registry.components.headers.seen.get(header);
+      if (seenHeader) {
+        return seenHeader as oas31.HeaderObject;
+      }
 
-export interface PartialResponseComponent extends BaseResponseComponent {
-  type: 'manual';
-}
+      const meta = globalRegistry.get(header);
 
-export type ResponseComponent =
-  | CompleteResponseComponent
-  | PartialResponseComponent;
+      const { id: metaId, ...rest } = meta?.header ?? {};
+      const id = metaId ?? opts?.manualId;
 
-export type ResponseComponentMap = Map<
-  ZodOpenApiResponseObject,
-  ResponseComponent
->;
+      const headerObject: oas31.HeaderObject = rest;
 
-interface BaseRequestBodyComponent {
-  ref: string;
-}
+      if (isRequired(header, 'output')) {
+        headerObject.required = true;
+      }
 
-export interface CompleteRequestBodyComponent extends BaseRequestBodyComponent {
-  type: 'complete';
-  requestBodyObject:
-    | oas31.RequestBodyObject
-    | oas31.ReferenceObject
-    | oas30.RequestBodyObject
-    | oas30.ReferenceObject;
-}
+      if (!headerObject.description && meta?.description) {
+        headerObject.description = meta.description;
+      }
 
-export interface PartialRequestBodyComponent extends BaseRequestBodyComponent {
-  type: 'manual';
-}
+      headerObject.schema = registry.addSchema(header, [...path, 'schema'], {
+        io: 'output',
+        source: { type: 'header' },
+      });
 
-export type RequestBodyComponent =
-  | CompleteRequestBodyComponent
-  | PartialRequestBodyComponent;
+      if (id) {
+        if (registry.components.schemas.ids.has(id)) {
+          throw new Error(
+            `Schema "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/headers/${id}`,
+        };
+        registry.components.headers.ids.set(id, headerObject);
+        registry.components.headers.seen.set(header, ref);
+        return ref;
+      }
 
-export type RequestBodyComponentMap = Map<
-  ZodOpenApiRequestBodyObject,
-  RequestBodyComponent
->;
+      registry.components.headers.seen.set(header, headerObject);
 
-export interface BaseCallbackComponent {
-  ref: string;
-}
+      return headerObject;
+    },
+    addRequestBody: (
+      requestBody,
+      path,
+      opts,
+    ): oas31.RequestBodyObject | oas31.ReferenceObject => {
+      const seenRequestBody =
+        registry.components.requestBodies.seen.get(requestBody);
+      if (seenRequestBody) {
+        return seenRequestBody as oas31.RequestBodyObject;
+      }
 
-export interface CompleteCallbackComponent extends BaseCallbackComponent {
-  type: 'complete';
-  callbackObject:
-    | ZodOpenApiCallbackObject
-    | oas31.CallbackObject
-    | oas30.CallbackObject;
-}
+      const { content, id: metaId, ...rest } = requestBody;
 
-export interface PartialCallbackComponent extends BaseCallbackComponent {
-  type: 'manual';
-}
+      const requestBodyObject: oas31.RequestBodyObject = {
+        ...rest,
+        content: createContent(content, { registry, io: 'input' }, [
+          ...path,
+          'content',
+        ]),
+      };
 
-export type CallbackComponent =
-  | CompleteCallbackComponent
-  | PartialCallbackComponent;
+      const id = metaId ?? opts?.manualId;
 
-export type CallbackComponentMap = Map<
-  ZodOpenApiCallbackObject,
-  CallbackComponent
->;
+      if (id) {
+        if (registry.components.requestBodies.ids.has(id)) {
+          throw new Error(
+            `RequestBody "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/requestBodies/${id}`,
+        };
+        registry.components.requestBodies.ids.set(id, requestBodyObject);
+        registry.components.requestBodies.seen.set(requestBody, ref);
+        return ref;
+      }
 
-export interface ComponentsObject {
-  schemas: SchemaComponentMap;
-  parameters: ParameterComponentMap;
-  headers: HeaderComponentMap;
-  requestBodies: RequestBodyComponentMap;
-  responses: ResponseComponentMap;
-  callbacks: CallbackComponentMap;
-  openapi: ZodOpenApiVersion;
-}
+      registry.components.requestBodies.seen.set(
+        requestBody,
+        requestBodyObject,
+      );
 
-export const getDefaultComponents = (
-  componentsObject?: ZodOpenApiComponentsObject,
-  openapi: ZodOpenApiVersion = '3.1.0',
-): ComponentsObject => {
-  const defaultComponents: ComponentsObject = {
-    schemas: new Map(),
-    parameters: new Map(),
-    headers: new Map(),
-    requestBodies: new Map(),
-    responses: new Map(),
-    callbacks: new Map(),
-    openapi,
+      return requestBodyObject;
+    },
+    addPathItem: (pathItem, path, opts) => {
+      const seenPathItem = registry.components.pathItems.seen.get(pathItem);
+      if (seenPathItem) {
+        return seenPathItem;
+      }
+
+      const pathItemObject: oas31.PathItemObject = {};
+
+      const { id: metaId, ...rest } = pathItem;
+
+      const id = metaId ?? opts?.manualId;
+
+      for (const [key, value] of Object.entries(rest)) {
+        if (isISpecificationExtension(key)) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          pathItemObject[key] = value;
+          continue;
+        }
+
+        if (
+          key === 'get' ||
+          key === 'put' ||
+          key === 'post' ||
+          key === 'delete' ||
+          key === 'options' ||
+          key === 'head' ||
+          key === 'patch' ||
+          key === 'trace'
+        ) {
+          pathItemObject[key] = createOperation(
+            value as ZodOpenApiOperationObject,
+            registry,
+            [...path, key],
+          );
+          continue;
+        }
+
+        if (key === 'parameters') {
+          pathItemObject[key] = createManualParameters(
+            value as
+              | Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>
+              | undefined,
+            registry,
+            [...path, key],
+          );
+          continue;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        pathItemObject[key as keyof oas31.PathItemObject] = value;
+      }
+
+      if (id) {
+        if (registry.components.pathItems.ids.has(id)) {
+          throw new Error(
+            `PathItem "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/pathItems/${id}`,
+        };
+        registry.components.pathItems.ids.set(id, pathItemObject);
+        registry.components.pathItems.seen.set(pathItem, ref);
+        return ref;
+      }
+
+      registry.components.pathItems.seen.set(pathItem, pathItemObject);
+
+      return pathItemObject;
+    },
+    addResponse: (
+      response,
+      path,
+      opts,
+    ): oas31.ResponseObject | oas31.ReferenceObject => {
+      const seenResponse = registry.components.responses.seen.get(response);
+      if (seenResponse) {
+        return seenResponse;
+      }
+
+      const { content, headers, links, id: metaId, ...rest } = response;
+
+      const responseObject: oas31.ResponseObject = rest;
+
+      const maybeHeaders = createHeaders(headers, registry, [
+        ...path,
+        'headers',
+      ]);
+      if (maybeHeaders) {
+        responseObject.headers = maybeHeaders;
+      }
+
+      if (content) {
+        responseObject.content = createContent(
+          content,
+          { registry, io: 'output' },
+          [...path, 'content'],
+        );
+      }
+
+      if (links) {
+        responseObject.links = createLinks(links, registry, [...path, 'links']);
+      }
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.responses.ids.has(id)) {
+          throw new Error(
+            `Response "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/responses/${id}`,
+        };
+        registry.components.responses.ids.set(id, responseObject);
+        registry.components.responses.seen.set(response, ref);
+        return ref;
+      }
+
+      registry.components.responses.seen.set(response, responseObject);
+
+      return responseObject;
+    },
+    addCallback: (
+      callback,
+      path,
+      opts,
+    ): oas31.CallbackObject | oas31.ReferenceObject => {
+      const seenCallback = registry.components.callbacks.seen.get(callback);
+      if (seenCallback) {
+        return seenCallback;
+      }
+
+      const { id: metaId, ...rest } = callback;
+
+      const callbackObject: oas31.CallbackObject = {};
+      for (const [name, pathItem] of Object.entries(rest)) {
+        if (isISpecificationExtension(name)) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          callbackObject[name] = pathItem;
+          continue;
+        }
+
+        callbackObject[name] = registry.addPathItem(
+          pathItem as ZodOpenApiPathItemObject,
+          [...path, name],
+        );
+      }
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.callbacks.ids.has(id)) {
+          throw new Error(
+            `Callback "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/callbacks/${id}`,
+        };
+        registry.components.callbacks.ids.set(id, callbackObject);
+        registry.components.callbacks.seen.set(callback, ref);
+        return ref;
+      }
+
+      registry.components.callbacks.seen.set(callback, callbackObject);
+      return callbackObject;
+    },
+    addSecurityScheme: (securityScheme, path, opts) => {
+      const seenSecurityScheme =
+        registry.components.securitySchemes.seen.get(securityScheme);
+      if (seenSecurityScheme) {
+        return seenSecurityScheme;
+      }
+
+      const { id: metaId, ...rest } = securityScheme;
+      const securitySchemeObject: oas31.SecuritySchemeObject = rest;
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.securitySchemes.ids.has(id)) {
+          throw new Error(
+            `SecurityScheme "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/securitySchemes/${id}`,
+        };
+        registry.components.securitySchemes.ids.set(id, securitySchemeObject);
+        registry.components.securitySchemes.seen.set(securityScheme, ref);
+        return ref;
+      }
+
+      registry.components.securitySchemes.seen.set(
+        securityScheme,
+        securitySchemeObject,
+      );
+      return securitySchemeObject;
+    },
+    addLink: (link, path, opts) => {
+      const seenLink = registry.components.links.seen.get(link);
+      if (seenLink) {
+        return seenLink;
+      }
+
+      const { id: metaId, ...rest } = link;
+
+      const linkObject: oas31.LinkObject = rest;
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.links.ids.has(id)) {
+          throw new Error(
+            `Link "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/links/${id}`,
+        };
+        registry.components.links.ids.set(id, linkObject);
+        registry.components.links.seen.set(link, ref);
+        return ref;
+      }
+
+      registry.components.links.seen.set(link, linkObject);
+      return linkObject;
+    },
+    addExample: (
+      example,
+      path,
+      opts,
+    ): oas31.ExampleObject | oas31.ReferenceObject => {
+      const seenExample = registry.components.examples.seen.get(example);
+      if (seenExample) {
+        return seenExample;
+      }
+
+      const { id: metaId, ...rest } = example;
+
+      const exampleObject: oas31.ExampleObject = rest;
+
+      const id = metaId ?? opts?.manualId;
+
+      if (id) {
+        if (registry.components.examples.ids.has(id)) {
+          throw new Error(
+            `Example "${id}" at ${path.join(' > ')} is already registered`,
+          );
+        }
+        const ref: oas31.ReferenceObject = {
+          $ref: `#/components/examples/${id}`,
+        };
+        registry.components.examples.ids.set(id, exampleObject);
+        registry.components.examples.seen.set(example, ref);
+        return ref;
+      }
+
+      registry.components.examples.seen.set(example, exampleObject);
+
+      return exampleObject;
+    },
   };
-  if (!componentsObject) {
-    return defaultComponents;
-  }
 
-  getSchemas(componentsObject.schemas, defaultComponents);
-  getParameters(componentsObject.parameters, defaultComponents);
-  getRequestBodies(componentsObject.requestBodies, defaultComponents);
-  getHeaders(componentsObject.headers, defaultComponents);
-  getResponses(componentsObject.responses, defaultComponents);
-  getCallbacks(componentsObject.callbacks, defaultComponents);
+  registerSchemas(components?.schemas, registry);
+  registerParameters(components?.parameters, registry);
+  registerHeaders(components?.headers, registry);
+  registerResponses(components?.responses, registry);
+  registerPathItems(components?.pathItems, registry);
+  registerRequestBodies(components?.requestBodies, registry);
+  registerCallbacks(components?.callbacks, registry);
+  registerSecuritySchemes(components?.securitySchemes, registry);
+  registerLinks(components?.links, registry);
+  registerExamples(components?.examples, registry);
 
-  return defaultComponents;
+  return registry;
 };
 
-const getSchemas = (
+const registerSchemas = (
   schemas: ZodOpenApiComponentsObject['schemas'],
-  components: ComponentsObject,
+  registry: ComponentRegistry,
 ): void => {
   if (!schemas) {
     return;
   }
 
-  Object.entries(schemas).forEach(([key, schema]) => {
+  for (const [key, schema] of Object.entries(schemas)) {
     if (isAnyZodType(schema)) {
-      if (components.schemas.has(schema)) {
-        throw new Error(
-          `Schema ${JSON.stringify(schema._def)} is already registered`,
-        );
-      }
-      const ref = schema._def.zodOpenApi?.openapi?.ref ?? key;
-      components.schemas.set(schema, {
-        type: 'manual',
-        ref,
+      const id = globalRegistry.get(schema)?.id ?? key;
+      registry.components.schemas.manual.set(id, {
+        input: {
+          schemaObject: {},
+        },
+        output: {
+          schemaObject: {},
+        },
+        zodType: schema,
       });
+      continue;
     }
-  });
+
+    registry.components.schemas.ids.set(
+      key,
+      schema as oas31.SchemaObject | oas31.ReferenceObject,
+    );
+  }
 };
 
-const getParameters = (
+const registerParameters = (
   parameters: ZodOpenApiComponentsObject['parameters'],
-  components: ComponentsObject,
+  registry: ComponentRegistry,
 ): void => {
   if (!parameters) {
     return;
   }
 
-  Object.entries(parameters).forEach(([key, schema]) => {
+  for (const [key, schema] of Object.entries(parameters)) {
     if (isAnyZodType(schema)) {
-      if (components.parameters.has(schema)) {
-        throw new Error(
-          `Parameter ${JSON.stringify(schema._def)} is already registered`,
-        );
-      }
-      const ref = schema._def.zodOpenApi?.openapi?.param?.ref ?? key;
-      const name = schema._def.zodOpenApi?.openapi?.param?.name;
-      const location = schema._def.zodOpenApi?.openapi?.param?.in;
-
-      if (!name || !location) {
-        throw new Error('`name` or `in` missing in .openapi()');
-      }
-      components.parameters.set(schema, {
-        type: 'manual',
-        ref,
-        in: location,
-        name,
+      const path = ['components', 'parameters', key];
+      registry.addParameter(schema, path, {
+        manualId: key,
       });
+      continue;
     }
-  });
+
+    // Raw OpenAPI Parameter we should just blindly insert into the components
+    registry.components.parameters.ids.set(
+      key,
+      schema as oas31.ParameterObject,
+    );
+  }
 };
 
-const getHeaders = (
-  responseHeaders: ZodOpenApiComponentsObject['headers'],
-  components: ComponentsObject,
+const registerHeaders = (
+  headers: ZodOpenApiComponentsObject['headers'],
+  registry: ComponentRegistry,
 ): void => {
-  if (!responseHeaders) {
+  if (!headers) {
     return;
   }
-
-  Object.entries(responseHeaders).forEach(([key, schema]) => {
+  for (const [key, schema] of Object.entries(headers)) {
     if (isAnyZodType(schema)) {
-      if (components.parameters.has(schema)) {
-        throw new Error(
-          `Header ${JSON.stringify(schema._def)} is already registered`,
-        );
-      }
-      const ref = schema._def.zodOpenApi?.openapi?.param?.ref ?? key;
-      components.headers.set(schema, {
-        type: 'manual',
-        ref,
-      });
+      const path = ['components', 'headers', key];
+      registry.addHeader(schema, path, { manualId: key });
+      continue;
     }
-  });
+    registry.components.headers.ids.set(key, schema as oas31.HeaderObject);
+  }
 };
 
-const getResponses = (
+const registerResponses = (
   responses: ZodOpenApiComponentsObject['responses'],
-  components: ComponentsObject,
+  registry: ComponentRegistry,
 ): void => {
   if (!responses) {
     return;
   }
+  for (const [key, schema] of Object.entries(responses)) {
+    const responseObject = registry.addResponse(
+      schema,
+      ['components', 'responses', key],
+      { manualId: key },
+    );
 
-  Object.entries(responses).forEach(([key, responseObject]) => {
-    if (components.responses.has(responseObject)) {
-      throw new Error(
-        `Header ${JSON.stringify(responseObject)} is already registered`,
-      );
-    }
-    const ref = responseObject?.ref ?? key;
-    components.responses.set(responseObject, {
-      type: 'manual',
-      ref,
-    });
-  });
+    registry.components.responses.ids.set(key, responseObject);
+    registry.components.responses.seen.set(schema, responseObject);
+  }
 };
 
-const getRequestBodies = (
+const registerRequestBodies = (
   requestBodies: ZodOpenApiComponentsObject['requestBodies'],
-  components: ComponentsObject,
+  registry: ComponentRegistry,
 ): void => {
   if (!requestBodies) {
     return;
   }
 
-  Object.entries(requestBodies).forEach(([key, requestBody]) => {
-    if (components.requestBodies.has(requestBody)) {
-      throw new Error(
-        `Header ${JSON.stringify(requestBody)} is already registered`,
-      );
+  for (const [key, schema] of Object.entries(requestBodies)) {
+    if (isAnyZodType(schema)) {
+      registry.addRequestBody(schema, ['components', 'requestBodies', key], {
+        manualId: key,
+      });
+      continue;
     }
-    const ref = requestBody?.ref ?? key;
-    components.requestBodies.set(requestBody, {
-      type: 'manual',
-      ref,
-    });
-  });
+
+    // Raw OpenAPI Request Body we should just blindly insert into the components
+    registry.components.requestBodies.ids.set(
+      key,
+      schema as oas31.RequestBodyObject,
+    );
+  }
 };
 
-const getCallbacks = (
+const registerCallbacks = (
   callbacks: ZodOpenApiComponentsObject['callbacks'],
-  components: ComponentsObject,
+  registry: ComponentRegistry,
 ): void => {
   if (!callbacks) {
     return;
   }
 
-  Object.entries(callbacks).forEach(([key, callback]) => {
-    if (components.callbacks.has(callback)) {
-      throw new Error(
-        `Callback ${JSON.stringify(callback)} is already registered`,
-      );
-    }
-    const ref = callback?.ref ?? key;
-    components.callbacks.set(callback, {
-      type: 'manual',
-      ref,
+  for (const [key, schema] of Object.entries(callbacks)) {
+    registry.addCallback(schema, ['components', 'callbacks', key], {
+      manualId: key,
     });
-  });
+  }
 };
 
-export const createComponentSchemaRef = (
-  schemaRef: string,
-  componentPath?: string,
-) => `${componentPath ?? '#/components/schemas/'}${schemaRef}`;
+const registerPathItems = (
+  pathItems: ZodOpenApiComponentsObject['pathItems'],
+  registry: ComponentRegistry,
+): void => {
+  if (!pathItems) {
+    return;
+  }
 
-export const createComponentResponseRef = (responseRef: string) =>
-  `#/components/responses/${responseRef}`;
+  for (const [key, schema] of Object.entries(pathItems)) {
+    registry.addPathItem(schema, ['components', 'pathItems', key], {
+      manualId: key,
+    });
+  }
+};
 
-export const createComponentRequestBodyRef = (requestBodyRef: string) =>
-  `#/components/requestBodies/${requestBodyRef}`;
+const registerSecuritySchemes = (
+  securitySchemes: ZodOpenApiComponentsObject['securitySchemes'],
+  registry: ComponentRegistry,
+): void => {
+  if (!securitySchemes) {
+    return;
+  }
 
-export const createComponentCallbackRef = (callbackRef: string) =>
-  `#/components/callbacks/${callbackRef}`;
+  for (const [key, schema] of Object.entries(securitySchemes)) {
+    registry.addSecurityScheme(schema, ['components', 'securitySchemes', key], {
+      manualId: key,
+    });
+  }
+};
+
+const registerLinks = (
+  links: ZodOpenApiComponentsObject['links'],
+  registry: ComponentRegistry,
+): void => {
+  if (!links) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(links)) {
+    registry.addLink(schema, ['components', 'links', key], {
+      manualId: key,
+    });
+  }
+};
+
+const registerExamples = (
+  examples: ZodOpenApiComponentsObject['examples'],
+  registry: ComponentRegistry,
+): void => {
+  if (!examples) {
+    return;
+  }
+
+  for (const [key, schema] of Object.entries(examples)) {
+    registry.components.examples.ids.set(
+      key,
+      schema as oas31.ExampleObject | oas31.ReferenceObject,
+    );
+  }
+};
+
+const createIOSchemas = (ctx: {
+  registry: ComponentRegistry;
+  io: 'input' | 'output';
+  opts: CreateDocumentOptions;
+}) => {
+  const { schemas, components, manual } = createSchemas(
+    Object.fromEntries(ctx.registry.components.schemas[ctx.io]),
+    ctx,
+  );
+
+  for (const [key, schema] of Object.entries(components)) {
+    ctx.registry.components.schemas.ids.set(key, schema);
+  }
+
+  for (const [key, schema] of Object.entries(schemas)) {
+    const ioSchema = ctx.registry.components.schemas[ctx.io].get(key);
+
+    if (ioSchema) {
+      Object.assign(ioSchema.schemaObject, schema);
+    }
+  }
+
+  for (const [key, value] of Object.entries(manual)) {
+    const manualSchema = ctx.registry.components.schemas.manual.get(key);
+    if (!manualSchema) {
+      continue;
+    }
+
+    if (components[key]) {
+      manualSchema[ctx.io].used = true;
+    }
+
+    Object.assign(manualSchema[ctx.io].schemaObject, value);
+  }
+};
+
+const createManualSchemas = (registry: ComponentRegistry) => {
+  for (const [key, value] of registry.components.schemas.manual) {
+    if (!value.input.used) {
+      const io = globalRegistry.get(value.zodType)?.unusedIO ?? 'output';
+      const schema = value[io].schemaObject;
+      registry.components.schemas.ids.set(key, schema);
+    }
+  }
+};
 
 export const createComponents = (
-  componentsObject: ZodOpenApiComponentsObject,
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject | undefined => {
-  const combinedSchemas = createSchemaComponents(
-    componentsObject,
-    components,
-    documentOptions,
-  );
-  const combinedParameters = createParamComponents(
-    componentsObject,
-    components,
-    documentOptions,
-  );
-  const combinedHeaders = createHeaderComponents(
-    componentsObject,
-    components,
-    documentOptions,
-  );
-  const combinedResponses = createResponseComponents(
-    components,
-    documentOptions,
-  );
-  const combinedRequestBodies = createRequestBodiesComponents(
-    components,
-    documentOptions,
-  );
-  const combinedCallbacks = createCallbackComponents(
-    components,
-    documentOptions,
-  );
+  registry: ComponentRegistry,
+  opts: CreateDocumentOptions,
+) => {
+  createIOSchemas({ registry, io: 'input', opts });
+  createIOSchemas({ registry, io: 'output', opts });
+  createManualSchemas(registry);
 
-  const { schemas, parameters, headers, responses, requestBodies, ...rest } =
-    componentsObject;
+  const components: oas31.ComponentsObject = {};
 
-  const finalComponents: oas31.ComponentsObject = {
-    ...rest,
-    ...(combinedSchemas && { schemas: combinedSchemas }),
-    ...(combinedParameters && { parameters: combinedParameters }),
-    ...(combinedRequestBodies && { requestBodies: combinedRequestBodies }),
-    ...(combinedHeaders && { headers: combinedHeaders }),
-    ...(combinedResponses && { responses: combinedResponses }),
-    ...(combinedCallbacks && { callbacks: combinedCallbacks }),
-  };
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
-};
+  if (registry.components.schemas.ids.size > 0) {
+    components.schemas = Object.fromEntries(registry.components.schemas.ids);
+  }
+  if (registry.components.headers.ids.size > 0) {
+    components.headers = Object.fromEntries(registry.components.headers.ids);
+  }
+  if (registry.components.requestBodies.ids.size > 0) {
+    components.requestBodies = Object.fromEntries(
+      registry.components.requestBodies.ids,
+    );
+  }
+  if (registry.components.responses.ids.size > 0) {
+    components.responses = Object.fromEntries(
+      registry.components.responses.ids,
+    );
+  }
+  if (registry.components.parameters.ids.size > 0) {
+    components.parameters = Object.fromEntries(
+      registry.components.parameters.ids,
+    );
+  }
+  if (registry.components.callbacks.ids.size > 0) {
+    components.callbacks = Object.fromEntries(
+      registry.components.callbacks.ids,
+    );
+  }
+  if (registry.components.pathItems.ids.size > 0) {
+    components.pathItems = Object.fromEntries(
+      registry.components.pathItems.ids,
+    );
+  }
+  if (registry.components.securitySchemes.ids.size > 0) {
+    components.securitySchemes = Object.fromEntries(
+      registry.components.securitySchemes.ids,
+    );
+  }
+  if (registry.components.links.ids.size > 0) {
+    components.links = Object.fromEntries(registry.components.links.ids);
+  }
+  if (registry.components.examples.ids.size > 0) {
+    components.examples = Object.fromEntries(registry.components.examples.ids);
+  }
 
-export const createSchemaComponents = (
-  componentsObject: ZodOpenApiComponentsObject,
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject['schemas'] => {
-  Array.from(components.schemas).forEach(([schema, { type }], index) => {
-    if (type === 'manual') {
-      const state: SchemaState = {
-        components,
-        type: schema._def.zodOpenApi?.openapi?.refType ?? 'output',
-        path: [],
-        visited: new Set(),
-        documentOptions,
-      };
-
-      createSchema(schema, state, [`component schema index ${index}`]);
-    }
-  });
-
-  const customComponents = Object.entries(
-    componentsObject.schemas ?? {},
-  ).reduce<NonNullable<oas31.ComponentsObject['schemas']>>(
-    (acc, [key, value]) => {
-      if (isAnyZodType(value)) {
-        return acc;
-      }
-
-      if (acc[key]) {
-        throw new Error(`Schema "${key}" is already registered`);
-      }
-
-      acc[key] = value as oas31.SchemaObject | oas31.ReferenceObject;
-      return acc;
-    },
-    {},
-  );
-
-  const finalComponents = Array.from(components.schemas).reduce<
-    NonNullable<oas31.ComponentsObject['schemas']>
-  >((acc, [_zodType, component]) => {
-    if (component.type === 'complete') {
-      if (acc[component.ref]) {
-        throw new Error(`Schema "${component.ref}" is already registered`);
-      }
-      acc[component.ref] = component.schemaObject as oas31.SchemaObject;
-    }
-
-    return acc;
-  }, customComponents);
-
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
-};
-
-const createParamComponents = (
-  componentsObject: ZodOpenApiComponentsObject,
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject['parameters'] => {
-  Array.from(components.parameters).forEach(([schema, component], index) => {
-    if (component.type === 'manual') {
-      createParamOrRef(
-        schema,
-        components,
-        [`component parameter index ${index}`],
-        component.in,
-        component.ref,
-        documentOptions,
-      );
-    }
-  });
-
-  const customComponents = Object.entries(
-    componentsObject.parameters ?? {},
-  ).reduce<NonNullable<oas31.ComponentsObject['parameters']>>(
-    (acc, [key, value]) => {
-      if (!isAnyZodType(value)) {
-        if (acc[key]) {
-          throw new Error(`Parameter "${key}" is already registered`);
-        }
-
-        acc[key] = value as oas31.ParameterObject;
-      }
-      return acc;
-    },
-    {},
-  );
-
-  const finalComponents = Array.from(components.parameters).reduce<
-    NonNullable<oas31.ComponentsObject['parameters']>
-  >((acc, [_zodType, component]) => {
-    if (component.type === 'complete') {
-      if (acc[component.ref]) {
-        throw new Error(`Parameter "${component.ref}" is already registered`);
-      }
-      acc[component.ref] = component.paramObject as oas31.ParameterObject;
-    }
-
-    return acc;
-  }, customComponents);
-
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
-};
-
-const createHeaderComponents = (
-  componentsObject: ZodOpenApiComponentsObject,
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject['headers'] => {
-  Array.from(components.headers).forEach(([schema, component]) => {
-    if (component.type === 'manual') {
-      createHeaderOrRef(schema, components, documentOptions);
-    }
-  });
-
-  const headers = componentsObject.headers ?? {};
-  const customComponents = Object.entries(headers).reduce<
-    NonNullable<oas31.ComponentsObject['headers']>
-  >((acc, [key, value]) => {
-    if (!isAnyZodType(value)) {
-      if (acc[key]) {
-        throw new Error(`Header Ref "${key}" is already registered`);
-      }
-
-      acc[key] = value as oas31.HeaderObject;
-    }
-    return acc;
-  }, {});
-
-  const finalComponents = Array.from(components.headers).reduce<
-    NonNullable<oas31.ComponentsObject['headers']>
-  >((acc, [_zodType, component]) => {
-    if (component.type === 'complete') {
-      if (acc[component.ref]) {
-        throw new Error(`Header "${component.ref}" is already registered`);
-      }
-      acc[component.ref] = component.headerObject as oas31.HeaderObject;
-    }
-
-    return acc;
-  }, customComponents);
-
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
-};
-
-const createResponseComponents = (
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject['responses'] => {
-  Array.from(components.responses).forEach(([schema, component], index) => {
-    if (component.type === 'manual') {
-      createResponse(
-        schema,
-        components,
-        [`component response index ${index}`],
-        documentOptions,
-      );
-    }
-  });
-
-  const finalComponents = Array.from(components.responses).reduce<
-    NonNullable<oas31.ComponentsObject['responses']>
-  >((acc, [_zodType, component]) => {
-    if (component.type === 'complete') {
-      if (acc[component.ref]) {
-        throw new Error(`Response "${component.ref}" is already registered`);
-      }
-      acc[component.ref] = component.responseObject as oas31.ResponseObject;
-    }
-
-    return acc;
-  }, {});
-
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
-};
-
-const createRequestBodiesComponents = (
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject['requestBodies'] => {
-  Array.from(components.requestBodies).forEach(([schema, component], index) => {
-    if (component.type === 'manual') {
-      createRequestBody(
-        schema,
-        components,
-        [`component request body ${index}`],
-        documentOptions,
-      );
-    }
-  });
-
-  const finalComponents = Array.from(components.requestBodies).reduce<
-    NonNullable<oas31.ComponentsObject['requestBodies']>
-  >((acc, [_zodType, component]) => {
-    if (component.type === 'complete') {
-      if (acc[component.ref]) {
-        throw new Error(`RequestBody "${component.ref}" is already registered`);
-      }
-      acc[component.ref] =
-        component.requestBodyObject as oas31.RequestBodyObject;
-    }
-
-    return acc;
-  }, {});
-
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
-};
-
-const createCallbackComponents = (
-  components: ComponentsObject,
-  documentOptions?: CreateDocumentOptions,
-): oas31.ComponentsObject['callbacks'] => {
-  Array.from(components.callbacks).forEach(([schema, component], index) => {
-    if (component.type === 'manual') {
-      createCallback(
-        schema,
-        components,
-        [`component callback ${index}`],
-        documentOptions,
-      );
-    }
-  });
-
-  const finalComponents = Array.from(components.callbacks).reduce<
-    NonNullable<oas31.ComponentsObject['callbacks']>
-  >((acc, [_zodType, component]) => {
-    if (component.type === 'complete') {
-      if (acc[component.ref]) {
-        throw new Error(`Callback "${component.ref}" is already registered`);
-      }
-      acc[component.ref] = component.callbackObject as oas31.CallbackObject;
-    }
-
-    return acc;
-  }, {});
-
-  return Object.keys(finalComponents).length ? finalComponents : undefined;
+  return components;
 };

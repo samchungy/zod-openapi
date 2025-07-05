@@ -1,21 +1,19 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('catch', () => {
   it('creates a default string schema for a string with a catch', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      default: 'bob',
-    };
-
     const schema = z.string().catch('bob');
 
-    const result = createSchema(schema, createOutputState(), ['catch']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'string',
+        default: 'bob',
+      },
+      components: {},
+    });
   });
 });

@@ -1,4 +1,4 @@
 export * from './create/document';
-export * from './create/schema/single';
-export * from './extendZod';
-export * from './openapi3-ts/dist';
+export { createSchema, type SchemaResult } from './create/schema/schema';
+export type * from './types';
+export type * as oas31 from './openapi3-ts/oas31';

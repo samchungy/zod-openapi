@@ -1,610 +1,1696 @@
-import '../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
+import type { ZodType } from 'zod/v4';
 
 import type { oas31 } from '../openapi3-ts/dist';
 
-import {
-  type CallbackComponent,
-  type CallbackComponentMap,
-  type ComponentsObject,
-  type HeaderComponent,
-  type HeaderComponentMap,
-  type ManualSchemaComponent,
-  type ParameterComponent,
-  type ParameterComponentMap,
-  type RequestBodyComponent,
-  type RequestBodyComponentMap,
-  type ResponseComponent,
-  type ResponseComponentMap,
-  type SchemaComponent,
-  type SchemaComponentMap,
-  createComponents,
-  getDefaultComponents,
-} from './components';
+import { createComponents, createRegistry } from './components';
 import type {
-  ZodOpenApiCallbackObject,
+  CreateDocumentOptions,
+  ZodOpenApiHeaderObject,
+  ZodOpenApiLinkObject,
+  ZodOpenApiParameterObject,
+  ZodOpenApiPathItemObject,
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
+  ZodOpenApiSecuritySchemeObject,
 } from './document';
+import { createSchema } from './schema/schema';
 
-describe('getDefaultComponents', () => {
-  it('returns default components', () => {
-    const result = getDefaultComponents();
-    const expected: ComponentsObject = {
-      callbacks: expect.any(Map),
-      responses: expect.any(Map),
-      parameters: expect.any(Map),
-      schemas: expect.any(Map),
-      headers: expect.any(Map),
-      requestBodies: expect.any(Map),
-      openapi: '3.1.0',
-    };
-    expect(result).toStrictEqual(expected);
-  });
+describe('createComponents', () => {
+  it('should create a schema for dynamic input types', () => {
+    const zodSchema = z
+      .object({
+        name: z.string().meta({ id: 'input' }),
+        age: z.number(),
+        get foo() {
+          return zodSchema;
+        },
+      })
+      .meta({ id: 'zodSchema' });
 
-  it('returns manual components', () => {
-    const aSchema = z.string();
-    const bSchema = z.string().openapi({ param: { in: 'header', name: 'b' } });
-    const cSchema = z.string();
-    const dResponse: ZodOpenApiResponseObject = {
-      description: '200 OK',
-      content: {
-        'application/json': {
-          schema: z.object({ a: z.string() }),
+    const nestedSchema = z.object({
+      nested: zodSchema,
+    });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
         },
       },
-    };
-    const eRequestBody: ZodOpenApiRequestBodyObject = {
-      content: {
-        'application/json': {
-          schema: z.object({ a: z.string() }),
+      ['test'],
+    );
+
+    const nestedRequestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: nestedSchema,
+          },
         },
       },
-    };
-    const fCallbacks: ZodOpenApiCallbackObject = {
-      '{$request.query.callbackUrl}/data': {
-        post: {
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: z.object({ a: z.string() }),
+      ['test', 'nested'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/zodSchema',
+          },
+        },
+      },
+    });
+
+    expect(nestedRequestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              nested: {
+                $ref: '#/components/schemas/zodSchema',
               },
             },
-          },
-          responses: {
-            '202': {
-              description: '202 OK',
-            },
+            required: ['nested'],
           },
         },
       },
-    };
-    const result = getDefaultComponents({
-      parameters: {
-        a: {
-          in: 'path',
-          name: 'a',
+    });
+
+    expect(components.schemas).toEqual({
+      zodSchema: {
+        type: 'object',
+        properties: {
+          name: {
+            $ref: '#/components/schemas/input',
+          },
+          age: {
+            type: 'number',
+          },
+          foo: {
+            $ref: '#/components/schemas/zodSchema',
+          },
+        },
+        required: ['name', 'age', 'foo'],
+      },
+      input: {
+        type: 'string',
+      },
+    });
+  });
+
+  it('should handle a manual schema component which is referenced in an outside schema', () => {
+    const manual = z.object({
+      id: z.string(),
+    });
+    const registry = createRegistry({
+      schemas: {
+        manual,
+      },
+    });
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: manual,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
           schema: {
+            $ref: '#/components/schemas/manual',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      manual: {
+        type: 'object',
+        properties: {
+          id: {
             type: 'string',
           },
         },
-        b: bSchema,
-      },
-      schemas: {
-        a: aSchema,
-        b: {
-          type: 'string',
-        },
-      },
-      headers: {
-        c: cSchema,
-      },
-      responses: {
-        d: dResponse,
-      },
-      requestBodies: {
-        e: eRequestBody,
-      },
-      callbacks: {
-        f: fCallbacks,
+        required: ['id'],
       },
     });
-    const expected: ComponentsObject = {
-      callbacks: expect.any(Map),
-      requestBodies: expect.any(Map),
-      responses: expect.any(Map),
-      parameters: expect.any(Map),
-      schemas: expect.any(Map),
-      headers: expect.any(Map),
-      openapi: '3.1.0',
-    };
-    const expectedParameter: ParameterComponent = {
-      ref: 'b',
-      type: 'manual',
-      in: 'header',
-      name: 'b',
-    };
-    const expectedSchema: SchemaComponent = {
-      ref: 'a',
-      type: 'manual',
-    };
-    const expectedHeader: HeaderComponent = {
-      ref: 'c',
-      type: 'manual',
-    };
-    const expectedResponse: ResponseComponent = {
-      ref: 'd',
-      type: 'manual',
-    };
-    const expectedRequestBodies: RequestBodyComponent = {
-      ref: 'e',
-      type: 'manual',
-    };
-    const expectedCallbacks: CallbackComponent = {
-      ref: 'f',
-      type: 'manual',
-    };
-
-    expect(result).toStrictEqual(expected);
-    expect(result.schemas.get(aSchema)).toStrictEqual(expectedSchema);
-    expect(result.parameters.get(bSchema)).toStrictEqual(expectedParameter);
-    expect(result.headers.get(cSchema)).toStrictEqual(expectedHeader);
-    expect(result.responses.get(dResponse)).toStrictEqual(expectedResponse);
-    expect(result.requestBodies.get(eRequestBody)).toStrictEqual(
-      expectedRequestBodies,
-    );
-    expect(result.callbacks.get(fCallbacks)).toStrictEqual(expectedCallbacks);
   });
 
-  it('allows registering schemas in any order', () => {
-    const expected: ComponentsObject = {
-      callbacks: expect.any(Map),
-      requestBodies: expect.any(Map),
-      responses: expect.any(Map),
-      headers: expect.any(Map),
-      parameters: expect.any(Map),
-      schemas: expect.any(Map),
-      openapi: '3.1.0',
-    };
-
-    const a = z.string();
-    const b = z.object({ a }).openapi({ ref: 'b' });
-    const componentsObject = getDefaultComponents({
+  it('should handle a manual schema component which is referenced in an nested schema', () => {
+    const manual2 = z.object({
+      id: z.string(),
+    });
+    const registry = createRegistry({
       schemas: {
-        b,
-        a,
+        manual2,
       },
     });
-    const expectedA: ManualSchemaComponent = {
-      ref: 'a',
-      type: 'manual',
-    };
-    const expectedB: ManualSchemaComponent = {
-      ref: 'b',
-      type: 'manual',
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: z.object({
+              a: manual2,
+            }),
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              a: {
+                $ref: '#/components/schemas/manual2',
+              },
+            },
+            required: ['a'],
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      manual2: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+      },
+    });
+  });
+
+  it('should handle a manual schema component which is referenced in both a request and response', () => {
+    const manual3 = z.object({
+      id: z.string(),
+    });
+    const registry = createRegistry({
+      schemas: {
+        manual3,
+      },
+    });
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: z.object({
+              a: manual3,
+            }),
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const responseBody = registry.addResponse(
+      {
+        description: 'foo',
+        content: {
+          'application/json': {
+            schema: z.object({
+              b: manual3,
+            }),
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              a: {
+                $ref: '#/components/schemas/manual3',
+              },
+            },
+            required: ['a'],
+          },
+        },
+      },
+    });
+
+    expect(responseBody).toEqual<oas31.RequestBodyObject>({
+      description: 'foo',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              b: {
+                $ref: '#/components/schemas/manual3Output',
+              },
+            },
+            required: ['b'],
+            additionalProperties: false,
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      manual3: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+      },
+      manual3Output: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should handle a manual schema component which is not referenced in any request and response', () => {
+    const manual4 = z.object({
+      id: z.string(),
+    });
+    const registry = createRegistry({
+      schemas: {
+        manual4,
+      },
+    });
+    const opts = {};
+
+    const components = createComponents(registry, opts);
+
+    expect(components.schemas).toEqual({
+      manual4: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should handle a manual schema component which is not referenced in any request and response but has an reusedIO set', () => {
+    const manual5 = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ unusedIO: 'input' });
+    const registry = createRegistry({
+      schemas: {
+        manual5,
+      },
+    });
+    const opts = {};
+
+    const components = createComponents(registry, opts);
+
+    expect(components.schemas).toEqual({
+      manual5: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+      },
+    });
+  });
+
+  it('should handle an auto registered schema component which is referenced in a request', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ id: 'autoRequest' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoRequest',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      autoRequest: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+      },
+    });
+  });
+
+  it('should handle an auto registered schema component which is referenced in a request and response', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ id: 'autoRequestResponse' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const responseBody = registry.addResponse(
+      {
+        description: 'foo',
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoRequestResponse',
+          },
+        },
+      },
+    });
+
+    expect(responseBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoRequestResponseOutput',
+          },
+        },
+      },
+      description: 'foo',
+    });
+
+    expect(components.schemas).toEqual({
+      autoRequestResponse: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+      },
+      autoRequestResponseOutput: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should handle an auto registered schema component which is referenced in a request and response with outputId', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({
+        id: 'autoRequestResponseOutputId',
+        outputId: 'autoRequestResponseOutput',
+      });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const responseBody = registry.addResponse(
+      {
+        description: 'foo',
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoRequestResponseOutputId',
+          },
+        },
+      },
+    });
+
+    expect(responseBody).toEqual<oas31.ResponseObject>({
+      description: 'foo',
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoRequestResponseOutput',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      autoRequestResponseOutputId: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+      },
+      autoRequestResponseOutput: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should handle unregistered lazy schemas', () => {
+    type Lazy = Lazy[];
+    const zodLazy: z.ZodType<Lazy> = z.lazy(() => zodLazy.array());
+
+    const BasePost = z.object({
+      id: z.string(),
+      userId: z.string(),
+    });
+
+    type Post = z.infer<typeof BasePost> & {
+      user?: User;
     };
 
-    expect(componentsObject).toStrictEqual(expected);
-    expect(componentsObject.schemas.get(a)).toStrictEqual(expectedA);
-    expect(componentsObject.schemas.get(b)).toStrictEqual(expectedB);
+    const BaseUser = z.object({
+      id: z.string(),
+    });
+
+    type User = z.infer<typeof BaseUser> & {
+      posts?: Post[];
+    };
+
+    const PostSchema: ZodType<Post> = BasePost.extend({
+      user: z.lazy(() => zodLazyComplex).optional(),
+    });
+
+    const zodLazyComplex: ZodType<User> = BaseUser.extend({
+      posts: z.array(z.lazy(() => PostSchema)).optional(),
+    });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodLazyComplex,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const response = registry.addResponse(
+      {
+        description: 'A complex lazy schema',
+        content: {
+          'application/json': {
+            schema: zodLazyComplex,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/__schema0' },
+        },
+      },
+    });
+
+    expect(response).toEqual<oas31.ResponseObject>({
+      description: 'A complex lazy schema',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/__schema1' },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual<Record<string, oas31.SchemaObject>>({
+      __schema0: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          posts: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                },
+                user: {
+                  $ref: '#/components/schemas/__schema0',
+                },
+                userId: {
+                  type: 'string',
+                },
+              },
+              required: ['id', 'userId'],
+            },
+          },
+        },
+        required: ['id'],
+      },
+      __schema1: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          posts: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                },
+                user: {
+                  $ref: '#/components/schemas/__schema1',
+                },
+                userId: {
+                  type: 'string',
+                },
+              },
+              required: ['id', 'userId'],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should handle registered lazy schemas', () => {
+    type Lazy = Lazy[];
+    const zodLazy: z.ZodType<Lazy> = z.lazy(() => zodLazy.array());
+
+    const BasePost = z.object({
+      id: z.string(),
+      userId: z.string(),
+    });
+
+    type Post = z.infer<typeof BasePost> & {
+      user?: User;
+    };
+
+    const BaseUser = z.object({
+      id: z.string(),
+    });
+
+    type User = z.infer<typeof BaseUser> & {
+      posts?: Post[];
+    };
+
+    const PostSchema: ZodType<Post> = BasePost.extend({
+      user: z.lazy(() => zodLazyComplex).optional(),
+    }).meta({ id: 'LazyPost' });
+
+    const zodLazyComplex: ZodType<User> = BaseUser.extend({
+      posts: z.array(z.lazy(() => PostSchema)).optional(),
+    }).meta({ id: 'LazyUser' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodLazyComplex,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const response = registry.addResponse(
+      {
+        description: 'A complex lazy schema',
+        content: {
+          'application/json': {
+            schema: zodLazyComplex,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/LazyUser' },
+        },
+      },
+    });
+
+    expect(response).toEqual<oas31.ResponseObject>({
+      description: 'A complex lazy schema',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/LazyUserOutput' },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual<Record<string, oas31.SchemaObject>>({
+      LazyUser: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          posts: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/LazyPost',
+            },
+          },
+        },
+        required: ['id'],
+      },
+      LazyPost: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          userId: { type: 'string' },
+          user: {
+            $ref: '#/components/schemas/LazyUser',
+          },
+        },
+        required: ['id', 'userId'],
+      },
+      LazyPostOutput: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          userId: { type: 'string' },
+          user: {
+            $ref: '#/components/schemas/LazyUserOutput',
+          },
+        },
+        required: ['id', 'userId'],
+        additionalProperties: false,
+      },
+      LazyUserOutput: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          posts: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/LazyPostOutput',
+            },
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should use the id as the response component name if a schema is not used in a request', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ id: 'autoResponse' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const responseBody = registry.addResponse(
+      {
+        description: 'A response with an auto registered schema',
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(responseBody).toEqual<oas31.ResponseObject>({
+      description: 'A response with an auto registered schema',
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/autoResponse',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      autoResponse: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('should create reused schemas as dynamic components', () => {
+    const zodSchema = z.object({
+      id: z.string(),
+    });
+
+    const registry = createRegistry();
+
+    const opts: CreateDocumentOptions = {
+      reused: 'ref',
+      cycles: 'ref',
+    };
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const requestBody2 = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test2'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/__schema0',
+          },
+        },
+      },
+    });
+
+    expect(requestBody2).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/__schema0',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      __schema0: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    });
+  });
+
+  it('should throw when cycles is set to "throw" and a cycle is detected', () => {
+    const zodSchema = z.object({
+      id: z.string(),
+      get cycle() {
+        return zodSchema;
+      },
+    });
+
+    const registry = createRegistry();
+    const opts: CreateDocumentOptions = {
+      reused: 'ref',
+      cycles: 'throw',
+    };
+
+    registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    expect(() => {
+      createComponents(registry, opts);
+    }).toThrowErrorMatchingInlineSnapshot(`
+"Cycle detected: #/properties/test > content > application/json > schema/properties/cycle/<root>
+
+Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs."
+`);
+  });
+
+  it('supports an alternate schemaRefPath', () => {
+    const zodSchema = z
+      .object({
+        id: z.string(),
+      })
+      .meta({ id: 'alternateSchemaRefPath' });
+
+    const { schema, components } = createSchema(zodSchema, {
+      schemaRefPath: '#/definitions/',
+    });
+
+    expect(schema).toEqual({
+      $ref: '#/definitions/alternateSchemaRefPath',
+    });
+
+    expect(components).toEqual({
+      alternateSchemaRefPath: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+    });
+  });
+
+  it('allows shared schema between request and response', () => {
+    const zodSchema = z
+      .looseObject({
+        id: z.string(),
+      })
+      .meta({ id: 'sharedSchema' });
+
+    const registry = createRegistry();
+    const opts = {};
+
+    const requestBody = registry.addRequestBody(
+      {
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const responseBody = registry.addResponse(
+      {
+        description: 'A response with a shared schema',
+        content: {
+          'application/json': {
+            schema: zodSchema,
+          },
+        },
+      },
+      ['test'],
+    );
+
+    const components = createComponents(registry, opts);
+
+    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/sharedSchema',
+          },
+        },
+      },
+    });
+
+    expect(responseBody).toEqual<oas31.ResponseObject>({
+      description: 'A response with a shared schema',
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/sharedSchema',
+          },
+        },
+      },
+    });
+
+    expect(components.schemas).toEqual({
+      sharedSchema: {
+        type: 'object',
+        additionalProperties: {},
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    });
   });
 });
 
-describe('createComponents', () => {
-  it('creates components object as undefined', () => {
-    const componentsObject = createComponents(
-      {},
-      {
-        callbacks: expect.any(Map),
-        requestBodies: new Map(),
-        parameters: new Map(),
-        schemas: new Map(),
-        headers: new Map(),
-        responses: new Map(),
-        openapi: '3.1.0',
-      },
-    );
+describe('addResponse', () => {
+  it('should register a response with a manual ID', () => {
+    const registry = createRegistry();
 
-    expect(componentsObject).toBeUndefined();
-  });
-
-  it('creates a components object', () => {
-    const expected: oas31.ComponentsObject = {
-      parameters: {
-        a: {
-          in: 'header',
-          name: 'some-header',
-          schema: {
-            type: 'string',
-          },
-        },
-      },
-      schemas: {
-        a: {
-          type: 'string',
-        },
-      },
-      headers: {
-        a: {
-          schema: {
-            type: 'string',
-          },
-        },
-      },
-      responses: {
-        a: {
-          description: '200 OK',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  a: {
-                    type: 'string',
-                  },
-                },
-                required: ['a'],
-              },
-            },
-          },
-        },
-      },
-      requestBodies: {
-        a: {
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  a: {
-                    type: 'string',
-                  },
-                },
-                required: ['a'],
-              },
-            },
-          },
-        },
-      },
-      callbacks: {
-        a: {
-          '{$request.query.callbackUrl}/data': {
-            post: {
-              requestBody: {
-                content: {
-                  'application/json': {
-                    schema: {
-                      type: 'object',
-                      properties: {
-                        a: {
-                          type: 'string',
-                        },
-                      },
-                      required: ['a'],
-                    },
-                  },
-                },
-              },
-              responses: {
-                '202': {
-                  description: '202 OK',
-                },
-              },
-            },
-          },
+    const manualResponse: ZodOpenApiResponseObject = {
+      description: 'A response with a manual ID',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
         },
       },
     };
-    const schemaMap: SchemaComponentMap = new Map();
-    schemaMap.set(z.string().openapi({ ref: 'a' }), {
-      type: 'complete',
-      ref: 'a',
-      schemaObject: {
-        type: 'string',
-      },
+
+    const response = registry.addResponse(manualResponse, ['test'], {
+      manualId: 'manualResponse',
     });
-    const paramMap: ParameterComponentMap = new Map();
-    paramMap.set(z.string(), {
-      type: 'complete',
-      ref: 'a',
-      paramObject: {
-        in: 'header',
-        name: 'some-header',
-        schema: {
-          type: 'string',
-        },
-      },
-      in: 'header',
-      name: 'some-header',
+
+    const response2 = registry.addResponse(manualResponse, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(response).toEqual({
+      $ref: '#/components/responses/manualResponse',
     });
-    const headerMap: HeaderComponentMap = new Map();
-    headerMap.set(z.string(), {
-      type: 'complete',
-      ref: 'a',
-      headerObject: {
-        schema: {
-          type: 'string',
-        },
-      },
+
+    expect(response2).toEqual({
+      $ref: '#/components/responses/manualResponse',
     });
-    const responseMap: ResponseComponentMap = new Map();
-    responseMap.set(
-      {
-        description: '200 OK',
-        content: {
-          'application/json': {
-            schema: z.object({ a: z.string() }),
-          },
+  });
+
+  it('should register a response with an id', () => {
+    const autoResponse: ZodOpenApiResponseObject = {
+      id: 'autoResponse',
+      description: 'A response with an auto ID',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
         },
       },
-      {
-        responseObject: {
-          description: '200 OK',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  a: {
-                    type: 'string',
-                  },
-                },
-                required: ['a'],
-              },
-            },
-          },
-        },
-        ref: 'a',
-        type: 'complete',
-      },
-    );
-    const requestBodyMap: RequestBodyComponentMap = new Map();
-    requestBodyMap.set(
-      {
-        content: {
-          'application/json': {
-            schema: z.object({ a: z.string() }),
-          },
-        },
-      },
-      {
-        type: 'complete',
-        ref: 'a',
-        requestBodyObject: {
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  a: {
-                    type: 'string',
-                  },
-                },
-                required: ['a'],
-              },
-            },
-          },
-        },
-      },
-    );
-    const callbackMap: CallbackComponentMap = new Map();
-    callbackMap.set(
-      {
-        '{$request.query.callbackUrl}/data': {
-          post: {
-            requestBody: {
+    };
+
+    const registry = createRegistry();
+
+    const response = registry.addResponse(autoResponse, ['test']);
+
+    const response2 = registry.addResponse(autoResponse, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(response).toEqual({
+      $ref: '#/components/responses/autoResponse',
+    });
+
+    expect(response2).toEqual({
+      $ref: '#/components/responses/autoResponse',
+    });
+  });
+});
+
+describe('addCallback', () => {
+  it('should register a callback with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualCallback: oas31.CallbackObject = {
+      '/path': {
+        post: {
+          summary: 'Example callback',
+          responses: {
+            '200': {
+              description: 'Success',
               content: {
                 'application/json': {
-                  schema: z.object({ a: z.string() }),
+                  schema: z.object({
+                    message: z.string(),
+                  }),
                 },
               },
             },
-            responses: {
-              '202': {
-                description: '202 OK',
-              },
-            },
-          },
-        },
-      },
-      {
-        type: 'complete',
-        ref: 'a',
-        callbackObject: {
-          '{$request.query.callbackUrl}/data': {
-            post: {
-              requestBody: {
-                content: {
-                  'application/json': {
-                    schema: {
-                      type: 'object',
-                      properties: {
-                        a: {
-                          type: 'string',
-                        },
-                      },
-                      required: ['a'],
-                    },
-                  },
-                },
-              },
-              responses: {
-                '202': {
-                  description: '202 OK',
-                },
-              },
-            },
-          },
-        },
-      },
-    );
-
-    const componentsObject = createComponents(
-      {},
-      {
-        callbacks: callbackMap,
-        parameters: paramMap,
-        schemas: schemaMap,
-        headers: headerMap,
-        responses: responseMap,
-        requestBodies: requestBodyMap,
-        openapi: '3.1.0',
-      },
-    );
-
-    expect(componentsObject).toStrictEqual(expected);
-  });
-
-  it('merges with existing components', () => {
-    const expected: oas31.ComponentsObject = {
-      examples: {
-        a: {
-          description: 'hello',
-        },
-      },
-      parameters: {
-        a: {
-          in: 'header',
-          name: 'some-header',
-          schema: {
-            type: 'string',
-          },
-        },
-      },
-      schemas: {
-        a: {
-          type: 'string',
-        },
-      },
-      headers: {
-        a: {
-          schema: {
-            type: 'string',
           },
         },
       },
     };
-    const schemaMap: SchemaComponentMap = new Map();
-    schemaMap.set(z.string(), {
-      type: 'complete',
-      ref: 'a',
-      schemaObject: {
-        type: 'string',
-      },
-    });
-    const paramMap: ParameterComponentMap = new Map();
-    paramMap.set(z.string(), {
-      type: 'complete',
-      paramObject: {
-        in: 'header',
-        name: 'some-header',
-        schema: {
-          type: 'string',
-        },
-      },
-      ref: 'a',
-      in: 'header',
-      name: 'some-header',
-    });
-    const headerMap: HeaderComponentMap = new Map();
-    headerMap.set(z.string(), {
-      type: 'complete',
-      ref: 'a',
-      headerObject: {
-        schema: {
-          type: 'string',
-        },
-      },
-    });
-    const componentsObject = createComponents(
-      {
-        examples: {
-          a: {
-            description: 'hello',
-          },
-        },
-      },
-      {
-        callbacks: expect.any(Map),
-        parameters: paramMap,
-        schemas: schemaMap,
-        headers: headerMap,
-        responses: new Map(),
-        requestBodies: new Map(),
-        openapi: '3.1.0',
-      },
-    );
 
-    expect(componentsObject).toStrictEqual(expected);
+    const callback = registry.addCallback(manualCallback, ['test'], {
+      manualId: 'manualCallback',
+    });
+
+    const callback2 = registry.addCallback(manualCallback, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(callback).toEqual({
+      $ref: '#/components/callbacks/manualCallback',
+    });
+
+    expect(callback2).toEqual({
+      $ref: '#/components/callbacks/manualCallback',
+    });
   });
 
-  it('completes manual components', () => {
-    const expected: oas31.ComponentsObject = {
-      examples: {
-        a: {
-          description: 'hello',
-        },
-      },
-      parameters: {
-        a: {
-          in: 'header',
-          name: 'some-header',
-          required: true,
-          schema: {
-            type: 'string',
+  it('should register a callback with an id', () => {
+    const autoCallback: oas31.CallbackObject = {
+      id: 'autoCallback',
+      '/path': {
+        post: {
+          summary: 'Example callback',
+          responses: {
+            '200': {
+              description: 'Success',
+              content: {
+                'application/json': {
+                  schema: z.object({
+                    message: z.string(),
+                  }),
+                },
+              },
+            },
           },
-        },
-      },
-      schemas: {
-        a: {
-          type: 'string',
-        },
-      },
-      headers: {
-        a: {
-          schema: {
-            type: 'string',
-          },
-          required: true,
         },
       },
     };
-    const schemaMap: SchemaComponentMap = new Map();
-    schemaMap.set(z.string(), {
-      type: 'manual',
-      ref: 'a',
+
+    const registry = createRegistry();
+
+    const callback = registry.addCallback(autoCallback, ['test']);
+
+    const callback2 = registry.addCallback(autoCallback, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(callback).toEqual({
+      $ref: '#/components/callbacks/autoCallback',
     });
-    const paramMap: ParameterComponentMap = new Map();
-    paramMap.set(z.string(), {
-      type: 'manual',
-      in: 'header',
-      ref: 'a',
-      name: 'some-header',
+
+    expect(callback2).toEqual({
+      $ref: '#/components/callbacks/autoCallback',
     });
-    const headerMap: HeaderComponentMap = new Map();
-    headerMap.set(z.string(), {
-      type: 'manual',
-      ref: 'a',
+  });
+});
+
+describe('addParameter', () => {
+  it('should register a parameter with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualParameter: ZodOpenApiParameterObject = z.string().meta({
+      param: {
+        name: 'test',
+        in: 'query',
+      },
+      description: 'A manual parameter',
     });
-    const componentsObject = createComponents(
-      {
-        examples: {
-          a: {
-            description: 'hello',
+
+    const parameter = registry.addParameter(manualParameter, ['test'], {
+      manualId: 'manualParameter',
+    });
+
+    const parameter2 = registry.addParameter(manualParameter, ['test2']);
+
+    const components = createComponents(registry, {});
+
+    expect(parameter).toEqual({
+      $ref: '#/components/parameters/manualParameter',
+    });
+
+    expect(parameter2).toEqual({
+      $ref: '#/components/parameters/manualParameter',
+    });
+
+    expect(
+      Object.fromEntries(registry.components.schemas.input.entries()),
+    ).toEqual({
+      'test > query > test > schema': {
+        schemaObject: {
+          type: 'string',
+          description: 'A manual parameter',
+        },
+        zodType: manualParameter,
+        source: {
+          path: ['test', 'query', 'test', 'schema'],
+          type: 'parameter',
+          location: {
+            in: 'query',
+            name: 'test',
           },
         },
       },
+    });
+
+    expect(components).toEqual({
+      parameters: {
+        manualParameter: {
+          name: 'test',
+          in: 'query',
+          description: 'A manual parameter',
+          required: true,
+          schema: {
+            description: 'A manual parameter',
+            type: 'string',
+          },
+        },
+      },
+    });
+  });
+
+  it('should register a parameter with an id', () => {
+    const autoParameter: ZodOpenApiParameterObject = z.string().meta({
+      param: {
+        name: 'test',
+        in: 'query',
+        id: 'autoParameter',
+      },
+      description: 'An auto parameter',
+    });
+
+    const registry = createRegistry();
+
+    const parameter = registry.addParameter(autoParameter, ['test']);
+
+    const parameter2 = registry.addParameter(autoParameter, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(parameter).toEqual({
+      $ref: '#/components/parameters/autoParameter',
+    });
+
+    expect(parameter2).toEqual({
+      $ref: '#/components/parameters/autoParameter',
+    });
+  });
+
+  it('should not remember a manually set parameter', () => {
+    const registry = createRegistry();
+    const nonEmptySchema = z.string().nonempty();
+
+    const parameter1 = registry.addParameter(nonEmptySchema, ['test'], {
+      location: {
+        in: 'query',
+        name: 'test',
+      },
+    });
+
+    const parameter2 = registry.addParameter(nonEmptySchema, ['test2'], {
+      location: {
+        in: 'query',
+        name: 'test2',
+      },
+    });
+
+    expect(parameter1).not.toEqual(parameter2);
+  });
+});
+
+describe('addRequestBody', () => {
+  it('should register a request body with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualRequestBody: ZodOpenApiRequestBodyObject = {
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+      description: 'A manual request body',
+    };
+
+    const requestBody = registry.addRequestBody(manualRequestBody, ['test'], {
+      manualId: 'manualRequestBody',
+    });
+
+    const requestBody2 = registry.addRequestBody(manualRequestBody, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(requestBody).toEqual({
+      $ref: '#/components/requestBodies/manualRequestBody',
+    });
+
+    expect(requestBody2).toEqual({
+      $ref: '#/components/requestBodies/manualRequestBody',
+    });
+  });
+
+  it('should register a request body with an id', () => {
+    const autoRequestBody: ZodOpenApiRequestBodyObject = {
+      id: 'autoRequestBody',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+      description: 'An auto request body',
+    };
+
+    const registry = createRegistry();
+
+    const requestBody = registry.addRequestBody(autoRequestBody, ['test']);
+
+    const requestBody2 = registry.addRequestBody(autoRequestBody, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(requestBody).toEqual({
+      $ref: '#/components/requestBodies/autoRequestBody',
+    });
+
+    expect(requestBody2).toEqual({
+      $ref: '#/components/requestBodies/autoRequestBody',
+    });
+  });
+});
+
+describe('addPathItem', () => {
+  it('should register a path item with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualPathItem: ZodOpenApiPathItemObject = {
+      get: {
+        summary: 'A manual path item',
+        responses: {
+          '200': {
+            description: 'Success',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  message: z.string(),
+                }),
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const pathItem = registry.addPathItem(manualPathItem, ['test'], {
+      manualId: 'manualPathItem',
+    });
+
+    const pathItem2 = registry.addPathItem(manualPathItem, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(pathItem).toEqual({
+      $ref: '#/components/pathItems/manualPathItem',
+    });
+
+    expect(pathItem2).toEqual({
+      $ref: '#/components/pathItems/manualPathItem',
+    });
+  });
+
+  it('should register a path item with an id', () => {
+    const autoPathItem: ZodOpenApiPathItemObject = {
+      id: 'autoPathItem',
+      get: {
+        summary: 'An auto path item',
+        responses: {
+          '200': {
+            description: 'Success',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  message: z.string(),
+                }),
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const registry = createRegistry();
+
+    const pathItem = registry.addPathItem(autoPathItem, ['test']);
+
+    const pathItem2 = registry.addPathItem(autoPathItem, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(pathItem).toEqual({
+      $ref: '#/components/pathItems/autoPathItem',
+    });
+
+    expect(pathItem2).toEqual({
+      $ref: '#/components/pathItems/autoPathItem',
+    });
+  });
+});
+
+describe('addHeader', () => {
+  it('should register a header with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualHeader: ZodOpenApiHeaderObject = z.string().meta({
+      header: {
+        description: 'A manual header',
+      },
+    });
+
+    const header = registry.addHeader(manualHeader, ['test'], {
+      manualId: 'manualHeader',
+    });
+
+    const header2 = registry.addHeader(manualHeader, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(header).toEqual({
+      $ref: '#/components/headers/manualHeader',
+    });
+
+    expect(header2).toEqual({
+      $ref: '#/components/headers/manualHeader',
+    });
+  });
+
+  it('should register a header with an id', () => {
+    const autoHeader: ZodOpenApiHeaderObject = z.string().meta({
+      header: {
+        description: 'An auto header',
+        id: 'autoHeader',
+      },
+    });
+
+    const registry = createRegistry();
+
+    const header = registry.addHeader(autoHeader, ['test']);
+
+    const header2 = registry.addHeader(autoHeader, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(header).toEqual({
+      $ref: '#/components/headers/autoHeader',
+    });
+
+    expect(header2).toEqual({
+      $ref: '#/components/headers/autoHeader',
+    });
+  });
+});
+
+describe('addSecurityScheme', () => {
+  it('should register a security scheme with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualSecurityScheme: oas31.SecuritySchemeObject = {
+      type: 'apiKey',
+      in: 'header',
+      name: 'X-API-Key',
+      description: 'A manual security scheme',
+    };
+
+    const securityScheme = registry.addSecurityScheme(
+      manualSecurityScheme,
+      ['test'],
       {
-        callbacks: new Map(),
-        parameters: paramMap,
-        schemas: schemaMap,
-        headers: headerMap,
-        responses: new Map(),
-        requestBodies: new Map(),
-        openapi: '3.1.0',
+        manualId: 'manualSecurityScheme',
       },
     );
 
-    expect(componentsObject).toStrictEqual(expected);
+    const securityScheme2 = registry.addSecurityScheme(manualSecurityScheme, [
+      'test2',
+    ]);
+
+    createComponents(registry, {});
+
+    expect(securityScheme).toEqual({
+      $ref: '#/components/securitySchemes/manualSecurityScheme',
+    });
+
+    expect(securityScheme2).toEqual({
+      $ref: '#/components/securitySchemes/manualSecurityScheme',
+    });
+  });
+
+  it('should register a security scheme with an id', () => {
+    const autoSecurityScheme: ZodOpenApiSecuritySchemeObject = {
+      id: 'autoSecurityScheme',
+      type: 'apiKey',
+      in: 'header',
+      name: 'X-API-Key',
+      description: 'An auto security scheme',
+    };
+
+    const registry = createRegistry();
+
+    const securityScheme = registry.addSecurityScheme(autoSecurityScheme, [
+      'test',
+    ]);
+
+    const securityScheme2 = registry.addSecurityScheme(autoSecurityScheme, [
+      'test2',
+    ]);
+
+    createComponents(registry, {});
+
+    expect(securityScheme).toEqual({
+      $ref: '#/components/securitySchemes/autoSecurityScheme',
+    });
+
+    expect(securityScheme2).toEqual({
+      $ref: '#/components/securitySchemes/autoSecurityScheme',
+    });
+  });
+});
+
+describe('addLink', () => {
+  it('should register a link with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualLink: oas31.LinkObject = {
+      operationRef: '#/paths/~1test/get',
+      description: 'A manual link',
+      parameters: {
+        id: '$request.body#/id',
+      },
+    };
+
+    const link = registry.addLink(manualLink, ['test'], {
+      manualId: 'manualLink',
+    });
+
+    const link2 = registry.addLink(manualLink, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(link).toEqual({
+      $ref: '#/components/links/manualLink',
+    });
+
+    expect(link2).toEqual({
+      $ref: '#/components/links/manualLink',
+    });
+  });
+
+  it('should register a link with an id', () => {
+    const autoLink: ZodOpenApiLinkObject = {
+      id: 'autoLink',
+      operationRef: '#/paths/~1test/get',
+      description: 'An auto link',
+      parameters: {
+        id: '$request.body#/id',
+      },
+    };
+
+    const registry = createRegistry();
+
+    const link = registry.addLink(autoLink, ['test']);
+
+    const link2 = registry.addLink(autoLink, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(link).toEqual({
+      $ref: '#/components/links/autoLink',
+    });
+
+    expect(link2).toEqual({
+      $ref: '#/components/links/autoLink',
+    });
+  });
+});
+
+describe('addExample', () => {
+  it('should register an example with a manual ID', () => {
+    const registry = createRegistry();
+
+    const manualExample: oas31.ExampleObject = {
+      summary: 'A manual example',
+      value: { message: 'Hello, world!' },
+    };
+
+    const example = registry.addExample(manualExample, ['test'], {
+      manualId: 'manualExample',
+    });
+
+    const example2 = registry.addExample(manualExample, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(example).toEqual({
+      $ref: '#/components/examples/manualExample',
+    });
+
+    expect(example2).toEqual({
+      $ref: '#/components/examples/manualExample',
+    });
+  });
+
+  it('should register an example with an id', () => {
+    const autoExample: oas31.ExampleObject = {
+      id: 'autoExample',
+      summary: 'An auto example',
+      value: { message: 'Hello, world!' },
+    };
+
+    const registry = createRegistry();
+
+    const example = registry.addExample(autoExample, ['test']);
+
+    const example2 = registry.addExample(autoExample, ['test2']);
+
+    createComponents(registry, {});
+
+    expect(example).toEqual({
+      $ref: '#/components/examples/autoExample',
+    });
+
+    expect(example2).toEqual({
+      $ref: '#/components/examples/autoExample',
+    });
   });
 });

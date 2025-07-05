@@ -1,20 +1,18 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('null', () => {
   it('creates a null schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'null',
-    };
-
     const schema = z.null();
 
-    const result = createSchema(schema, createOutputState(), ['null']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'null',
+      },
+      components: {},
+    });
   });
 });

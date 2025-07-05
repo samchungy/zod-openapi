@@ -1,93 +1,95 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createInputState, createOutputState } from '../../../testing/state';
+import { createInputContext, createOutputContext } from '../../../testing/ctx';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('object', () => {
   it('creates a simple object with required and optionals', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: { type: 'string' },
-        b: { type: 'string' },
-      },
-      required: ['a'],
-    };
-
     const schema = z.object({
       a: z.string(),
       b: z.string().optional(),
     });
 
-    const result = createSchema(schema, createOutputState(), ['object']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'string' },
+        },
+        required: ['a'],
+        additionalProperties: false,
+      },
+      components: {},
+    });
   });
 
   it('creates a object with strict', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: {
-          type: 'string',
-        },
-      },
-      required: ['a'],
-      additionalProperties: false,
-    };
-
     const schema = z.strictObject({
       a: z.string(),
     });
 
-    const result = createSchema(schema, createOutputState(), ['object']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+          },
+        },
+        required: ['a'],
+        additionalProperties: false,
+      },
+      components: {},
+    });
   });
 
   it('supports passthrough', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: {
-          type: 'string',
+    const schema = z.looseObject({
+      a: z.string(),
+    });
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+          },
         },
+        required: ['a'],
+        additionalProperties: {},
       },
-      required: ['a'],
-      additionalProperties: true,
-    };
-
-    const schema = z
-      .object({
-        a: z.string(),
-      })
-      .passthrough();
-
-    const result = createSchema(schema, createOutputState(), ['object']);
-
-    expect(result).toEqual(expected);
+      components: {},
+    });
   });
 
   it('supports catchall', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: { type: 'string' },
-      },
-      required: ['a'],
-      additionalProperties: { type: 'boolean' },
-    };
-
     const schema = z
       .object({
         a: z.string(),
       })
       .catchall(z.boolean());
 
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+        },
+        required: ['a'],
+        additionalProperties: { type: 'boolean' },
+      },
+      components: {},
+    });
   });
 
   it('considers ZodDefault in an input state', () => {
@@ -95,15 +97,20 @@ describe('object', () => {
       a: z.string().default('a'),
     });
 
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: { type: 'string', default: 'a' },
-      },
-    };
+    const ctx = createOutputContext();
+    ctx.io = 'input' as any;
 
-    const result = createSchema(schema, createInputState(), ['object']);
-    expect(result).toEqual(expected);
+    const result = createSchema(schema, ctx);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+      },
+      components: {},
+    });
   });
 
   it('considers ZodCatch in an input state', () => {
@@ -111,15 +118,19 @@ describe('object', () => {
       a: z.string().catch('a'),
     });
 
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: { type: 'string', default: 'a' },
-      },
-    };
+    const ctx = createInputContext();
 
-    const result = createSchema(schema, createInputState(), ['object']);
-    expect(result).toEqual(expected);
+    const result = createSchema(schema, ctx);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+      },
+      components: {},
+    });
   });
 
   it('considers ZodDefault in an output state', () => {
@@ -127,16 +138,20 @@ describe('object', () => {
       a: z.string().default('a'),
     });
 
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: { type: 'string', default: 'a' },
-      },
-      required: ['a'],
-    };
+    const ctx = createOutputContext();
+    const result = createSchema(schema, ctx);
 
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+        required: ['a'],
+        additionalProperties: false,
+      },
+      components: {},
+    });
   });
 
   it('considers ZodCatch in an output state', () => {
@@ -144,16 +159,20 @@ describe('object', () => {
       a: z.string().catch('a'),
     });
 
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: { type: 'string', default: 'a' },
-      },
-      required: ['a'],
-    };
+    const ctx = createOutputContext();
+    const result = createSchema(schema, ctx);
 
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        properties: {
+          a: { type: 'string', default: 'a' },
+        },
+        required: ['a'],
+        additionalProperties: false,
+      },
+      components: {},
+    });
   });
 });
 
@@ -171,30 +190,37 @@ describe('required', () => {
         h: z.string().catch('a'),
       });
 
-      const result = createSchema(schema, createOutputState(), ['object']);
+      const ctx = createOutputContext();
+      ctx.opts.allowEmptySchema = {
+        custom: true,
+      };
+      const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<oas31.SchemaObject>({
-        type: 'object',
-        properties: {
-          a: { type: 'string' },
-          b: { type: ['string', 'null'] },
-          c: { type: 'number' },
-          d: { type: 'null' },
-          e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
-          f: {},
-          g: { type: 'string', default: 'a' },
-          h: { type: 'string', default: 'a' },
+      expect(result).toEqual<SchemaResult>({
+        schema: {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+            c: { type: 'number' },
+            d: { const: null, type: 'null' },
+            e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            f: {},
+            g: { type: 'string', default: 'a' },
+            h: { type: 'string', default: 'a' },
+          },
+          required: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+          additionalProperties: false,
         },
-        required: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+        components: {},
       });
     });
 
     it('does not create an required array', () => {
-      const ref = z.string().openapi({ ref: 'ref' });
-      const oref = z.string().optional().openapi({ ref: 'oref' });
+      const ref = z.string().meta({ id: 'ref' });
+      const oref = z.string().optional().meta({ id: 'oref' });
       const schema = z.object({
-        a: z.literal(undefined),
-        b: z.never(),
+        b: z.never().optional(),
         c: z.undefined(),
         d: z.string().optional(),
         e: z.string().nullish(),
@@ -203,7 +229,7 @@ describe('required', () => {
         h: z.union([z.string(), z.number().optional()]),
         i: ref.optional(),
         j: oref,
-        k: z.custom<string | undefined>(),
+        k: z.custom<string | undefined>().meta({ type: 'string' }).optional(),
         l: z
           .string()
           .optional()
@@ -211,20 +237,34 @@ describe('required', () => {
           .pipe(z.number().optional()),
       });
 
-      const result = createSchema(schema, createOutputState(), ['object']);
+      const ctx = createOutputContext();
+      const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<oas31.SchemaObject>({
-        type: 'object',
-        properties: {
-          d: { type: 'string' },
-          e: { type: ['string', 'null'] },
-          f: { type: 'number' },
-          g: { anyOf: [{ type: 'string' }] },
-          h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
-          i: { $ref: '#/components/schemas/ref' },
-          j: { $ref: '#/components/schemas/oref' },
-          k: {},
-          l: { type: 'number' },
+      expect(result).toEqual<SchemaResult>({
+        schema: {
+          type: 'object',
+          properties: {
+            b: { not: {} },
+            c: { not: {} },
+            d: { type: 'string' },
+            e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+            f: { type: 'number' },
+            g: { anyOf: [{ type: 'string' }, { not: {} }] },
+            h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            i: { $ref: '#/components/schemas/ref' },
+            j: { $ref: '#/components/schemas/oref' },
+            k: { type: 'string' },
+            l: { type: 'number' },
+          },
+          additionalProperties: false,
+        },
+        components: {
+          ref: {
+            type: 'string',
+          },
+          oref: {
+            type: 'string',
+          },
         },
       });
     });
@@ -241,28 +281,34 @@ describe('required', () => {
         f: z.custom((r) => r !== undefined),
       });
 
-      const result = createSchema(schema, createInputState(), ['object']);
+      const ctx = createInputContext();
+      ctx.opts.allowEmptySchema = {
+        custom: true,
+      };
+      const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<oas31.SchemaObject>({
-        type: 'object',
-        properties: {
-          a: { type: 'string' },
-          b: { type: ['string', 'null'] },
-          c: { type: 'number' },
-          d: { type: 'null' },
-          e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
-          f: {},
+      expect(result).toEqual<SchemaResult>({
+        schema: {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+            c: { type: 'number' },
+            d: { type: 'null', const: null },
+            e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            f: {},
+          },
+          required: ['a', 'b', 'c', 'd', 'e', 'f'],
         },
-        required: ['a', 'b', 'c', 'd', 'e', 'f'],
+        components: {},
       });
     });
 
     it('does not create an required array', () => {
-      const ref = z.string().openapi({ ref: 'ref' });
-      const oref = z.string().optional().openapi({ ref: 'oref' });
+      const ref = z.string().meta({ id: 'ref1' });
+      const oref = z.string().optional().meta({ id: 'oref1' });
       const schema = z.object({
-        a: z.literal(undefined),
-        b: z.never(),
+        b: z.never().optional(),
         c: z.undefined(),
         d: z.string().optional(),
         e: z.string().nullish(),
@@ -271,7 +317,7 @@ describe('required', () => {
         h: z.union([z.string(), z.number().optional()]),
         i: ref.optional(),
         j: oref,
-        k: z.custom<string | undefined>(),
+        k: z.custom<string | undefined>().meta({ type: 'string' }).optional(),
         l: z
           .string()
           .optional()
@@ -281,183 +327,40 @@ describe('required', () => {
         n: z.undefined().optional(),
       });
 
-      const result = createSchema(schema, createInputState(), ['object']);
+      const ctx = createInputContext();
+      ctx.opts.allowEmptySchema = {
+        custom: true,
+      };
+      const result = createSchema(schema, ctx);
 
-      expect(result).toEqual<oas31.SchemaObject>({
-        type: 'object',
-        properties: {
-          d: { type: 'string' },
-          e: { type: ['string', 'null'] },
-          f: { type: 'number' },
-          g: { anyOf: [{ type: 'string' }] },
-          h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
-          i: { $ref: '#/components/schemas/ref' },
-          j: { $ref: '#/components/schemas/oref' },
-          k: {},
-          l: { type: 'string' },
-          m: { type: 'string', default: 'a' },
+      expect(result).toEqual<SchemaResult>({
+        schema: {
+          type: 'object',
+          properties: {
+            b: { not: {} },
+            c: { not: {} },
+            d: { type: 'string' },
+            e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+            f: { type: 'number' },
+            g: { anyOf: [{ type: 'string' }, { not: {} }] },
+            h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+            i: { $ref: '#/components/schemas/ref1' },
+            j: { $ref: '#/components/schemas/oref1' },
+            k: { type: 'string' },
+            l: { type: 'string' },
+            m: { type: 'string', default: 'a' },
+            n: { not: {} },
+          },
+        },
+        components: {
+          ref1: {
+            type: 'string',
+          },
+          oref1: {
+            type: 'string',
+          },
         },
       });
     });
-  });
-});
-
-describe('extend', () => {
-  it('creates an extended object', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        obj1: { $ref: '#/components/schemas/obj1' },
-        obj2: {
-          allOf: [{ $ref: '#/components/schemas/obj1' }],
-          properties: { b: { type: 'string' } },
-          required: ['b'],
-        },
-      },
-      required: ['obj1', 'obj2'],
-    };
-
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
-    const object2 = object1.extend({ b: z.string() });
-    const schema = z.object({
-      obj1: object1,
-      obj2: object2,
-    });
-
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
-  });
-
-  it('does not create an allOf schema when the base object has a catchall', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        obj1: { $ref: '#/components/schemas/obj1' },
-        obj2: {
-          type: 'object',
-          properties: { a: { type: 'string' }, b: { type: 'number' } },
-          required: ['a', 'b'],
-          additionalProperties: {
-            type: 'boolean',
-          },
-        },
-      },
-      required: ['obj1', 'obj2'],
-    };
-
-    const object1 = z
-      .object({ a: z.string() })
-      .catchall(z.boolean())
-      .openapi({ ref: 'obj1' });
-    const object2 = object1.extend({ b: z.number() });
-    const schema = z.object({
-      obj1: object1,
-      obj2: object2,
-    });
-
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
-  });
-
-  it('creates an allOf schema when catchall is on the extended object', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        obj1: { $ref: '#/components/schemas/obj1' },
-        obj2: {
-          allOf: [{ $ref: '#/components/schemas/obj1' }],
-          properties: { b: { type: 'number' } },
-          required: ['b'],
-          additionalProperties: {
-            type: 'boolean',
-          },
-        },
-      },
-      required: ['obj1', 'obj2'],
-    };
-
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
-    const object2 = object1.extend({ b: z.number() }).catchall(z.boolean());
-    const schema = z.object({
-      obj1: object1,
-      obj2: object2,
-    });
-
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
-  });
-
-  it('auto registers the base of an extended object', () => {
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
-    const object2 = object1.extend({ b: z.string() });
-    const schema = z.object({
-      obj1: object1,
-      obj2: object2,
-    });
-
-    const state = createOutputState();
-    createSchema(schema, state, ['object']);
-
-    expect(state.components.schemas.get(object1)?.ref).toBe('obj1');
-    expect(state.components.schemas.get(object1)?.type).toBe('complete');
-  });
-
-  it('does not create an allOf schema when the extension overrides a field', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        obj1: { $ref: '#/components/schemas/obj1' },
-        obj2: {
-          type: 'object',
-          properties: { a: { type: 'number' } },
-          required: ['a'],
-        },
-      },
-      required: ['obj1', 'obj2'],
-    };
-
-    const object1 = z.object({ a: z.string() }).openapi({ ref: 'obj1' });
-    const object2 = object1.extend({ a: z.number() });
-    const schema = z.object({
-      obj1: object1,
-      obj2: object2,
-    });
-
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
-  });
-
-  it('creates an object with 2 required fields using a custom type', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        a: {
-          type: 'string',
-        },
-        b: {
-          type: 'string',
-          format: 'date',
-        },
-      },
-      required: ['a', 'b'],
-    };
-
-    const zodDate = z
-      .union([
-        z.custom<Date>((val: unknown) => val instanceof Date),
-        z.string().transform((str: string): Date => new Date(str)), // ignore validation
-      ])
-      .openapi({
-        type: 'string',
-        format: 'date',
-      });
-
-    const schema = z.object({
-      a: z.string(),
-      b: zodDate,
-    });
-
-    const result = createSchema(schema, createOutputState(), ['object']);
-    expect(result).toEqual(expected);
   });
 });

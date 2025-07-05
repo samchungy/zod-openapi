@@ -1,65 +1,51 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
-import type { CreateDocumentOptions } from '../../document';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('date', () => {
   it('creates a string schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-    };
-
     const schema = z.date();
 
-    const result = createSchema(schema, createOutputState(), ['date']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'string',
+      },
+      components: {},
+    });
   });
 
   it('sets a custom format', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
+    const schema = z.date().meta({
       format: 'date-time',
-    };
+    });
 
-    const schema = z.date();
-    const documentOptions: CreateDocumentOptions = {
-      defaultDateSchema: {
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
         type: 'string',
         format: 'date-time',
       },
-    };
-
-    const result = createSchema(
-      schema,
-      createOutputState(undefined, documentOptions),
-      ['date'],
-    );
-
-    expect(result).toEqual(expected);
+      components: {},
+    });
   });
 
   it('sets a custom type', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'number',
-    };
-
-    const schema = z.date();
-    const documentOptions: CreateDocumentOptions = {
-      defaultDateSchema: {
+    const schema = z.date().meta({
+      override: {
         type: 'number',
       },
-    };
+    });
 
-    const result = createSchema(
-      schema,
-      createOutputState(undefined, documentOptions),
-      ['date'],
-    );
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'number',
+      },
+      components: {},
+    });
   });
 });

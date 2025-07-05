@@ -1,21 +1,81 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('enum', () => {
   it('creates a string enum schema', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-      enum: ['a', 'b'],
-    };
-
     const schema = z.enum(['a', 'b']);
 
-    const result = createSchema(schema, createOutputState(), ['enum']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'string',
+        enum: ['a', 'b'],
+      },
+      components: {},
+    });
+  });
+
+  it('creates a string schema from a string enum', () => {
+    enum Direction {
+      Up = 'Up',
+      Down = 'Down',
+      Left = 'Left',
+      Right = 'Right',
+    }
+
+    const schema = z.enum(Direction);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'string',
+        enum: ['Up', 'Down', 'Left', 'Right'],
+      },
+      components: {},
+    });
+  });
+
+  it('creates a number schema from an number enum', () => {
+    enum Direction {
+      Up,
+      Down,
+      Left,
+      Right,
+    }
+
+    const schema = z.enum(Direction);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'number',
+        enum: [0, 1, 2, 3],
+      },
+      components: {},
+    });
+  });
+
+  it('creates a string and number schema from a mixed enum', () => {
+    enum Direction {
+      Up,
+      Down,
+      Left,
+      Right = 'Right',
+    }
+
+    const schema = z.enum(Direction);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        enum: [0, 1, 2, 'Right'],
+      },
+      components: {},
+    });
   });
 });

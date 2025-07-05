@@ -1,28 +1,26 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('intersection', () => {
   it('creates an intersection schema', () => {
-    const expected: oas31.SchemaObject = {
-      allOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'number',
-        },
-      ],
-    };
-
     const schema = z.intersection(z.string(), z.number());
 
-    const result = createSchema(schema, createOutputState(), ['intersection']);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        allOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      },
+      components: {},
+    });
   });
 
   it('creates an object with an allOf', () => {
@@ -36,31 +34,34 @@ describe('intersection', () => {
       }),
     );
 
-    const result = createSchema(andSchema, createOutputState(), [
-      'intersection',
-    ]);
+    const result = createSchema(andSchema);
 
-    expect(result).toEqual<oas31.SchemaObject>({
-      allOf: [
-        {
-          type: 'object',
-          properties: {
-            a: {
-              type: 'string',
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        allOf: [
+          {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string',
+              },
             },
+            required: ['a'],
+            additionalProperties: false,
           },
-          required: ['a'],
-        },
-        {
-          type: 'object',
-          properties: {
-            b: {
-              type: 'string',
+          {
+            type: 'object',
+            properties: {
+              b: {
+                type: 'string',
+              },
             },
+            required: ['b'],
+            additionalProperties: false,
           },
-          required: ['b'],
-        },
-      ],
+        ],
+      },
+      components: {},
     });
   });
 
@@ -77,42 +78,44 @@ describe('intersection', () => {
       c: z.string(),
     });
 
-    const result = createSchema(
-      schema.and(schema2).and(schema3),
-      createOutputState(),
-      ['intersection'],
-    );
+    const result = createSchema(schema.and(schema2).and(schema3));
 
-    expect(result).toEqual<oas31.SchemaObject>({
-      allOf: [
-        {
-          type: 'object',
-          properties: {
-            a: {
-              type: 'string',
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        allOf: [
+          {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string',
+              },
             },
+            required: ['a'],
+            additionalProperties: false,
           },
-          required: ['a'],
-        },
-        {
-          type: 'object',
-          properties: {
-            b: {
-              type: 'string',
+          {
+            type: 'object',
+            properties: {
+              b: {
+                type: 'string',
+              },
             },
+            required: ['b'],
+            additionalProperties: false,
           },
-          required: ['b'],
-        },
-        {
-          type: 'object',
-          properties: {
-            c: {
-              type: 'string',
+          {
+            type: 'object',
+            properties: {
+              c: {
+                type: 'string',
+              },
             },
+            required: ['c'],
+            additionalProperties: false,
           },
-          required: ['c'],
-        },
-      ],
+        ],
+      },
+      components: {},
     });
   });
 });

@@ -1,26 +1,27 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('unknown', () => {
   it('should create an empty schema for unknown', () => {
-    const expected: oas31.SchemaObject = {};
     const schema = z.unknown();
 
-    const result = createSchema(schema, createOutputState(), ['unknown']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {},
+      components: {},
+    });
   });
 
   it('should create an empty schema for any', () => {
-    const expected: oas31.SchemaObject = {};
     const schema = z.any();
 
-    const result = createSchema(schema, createOutputState(), ['unknown']);
+    const result = createSchema(schema);
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {},
+      components: {},
+    });
   });
 });

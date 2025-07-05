@@ -1,20 +1,20 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { createSchema } from '../schema';
 
 describe('manual', () => {
-  it('creates a simple string schema for an optional string', () => {
-    const expected: oas31.SchemaObject = {
-      type: 'string',
-    };
+  it('creates a string schema for a string override', () => {
+    const schema = z.unknown().meta({
+      override: { type: 'string' },
+    });
 
-    const schema = z.unknown().openapi({ type: 'string' });
+    const result = createSchema(schema);
 
-    const result = createSchema(schema, createOutputState(), ['manual']);
-
-    expect(result).toEqual(expected);
+    expect(result).toEqual({
+      schema: {
+        type: 'string',
+      },
+      components: {},
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
 import { JobIdSchema, JobTitleSchema, UserIdSchema } from './common';
 
@@ -13,7 +13,7 @@ export const GetJobQuerySchema = z
      */
     id: JobIdSchema,
   })
-  .openapi({ description: 'Get Job Query Parameters' });
+  .meta({ description: 'Get Job Query Parameters' });
 
 /**
  * Get Job Response
@@ -36,6 +36,6 @@ export const GetJobResponseSchema = z
      */
     userId: UserIdSchema,
   })
-  .openapi({
+  .meta({
     description: 'Get Job Response',
   });

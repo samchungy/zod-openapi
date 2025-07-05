@@ -38,6 +38,7 @@ async function copyDTs(src: string, dest: string): Promise<void> {
         const patched = contents
           .replace(', SpecificationExtension }', ' }')
           .replaceAll(/.*export declare function.*\n/g, '');
+
         await fs.writeFile(destination, Buffer.from(patched));
         continue;
       }

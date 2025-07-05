@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
 import { JobIdSchema, JobTitleSchema } from './common';
 
@@ -13,7 +13,7 @@ export const CreateJobRequestSchema = z
      */
     title: JobTitleSchema,
   })
-  .openapi({
+  .meta({
     description: 'Create Job Request',
   });
 
@@ -28,4 +28,4 @@ export const CreateJobResponseSchema = z
      */
     id: JobIdSchema,
   })
-  .openapi({ description: 'Create Job Response' });
+  .meta({ description: 'Create Job Response' });

@@ -18,18 +18,19 @@ paths:
       operationId: getJob
       summary: Get Job
       parameters:
-        - in: query
-          name: id
-          description: A unique identifier for a job
+        - name: id
+          in: query
           schema:
             $ref: "#/components/schemas/jobId"
           required: true
+          description: A unique identifier for a job
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
+                description: Get Job Response
                 type: object
                 properties:
                   id:
@@ -37,14 +38,14 @@ paths:
                   title:
                     $ref: "#/components/schemas/jobTitle"
                   userId:
-                    type: string
                     description: A unique identifier for a user
                     example: "60001234"
+                    type: string
                 required:
                   - id
                   - title
                   - userId
-                description: Get Job Response
+                additionalProperties: false
     post:
       operationId: createJob
       summary: Create Job
@@ -52,6 +53,7 @@ paths:
         content:
           application/json:
             schema:
+              description: Create Job Request
               type: object
               properties:
                 title:
@@ -59,35 +61,33 @@ paths:
               required:
                 - title
               additionalProperties: false
-              description: Create Job Request
       responses:
         "201":
-          description: Successful creation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    $ref: "#/components/schemas/jobId"
-                required:
-                  - id
-                description: Create Job Response
+          $ref: "#/components/responses/CreateJobResponse"
 components:
-  securitySchemes:
-    s2sauth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: An s2s token issued by an allow listed consumer
   schemas:
-    jobId:
-      type: string
-      format: uuid
-      description: A unique identifier for a job
-      example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
     jobTitle:
-      type: string
-      minLength: 1
       description: A name that describes the job
       example: Mid level developer
+      type: string
+      minLength: 1
+    jobId:
+      description: A unique identifier for a job
+      example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+  responses:
+    CreateJobResponse:
+      description: Successful creation
+      content:
+        application/json:
+          schema:
+            description: Create Job Response
+            type: object
+            properties:
+              id:
+                $ref: "#/components/schemas/jobId"
+            required:
+              - id
+            additionalProperties: false

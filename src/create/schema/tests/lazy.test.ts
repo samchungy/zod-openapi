@@ -1,69 +1,85 @@
-import '../../../entries/extend';
-import assert from 'assert';
+import * as z from 'zod/v4';
+import type { ZodLazy, ZodType } from 'zod/v4';
 
-import { type ZodLazy, type ZodType, z } from 'zod';
-
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { createRegistry } from '../../components';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('lazy', () => {
-  it('throws an error when a lazy schema has no ref', () => {
+  it('supports the new lazy syntax', () => {
+    const lazy = z.object({
+      id: z.string(),
+      get a() {
+        return lazy;
+      },
+    });
+
+    const registry = createRegistry();
+
+    const result = createSchema(lazy, { registry });
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/__schema0',
+      },
+      components: {
+        __schema0: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            a: {
+              $ref: '#/components/schemas/__schema0',
+            },
+          },
+          additionalProperties: false,
+          required: ['id', 'a'],
+        },
+      },
+    });
+  });
+  it('creates a dynamic component', () => {
     type Lazy = Lazy[];
     const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
 
-    expect(() =>
-      createSchema(lazy as ZodLazy<any>, createOutputState(), ['response']),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"The schema at response > lazy schema > array items needs to be registered because it's circularly referenced"`,
-    );
-  });
+    const result = createSchema(lazy as z.ZodLazy<any>);
 
-  it('throws errors when cycles without refs are detected', () => {
-    const cycle1: any = z.lazy(() => z.array(z.object({ foo: cycle1 })));
-    expect(() =>
-      createSchema(cycle1, createOutputState(), ['response']),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"The schema at response > lazy schema > array items > property: foo needs to be registered because it's circularly referenced"`,
-    );
-
-    const cycle2: any = z.lazy(() => z.union([z.number(), z.array(cycle2)]));
-    expect(() =>
-      createSchema(cycle2, createOutputState(), ['response']),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"The schema at response > lazy schema > union option 1 > array items needs to be registered because it's circularly referenced"`,
-    );
-
-    const cycle3: any = z.lazy(() => z.record(z.tuple([cycle3.optional()])));
-    expect(() =>
-      createSchema(cycle3, createOutputState(), ['response']),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"The schema at response > lazy schema > record value > tuple item 0 > optional needs to be registered because it's circularly referenced"`,
-    );
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/__schema0',
+      },
+      components: {
+        __schema0: {
+          items: {
+            $ref: '#/components/schemas/__schema0',
+          },
+          type: 'array',
+        },
+      },
+    });
   });
 
   it('creates a lazy schema when the schema contains a ref', () => {
     type Lazy = Lazy[];
     const lazy: z.ZodType<Lazy> = z
       .lazy(() => lazy.array())
-      .openapi({ ref: 'lazy' });
+      .meta({ id: 'lazy' });
 
-    const state = createOutputState();
+    const result = createSchema(lazy as ZodLazy<any>);
 
-    const expectedComponent: oas31.SchemaObject = {
-      type: 'array',
-      items: { $ref: '#/components/schemas/lazy' },
-    };
-
-    const result = createSchema(lazy as ZodLazy<any>, state, ['lazy']);
-
-    expect(result).toEqual(expectedComponent.items);
-
-    const component = state.components.schemas.get(lazy);
-
-    assert(component?.type === 'complete');
-
-    expect(component.schemaObject).toEqual(expectedComponent);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/lazy',
+      },
+      components: {
+        lazy: {
+          items: {
+            $ref: '#/components/schemas/lazy',
+          },
+          type: 'array',
+        },
+      },
+    });
   });
 
   it('supports registering the base schema', () => {
@@ -86,58 +102,51 @@ describe('lazy', () => {
 
     const PostSchema: ZodType<Post> = BasePost.extend({
       user: z.lazy(() => UserSchema).optional(),
-    }).openapi({ ref: 'post' });
+    }).meta({ id: 'post' });
 
     const UserSchema: ZodType<User> = BaseUser.extend({
       posts: z.array(z.lazy(() => PostSchema)).optional(),
-    }).openapi({ ref: 'user' });
+    }).meta({ id: 'user' });
 
-    const state = createOutputState();
+    const result = createSchema(UserSchema);
 
-    const expectedUserComponent: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-        },
-        posts: {
-          type: 'array',
-          items: { $ref: '#/components/schemas/post' },
-        },
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/user',
       },
-      required: ['id'],
-    };
-    const expectedPostComponent: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-        },
-        userId: {
-          type: 'string',
-        },
+      components: {
         user: {
-          $ref: '#/components/schemas/user',
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            posts: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/post' },
+            },
+          },
+          additionalProperties: false,
+          required: ['id'],
+        },
+        post: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            userId: {
+              type: 'string',
+            },
+            user: {
+              $ref: '#/components/schemas/user',
+            },
+          },
+          additionalProperties: false,
+          required: ['id', 'userId'],
         },
       },
-      required: ['id', 'userId'],
-    };
-
-    const expectedUser: oas31.ReferenceObject = {
-      $ref: '#/components/schemas/user',
-    };
-
-    const result = createSchema(UserSchema, state, ['object']);
-
-    expect(result).toEqual(expectedUser);
-
-    const component = state.components.schemas.get(UserSchema);
-    assert(component?.type === 'complete');
-    expect(component.schemaObject).toEqual(expectedUserComponent);
-
-    const postComponent = state.components.schemas.get(PostSchema);
-    assert(postComponent?.type === 'complete');
-    expect(postComponent.schemaObject).toEqual(expectedPostComponent);
+    });
   });
 
   it('supports sibling properties that are circular references', () => {
@@ -162,59 +171,53 @@ describe('lazy', () => {
     const PostSchema: ZodType<Post> = BasePost.extend({
       user: z.lazy(() => UserSchema).optional(),
       author: z.lazy(() => UserSchema).optional(),
-    }).openapi({ ref: 'post' });
+    }).meta({ id: 'post2' });
 
     const UserSchema: ZodType<User> = BaseUser.extend({
       posts: z.array(z.lazy(() => PostSchema)).optional(),
-    }).openapi({ ref: 'user' });
+    }).meta({ id: 'user2' });
 
-    const state = createOutputState();
+    const result = createSchema(PostSchema);
 
-    const expectedPostComponent: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        $ref: '#/components/schemas/post2',
+      },
+      components: {
+        post2: {
+          type: 'object',
+          properties: {
+            author: {
+              $ref: '#/components/schemas/user2',
+            },
+            id: {
+              type: 'string',
+            },
+            userId: {
+              type: 'string',
+            },
+            user: {
+              $ref: '#/components/schemas/user2',
+            },
+          },
+          additionalProperties: false,
+          required: ['id', 'userId'],
         },
-        userId: {
-          type: 'string',
-        },
-        user: {
-          $ref: '#/components/schemas/user',
-        },
-        author: {
-          $ref: '#/components/schemas/user',
+        user2: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            posts: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/post2' },
+            },
+          },
+          additionalProperties: false,
+          required: ['id'],
         },
       },
-      required: ['id', 'userId'],
-    };
-    const expected: oas31.ReferenceObject = {
-      $ref: '#/components/schemas/post',
-    };
-    const expectedUserComponent: oas31.SchemaObject = {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-        },
-        posts: {
-          type: 'array',
-          items: { $ref: '#/components/schemas/post' },
-        },
-      },
-      required: ['id'],
-    };
-
-    const result = createSchema(PostSchema, state, ['object']);
-
-    expect(result).toEqual(expected);
-
-    const component = state.components.schemas.get(PostSchema);
-    assert(component?.type === 'complete');
-    expect(component.schemaObject).toEqual(expectedPostComponent);
-
-    const userComponent = state.components.schemas.get(UserSchema);
-    assert(userComponent?.type === 'complete');
-    expect(userComponent.schemaObject).toEqual(expectedUserComponent);
+    });
   });
 });

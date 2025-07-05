@@ -1,16 +1,49 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas31 } from '../../../openapi3-ts/dist';
-import { createOutputState } from '../../../testing/state';
+import { createOutputContext } from '../../../testing/ctx';
+import { createRegistry } from '../../components';
 import type { ZodOpenApiComponentsObject } from '../../document';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('discriminatedUnion', () => {
-  it('creates a oneOf schema', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
+  it('creates a oneOf schema with discriminator mapping when schemas are registered', () => {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal('a'),
+        })
+        .meta({ id: 'a' }),
+      z
+        .object({
+          type: z.literal('b'),
+        })
+        .meta({ id: 'b' }),
+    ]);
+
+    const ctx = createOutputContext();
+    const result = createSchema(schema, ctx);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        oneOf: [
+          {
+            $ref: '#/components/schemas/a',
+          },
+          {
+            $ref: '#/components/schemas/b',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            a: '#/components/schemas/a',
+            b: '#/components/schemas/b',
+          },
+        },
+        type: 'object',
+      },
+      components: {
+        a: {
           type: 'object',
           properties: {
             type: {
@@ -19,8 +52,9 @@ describe('discriminatedUnion', () => {
             },
           },
           required: ['type'],
+          additionalProperties: false,
         },
-        {
+        b: {
           type: 'object',
           properties: {
             type: {
@@ -29,205 +63,213 @@ describe('discriminatedUnion', () => {
             },
           },
           required: ['type'],
-        },
-      ],
-    };
-
-    const schema = z.discriminatedUnion('type', [
-      z.object({
-        type: z.literal('a'),
-      }),
-      z.object({
-        type: z.literal('b'),
-      }),
-    ]);
-
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
-
-    expect(result).toEqual(expected);
-  });
-
-  it('creates a oneOf schema with discriminator mapping when schemas are registered', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-      discriminator: {
-        propertyName: 'type',
-        mapping: {
-          a: '#/components/schemas/a',
-          b: '#/components/schemas/b',
+          additionalProperties: false,
         },
       },
-    };
-
-    const schema = z.discriminatedUnion('type', [
-      z
-        .object({
-          type: z.literal('a'),
-        })
-        .openapi({ ref: 'a' }),
-      z
-        .object({
-          type: z.literal('b'),
-        })
-        .openapi({ ref: 'b' }),
-    ]);
-
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
-
-    expect(result).toEqual(expected);
+    });
   });
 
   it('creates a oneOf schema with discriminator mapping when schemas with enums are registered', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/c',
-        },
-        {
-          $ref: '#/components/schemas/d',
-        },
-      ],
-      discriminator: {
-        propertyName: 'type',
-        mapping: {
-          c: '#/components/schemas/c',
-          d: '#/components/schemas/d',
-          e: '#/components/schemas/d',
-        },
-      },
-    };
-
     const schema = z.discriminatedUnion('type', [
       z
         .object({
           type: z.literal('c'),
         })
-        .openapi({ ref: 'c' }),
+        .meta({ id: 'c' }),
       z
         .object({
           type: z.enum(['d', 'e']),
         })
-        .openapi({ ref: 'd' }),
+        .meta({ id: 'd' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        oneOf: [
+          {
+            $ref: '#/components/schemas/c',
+          },
+          {
+            $ref: '#/components/schemas/d',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            c: '#/components/schemas/c',
+            d: '#/components/schemas/d',
+            e: '#/components/schemas/d',
+          },
+        },
+        type: 'object',
+      },
+      components: {
+        c: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'c',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        d: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['d', 'e'],
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('creates a oneOf schema with discriminator mapping when schemas with enums are registered manually', () => {
-    const c = z.object({
-      type: z.literal('c'),
+    const f = z.object({
+      type: z.literal('f'),
     });
 
-    const d = z.object({
-      type: z.enum(['d', 'e']),
+    const g = z.object({
+      type: z.enum(['g', 'h']),
     });
 
     const components: ZodOpenApiComponentsObject = {
       schemas: {
-        c,
-        d,
+        f,
+        g,
       },
     };
 
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/c',
-        },
-        {
-          $ref: '#/components/schemas/d',
-        },
-      ],
-      discriminator: {
-        propertyName: 'type',
-        mapping: {
-          c: '#/components/schemas/c',
-          d: '#/components/schemas/d',
-          e: '#/components/schemas/d',
+    const schema = z.discriminatedUnion('type', [f, g]);
+
+    const result = createSchema(schema, {
+      registry: createRegistry(components),
+    });
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/f',
+          },
+          {
+            $ref: '#/components/schemas/g',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            f: '#/components/schemas/f',
+            g: '#/components/schemas/g',
+            h: '#/components/schemas/g',
+          },
         },
       },
-    };
-
-    const schema = z.discriminatedUnion('type', [c, d]);
-    const state = createOutputState(components);
-
-    const result = createSchema(schema, state, ['discriminatedUnion']);
-
-    expect(result).toEqual(expected);
+      components: {
+        f: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'f',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        g: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['g', 'h'],
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('creates a oneOf schema with discriminator mapping when schemas with string nativeEnums', () => {
-    const expected: oas31.SchemaObject = {
-      discriminator: {
-        mapping: {
-          a: '#/components/schemas/a',
-          c: '#/components/schemas/a',
-          b: '#/components/schemas/b',
-        },
-        propertyName: 'type',
-      },
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     enum Letters {
-      a = 'a',
-      c = 'c',
+      i = 'i',
+      k = 'k',
     }
 
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.nativeEnum(Letters),
+          type: z.enum(Letters),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'i' }),
       z
         .object({
-          type: z.literal('b'),
+          type: z.literal('j'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'j' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        discriminator: {
+          mapping: {
+            i: '#/components/schemas/i',
+            j: '#/components/schemas/j',
+            k: '#/components/schemas/i',
+          },
+          propertyName: 'type',
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/i',
+          },
+          {
+            $ref: '#/components/schemas/j',
+          },
+        ],
+        type: 'object',
+      },
+      components: {
+        i: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['i', 'k'],
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        j: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'j',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('creates a oneOf schema without discriminator mapping when schemas with mixed nativeEnums', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     enum Mixed {
       a = 'a',
       c = 'c',
@@ -237,203 +279,373 @@ describe('discriminatedUnion', () => {
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.nativeEnum(Mixed),
+          type: z.enum(Mixed),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'k' }),
       z
         .object({
           type: z.literal('b'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'l' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            1: '#/components/schemas/k',
+            a: '#/components/schemas/k',
+            b: '#/components/schemas/l',
+            c: '#/components/schemas/k',
+          },
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/k',
+          },
+          {
+            $ref: '#/components/schemas/l',
+          },
+        ],
+      },
+      components: {
+        k: {
+          type: 'object',
+          properties: {
+            type: {
+              enum: ['a', 'c', 1],
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        l: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'b',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('handles a discriminated union with an optional type', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.literal('a').optional(),
+          type: z.literal('m').optional(),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'm' }),
       z
         .object({
-          type: z.literal('b'),
+          type: z.literal('n'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'n' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/m',
+          },
+          {
+            $ref: '#/components/schemas/n',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+        },
+      },
+      components: {
+        n: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'n',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        m: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'm',
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('handles a discriminated union with a nullable type', () => {
-    const expected: oas31.SchemaObject = {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.literal('a').nullable(),
+          type: z.literal('o').nullable(),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'o' }),
       z
         .object({
-          type: z.literal('b'),
+          type: z.literal('p'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'p' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        discriminator: {
+          propertyName: 'type',
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/o',
+          },
+          {
+            $ref: '#/components/schemas/p',
+          },
+        ],
+      },
+      components: {
+        o: {
+          type: 'object',
+          properties: {
+            type: {
+              anyOf: [
+                {
+                  type: 'string',
+                  const: 'o',
+                },
+                {
+                  type: 'null',
+                },
+              ],
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        p: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'p',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('handles a discriminated union with a branded type', () => {
-    const expected: oas31.SchemaObject = {
-      discriminator: {
-        mapping: {
-          a: '#/components/schemas/a',
-          b: '#/components/schemas/b',
-        },
-        propertyName: 'type',
-      },
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.literal('a').brand(),
+          type: z.literal('q').brand(),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'q' }),
       z
         .object({
-          type: z.literal('b'),
+          type: z.literal('r'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'r' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        discriminator: {
+          mapping: {
+            q: '#/components/schemas/q',
+            r: '#/components/schemas/r',
+          },
+          propertyName: 'type',
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/q',
+          },
+          {
+            $ref: '#/components/schemas/r',
+          },
+        ],
+      },
+      components: {
+        q: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'q',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        r: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'r',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('handles a discriminated union with a branded enum type', () => {
-    const expected: oas31.SchemaObject = {
-      discriminator: {
-        mapping: {
-          a: '#/components/schemas/a',
-          c: '#/components/schemas/a',
-          b: '#/components/schemas/b',
-        },
-        propertyName: 'type',
-      },
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     const schema = z.discriminatedUnion('type', [
       z
         .object({
           type: z.enum(['a', 'c']).brand(),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 's' }),
       z
         .object({
           type: z.literal('b'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 't' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual({
+      schema: {
+        type: 'object',
+        discriminator: {
+          mapping: {
+            a: '#/components/schemas/s',
+            b: '#/components/schemas/t',
+            c: '#/components/schemas/s',
+          },
+          propertyName: 'type',
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/s',
+          },
+          {
+            $ref: '#/components/schemas/t',
+          },
+        ],
+      },
+      components: {
+        s: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['a', 'c'],
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        t: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'b',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('handles a discriminated union with a readonly type', () => {
-    const expected: oas31.SchemaObject = {
-      discriminator: {
-        mapping: {
-          a: '#/components/schemas/a',
-          b: '#/components/schemas/b',
-        },
-        propertyName: 'type',
-      },
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
-        },
-        {
-          $ref: '#/components/schemas/b',
-        },
-      ],
-    };
-
     const schema = z.discriminatedUnion('type', [
       z
         .object({
-          type: z.literal('a').readonly(),
+          type: z.literal('u').readonly(),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'u' }),
       z
         .object({
-          type: z.literal('b'),
+          type: z.literal('v'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'v' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            u: '#/components/schemas/u',
+            v: '#/components/schemas/v',
+          },
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/u',
+          },
+          {
+            $ref: '#/components/schemas/v',
+          },
+        ],
+      },
+      components: {
+        u: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'u',
+              readOnly: true,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        v: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'v',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 
   it('handles a discriminated union with a catch type', () => {
@@ -442,63 +654,234 @@ describe('discriminatedUnion', () => {
         .object({
           type: z.literal('a').catch('a'),
         })
-        .openapi({ ref: 'a' }),
+        .meta({ id: 'w' }),
       z
         .object({
           type: z.literal('b'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'x' }),
     ]);
 
-    const result = createSchema(schema, createOutputState(), [
-      'discriminatedUnion',
-    ]);
+    const result = createSchema(schema);
 
-    expect(result).toEqual<oas31.SchemaObject>({
-      discriminator: {
-        mapping: {
-          a: '#/components/schemas/a',
-          b: '#/components/schemas/b',
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        discriminator: {
+          mapping: {
+            a: '#/components/schemas/w',
+            b: '#/components/schemas/x',
+          },
+          propertyName: 'type',
         },
-        propertyName: 'type',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/w',
+          },
+          {
+            $ref: '#/components/schemas/x',
+          },
+        ],
       },
-      oneOf: [
-        {
-          $ref: '#/components/schemas/a',
+      components: {
+        w: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              default: 'a',
+              const: 'a',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
         },
-        {
-          $ref: '#/components/schemas/b',
+        x: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'b',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
         },
-      ],
+      },
     });
   });
 
-  it('throws an error if enforceDiscriminatedUnionComponents is specified and a schema is not registered', () => {
+  it('should delete the discriminator mapping if any of the values are not registered', () => {
     const schema = z.discriminatedUnion('type', [
-      z.object({
-        type: z.literal('a'),
-      }),
       z
         .object({
-          type: z.literal('b'),
+          type: z.literal('foo'),
         })
-        .openapi({ ref: 'b' }),
+        .meta({ id: 'y' }),
+      z.object({
+        type: z.literal('bar'),
+      }),
     ]);
 
-    expect(() =>
-      createSchema(
-        schema,
-        {
-          ...createOutputState(
-            {},
-            { enforceDiscriminatedUnionComponents: true },
-          ),
-          path: ['some', 'path'],
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/y',
+          },
+          {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                const: 'bar',
+              },
+            },
+            required: ['type'],
+            additionalProperties: false,
+          },
+        ],
+      },
+      components: {
+        y: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              const: 'foo',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
         },
-        ['discriminatedUnion'],
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Discriminated Union member 0 at some > path > discriminatedUnion is not registered as a component"`,
-    );
+      },
+    });
+  });
+
+  it('should allow boolean discriminators', () => {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal(true),
+        })
+        .meta({ id: 'true' }),
+      z
+        .object({
+          type: z.literal(false),
+        })
+        .meta({ id: 'false' }),
+    ]);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/true',
+          },
+          {
+            $ref: '#/components/schemas/false',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            true: '#/components/schemas/true',
+            false: '#/components/schemas/false',
+          },
+        },
+      },
+      components: {
+        true: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'boolean',
+              const: true,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        false: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'boolean',
+              const: false,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it('should allow number discriminators', () => {
+    const schema = z.discriminatedUnion('type', [
+      z
+        .object({
+          type: z.literal(1),
+        })
+        .meta({ id: 'one' }),
+      z
+        .object({
+          type: z.literal(2),
+        })
+        .meta({ id: 'two' }),
+    ]);
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        type: 'object',
+        oneOf: [
+          {
+            $ref: '#/components/schemas/one',
+          },
+          {
+            $ref: '#/components/schemas/two',
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            1: '#/components/schemas/one',
+            2: '#/components/schemas/two',
+          },
+        },
+      },
+      components: {
+        one: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'number',
+              const: 1,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        two: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'number',
+              const: 2,
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+      },
+    });
   });
 });

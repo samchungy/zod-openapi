@@ -59,6 +59,9 @@ export interface ComponentsObject extends ISpecificationExtension {
     callbacks?: {
         [callback: string]: CallbackObject | ReferenceObject;
     };
+    pathItems?: {
+        [pathItem: string]: PathItemObject | ReferenceObject;
+    };
 }
 export interface PathsObject extends ISpecificationExtension {
     [path: string]: PathItemObject;
@@ -205,6 +208,7 @@ export interface ReferenceObject {
 }
 export type SchemaObjectType = 'integer' | 'number' | 'string' | 'boolean' | 'object' | 'null' | 'array';
 export interface SchemaObject extends ISpecificationExtension {
+    $ref?: string;
     discriminator?: DiscriminatorObject;
     readOnly?: boolean;
     writeOnly?: boolean;

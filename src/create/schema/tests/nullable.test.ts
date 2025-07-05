@@ -1,141 +1,40 @@
-import '../../../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import { createSchema } from '..';
-import type { oas30, oas31 } from '../../../openapi3-ts/dist';
-import {
-  createOutputOpenapi3State,
-  createOutputState,
-} from '../../../testing/state';
+import { createOutputContext } from '../../../testing/ctx';
+import { type SchemaResult, createSchema } from '../schema';
 
 describe('nullable', () => {
-  describe('openapi 3.0.0', () => {
-    it('creates a simple nullable string schema', () => {
-      const expected: oas30.SchemaObject = {
-        type: 'string',
-        nullable: true,
-      };
+  it('creates a simple nullable string schema', () => {
+    const schema = z.string().nullable();
 
-      const schema = z.string().nullable();
+    const result = createSchema(schema);
 
-      const result = createSchema(schema, createOutputOpenapi3State(), [
-        'nullable',
-      ]);
-
-      expect(result).toEqual(expected);
-    });
-
-    it('creates an allOf nullable schema for registered schemas', () => {
-      const expected: oas30.SchemaObject = {
-        allOf: [{ $ref: '#/components/schemas/a' }],
-        nullable: true,
-      };
-
-      const registered = z.string().openapi({ ref: 'a' });
-      const schema = registered.optional().nullable();
-
-      const result = createSchema(schema, createOutputOpenapi3State(), [
-        'nullable',
-      ]);
-
-      expect(result).toEqual(expected);
-    });
-
-    it('creates an anyOf nullable schema', () => {
-      const expected: oas30.SchemaObject = {
+    expect(result).toEqual<SchemaResult>({
+      schema: {
         anyOf: [
           {
-            type: 'object',
-            properties: {
-              a: {
-                type: 'string',
-              },
-            },
-            required: ['a'],
+            type: 'string',
           },
           {
-            type: 'object',
-            properties: {
-              b: {
-                type: 'string',
-              },
-            },
-            required: ['b'],
+            type: 'null',
           },
         ],
-        nullable: true,
-      };
-
-      const schema = z
-        .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
-        .nullable();
-
-      const result = createSchema(schema, createOutputOpenapi3State(), [
-        'nullable',
-      ]);
-
-      expect(result).toEqual(expected);
-    });
-
-    it('creates a nullable allOf nullable schema', () => {
-      const expected: oas30.SchemaObject = {
-        type: 'object',
-        properties: {
-          b: {
-            allOf: [{ $ref: '#/components/schemas/a' }],
-            properties: { b: { type: 'string' } },
-            required: ['b'],
-            nullable: true,
-          },
-        },
-        required: ['b'],
-        nullable: true,
-      };
-
-      const object1 = z.object({ a: z.string() }).openapi({ ref: 'a' });
-      const object2 = object1.extend({ b: z.string() });
-      const schema = z.object({ b: object2.nullable() }).nullable();
-
-      const result = createSchema(schema, createOutputOpenapi3State(), [
-        'nullable',
-      ]);
-
-      expect(result).toEqual(expected);
-    });
-
-    it('creates a nullable enum', () => {
-      const expected: oas30.SchemaObject = {
-        type: 'string',
-        nullable: true,
-        enum: ['a', null],
-      };
-
-      const schema = z.enum(['a']).nullable();
-
-      const result = createSchema(schema, createOutputOpenapi3State(), [
-        'nullable',
-      ]);
-
-      expect(result).toEqual(expected);
+      },
+      components: {},
     });
   });
 
-  describe('openapi 3.1.0', () => {
-    it('creates a simple nullable string schema', () => {
-      const expected: oas31.SchemaObject = {
-        type: ['string', 'null'],
-      };
+  it('creates an oneOf nullable schema for registered schemas', () => {
+    const registered = z.string().meta({ id: 'a' });
+    const schema = registered.optional().nullable();
 
-      const schema = z.string().nullable();
+    const ctx = createOutputContext();
 
-      const result = createSchema(schema, createOutputState(), ['nullable']);
+    const result = createSchema(schema, ctx);
 
-      expect(result).toEqual(expected);
-    });
-
-    it('creates an oneOf nullable schema for registered schemas', () => {
-      const expected: oas31.SchemaObject = {
-        oneOf: [
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        anyOf: [
           {
             $ref: '#/components/schemas/a',
           },
@@ -143,103 +42,137 @@ describe('nullable', () => {
             type: 'null',
           },
         ],
-      };
-
-      const registered = z.string().openapi({ ref: 'a' });
-      const schema = registered.optional().nullable();
-
-      const result = createSchema(schema, createOutputState(), ['nullable']);
-
-      expect(result).toEqual(expected);
+      },
+      components: {
+        a: {
+          type: 'string',
+        },
+      },
     });
+  });
 
-    it('creates an anyOf nullable schema', () => {
-      const expected: oas31.SchemaObject = {
+  it('creates an anyOf nullable schema', () => {
+    const schema = z
+      .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
+      .nullable();
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {
         anyOf: [
           {
-            type: 'object',
-            properties: {
-              a: {
-                type: 'string',
+            anyOf: [
+              {
+                type: 'object',
+                properties: {
+                  a: {
+                    type: 'string',
+                  },
+                },
+                required: ['a'],
+                additionalProperties: false,
               },
-            },
-            required: ['a'],
-          },
-          {
-            type: 'object',
-            properties: {
-              b: {
-                type: 'string',
+              {
+                type: 'object',
+                properties: {
+                  b: {
+                    type: 'string',
+                  },
+                },
+                required: ['b'],
+                additionalProperties: false,
               },
-            },
-            required: ['b'],
+            ],
           },
           {
             type: 'null',
           },
         ],
-      };
-
-      const schema = z
-        .union([z.object({ a: z.string() }), z.object({ b: z.string() })])
-        .nullable();
-
-      const result = createSchema(schema, createOutputState(), ['nullable']);
-
-      expect(result).toEqual(expected);
+      },
+      components: {},
     });
+  });
 
-    it('creates a nullable allOf nullable schema', () => {
-      const expected: oas31.SchemaObject = {
-        type: ['object', 'null'],
-        properties: {
-          b: {
-            oneOf: [
-              {
-                allOf: [{ $ref: '#/components/schemas/a' }],
-                properties: { b: { type: 'string' } },
-                required: ['b'],
+  it('creates a nullable allOf nullable schema', () => {
+    const object1 = z.object({ a: z.string() }).meta({ id: 'nullable' });
+    const object2 = object1.extend({ b: z.string() });
+    const schema = z.object({ b: object2.nullable() }).nullable();
+
+    const ctx = createOutputContext();
+
+    const result = createSchema(schema, ctx);
+
+    expect(result).toEqual<SchemaResult>({
+      components: {},
+      schema: {
+        anyOf: [
+          {
+            additionalProperties: false,
+            properties: {
+              b: {
+                anyOf: [
+                  {
+                    additionalProperties: false,
+                    properties: {
+                      a: { type: 'string' },
+                      b: { type: 'string' },
+                    },
+                    required: ['a', 'b'],
+                    type: 'object',
+                  },
+                  { type: 'null' },
+                ],
               },
-              { type: 'null' },
-            ],
+            },
+            required: ['b'],
+            type: 'object',
           },
-        },
-        required: ['b'],
-      };
-
-      const object1 = z.object({ a: z.string() }).openapi({ ref: 'a' });
-      const object2 = object1.extend({ b: z.string() });
-      const schema = z.object({ b: object2.nullable() }).nullable();
-
-      const result = createSchema(schema, createOutputState(), ['nullable']);
-
-      expect(result).toEqual(expected);
+          { type: 'null' },
+        ],
+      },
     });
+  });
 
-    it('creates a nullable enum', () => {
-      const expected: oas31.SchemaObject = {
-        type: ['string', 'null'],
-        enum: ['a', null],
-      };
+  it('creates a nullable enum', () => {
+    const schema = z.enum(['a', 'b']).nullable();
 
-      const schema = z.enum(['a']).nullable();
+    const result = createSchema(schema);
 
-      const result = createSchema(schema, createOutputState(), ['nullable']);
-
-      expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        anyOf: [
+          {
+            type: 'string',
+            enum: ['a', 'b'],
+          },
+          {
+            type: 'null',
+          },
+        ],
+      },
+      components: {},
     });
+  });
 
-    it('creates a nullable enum from a literal', () => {
-      const expected: oas31.SchemaObject = {
-        type: ['string', 'null'],
-        enum: ['a', null],
-      };
+  it('creates a nullable enum from a literal', () => {
+    const schema = z.literal('a').nullable();
 
-      const schema = z.literal('a').nullable();
+    const result = createSchema(schema);
 
-      const result = createSchema(schema, createOutputState(), ['nullable']);
-
-      expect(result).toEqual(expected);
+    expect(result).toEqual<SchemaResult>({
+      schema: {
+        anyOf: [
+          {
+            type: 'string',
+            const: 'a',
+          },
+          {
+            type: 'null',
+          },
+        ],
+      },
+      components: {},
     });
   });
 });

@@ -1,30 +1,27 @@
-import '../entries/extend';
-import { z } from 'zod';
+import * as z from 'zod/v4';
 
-import type { oas31 } from '../openapi3-ts/dist';
-
-import { getDefaultComponents } from './components';
+import { createRegistry } from './components';
 import type { ZodOpenApiPathsObject } from './document';
 import { createPaths } from './paths';
 
 describe('createPaths', () => {
   it('should create a paths object', () => {
     const paths: ZodOpenApiPathsObject = {
-      '/jobs': {
+      '/users': {
         get: {
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: z.object({ a: z.string() }),
-              },
-            },
-          },
+          summary: 'Get users',
+          description: 'Returns a list of users',
           responses: {
             '200': {
-              description: '200 OK',
+              description: 'A list of users',
               content: {
                 'application/json': {
-                  schema: z.object({ b: z.string() }),
+                  schema: z.array(
+                    z.object({
+                      id: z.string(),
+                      name: z.string(),
+                    }),
+                  ),
                 },
               },
             },
@@ -33,122 +30,27 @@ describe('createPaths', () => {
       },
     };
 
-    const expectedResult: oas31.PathsObject = {
-      '/jobs': {
+    const registry = createRegistry();
+
+    const result = createPaths(paths, registry, ['test']);
+
+    expect(result).toEqual({
+      '/users': {
         get: {
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: {
-                  properties: {
-                    a: {
-                      type: 'string',
-                    },
-                  },
-                  required: ['a'],
-                  type: 'object',
-                },
-              },
-            },
-          },
+          summary: 'Get users',
+          description: 'Returns a list of users',
           responses: {
             '200': {
+              description: 'A list of users',
               content: {
                 'application/json': {
-                  schema: {
-                    properties: {
-                      b: {
-                        type: 'string',
-                      },
-                    },
-                    required: ['b'],
-                    type: 'object',
-                  },
+                  schema: {},
                 },
               },
-              description: '200 OK',
             },
           },
         },
       },
-    };
-
-    const result = createPaths(paths, getDefaultComponents());
-
-    expect(result).toStrictEqual(expectedResult);
-  });
-
-  it('preserves extra fields', () => {
-    const paths: ZodOpenApiPathsObject = {
-      '/jobs': {
-        get: {
-          'x-extra': 'hello',
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: z.object({ a: z.string() }),
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: '200 OK',
-              content: {
-                'application/json': {
-                  schema: z.object({ b: z.string() }),
-                },
-              },
-            },
-          },
-          description: 'hello',
-        },
-      },
-    };
-
-    const expectedResult: oas31.PathsObject = {
-      '/jobs': {
-        get: {
-          'x-extra': 'hello',
-          description: 'hello',
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: {
-                  properties: {
-                    a: {
-                      type: 'string',
-                    },
-                  },
-                  required: ['a'],
-                  type: 'object',
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              content: {
-                'application/json': {
-                  schema: {
-                    properties: {
-                      b: {
-                        type: 'string',
-                      },
-                    },
-                    required: ['b'],
-                    type: 'object',
-                  },
-                },
-              },
-              description: '200 OK',
-            },
-          },
-        },
-      },
-    };
-
-    const result = createPaths(paths, getDefaultComponents());
-
-    expect(result).toStrictEqual(expectedResult);
+    });
   });
 });
