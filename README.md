@@ -868,10 +868,6 @@ See the library in use in the [examples](./examples/) folder.
 
 For information about changes and migration from v4 to v5, see the [v5 migration guide](./docs/v5.md).
 
-## Comparisons
-
-### [@asteasolutions/zod-to-openapi](./docs/comparisons.md)
-
 ## Development
 
 ### Prerequisites
