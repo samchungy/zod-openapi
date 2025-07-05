@@ -16,7 +16,7 @@ A TypeScript library which uses <a href="https://github.com/colinhacks/zod">Zod<
 <br>
 
 > [!TIP]
-> Zod v4 support is available via `zod-openapi@beta`. Please read the [documentation](https://github.com/samchungy/zod-openapi/blob/v4-stash/docs/v5.md) for more information. A codegen will be available on release to help you migrate if you wish to wait.
+> Zod v4 support is available via `zod-openapi@beta`. Please read the [documentation](https://github.com/samchungy/zod-openapi/blob/v4-stash/docs/v5.md) for more information. A codemod will be available on release to help you migrate if you wish to wait.
 
 ## Installation
 
