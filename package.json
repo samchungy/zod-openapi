@@ -12,7 +12,6 @@
     "zod-openapi"
   ],
   "homepage": "https://github.com/samchungy/zod-openapi#readme",
-  "funding": "https://github.com/samchungy/zod-openapi?sponsor=1",
   "bugs": {
     "url": "https://github.com/samchungy/zod-openapi/issues"
   },
@@ -20,6 +19,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/samchungy/zod-openapi.git"
   },
+  "funding": "https://github.com/samchungy/zod-openapi?sponsor=1",
   "license": "MIT",
   "sideEffects": false,
   "exports": {
@@ -47,10 +47,10 @@
     "format": "skuba format",
     "lint": "skuba lint",
     "prepare": "pnpm build",
+    "release": "pnpm build && changeset publish",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
-    "test:watch": "skuba test --watch",
-    "release": "pnpm build && changeset publish"
+    "test:watch": "skuba test --watch"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.1",
