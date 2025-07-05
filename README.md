@@ -201,7 +201,7 @@ createDocument(doc, {
 | ------------------ | ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | `override`         | `Function`          | `undefined` | Override rendered schema with a function``                                                                        |
 | `outputIdSuffix`   | `string`            | `'Output'`  | Suffix for output schema IDs when the schema is used in both a request and response                               |
-| `allowEmptySchema` | `Object`            | `undefined` | Control whether empty schemas are allowed.                                                                        |
+| `allowEmptySchema` | `Object`            | `undefined` | Control whether empty schemas are allowed for specific Zod schema types                                           |
 | `cycles`           | `'ref' \| 'throw'`  | `'ref'`     | How to handle cycles in schemas.<br>- `'ref'` — Break cycles using $defs<br>- `'throw'` — Error on cycles         |
 | `reused`           | `'ref' \| 'inline'` | `'inline'`  | How to handle reused schemas.<br>- `'ref'` — Reused schemas as references<br>- `'inline'` — Inline reused schemas |
 |                    |
