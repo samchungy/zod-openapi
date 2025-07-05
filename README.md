@@ -189,6 +189,9 @@ createDocument(doc, {
       jsonSchema.format = 'date-time';
     }
   },
+  allowEmptySchema: {
+    custom: true,
+  },
 });
 ```
 
