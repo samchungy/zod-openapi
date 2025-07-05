@@ -1,18 +1,14 @@
-name: Release
+name: Snapshot
 
-on:
-  push:
-    branches:
-      - beta
-      - main
+on: workflow_dispatch
 
 jobs:
-  release:
+  publish:
     permissions:
       contents: write
       id-token: write
       pull-requests: write
-    name: Release
+    name: Publish snapshot version
     runs-on: ubuntu-latest
     env:
       CI: true
@@ -36,11 +32,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Release
-        uses: changesets/action@v1
-        with:
-          publish: pnpm release
-          version: pnpm changeset version
+      - name: Publish
+        uses: seek-oss/changesets-snapshot@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

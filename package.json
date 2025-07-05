@@ -48,10 +48,12 @@
     "prepare": "pnpm build",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
-    "test:watch": "skuba test --watch"
+    "test:watch": "skuba test --watch",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.1",
+    "@changesets/cli": "^2.29.5",
     "@redocly/cli": "1.34.3",
     "@types/node": "22.15.21",
     "ajv": "8.17.1",
