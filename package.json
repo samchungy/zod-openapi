@@ -1,6 +1,6 @@
 {
   "name": "zod-openapi",
-  "version": "4.2.4",
+  "version": "5.0.0",
   "description": "Convert Zod Schemas to OpenAPI v3.x documentation",
   "keywords": [
     "typescript",
@@ -12,6 +12,7 @@
     "zod-openapi"
   ],
   "homepage": "https://github.com/samchungy/zod-openapi#readme",
+  "funding": "https://github.com/samchungy/zod-openapi?sponsor=1",
   "bugs": {
     "url": "https://github.com/samchungy/zod-openapi/issues"
   },
@@ -53,8 +54,8 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.1",
-    "@changesets/cli": "^2.29.5",
-    "@redocly/cli": "1.34.3",
+    "@changesets/cli": "2.29.5",
+    "@redocly/cli": "1.34.4",
     "@types/node": "22.15.21",
     "ajv": "8.17.1",
     "eslint-plugin-import-zod": "1.0.3",
