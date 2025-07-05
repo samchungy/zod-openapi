@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@arethetypeswrong/cli':
-        specifier: 0.18.1
-        version: 0.18.1
+        specifier: 0.18.2
+        version: 0.18.2
       '@changesets/cli':
         specifier: 2.29.5
         version: 2.29.5
@@ -37,7 +37,7 @@ importers:
         version: 11.0.1(@babel/core@7.27.1)(@jest/transform@29.7.0)(@swc/core@1.11.29)(@typescript-eslint/eslint-plugin@8.32.1(@typescript-eslint/parser@8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3))(babel-jest@29.7.0(@babel/core@7.27.1))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.27.0(jiti@2.4.2)))(jiti@2.4.2)
       tsdown:
         specifier: 0.12.9
-        version: 0.12.9(@arethetypeswrong/core@0.18.1)(typescript@5.8.3)
+        version: 0.12.9(@arethetypeswrong/core@0.18.2)(typescript@5.8.3)
       yaml:
         specifier: 2.8.0
         version: 2.8.0
@@ -54,13 +54,13 @@ packages:
   '@andrewbranch/untar.js@1.0.3':
     resolution: {integrity: sha512-Jh15/qVmrLGhkKJBdXlK1+9tY4lZruYjsgkDFj08ZmDiWVBLJcqkok7Z0/R0In+i1rScBpJlSvrTS2Lm41Pbnw==}
 
-  '@arethetypeswrong/cli@0.18.1':
-    resolution: {integrity: sha512-SS1Z5gRSvbP4tl98KlNygSUp3Yfenktt782MQKEbYm6GFPowztnnvdEUhQGm2uVDIH4YkU6av+n8Lm6OEOigqA==}
+  '@arethetypeswrong/cli@0.18.2':
+    resolution: {integrity: sha512-PcFM20JNlevEDKBg4Re29Rtv2xvjvQZzg7ENnrWFSS0PHgdP2njibVFw+dRUhNkPgNfac9iUqO0ohAXqQL4hbw==}
     engines: {node: '>=20'}
     hasBin: true
 
-  '@arethetypeswrong/core@0.18.1':
-    resolution: {integrity: sha512-uUw47cLgB6zYOpAxFp94NG/J9ev0wcOC+UOmTCFEWtbDEn4vpR0ScoPxD7LCGcPczOd7bDJSJL/gMSz3BknYcw==}
+  '@arethetypeswrong/core@0.18.2':
+    resolution: {integrity: sha512-GiwTmBFOU1/+UVNqqCGzFJYfBXEytUkiI+iRZ6Qx7KmUVtLm00sYySkfe203C9QtPG11yOz1ZaMek8dT/xnlgg==}
     engines: {node: '>=20'}
 
   '@babel/code-frame@7.27.1':
@@ -4900,8 +4900,8 @@ packages:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  validate-npm-package-name@6.0.0:
-    resolution: {integrity: sha512-d7KLgL1LD3U3fgnvWEY1cQXoO/q6EQ1BSz48Sa149V/5zVTAbgmZIpyI8TRi6U9/JNyeYLlTKsEMPtLC27RFUg==}
+  validate-npm-package-name@6.0.1:
+    resolution: {integrity: sha512-OaI//3H0J7ZkR1OqlhGA8cA+Cbk/2xFOQpJOt5+s27/ta9eZwpeervh4Mxh4w0im/kdgktowaqVNR7QOrUd7Yg==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
   walker@1.0.8:
@@ -5050,9 +5050,9 @@ snapshots:
 
   '@andrewbranch/untar.js@1.0.3': {}
 
-  '@arethetypeswrong/cli@0.18.1':
+  '@arethetypeswrong/cli@0.18.2':
     dependencies:
-      '@arethetypeswrong/core': 0.18.1
+      '@arethetypeswrong/core': 0.18.2
       chalk: 4.1.2
       cli-table3: 0.6.5
       commander: 10.0.1
@@ -5060,7 +5060,7 @@ snapshots:
       marked-terminal: 7.3.0(marked@9.1.6)
       semver: 7.7.2
 
-  '@arethetypeswrong/core@0.18.1':
+  '@arethetypeswrong/core@0.18.2':
     dependencies:
       '@andrewbranch/untar.js': 1.0.3
       '@loaderkit/resolve': 1.0.4
@@ -9247,7 +9247,7 @@ snapshots:
       hosted-git-info: 8.1.0
       proc-log: 5.0.0
       semver: 7.7.2
-      validate-npm-package-name: 6.0.0
+      validate-npm-package-name: 6.0.1
 
   npm-path@2.0.4:
     dependencies:
@@ -10524,7 +10524,7 @@ snapshots:
 
   tsconfig-seek@2.0.0: {}
 
-  tsdown@0.12.9(@arethetypeswrong/core@0.18.1)(typescript@5.8.3):
+  tsdown@0.12.9(@arethetypeswrong/core@0.18.2)(typescript@5.8.3):
     dependencies:
       ansis: 4.1.0
       cac: 6.7.14
@@ -10540,7 +10540,7 @@ snapshots:
       tinyglobby: 0.2.14
       unconfig: 7.3.2
     optionalDependencies:
-      '@arethetypeswrong/core': 0.18.1
+      '@arethetypeswrong/core': 0.18.2
       typescript: 5.8.3
     transitivePeerDependencies:
       - '@typescript/native-preview'
@@ -10730,7 +10730,7 @@ snapshots:
 
   validate-npm-package-name@5.0.1: {}
 
-  validate-npm-package-name@6.0.0: {}
+  validate-npm-package-name@6.0.1: {}
 
   walker@1.0.8:
     dependencies:
