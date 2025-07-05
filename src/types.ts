@@ -50,6 +50,10 @@ export interface ZodOpenApiMetadata
   extends ZodOpenApiBaseMetadata,
     core.JSONSchemaMeta {
   examples?: unknown[];
+  /**
+   * @deprecated - Use `examples` instead.
+   * Use of `example` is discouraged, and later versions of OpenAPI specification may remove it.
+   */
   example?: unknown;
 }
 
