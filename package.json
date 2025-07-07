@@ -59,7 +59,7 @@
     "@types/node": "22.15.21",
     "ajv": "8.17.1",
     "eslint-plugin-import-zod": "1.0.3",
-    "eslint-plugin-zod-openapi": "2.0.0-beta.1",
+    "eslint-plugin-zod-openapi": "2.0.0",
     "openapi3-ts": "4.5.0",
     "skuba": "11.1.0",
     "tsdown": "0.12.9",
