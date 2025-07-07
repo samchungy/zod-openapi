@@ -82,4 +82,38 @@ describe('createContent', () => {
       },
     });
   });
+
+  it('should preserve non-Zod schema objects', () => {
+    const registry = createRegistry();
+    const content: oas31.ContentObject = createContent(
+      {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              age: { type: 'integer' },
+            },
+          } as oas31.SchemaObject,
+        },
+      },
+      {
+        registry,
+        io: 'output',
+      },
+      ['test'],
+    );
+
+    expect(content).toEqual<oas31.ContentObject>({
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            age: { type: 'integer' },
+          },
+        },
+      },
+    });
+  });
 });
