@@ -44,7 +44,6 @@ describe('validate', () => {
         jsonSchema: {},
         io: 'output',
         path: ['properties', 'zodOpenApiCreateSchema'],
-
       },
       {
         allowEmptySchema: { pipe: { output: true } },
