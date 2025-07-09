@@ -3,11 +3,13 @@ import type * as core from 'zod/v4/core';
 
 import type { oas31 } from './openapi3-ts/dist';
 
-export type Override = (ctx: {
-  zodSchema: core.$ZodTypes;
-  jsonSchema: core.JSONSchema.BaseSchema;
+type OverrideParameters = Parameters<NonNullable<NonNullable<Parameters<typeof core.toJSONSchema>[1]>['override']>>[0];
+
+export type ZodOpenApiOverrideContext = OverrideParameters & {
   io: 'input' | 'output';
-}) => void;
+}
+
+export type Override = (ctx: ZodOpenApiOverrideContext) => void;
 
 export interface ZodOpenApiBaseMetadata {
   /**
@@ -48,7 +50,7 @@ export interface ZodOpenApiBaseMetadata {
 
 export interface ZodOpenApiMetadata
   extends ZodOpenApiBaseMetadata,
-    core.JSONSchemaMeta {
+  core.JSONSchemaMeta {
   examples?: unknown[];
   /**
    * @deprecated - Use `examples` instead.
@@ -58,5 +60,5 @@ export interface ZodOpenApiMetadata
 }
 
 declare module 'zod/v4' {
-  interface GlobalMeta extends ZodOpenApiMetadata {}
+  interface GlobalMeta extends ZodOpenApiMetadata { }
 }

@@ -27,7 +27,7 @@ describe('transform', () => {
       const schema = z.string().transform((str) => str.length);
 
       expect(() => createSchema(schema)).toThrow(
-        'Zod transform schemas are not supported in output schemas. Please use `.overwrite()` or wrap the schema in a `.pipe()`',
+        'Zod transform found at properties > zodOpenApiCreateSchema are not supported in output schemas. Please use `.overwrite()` or wrap the schema in a `.pipe()` or assign it manual metadata with `.meta()`',
       );
     });
 

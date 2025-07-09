@@ -1,7 +1,7 @@
 import type { GlobalMeta, core } from 'zod/v4';
 
 import type { CreateDocumentOptions, oas31 } from '../..';
-import type { Override } from '../../types';
+import type { Override, ZodOpenApiOverrideContext } from '../../types';
 
 type ZodTypeWithMeta = core.$ZodTypes & {
   meta: () => GlobalMeta | undefined;
@@ -87,11 +87,7 @@ export const override: Override = (ctx) => {
 };
 
 export const validate = (
-  ctx: {
-    zodSchema: core.$ZodTypes;
-    jsonSchema: core.JSONSchema.BaseSchema;
-    io: 'input' | 'output';
-  },
+  ctx: ZodOpenApiOverrideContext,
   opts: CreateDocumentOptions,
 ) => {
   if (Object.keys(ctx.jsonSchema).length) {
@@ -116,7 +112,7 @@ export const validate = (
       if (ctx.io === 'output') {
         // For some reason transform calls pipe and the meta ends up on the pipe instead of the transform
         throw new Error(
-          'Zod transform schemas are not supported in output schemas. Please use `.overwrite()` or wrap the schema in a `.pipe()`',
+          `Zod transform found at ${ctx.path.join(' > ')} are not supported in output schemas. Please use \`.overwrite()\` or wrap the schema in a \`.pipe()\` or assign it manual metadata with \`.meta()\``,
         );
       }
       return;
@@ -130,7 +126,7 @@ export const validate = (
     case 'literal': {
       if (def.values.includes(undefined)) {
         throw new Error(
-          'Zod literal schemas cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
+          `Zod literal at ${ctx.path.join(' > ')} cannot include \`undefined\` as a value. Please use \`z.undefined()\` or \`.optional()\` instead.`,
         );
       }
       return;
@@ -138,6 +134,6 @@ export const validate = (
   }
 
   throw new Error(
-    `Zod schema of type \`${def.type}\` cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\``,
+    `Zod schema of type \`${def.type}\` at ${ctx.path.join(' > ')} cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\``,
   );
 };

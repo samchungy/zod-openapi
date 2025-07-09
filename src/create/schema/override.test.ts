@@ -10,11 +10,12 @@ describe('validate', () => {
           zodSchema: z.void(),
           jsonSchema: {},
           io: 'input',
+          path: ['properties', 'zodOpenApiCreateSchema'],
         },
         {},
       ),
     ).toThrow(
-      'Zod schema of type `void` cannot be represented in OpenAPI. Please assign it metadata with `.meta()`',
+      'Zod schema of type `void` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with `.meta()`',
     );
   });
 
@@ -25,11 +26,12 @@ describe('validate', () => {
           zodSchema: z.map(z.string(), z.number()),
           jsonSchema: {},
           io: 'input',
+          path: ['properties', 'zodOpenApiCreateSchema'],
         },
         {},
       ),
     ).toThrow(
-      'Zod schema of type `map` cannot be represented in OpenAPI. Please assign it metadata with `.meta()`',
+      'Zod schema of type `map` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with `.meta()`',
     );
   });
 
@@ -41,6 +43,8 @@ describe('validate', () => {
         zodSchema: schema,
         jsonSchema: {},
         io: 'output',
+        path: ['properties', 'zodOpenApiCreateSchema'],
+
       },
       {
         allowEmptySchema: { pipe: { output: true } },

@@ -42,10 +42,10 @@ export const createSchema = (
      */
     schemaRefPath?: string;
   } = {
-    registry: createRegistry(),
-    io: 'output',
-    opts: {},
-  },
+      registry: createRegistry(),
+      io: 'output',
+      opts: {},
+    },
 ) => {
   ctx.registry ??= createRegistry({
     schemas: ctx.schemaComponents,

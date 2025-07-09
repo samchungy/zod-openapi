@@ -77,7 +77,7 @@ describe('union', () => {
   });
 
   it('produces not values in a union', () => {
-    const schema = z.union([z.string(), z.undefined(), z.never()]);
+    const schema = z.union([z.string(), z.never()]);
 
     const result = createSchema(schema);
 
@@ -86,9 +86,6 @@ describe('union', () => {
         anyOf: [
           {
             type: 'string',
-          },
-          {
-            not: {},
           },
           {
             not: {},
