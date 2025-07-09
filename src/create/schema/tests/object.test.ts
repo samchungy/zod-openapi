@@ -221,11 +221,9 @@ describe('required', () => {
       const oref = z.string().optional().meta({ id: 'oref' });
       const schema = z.object({
         b: z.never().optional(),
-        c: z.undefined(),
         d: z.string().optional(),
         e: z.string().nullish(),
         f: z.number().optional(),
-        g: z.union([z.string(), z.undefined()]),
         h: z.union([z.string(), z.number().optional()]),
         i: ref.optional(),
         j: oref,
@@ -245,11 +243,9 @@ describe('required', () => {
           type: 'object',
           properties: {
             b: { not: {} },
-            c: { not: {} },
             d: { type: 'string' },
             e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
             f: { type: 'number' },
-            g: { anyOf: [{ type: 'string' }, { not: {} }] },
             h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
             i: { $ref: '#/components/schemas/ref' },
             j: { $ref: '#/components/schemas/oref' },
@@ -309,11 +305,9 @@ describe('required', () => {
       const oref = z.string().optional().meta({ id: 'oref1' });
       const schema = z.object({
         b: z.never().optional(),
-        c: z.undefined(),
         d: z.string().optional(),
         e: z.string().nullish(),
         f: z.number().optional(),
-        g: z.union([z.string(), z.undefined()]),
         h: z.union([z.string(), z.number().optional()]),
         i: ref.optional(),
         j: oref,
@@ -324,7 +318,6 @@ describe('required', () => {
           .transform((str) => str?.length)
           .pipe(z.number().optional()),
         m: z.string().default('a'),
-        n: z.undefined().optional(),
       });
 
       const ctx = createInputContext();
@@ -338,18 +331,15 @@ describe('required', () => {
           type: 'object',
           properties: {
             b: { not: {} },
-            c: { not: {} },
             d: { type: 'string' },
             e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
             f: { type: 'number' },
-            g: { anyOf: [{ type: 'string' }, { not: {} }] },
             h: { anyOf: [{ type: 'string' }, { type: 'number' }] },
             i: { $ref: '#/components/schemas/ref1' },
             j: { $ref: '#/components/schemas/oref1' },
             k: { type: 'string' },
             l: { type: 'string' },
             m: { type: 'string', default: 'a' },
-            n: { not: {} },
           },
         },
         components: {

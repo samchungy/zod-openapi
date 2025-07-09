@@ -63,7 +63,7 @@ describe('literal', () => {
     const schema = z.literal(undefined);
 
     expect(() => createSchema(schema)).toThrow(
-      'Zod literal schemas cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
+      'Zod literal at properties > zodOpenApiCreateSchema cannot include `undefined` as a value. Please use `z.undefined()` or `.optional()` instead.',
     );
   });
 });
