@@ -1,10 +1,5 @@
-import {
-  type GlobalMeta,
-  type core,
-  object,
-  registry,
-  toJSONSchema,
-} from 'zod/v4';
+import { type GlobalMeta, object, registry, toJSONSchema } from 'zod/v4';
+import type * as core from 'zod/v4/core';
 import type { $ZodType } from 'zod/v4/core';
 
 import type {
@@ -93,6 +88,7 @@ const deleteInvalidJsonSchemaFields = (
   // Remove fields that are not valid in OpenAPI 3.1
   delete jsonSchema.$schema;
   delete jsonSchema.id;
+  delete jsonSchema.$id;
 };
 
 export const createSchemas = <
@@ -171,6 +167,7 @@ export const createSchemas = <
 
   const dynamicComponents = new Map<string, string>();
   for (const [key, value] of Object.entries(components)) {
+    deleteInvalidJsonSchemaFields(value);
     if (/^schema\d+$/.test(key)) {
       const newName = `__schema${ctx.registry.components.schemas.dynamicSchemaCount++}`;
       dynamicComponents.set(key, `"${refPath}${newName}"`);
@@ -179,6 +176,14 @@ export const createSchemas = <
         delete components[key];
       }
     }
+  }
+
+  for (const [key] of ctx.registry.components.schemas.manual) {
+    const manualComponent = jsonSchema.schemas[key];
+    if (!manualComponent) {
+      continue;
+    }
+    deleteInvalidJsonSchemaFields(manualComponent);
   }
 
   const manualUsed: Record<string, true> = {};
@@ -208,7 +213,6 @@ export const createSchemas = <
     if (!manualComponent) {
       continue;
     }
-    deleteInvalidJsonSchemaFields(manualComponent);
 
     if (manualUsed[key]) {
       if (parsedComponents[key]) {

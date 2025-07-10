@@ -2,7 +2,7 @@
 // and if they are the same as the current schema
 // if not we need to rename them to ensure accuracy
 
-import type { core } from 'zod/v4';
+import type * as core from 'zod/v4/core';
 
 import type { ComponentRegistry } from '../components';
 import type { CreateDocumentOptions } from '../document';
