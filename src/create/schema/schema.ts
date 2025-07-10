@@ -1,10 +1,5 @@
-import {
-  type GlobalMeta,
-  type core,
-  object,
-  registry,
-  toJSONSchema,
-} from 'zod/v4';
+import { type GlobalMeta, object, registry, toJSONSchema } from 'zod/v4';
+import type * as core from 'zod/v4/core';
 import type { $ZodType } from 'zod/v4/core';
 
 import type {
@@ -42,10 +37,10 @@ export const createSchema = (
      */
     schemaRefPath?: string;
   } = {
-      registry: createRegistry(),
-      io: 'output',
-      opts: {},
-    },
+    registry: createRegistry(),
+    io: 'output',
+    opts: {},
+  },
 ) => {
   ctx.registry ??= createRegistry({
     schemas: ctx.schemaComponents,
@@ -93,7 +88,7 @@ const deleteInvalidJsonSchemaFields = (
   // Remove fields that are not valid in OpenAPI 3.1
   delete jsonSchema.$schema;
   delete jsonSchema.id;
-  delete jsonSchema.$id
+  delete jsonSchema.$id;
 };
 
 export const createSchemas = <

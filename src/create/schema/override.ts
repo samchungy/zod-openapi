@@ -1,4 +1,5 @@
-import type { GlobalMeta, core } from 'zod/v4';
+import type { GlobalMeta } from 'zod/v4';
+import type * as core from 'zod/v4/core';
 
 import type { CreateDocumentOptions, oas31 } from '../..';
 import type { Override, ZodOpenApiOverrideContext } from '../../types';

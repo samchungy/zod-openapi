@@ -1,4 +1,4 @@
-import type { core } from 'zod/v4';
+import type * as core from 'zod/v4/core';
 
 import { createRegistry } from '../components';
 
