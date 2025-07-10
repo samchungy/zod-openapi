@@ -42,10 +42,10 @@ export const createSchema = (
      */
     schemaRefPath?: string;
   } = {
-    registry: createRegistry(),
-    io: 'output',
-    opts: {},
-  },
+      registry: createRegistry(),
+      io: 'output',
+      opts: {},
+    },
 ) => {
   ctx.registry ??= createRegistry({
     schemas: ctx.schemaComponents,
@@ -93,6 +93,7 @@ const deleteInvalidJsonSchemaFields = (
   // Remove fields that are not valid in OpenAPI 3.1
   delete jsonSchema.$schema;
   delete jsonSchema.id;
+  delete jsonSchema.$id
 };
 
 export const createSchemas = <
