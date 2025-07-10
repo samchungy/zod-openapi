@@ -24,8 +24,8 @@ importers:
         specifier: 8.17.1
         version: 8.17.1
       eslint-plugin-import-zod:
-        specifier: 1.0.3
-        version: 1.0.3(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2))
+        specifier: 1.1.0
+        version: 1.1.0(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2))
       eslint-plugin-zod-openapi:
         specifier: 2.0.0
         version: 2.0.0(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3)
@@ -42,8 +42,8 @@ importers:
         specifier: 2.8.0
         version: 2.8.0
       zod:
-        specifier: 3.25.75
-        version: 3.25.75
+        specifier: 4.0.0
+        version: 4.0.0
 
 packages:
 
@@ -2261,8 +2261,8 @@ packages:
       eslint-import-resolver-node:
         optional: true
 
-  eslint-plugin-import-zod@1.0.3:
-    resolution: {integrity: sha512-P2U8iQTDBdqPG0wAZSDAo5YkM9oyBuoGVqAti1NZvhOEZtaqxLWWFerZTQ/jYSXHirSECP+vV0QhAk0sPOAFhA==}
+  eslint-plugin-import-zod@1.1.0:
+    resolution: {integrity: sha512-bebe3DcYpypEFxIWSfPKDe+maRZ75SjzIdoI6+DGR+n23yxaffxokObJ6COFic22ii0OkrdGn2+g3uPmXa/V/A==}
     engines: {node: '>=20'}
     peerDependencies:
       '@typescript-eslint/utils': ^8.35.1
@@ -5071,6 +5071,9 @@ packages:
   zod@3.25.75:
     resolution: {integrity: sha512-OhpzAmVzabPOL6C3A3gpAifqr9MqihV/Msx3gor2b2kviCgcb+HM9SEOpMWwwNp9MRunWnhtAKUoo0AHhjyPPg==}
 
+  zod@4.0.0:
+    resolution: {integrity: sha512-9diLdTPc/L7w/5jI4C3gHYNiGHDV9IZYxo1e5LSD8cabi65WVTWWb+g2BGPEpUUCOxR4D+6O5B0AzyMdUAXwrw==}
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -7631,7 +7634,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import-zod@1.0.3(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2)):
+  eslint-plugin-import-zod@1.1.0(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2)):
     dependencies:
       '@typescript-eslint/utils': 8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.30.1(jiti@2.4.2)
@@ -10879,3 +10882,5 @@ snapshots:
   yoctocolors@2.1.1: {}
 
   zod@3.25.75: {}
+
+  zod@4.0.0: {}

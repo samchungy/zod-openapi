@@ -58,16 +58,16 @@
     "@redocly/cli": "1.34.4",
     "@types/node": "22.15.21",
     "ajv": "8.17.1",
-    "eslint-plugin-import-zod": "1.0.3",
+    "eslint-plugin-import-zod": "1.1.0",
     "eslint-plugin-zod-openapi": "2.0.0",
     "openapi3-ts": "4.5.0",
     "skuba": "11.1.0",
     "tsdown": "0.12.9",
     "yaml": "2.8.0",
-    "zod": "3.25.75"
+    "zod": "4.0.0"
   },
   "peerDependencies": {
-    "zod": "^3.25.74"
+    "zod": "^3.25.74 || ^4.0.0"
   },
   "packageManager": "pnpm@10.12.1",
   "engines": {
