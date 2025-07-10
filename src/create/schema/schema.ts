@@ -172,6 +172,7 @@ export const createSchemas = <
 
   const dynamicComponents = new Map<string, string>();
   for (const [key, value] of Object.entries(components)) {
+    deleteInvalidJsonSchemaFields(value);
     if (/^schema\d+$/.test(key)) {
       const newName = `__schema${ctx.registry.components.schemas.dynamicSchemaCount++}`;
       dynamicComponents.set(key, `"${refPath}${newName}"`);
@@ -180,6 +181,14 @@ export const createSchemas = <
         delete components[key];
       }
     }
+  }
+
+  for (const [key] of ctx.registry.components.schemas.manual) {
+    const manualComponent = jsonSchema.schemas[key];
+    if (!manualComponent) {
+      continue;
+    }
+    deleteInvalidJsonSchemaFields(manualComponent);
   }
 
   const manualUsed: Record<string, true> = {};
@@ -209,7 +218,6 @@ export const createSchemas = <
     if (!manualComponent) {
       continue;
     }
-    deleteInvalidJsonSchemaFields(manualComponent);
 
     if (manualUsed[key]) {
       if (parsedComponents[key]) {
