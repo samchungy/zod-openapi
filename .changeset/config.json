@@ -1,6 +1,11 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": "@changesets/changelog-github",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "samchungy/zod-openapi"
+    }
+  ],
   "commit": false,
   "fixed": [],
   "linked": [],
