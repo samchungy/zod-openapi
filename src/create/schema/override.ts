@@ -84,6 +84,10 @@ export const override: Override = (ctx) => {
       }
       break;
     }
+    case 'undefined': {
+      ctx.jsonSchema.not = {};
+      break;
+    }
   }
 };
 
