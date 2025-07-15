@@ -4,7 +4,7 @@
 
 Change `ZodUndefined` behaviour
 
-This updates how the `z.undefined()` is rendered to pre Zod v3.25.75.
+This restores how `z.undefined()` is rendered to pre Zod v3.25.75.
 
 It is now rendered as:
 
@@ -27,8 +27,8 @@ createDocument(
   }),
   {
     override: (ctx) => {
-      if (ctx.zodSchema.type === 'undefined') {
-        // This will revert the behaviour to throwing an error
+      if (ctx.zodSchema._zod.def.type === 'undefined') {
+        // This will change the behaviour back to throwing an error
         delete ctx.jsonSchema.not;
       }
     },
