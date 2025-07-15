@@ -103,6 +103,9 @@ export const validate = (
   }
 
   switch (def.type) {
+    case 'optional': {
+      return;
+    }
     case 'any': {
       return;
     }
