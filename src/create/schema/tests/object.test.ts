@@ -220,6 +220,7 @@ describe('required', () => {
       const ref = z.string().meta({ id: 'ref' });
       const oref = z.string().optional().meta({ id: 'oref' });
       const schema = z.object({
+        a: z.undefined(),
         b: z.never().optional(),
         d: z.string().optional(),
         e: z.string().nullish(),
@@ -242,6 +243,7 @@ describe('required', () => {
         schema: {
           type: 'object',
           properties: {
+            a: { not: {} },
             b: { not: {} },
             d: { type: 'string' },
             e: { anyOf: [{ type: 'string' }, { type: 'null' }] },
@@ -275,6 +277,7 @@ describe('required', () => {
         d: z.literal(null),
         e: z.union([z.string(), z.number()]),
         f: z.custom((r) => r !== undefined),
+        g: z.undefined(),
       });
 
       const ctx = createInputContext();
@@ -293,6 +296,7 @@ describe('required', () => {
             d: { type: 'null', const: null },
             e: { anyOf: [{ type: 'string' }, { type: 'number' }] },
             f: {},
+            g: { not: {} },
           },
           required: ['a', 'b', 'c', 'd', 'e', 'f'],
         },
