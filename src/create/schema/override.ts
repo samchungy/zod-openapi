@@ -104,6 +104,13 @@ export const validate = (
 
   switch (def.type) {
     case 'optional': {
+      validate(
+        {
+          ...ctx,
+          zodSchema: def.innerType,
+        } as ZodOpenApiOverrideContext,
+        opts,
+      );
       return;
     }
     case 'any': {
