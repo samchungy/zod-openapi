@@ -24,4 +24,26 @@ describe('unknown', () => {
       components: {},
     });
   });
+
+  it('should create an empty schema for any optional', () => {
+    const schema = z.any().optional();
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {},
+      components: {},
+    });
+  });
+
+  it('should create an empty schema for unknown optional', () => {
+    const schema = z.unknown().optional();
+
+    const result = createSchema(schema);
+
+    expect(result).toEqual<SchemaResult>({
+      schema: {},
+      components: {},
+    });
+  });
 });

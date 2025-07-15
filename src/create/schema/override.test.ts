@@ -3,6 +3,22 @@ import * as z from 'zod/v4';
 import { validate } from './override';
 
 describe('validate', () => {
+  it('should throw an error for a custom optional', () => {
+    expect(() =>
+      validate(
+        {
+          zodSchema: z.custom().optional(),
+          jsonSchema: {},
+          io: 'input',
+          path: ['properties', 'zodOpenApiCreateSchema'],
+        },
+        {},
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Zod schema of type \`custom\` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\`"`,
+    );
+  });
+
   it('should throw an error for a void', () => {
     expect(() =>
       validate(
