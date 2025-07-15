@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.1.1
+
+### Patch Changes
+
+- 779d22b: Fix ZodAny and ZodUnknown optionals
+
 ## 5.1.0
 
 ### Minor Changes
