@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { type SchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('readonly', () => {
   it('creates a simple string schema for a readonly string', () => {

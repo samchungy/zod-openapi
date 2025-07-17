@@ -4,8 +4,8 @@
 
 import type * as core from 'zod/v4/core';
 
-import type { ComponentRegistry } from '../components';
-import type { CreateDocumentOptions } from '../document';
+import type { ComponentRegistry } from '../components.js';
+import type { CreateDocumentOptions } from '../document.js';
 
 interface ComponentDependencies {
   pure?: boolean;

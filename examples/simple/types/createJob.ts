@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { JobIdSchema, JobTitleSchema } from './common';
+import { JobIdSchema, JobTitleSchema } from './common.js';
 
 /**
  * Create Job Request

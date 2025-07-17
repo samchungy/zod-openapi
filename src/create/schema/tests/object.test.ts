@@ -1,7 +1,10 @@
 import * as z from 'zod/v4';
 
-import { createInputContext, createOutputContext } from '../../../testing/ctx';
-import { type SchemaResult, createSchema } from '../schema';
+import {
+  createInputContext,
+  createOutputContext,
+} from '../../../testing/ctx.js';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('object', () => {
   it('creates a simple object with required and optionals', () => {

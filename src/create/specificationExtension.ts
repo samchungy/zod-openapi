@@ -1,4 +1,4 @@
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
 
 export const isISpecificationExtension = (
   key: string,

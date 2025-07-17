@@ -1,4 +1,4 @@
-import { isISpecificationExtension } from './specificationExtension';
+import { isISpecificationExtension } from './specificationExtension.js';
 
 describe('isISpecificationExtension', () => {
   it('returns true for strings starting with x-', () => {

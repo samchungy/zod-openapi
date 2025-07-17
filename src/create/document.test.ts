@@ -1,6 +1,6 @@
 import z from 'zod/v4';
 
-import { createDocument } from './document';
+import { createDocument } from './document.js';
 
 describe('createDocument', () => {
   it('should render a document with paths, webhooks, and components', () => {

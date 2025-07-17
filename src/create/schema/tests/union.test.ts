@@ -1,7 +1,7 @@
 import * as z from 'zod/v4';
 
-import { createOutputContext } from '../../../testing/ctx';
-import { type SchemaResult, createSchema } from '../schema';
+import { createOutputContext } from '../../../testing/ctx.js';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('union', () => {
   it('creates an anyOf schema for a union', () => {

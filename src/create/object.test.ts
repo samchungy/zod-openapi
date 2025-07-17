@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { isRequired, unwrapZodObject } from './object';
+import { isRequired, unwrapZodObject } from './object.js';
 
 describe('unwrapZodObject', () => {
   it('should handle a ZodObject', () => {

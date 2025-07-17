@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { type SchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('nativeEnum', () => {
   it('creates a string schema from a string enum', () => {

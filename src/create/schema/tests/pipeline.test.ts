@@ -1,7 +1,7 @@
 import * as z from 'zod/v4';
 
-import { createInputContext } from '../../../testing/ctx';
-import { type SchemaResult, createSchema } from '../schema';
+import { createInputContext } from '../../../testing/ctx.js';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('pipeline', () => {
   describe('input', () => {

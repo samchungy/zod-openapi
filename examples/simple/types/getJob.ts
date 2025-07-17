@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { JobIdSchema, JobTitleSchema, UserIdSchema } from './common';
+import { JobIdSchema, JobTitleSchema, UserIdSchema } from './common.js';
 
 /**
  * Get Job Query Parameters

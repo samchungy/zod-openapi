@@ -1,12 +1,12 @@
-import type { oas31 } from '../openapi3-ts/dist';
-import { isAnyZodType } from '../zod';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
+import { isAnyZodType } from '../zod.js';
 
-import type { ComponentRegistry } from './components';
+import type { ComponentRegistry } from './components.js';
 import type {
   ZodOpenApiContentObject,
   ZodOpenApiMediaTypeObject,
-} from './document';
-import { createExamples } from './examples';
+} from './document.js';
+import { createExamples } from './examples.js';
 
 export const createMediaTypeObject = (
   mediaType: ZodOpenApiMediaTypeObject,

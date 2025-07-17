@@ -1,8 +1,8 @@
 import type * as core from 'zod/v4/core';
 
-import { createRegistry } from '../components';
+import { createRegistry } from '../components.js';
 
-import { renameComponents } from './rename';
+import { renameComponents } from './rename.js';
 
 describe('rename', () => {
   it('should not rename components if they are the same as in the registry', () => {

@@ -1,7 +1,7 @@
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
 
-import type { ComponentRegistry } from './components';
-import type { ZodOpenApiExamplesObject } from './document';
+import type { ComponentRegistry } from './components.js';
+import type { ZodOpenApiExamplesObject } from './document.js';
 
 export const createExamples = (
   examples: ZodOpenApiExamplesObject | undefined,

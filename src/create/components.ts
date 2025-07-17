@@ -1,9 +1,9 @@
 import { type $ZodType, globalRegistry } from 'zod/v4/core';
 
-import type { oas31 } from '../openapi3-ts/dist';
-import { isAnyZodType } from '../zod';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
+import { isAnyZodType } from '../zod.js';
 
-import { createContent } from './content';
+import { createContent } from './content.js';
 import type {
   CreateDocumentOptions,
   ZodOpenApiCallbackObject,
@@ -15,15 +15,15 @@ import type {
   ZodOpenApiRequestBodyObject,
   ZodOpenApiResponseObject,
   ZodOpenApiSecuritySchemeObject,
-} from './document';
-import { createExamples } from './examples';
-import { createHeaders } from './headers';
-import { createLinks } from './links';
-import { isRequired } from './object';
-import { createManualParameters } from './parameters';
-import { createOperation } from './paths';
-import { createSchemas } from './schema/schema';
-import { isISpecificationExtension } from './specificationExtension';
+} from './document.js';
+import { createExamples } from './examples.js';
+import { createHeaders } from './headers.js';
+import { createLinks } from './links.js';
+import { isRequired } from './object.js';
+import { createManualParameters } from './parameters.js';
+import { createOperation } from './paths.js';
+import { createSchemas } from './schema/schema.js';
+import { isISpecificationExtension } from './specificationExtension.js';
 
 type SchemaSource =
   | {

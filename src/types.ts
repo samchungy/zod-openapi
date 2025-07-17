@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import type * as core from 'zod/v4/core';
 
-import type { oas31 } from './openapi3-ts/dist';
+import type { oas31 } from './openapi3-ts/dist/index.js';
 
 type OverrideParameters = Parameters<
   NonNullable<NonNullable<Parameters<typeof core.toJSONSchema>[1]>['override']>

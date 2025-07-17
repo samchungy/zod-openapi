@@ -7,11 +7,11 @@ import type {
   ZodOpenApiBaseMetadata,
   ZodOpenApiComponentsObject,
   oas31,
-} from '../..';
-import { type ComponentRegistry, createRegistry } from '../components';
+} from '../../index.js';
+import { type ComponentRegistry, createRegistry } from '../components.js';
 
-import { override, validate } from './override';
-import { renameComponents } from './rename';
+import { override, validate } from './override.js';
+import { renameComponents } from './rename.js';
 
 export interface SchemaResult {
   schema: oas31.SchemaObject | oas31.ReferenceObject;

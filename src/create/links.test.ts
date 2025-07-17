@@ -1,7 +1,7 @@
-import type { oas31 } from '..';
+import type { oas31 } from '../index.js';
 
-import { createRegistry } from './components';
-import { createLinks } from './links';
+import { createRegistry } from './components.js';
+import { createLinks } from './links.js';
 
 describe('createLinks', () => {
   it('should create a links object with a link', () => {

@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { type SchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('default', () => {
   it('creates a default string schema', () => {

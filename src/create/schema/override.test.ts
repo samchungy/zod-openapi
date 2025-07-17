@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { validate } from './override';
+import { validate } from './override.js';
 
 describe('validate', () => {
   it('should throw an error for a custom optional', () => {

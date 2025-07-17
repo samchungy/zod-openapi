@@ -1,14 +1,14 @@
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
 
-import { createCallbacks } from './callbacks';
-import type { ComponentRegistry } from './components';
+import { createCallbacks } from './callbacks.js';
+import type { ComponentRegistry } from './components.js';
 import type {
   ZodOpenApiOperationObject,
   ZodOpenApiPathsObject,
-} from './document';
-import { createManualParameters, createParameters } from './parameters';
-import { createResponses } from './responses';
-import { isISpecificationExtension } from './specificationExtension';
+} from './document.js';
+import { createManualParameters, createParameters } from './parameters.js';
+import { createResponses } from './responses.js';
+import { isISpecificationExtension } from './specificationExtension.js';
 
 export const createOperation = (
   operation: ZodOpenApiOperationObject,

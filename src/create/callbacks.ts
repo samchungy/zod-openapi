@@ -1,8 +1,8 @@
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
 
-import type { ComponentRegistry } from './components';
-import type { ZodOpenApiCallbackObject } from './document';
-import { isISpecificationExtension } from './specificationExtension';
+import type { ComponentRegistry } from './components.js';
+import type { ZodOpenApiCallbackObject } from './document.js';
+import { isISpecificationExtension } from './specificationExtension.js';
 
 export const createCallbacks = (
   callbacks: oas31.CallbackObject | undefined,

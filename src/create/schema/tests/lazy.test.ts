@@ -1,8 +1,8 @@
 import * as z from 'zod/v4';
 import type { ZodLazy, ZodType } from 'zod/v4';
 
-import { createRegistry } from '../../components';
-import { type SchemaResult, createSchema } from '../schema';
+import { createRegistry } from '../../components.js';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('lazy', () => {
   it('supports the new lazy syntax', () => {

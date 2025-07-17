@@ -1,8 +1,8 @@
 import type { GlobalMeta } from 'zod/v4';
 import type * as core from 'zod/v4/core';
 
-import type { CreateDocumentOptions, oas31 } from '../..';
-import type { Override, ZodOpenApiOverrideContext } from '../../types';
+import type { CreateDocumentOptions, oas31 } from '../../index.js';
+import type { Override, ZodOpenApiOverrideContext } from '../../types.js';
 
 type ZodTypeWithMeta = core.$ZodTypes & {
   meta: () => GlobalMeta | undefined;

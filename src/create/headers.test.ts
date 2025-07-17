@@ -1,9 +1,9 @@
 import z from 'zod/v4';
 
-import type { oas31 } from '../openapi3-ts/dist';
+import type { oas31 } from '../openapi3-ts/dist/index.js';
 
-import { createRegistry } from './components';
-import { createHeaders } from './headers';
+import { createRegistry } from './components.js';
+import { createHeaders } from './headers.js';
 
 describe('createHeaders', () => {
   it('should create a header object with a schema', () => {

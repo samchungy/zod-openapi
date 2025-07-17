@@ -1,8 +1,8 @@
 import * as z from 'zod/v4';
 
-import { createRegistry } from './components';
-import type { ZodOpenApiPathsObject } from './document';
-import { createPaths } from './paths';
+import { createRegistry } from './components.js';
+import type { ZodOpenApiPathsObject } from './document.js';
+import { createPaths } from './paths.js';
 
 describe('createPaths', () => {
   it('should create a paths object', () => {

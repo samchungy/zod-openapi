@@ -1,7 +1,7 @@
 import * as z from 'zod/v4';
 import type { ZodString } from 'zod/v4';
 
-import { type SchemaResult, createSchema } from '../schema';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('string', () => {
   it('creates a simple string schema', () => {

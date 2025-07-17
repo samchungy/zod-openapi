@@ -1,6 +1,6 @@
 import * as z from 'zod/v4';
 
-import { createSchema } from '../schema';
+import { createSchema } from '../schema.js';
 
 describe('manual', () => {
   it('creates a string schema for a string override', () => {

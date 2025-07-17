@@ -1,9 +1,9 @@
 import * as z from 'zod/v4';
 
-import { createOutputContext } from '../../../testing/ctx';
-import { createRegistry } from '../../components';
-import type { ZodOpenApiComponentsObject } from '../../document';
-import { type SchemaResult, createSchema } from '../schema';
+import { createOutputContext } from '../../../testing/ctx.js';
+import { createRegistry } from '../../components.js';
+import type { ZodOpenApiComponentsObject } from '../../document.js';
+import { type SchemaResult, createSchema } from '../schema.js';
 
 describe('discriminatedUnion', () => {
   it('creates a oneOf schema with discriminator mapping when schemas are registered', () => {

@@ -1,5 +1,8 @@
-import { type ComponentRegistry, createRegistry } from '../create/components';
-import type { CreateDocumentOptions } from '../create/document';
+import {
+  type ComponentRegistry,
+  createRegistry,
+} from '../create/components.js';
+import type { CreateDocumentOptions } from '../create/document.js';
 
 export const createOutputContext = (): {
   registry: ComponentRegistry;

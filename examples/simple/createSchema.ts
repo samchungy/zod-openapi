@@ -3,14 +3,17 @@ import path from 'path';
 
 import { stringify } from 'yaml';
 
-import { type ZodOpenApiOperationObject, createDocument } from '../../src';
+import {
+  type ZodOpenApiOperationObject,
+  createDocument,
+} from '../../src/index.js';
 
 import {
   CreateJobRequestSchema,
   CreateJobResponseSchema,
   GetJobQuerySchema,
   GetJobResponseSchema,
-} from './types';
+} from './types/index.js';
 
 const getJobOperation: ZodOpenApiOperationObject = {
   operationId: 'getJob',
