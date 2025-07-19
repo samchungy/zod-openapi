@@ -109,6 +109,8 @@ Generates an OpenAPI documentation object.
 
 ```typescript
 import * as z from 'zod/v4';
+// or import * as z from 'zod'; if using Zod 4.0.0+
+
 import { createDocument } from 'zod-openapi';
 
 const jobId = z.string().meta({
