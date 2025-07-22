@@ -1,8 +1,10 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 
-import type { oas31 } from '../../../openapi3-ts/dist/index.js';
 import { createInputContext } from '../../../testing/ctx.js';
 import { type SchemaResult, createSchema } from '../schema.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('transform', () => {
   describe('input', () => {

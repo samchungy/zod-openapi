@@ -1,6 +1,5 @@
 import { type $ZodType, globalRegistry } from 'zod/v4/core';
 
-import type { oas31 } from '../openapi3-ts/dist/index.js';
 import { isAnyZodType } from '../zod.js';
 
 import { createContent } from './content.js';
@@ -24,6 +23,8 @@ import { createManualParameters } from './parameters.js';
 import { createOperation } from './paths.js';
 import { createSchemas } from './schema/schema.js';
 import { isISpecificationExtension } from './specificationExtension.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 type SchemaSource =
   | {

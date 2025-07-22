@@ -1,10 +1,11 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
-
-import type { oas31 } from '../openapi3-ts/dist/index.js';
 
 import { createRegistry } from './components.js';
 import type { ZodOpenApiParameters } from './document.js';
 import { createManualParameters, createParameters } from './parameters.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createParameters', () => {
   it('should create a parameter object with a schema', () => {

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import type * as core from 'zod/v4/core';
 
 import { createRegistry } from '../components.js';

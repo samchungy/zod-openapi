@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type * as core from 'zod/v4/core';
+import type { JSONSchemaMeta, toJSONSchema } from 'zod/v4/core';
 
-import type { oas31 } from './openapi3-ts/dist/index.js';
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 type OverrideParameters = Parameters<
-  NonNullable<NonNullable<Parameters<typeof core.toJSONSchema>[1]>['override']>
+  NonNullable<NonNullable<Parameters<typeof toJSONSchema>[1]>['override']>
 >[0];
 
 export type ZodOpenApiOverrideContext = OverrideParameters & {
@@ -52,7 +52,7 @@ export interface ZodOpenApiBaseMetadata {
 
 export interface ZodOpenApiMetadata
   extends ZodOpenApiBaseMetadata,
-    core.JSONSchemaMeta {
+    JSONSchemaMeta {
   examples?: unknown[];
   /**
    * @deprecated - Use `examples` instead.

@@ -6,12 +6,13 @@ import type {
   CreateDocumentOptions,
   ZodOpenApiBaseMetadata,
   ZodOpenApiComponentsObject,
-  oas31,
 } from '../../index.js';
 import { type ComponentRegistry, createRegistry } from '../components.js';
 
 import { override, validate } from './override.js';
 import { renameComponents } from './rename.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export interface SchemaResult {
   schema: oas31.SchemaObject | oas31.ReferenceObject;

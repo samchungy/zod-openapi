@@ -74,14 +74,14 @@ async function deleteFolderRecursive(folderPath: string) {
 async function main() {
   const dir = process.cwd();
 
-  const src = join(dir, './node_modules/openapi3-ts');
-  const dest = join(dir, 'src/openapi3-ts');
+  const src = join(dir, './packages/openapi3-ts/node_modules/openapi3-ts');
+  const dest = join(dir, 'packages/openapi3-ts/src');
   await deleteFolderRecursive(dest);
   await copyDTs(src, dest);
 
   if (process.env.GITHUB_ACTIONS) {
     const files = await Git.getChangedFiles({ dir });
-    if (files.some(({ path }) => path.startsWith('src/openapi3-ts'))) {
+    if (files.some(({ path }) => path.startsWith('packages/openapi3-ts/src'))) {
       throw new Error('openapi3-ts types need updating');
     }
   }

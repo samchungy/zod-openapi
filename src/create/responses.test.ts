@@ -1,10 +1,11 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
-
-import type { oas31 } from '../openapi3-ts/dist/index.js';
 
 import { createRegistry } from './components.js';
 import type { ZodOpenApiResponsesObject } from './document.js';
 import { createResponses } from './responses.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createResponses', () => {
   it('creates a response', () => {

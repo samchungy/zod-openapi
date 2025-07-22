@@ -1,9 +1,10 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
-
-import type { oas31 } from '../openapi3-ts/dist/index.js';
 
 import { createRegistry } from './components.js';
 import { createContent } from './content.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createContent', () => {
   it('should create a content object with a media type', () => {

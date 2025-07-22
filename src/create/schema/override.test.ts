@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 
 import { validate } from './override.js';
@@ -15,7 +16,7 @@ describe('validate', () => {
         {},
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Zod schema of type \`custom\` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\`"`,
+      `[Error: Zod schema of type \`custom\` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\`]`,
     );
   });
 

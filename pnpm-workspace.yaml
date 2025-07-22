@@ -8,3 +8,7 @@ publicHoistPattern:
   - jest
   - tsconfig-seek
   # end managed by skuba
+
+packages:
+  - 'packages/*'
+  - .

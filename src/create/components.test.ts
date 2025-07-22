@@ -1,7 +1,6 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 import type { ZodType } from 'zod/v4';
-
-import type { oas31 } from '../openapi3-ts/dist/index.js';
 
 import { createComponents, createRegistry } from './components.js';
 import type {
@@ -15,6 +14,8 @@ import type {
   ZodOpenApiSecuritySchemeObject,
 } from './document.js';
 import { createSchema } from './schema/schema.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createComponents', () => {
   it('should create a schema for dynamic input types', () => {
@@ -970,10 +971,10 @@ describe('createComponents', () => {
     expect(() => {
       createComponents(registry, opts);
     }).toThrowErrorMatchingInlineSnapshot(`
-"Cycle detected: #/properties/test > content > application/json > schema/properties/cycle/<root>
+      [Error: Cycle detected: #/properties/test > content > application/json > schema/properties/cycle/<root>
 
-Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs."
-`);
+      Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.]
+    `);
   });
 
   it('supports an alternate schemaRefPath', () => {

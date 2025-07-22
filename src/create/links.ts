@@ -1,7 +1,7 @@
-import type { oas31 } from '../index.js';
-
 import type { ComponentRegistry } from './components.js';
 import type { ZodOpenApiLinksObject } from './document.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export const createLinks = (
   links: ZodOpenApiLinksObject | undefined,
