@@ -41,12 +41,12 @@
     "api"
   ],
   "scripts": {
-    "build": "pnpm copy:types && tsdown",
+    "build": "pnpm -r build && tsdown",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
     "lint": "skuba lint",
-    "prepare": "pnpm build",
+    "prepare": "pnpm copy:types && pnpm build",
     "release": "pnpm build && changeset publish",
     "test": "skuba test",
     "test:ci": "skuba test --coverage",
