@@ -33,8 +33,8 @@ importers:
         specifier: 8.17.1
         version: 8.17.1
       eslint-plugin-import-zod:
-        specifier: 1.1.0
-        version: 1.1.0(@typescript-eslint/utils@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))
+        specifier: 1.1.1
+        version: 1.1.1(@typescript-eslint/utils@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-zod-openapi:
         specifier: 2.0.0
         version: 2.0.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
@@ -2517,8 +2517,8 @@ packages:
       eslint-import-resolver-node:
         optional: true
 
-  eslint-plugin-import-zod@1.1.0:
-    resolution: {integrity: sha512-bebe3DcYpypEFxIWSfPKDe+maRZ75SjzIdoI6+DGR+n23yxaffxokObJ6COFic22ii0OkrdGn2+g3uPmXa/V/A==}
+  eslint-plugin-import-zod@1.1.1:
+    resolution: {integrity: sha512-4FMNwOFHv9Gz9QIVfDZ45T3lq+xD9DN64MVCqYuo7gnq7xikvYQSiIiUCQq8P47LZbq5f9BDU16w+hR9nqBNgQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@typescript-eslint/utils': ^8.35.1
@@ -8288,7 +8288,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import-zod@1.1.0(@typescript-eslint/utils@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)):
+  eslint-plugin-import-zod@1.1.1(@typescript-eslint/utils@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)):
     dependencies:
       '@typescript-eslint/utils': 8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.31.0(jiti@2.4.2)
