@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type * as core from 'zod/v4/core';
+import type core from 'zod/v4/core';
 
 import type { oas31 } from '@zod-openapi/openapi3-ts';
 

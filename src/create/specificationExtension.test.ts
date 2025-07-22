@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { isISpecificationExtension } from './specificationExtension.js';
 
 describe('isISpecificationExtension', () => {

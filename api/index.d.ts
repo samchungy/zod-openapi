@@ -1,1 +1,1 @@
-export * from '../dist/api';
+export * from '../dist/api.js';

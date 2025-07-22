@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { createRegistry } from './components.js';
 import { createLinks } from './links.js';
 

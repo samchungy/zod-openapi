@@ -22,20 +22,21 @@
   "funding": "https://github.com/samchungy/zod-openapi?sponsor=1",
   "license": "MIT",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./api": {
-      "import": "./dist/api.mjs",
-      "require": "./dist/api.js"
+      "import": "./dist/api.js",
+      "require": "./dist/api.cjs"
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
   "files": [
     "dist",
     "api"
@@ -64,6 +65,7 @@
     "eslint-plugin-zod-openapi": "2.0.0",
     "skuba": "12.0.2",
     "tsdown": "0.12.9",
+    "vitest": "3.2.4",
     "yaml": "2.8.0",
     "zod": "4.0.5"
   },

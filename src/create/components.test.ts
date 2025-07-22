@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 import type { ZodType } from 'zod/v4';
 
@@ -970,10 +971,10 @@ describe('createComponents', () => {
     expect(() => {
       createComponents(registry, opts);
     }).toThrowErrorMatchingInlineSnapshot(`
-"Cycle detected: #/properties/test > content > application/json > schema/properties/cycle/<root>
+      [Error: Cycle detected: #/properties/test > content > application/json > schema/properties/cycle/<root>
 
-Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs."
-`);
+      Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.]
+    `);
   });
 
   it('supports an alternate schemaRefPath', () => {

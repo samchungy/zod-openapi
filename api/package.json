@@ -1,5 +1,5 @@
 {
-  "main": "../dist/api.js",
-  "module": "../dist/api.mjs",
-  "types": "./index.d.ts"
+  "main": "../dist/api.cjs",
+  "module": "../dist/api.js",
+  "types": "./index.d.cts"
 }
