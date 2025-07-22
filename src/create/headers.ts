@@ -1,11 +1,12 @@
 import type { $ZodTypes } from 'zod/v4/core';
 
-import type { oas31 } from '../openapi3-ts/dist/index.js';
 import { isAnyZodType } from '../zod.js';
 
 import type { ComponentRegistry } from './components.js';
 import type { ZodOpenApiHeadersObject } from './document.js';
 import { unwrapZodObject } from './object.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export const createHeaders = (
   headers: ZodOpenApiHeadersObject | undefined,

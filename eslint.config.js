@@ -4,7 +4,14 @@ const zodOpenapi = require('eslint-plugin-zod-openapi');
 
 module.exports = [
   {
-    ignores: ['src/openapi3-ts/*', '**/crackle.config.ts', 'api', 'extend'],
+    ignores: [
+      'src/openapi3-ts/*',
+      '**/crackle.config.ts',
+      'api',
+      'extend',
+      'packages/openapi3-ts/src/*',
+      'packages/openapi3-ts/lib-*',
+    ],
   },
   ...skuba,
   ...importZod.configs.recommended,

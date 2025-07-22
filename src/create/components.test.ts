@@ -1,8 +1,6 @@
 import * as z from 'zod/v4';
 import type { ZodType } from 'zod/v4';
 
-import type { oas31 } from '../openapi3-ts/dist/index.js';
-
 import { createComponents, createRegistry } from './components.js';
 import type {
   CreateDocumentOptions,
@@ -15,6 +13,8 @@ import type {
   ZodOpenApiSecuritySchemeObject,
 } from './document.js';
 import { createSchema } from './schema/schema.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createComponents', () => {
   it('should create a schema for dynamic input types', () => {
