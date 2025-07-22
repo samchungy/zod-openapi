@@ -1,6 +1,5 @@
 {
   "name": "@zod-openapi/openapi3-ts",
-  "version": "1.0.0",
   "private": true,
   "exports": {
     ".": {

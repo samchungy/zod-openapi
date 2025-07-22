@@ -1,5 +1,5 @@
 ---
-'@zod-openapi/openapi3-ts': patch
+'zod-openapi': patch
 ---
 
 Switch to ESM

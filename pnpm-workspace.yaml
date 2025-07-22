@@ -11,3 +11,4 @@ publicHoistPattern:
 
 packages:
   - 'packages/*'
+  - .
