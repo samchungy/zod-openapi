@@ -11,4 +11,4 @@ coverage
 examples/**/*.yml
 examples/**/*.html
 src/openapi3-ts/*
-packages/openapi3-ts/dist/*
+packages/openapi3-ts/src/*
