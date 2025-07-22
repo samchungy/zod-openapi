@@ -58,7 +58,7 @@
     "@changesets/cli": "2.29.5",
     "@redocly/cli": "1.34.4",
     "@types/node": "22.15.21",
-    "@zod-openapi/openapi3-ts": "workspace:*",
+    "@zod-openapi/openapi3-ts": "workspace:1.0.0",
     "ajv": "8.17.1",
     "eslint-plugin-import-zod": "1.1.0",
     "eslint-plugin-zod-openapi": "2.0.0",

@@ -24,7 +24,7 @@ importers:
         specifier: 22.15.21
         version: 22.15.21
       '@zod-openapi/openapi3-ts':
-        specifier: workspace:*
+        specifier: workspace:1.0.0
         version: link:packages/openapi3-ts
       ajv:
         specifier: 8.17.1
