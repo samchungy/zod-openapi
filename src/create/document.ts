@@ -40,8 +40,8 @@ export interface ZodOpenApiResponsesObject
   extends oas31.ISpecificationExtension {
   default?: ZodOpenApiResponseObject | oas31.ReferenceObject;
   [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]:
-  | ZodOpenApiResponseObject
-  | oas31.ReferenceObject;
+    | ZodOpenApiResponseObject
+    | oas31.ReferenceObject;
 }
 
 export type ZodOpenApiParameters = Partial<
@@ -195,9 +195,9 @@ export interface CreateDocumentOptions {
       OverrideType,
       | true
       | Partial<{
-        input: true;
-        output: true;
-      }>
+          input: true;
+          output: true;
+        }>
     >
   >;
 

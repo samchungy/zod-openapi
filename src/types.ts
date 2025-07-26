@@ -13,9 +13,11 @@ export type ZodOpenApiOverrideContext = OverrideParameters & {
   io: 'input' | 'output';
 };
 
-export type ZodOpenApiOverrideSchemaContext = OverrideSchemaParameters
+export type ZodOpenApiOverrideSchemaContext = OverrideSchemaParameters;
 
-export type ZodOpenApiOverrideSchema = (ctx: ZodOpenApiOverrideSchemaContext) => void;
+export type ZodOpenApiOverrideSchema = (
+  ctx: ZodOpenApiOverrideSchemaContext,
+) => void;
 
 export type ZodOpenApiOverride = (ctx: ZodOpenApiOverrideContext) => void;
 
@@ -58,7 +60,7 @@ export interface ZodOpenApiBaseMetadata {
 
 export interface ZodOpenApiMetadata
   extends ZodOpenApiBaseMetadata,
-  JSONSchemaMeta {
+    JSONSchemaMeta {
   examples?: unknown[];
   /**
    * @deprecated - Use `examples` instead.
@@ -68,5 +70,5 @@ export interface ZodOpenApiMetadata
 }
 
 declare module 'zod/v4' {
-  interface GlobalMeta extends ZodOpenApiMetadata { }
+  interface GlobalMeta extends ZodOpenApiMetadata {}
 }
