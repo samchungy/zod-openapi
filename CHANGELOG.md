@@ -1,5 +1,21 @@
 # zod-openapi
 
+## 5.3.0
+
+### Minor Changes
+
+- [`c43d544`](https://github.com/samchungy/zod-openapi/commit/c43d5445e6bfaacbcbf5af6374ce783aba5c783c) Thanks [@samchungy](https://github.com/samchungy)! - Remove `zodSchemas` from meta `override`
+
+  This should result in faster type inference when using `.meta()`.
+
+  `zodSchemas` is still available in the `CreateDocumentOptions` `override` function.
+
+  The mis-scoped `Override` type is now exported as `ZodOpenApiOverride` and `ZodOpenApiOverrideMeta`
+
+### Patch Changes
+
+- [#484](https://github.com/samchungy/zod-openapi/pull/484) [`8ae543f`](https://github.com/samchungy/zod-openapi/commit/8ae543fe95c3582553af4710a8ff7bf6540b0bca) Thanks [@samchungy](https://github.com/samchungy)! - Switch to ESM
+
 ## 5.2.0
 
 ### Minor Changes
