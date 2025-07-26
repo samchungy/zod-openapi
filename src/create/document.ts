@@ -1,7 +1,7 @@
 import type { $ZodType, $ZodTypes } from 'zod/v4/core';
 
 import type { OpenApiVersion } from '../openapi.js';
-import type { Override } from '../types.js';
+import type { ZodOpenApiOverride } from '../types.js';
 
 import { createComponents, createRegistry } from './components.js';
 import { createPaths } from './paths.js';
@@ -40,8 +40,8 @@ export interface ZodOpenApiResponsesObject
   extends oas31.ISpecificationExtension {
   default?: ZodOpenApiResponseObject | oas31.ReferenceObject;
   [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]:
-    | ZodOpenApiResponseObject
-    | oas31.ReferenceObject;
+  | ZodOpenApiResponseObject
+  | oas31.ReferenceObject;
 }
 
 export type ZodOpenApiParameters = Partial<
@@ -195,9 +195,9 @@ export interface CreateDocumentOptions {
       OverrideType,
       | true
       | Partial<{
-          input: true;
-          output: true;
-        }>
+        input: true;
+        output: true;
+      }>
     >
   >;
 
@@ -206,7 +206,7 @@ export interface CreateDocumentOptions {
    * - `{ type: 'string' }` — Override the schema type to be a string using an object
    * - `(ctx) => { ctx.jsonSchema.type = 'string'; }` — Override the schema type to be a string using a function
    */
-  override?: Override;
+  override?: ZodOpenApiOverride;
 
   /**
    * Suffix to append to the output ID of the schema.

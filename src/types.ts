@@ -7,11 +7,17 @@ type OverrideParameters = Parameters<
   NonNullable<NonNullable<Parameters<typeof toJSONSchema>[1]>['override']>
 >[0];
 
+type OverrideSchemaParameters = Omit<OverrideParameters, 'zodSchema'>;
+
 export type ZodOpenApiOverrideContext = OverrideParameters & {
   io: 'input' | 'output';
 };
 
-export type Override = (ctx: ZodOpenApiOverrideContext) => void;
+export type ZodOpenApiOverrideSchemaContext = OverrideSchemaParameters
+
+export type ZodOpenApiOverrideSchema = (ctx: ZodOpenApiOverrideSchemaContext) => void;
+
+export type ZodOpenApiOverride = (ctx: ZodOpenApiOverrideContext) => void;
 
 export interface ZodOpenApiBaseMetadata {
   /**
@@ -35,7 +41,7 @@ export interface ZodOpenApiBaseMetadata {
   /**
    * Use to override the rendered schema
    */
-  override?: oas31.SchemaObject | Override;
+  override?: oas31.SchemaObject | ZodOpenApiOverrideSchema;
 
   /**
    * For use only if this Zod Schema is manually registered in the `components` section
@@ -52,7 +58,7 @@ export interface ZodOpenApiBaseMetadata {
 
 export interface ZodOpenApiMetadata
   extends ZodOpenApiBaseMetadata,
-    JSONSchemaMeta {
+  JSONSchemaMeta {
   examples?: unknown[];
   /**
    * @deprecated - Use `examples` instead.
@@ -62,5 +68,5 @@ export interface ZodOpenApiMetadata
 }
 
 declare module 'zod/v4' {
-  interface GlobalMeta extends ZodOpenApiMetadata {}
+  interface GlobalMeta extends ZodOpenApiMetadata { }
 }
