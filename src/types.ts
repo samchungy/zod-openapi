@@ -13,10 +13,10 @@ export type ZodOpenApiOverrideContext = OverrideParameters & {
   io: 'input' | 'output';
 };
 
-export type ZodOpenApiOverrideSchemaContext = OverrideSchemaParameters;
+export type ZodOpenApiOverrideMetaContext = OverrideSchemaParameters;
 
-export type ZodOpenApiOverrideSchema = (
-  ctx: ZodOpenApiOverrideSchemaContext,
+export type ZodOpenApiOverrideMeta = (
+  ctx: ZodOpenApiOverrideMetaContext,
 ) => void;
 
 export type ZodOpenApiOverride = (ctx: ZodOpenApiOverrideContext) => void;
@@ -43,7 +43,7 @@ export interface ZodOpenApiBaseMetadata {
   /**
    * Use to override the rendered schema
    */
-  override?: oas31.SchemaObject | ZodOpenApiOverrideSchema;
+  override?: oas31.SchemaObject | ZodOpenApiOverrideMeta;
 
   /**
    * For use only if this Zod Schema is manually registered in the `components` section
