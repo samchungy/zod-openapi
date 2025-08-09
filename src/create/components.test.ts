@@ -1097,7 +1097,21 @@ describe('addResponse', () => {
     createComponents(registry, {});
 
     expect(response).toEqual({
-      $ref: '#/components/responses/manualResponse',
+      content: {
+        'application/json': {
+          schema: {
+            additionalProperties: false,
+            properties: {
+              message: {
+                type: 'string',
+              },
+            },
+            required: ['message'],
+            type: 'object',
+          },
+        },
+      },
+      description: 'A response with a manual ID',
     });
 
     expect(response2).toEqual({
@@ -1169,7 +1183,30 @@ describe('addCallback', () => {
     createComponents(registry, {});
 
     expect(callback).toEqual({
-      $ref: '#/components/callbacks/manualCallback',
+      '/path': {
+        post: {
+          responses: {
+            '200': {
+              content: {
+                'application/json': {
+                  schema: {
+                    additionalProperties: false,
+                    properties: {
+                      message: {
+                        type: 'string',
+                      },
+                    },
+                    required: ['message'],
+                    type: 'object',
+                  },
+                },
+              },
+              description: 'Success',
+            },
+          },
+          summary: 'Example callback',
+        },
+      },
     });
 
     expect(callback2).toEqual({
@@ -1238,7 +1275,14 @@ describe('addParameter', () => {
     const components = createComponents(registry, {});
 
     expect(parameter).toEqual({
-      $ref: '#/components/parameters/manualParameter',
+      description: 'A manual parameter',
+      in: 'query',
+      name: 'test',
+      required: true,
+      schema: {
+        description: 'A manual parameter',
+        type: 'string',
+      },
     });
 
     expect(parameter2).toEqual({
@@ -1354,7 +1398,20 @@ describe('addRequestBody', () => {
     createComponents(registry, {});
 
     expect(requestBody).toEqual({
-      $ref: '#/components/requestBodies/manualRequestBody',
+      content: {
+        'application/json': {
+          schema: {
+            properties: {
+              message: {
+                type: 'string',
+              },
+            },
+            required: ['message'],
+            type: 'object',
+          },
+        },
+      },
+      description: 'A manual request body',
     });
 
     expect(requestBody2).toEqual({
@@ -1424,7 +1481,28 @@ describe('addPathItem', () => {
     createComponents(registry, {});
 
     expect(pathItem).toEqual({
-      $ref: '#/components/pathItems/manualPathItem',
+      get: {
+        summary: 'A manual path item',
+        responses: {
+          '200': {
+            description: 'Success',
+            content: {
+              'application/json': {
+                schema: {
+                  additionalProperties: false,
+                  properties: {
+                    message: {
+                      type: 'string',
+                    },
+                  },
+                  required: ['message'],
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     expect(pathItem2).toEqual({
@@ -1489,7 +1567,11 @@ describe('addHeader', () => {
     createComponents(registry, {});
 
     expect(header).toEqual({
-      $ref: '#/components/headers/manualHeader',
+      description: 'A manual header',
+      required: true,
+      schema: {
+        type: 'string',
+      },
     });
 
     expect(header2).toEqual({
@@ -1549,7 +1631,10 @@ describe('addSecurityScheme', () => {
     createComponents(registry, {});
 
     expect(securityScheme).toEqual({
-      $ref: '#/components/securitySchemes/manualSecurityScheme',
+      type: 'apiKey',
+      in: 'header',
+      name: 'X-API-Key',
+      description: 'A manual security scheme',
     });
 
     expect(securityScheme2).toEqual({
@@ -1609,7 +1694,11 @@ describe('addLink', () => {
     createComponents(registry, {});
 
     expect(link).toEqual({
-      $ref: '#/components/links/manualLink',
+      operationRef: '#/paths/~1test/get',
+      description: 'A manual link',
+      parameters: {
+        id: '$request.body#/id',
+      },
     });
 
     expect(link2).toEqual({
@@ -1663,7 +1752,8 @@ describe('addExample', () => {
     createComponents(registry, {});
 
     expect(example).toEqual({
-      $ref: '#/components/examples/manualExample',
+      summary: 'A manual example',
+      value: { message: 'Hello, world!' },
     });
 
     expect(example2).toEqual({

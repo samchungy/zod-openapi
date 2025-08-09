@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 
-import { createDocument } from './document.js';
+import {
+  type ZodOpenApiObject,
+  type ZodOpenApiResponseObject,
+  createDocument,
+} from './document.js';
 
 describe('createDocument', () => {
   it('should render a document with paths, webhooks, and components', () => {
@@ -511,5 +515,105 @@ describe('createDocument', () => {
   },
 }
 `);
+  });
+
+  it('should work allow manual ids', () => {
+    const response: ZodOpenApiResponseObject = {
+      description: '200 OK',
+      content: {
+        'application/json': {
+          schema: z.object({ a: z.string() }),
+        },
+      },
+      id: 'some-response',
+    };
+
+    const options: ZodOpenApiObject = {
+      openapi: '3.1.0',
+      info: {
+        title: 'some title',
+        version: '1.0.0',
+      },
+      paths: {
+        '/some-path': {
+          get: {
+            summary: 'some summary',
+            description: 'some description',
+            responses: {
+              '200': response,
+            },
+          },
+        },
+      },
+      components: {
+        responses: {
+          'some-response': response,
+        },
+      },
+    };
+
+    const document = createDocument(options);
+
+    expect(document).toMatchInlineSnapshot(`
+      {
+        "components": {
+          "responses": {
+            "some-response": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "a": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "a",
+                    ],
+                    "type": "object",
+                  },
+                },
+              },
+              "description": "200 OK",
+            },
+          },
+        },
+        "info": {
+          "title": "some title",
+          "version": "1.0.0",
+        },
+        "openapi": "3.1.0",
+        "paths": {
+          "/some-path": {
+            "get": {
+              "description": "some description",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "a": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "a",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "200 OK",
+                },
+              },
+              "summary": "some summary",
+            },
+          },
+        },
+      }
+    `);
   });
 });

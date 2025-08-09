@@ -132,6 +132,7 @@ describe('object', () => {
         properties: {
           a: { type: 'string', default: 'a' },
         },
+        required: ['a'],
       },
       components: {},
     });

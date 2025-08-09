@@ -348,6 +348,9 @@ export const createRegistry = (
         };
         registry.components.parameters.seen.set(parameter, ref);
         registry.components.parameters.ids.set(id, parameterObject);
+        if (opts?.manualId) {
+          return parameterObject;
+        }
         return ref;
       }
 
@@ -399,6 +402,9 @@ export const createRegistry = (
         };
         registry.components.headers.ids.set(id, headerObject);
         registry.components.headers.seen.set(header, ref);
+        if (opts?.manualId) {
+          return headerObject;
+        }
         return ref;
       }
 
@@ -440,6 +446,9 @@ export const createRegistry = (
         };
         registry.components.requestBodies.ids.set(id, requestBodyObject);
         registry.components.requestBodies.seen.set(requestBody, ref);
+        if (opts?.manualId) {
+          return requestBodyObject;
+        }
         return ref;
       }
 
@@ -513,6 +522,9 @@ export const createRegistry = (
         };
         registry.components.pathItems.ids.set(id, pathItemObject);
         registry.components.pathItems.seen.set(pathItem, ref);
+        if (opts?.manualId) {
+          return pathItemObject;
+        }
         return ref;
       }
 
@@ -568,6 +580,10 @@ export const createRegistry = (
         };
         registry.components.responses.ids.set(id, responseObject);
         registry.components.responses.seen.set(response, ref);
+
+        if (opts?.manualId) {
+          return responseObject;
+        }
         return ref;
       }
 
@@ -614,6 +630,9 @@ export const createRegistry = (
         };
         registry.components.callbacks.ids.set(id, callbackObject);
         registry.components.callbacks.seen.set(callback, ref);
+        if (opts?.manualId) {
+          return callbackObject;
+        }
         return ref;
       }
 
@@ -643,6 +662,9 @@ export const createRegistry = (
         };
         registry.components.securitySchemes.ids.set(id, securitySchemeObject);
         registry.components.securitySchemes.seen.set(securityScheme, ref);
+        if (opts?.manualId) {
+          return securitySchemeObject;
+        }
         return ref;
       }
 
@@ -675,6 +697,9 @@ export const createRegistry = (
         };
         registry.components.links.ids.set(id, linkObject);
         registry.components.links.seen.set(link, ref);
+        if (opts?.manualId) {
+          return linkObject;
+        }
         return ref;
       }
 
@@ -708,6 +733,9 @@ export const createRegistry = (
         };
         registry.components.examples.ids.set(id, exampleObject);
         registry.components.examples.seen.set(example, ref);
+        if (opts?.manualId) {
+          return exampleObject;
+        }
         return ref;
       }
 
