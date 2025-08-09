@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import z from 'zod/v4';
 
-import { type ZodOpenApiObject, type ZodOpenApiResponseObject, createDocument } from './document.js';
+import {
+  type ZodOpenApiObject,
+  type ZodOpenApiResponseObject,
+  createDocument,
+} from './document.js';
 
 describe('createDocument', () => {
   it('should render a document with paths, webhooks, and components', () => {
@@ -513,7 +517,6 @@ describe('createDocument', () => {
 `);
   });
 
-
   it('should work allow manual ids', () => {
     const response: ZodOpenApiResponseObject = {
       description: '200 OK',
@@ -523,7 +526,7 @@ describe('createDocument', () => {
         },
       },
       id: 'some-response',
-    }
+    };
 
     const options: ZodOpenApiObject = {
       openapi: '3.1.0',
@@ -547,9 +550,9 @@ describe('createDocument', () => {
           'some-response': response,
         },
       },
-    }
+    };
 
-    const document = createDocument(options)
+    const document = createDocument(options);
 
     expect(document).toMatchInlineSnapshot(`
       {
@@ -611,6 +614,6 @@ describe('createDocument', () => {
           },
         },
       }
-    `)
-  })
+    `);
+  });
 });

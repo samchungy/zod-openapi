@@ -28,8 +28,8 @@ import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 type SchemaSource =
   | {
-    type: 'mediaType' | 'header';
-  }
+      type: 'mediaType' | 'header';
+    }
   | { type: 'parameter'; location: { in: string; name: string } };
 
 export interface ComponentRegistry {
@@ -499,8 +499,8 @@ export const createRegistry = (
         if (key === 'parameters') {
           pathItemObject[key] = createManualParameters(
             value as
-            | Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>
-            | undefined,
+              | Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>
+              | undefined,
             registry,
             [...path, key],
           );
@@ -582,7 +582,7 @@ export const createRegistry = (
         registry.components.responses.seen.set(response, ref);
 
         if (opts?.manualId) {
-          return responseObject
+          return responseObject;
         }
         return ref;
       }
