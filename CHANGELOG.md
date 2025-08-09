@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.3.1
+
+### Patch Changes
+
+- [`4b88330`](https://github.com/samchungy/zod-openapi/commit/4b8833024656ba04d7cf4fe1c36635c4345586f3) Thanks [@samchungy](https://github.com/samchungy)! - Fix manual component registration
+
 ## 5.3.0
 
 ### Minor Changes
