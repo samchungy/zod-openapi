@@ -65,7 +65,7 @@
     "eslint-plugin-import-zod": "1.2.0",
     "eslint-plugin-zod-openapi": "2.0.0",
     "skuba": "12.0.2",
-    "tsdown": "0.13.2",
+    "tsdown": "0.14.0",
     "vitest": "3.2.4",
     "yaml": "2.8.1",
     "zod": "4.0.17"
