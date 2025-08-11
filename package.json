@@ -67,7 +67,7 @@
     "skuba": "12.0.2",
     "tsdown": "0.13.2",
     "vitest": "3.2.4",
-    "yaml": "2.8.0",
+    "yaml": "2.8.1",
     "zod": "4.0.14"
   },
   "peerDependencies": {
