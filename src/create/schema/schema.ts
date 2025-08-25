@@ -7,6 +7,7 @@ import type {
   ZodOpenApiBaseMetadata,
   ZodOpenApiComponentsObject,
 } from '../../index.js';
+import { type OpenApiVersion, satisfiesVersion } from '../../openapi.js';
 import { type ComponentRegistry, createRegistry } from '../components.js';
 
 import { override, validate } from './override.js';
@@ -37,6 +38,7 @@ export const createSchema = (
      * The $ref path to use for a schema component. Defaults to `#/components/schemas/`
      */
     schemaRefPath?: string;
+    openapiVersion?: OpenApiVersion;
   } = {
     registry: createRegistry(),
     io: 'output',
@@ -61,6 +63,7 @@ export const createSchema = (
     registry: ctx.registry,
     io: ctx.io,
     opts: { ...ctx.opts, schemaRefPath: ctx.schemaRefPath },
+    openapiVersion: ctx.openapiVersion,
   });
 
   return {
@@ -102,6 +105,7 @@ export const createSchemas = <
     opts: CreateDocumentOptions & {
       schemaRefPath?: string;
     };
+    openapiVersion?: OpenApiVersion;
   },
 ): {
   schemas: Record<keyof T, oas31.SchemaObject | oas31.ReferenceObject>;
@@ -157,6 +161,9 @@ export const createSchemas = <
     unrepresentable: 'any',
     reused: ctx.opts.reused,
     cycles: ctx.opts.cycles,
+    target: satisfiesVersion(ctx.openapiVersion ?? '3.1.0', '3.1.0')
+      ? undefined
+      : 'openapi-3.0',
     uri: (id) =>
       id === '__shared'
         ? `#ZOD_OPENAPI/${id}`
