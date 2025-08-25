@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.0
+
+### Minor Changes
+
+- [#510](https://github.com/samchungy/zod-openapi/pull/510) [`dea9dbc`](https://github.com/samchungy/zod-openapi/commit/dea9dbce89cd008e18a5bdec9c7e84903a8acd5e) Thanks [@samchungy](https://github.com/samchungy)! - Re-introduce support for OpenAPI 3.x
+
 ## 5.3.1
 
 ### Patch Changes
