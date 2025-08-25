@@ -616,4 +616,70 @@ describe('createDocument', () => {
       }
     `);
   });
+
+  it('should support OpenAPI 3.0.0', () => {
+    const result = createDocument({
+      info: {
+        title: 'My API',
+        version: '1.0.0',
+      },
+      openapi: '3.0.0',
+      paths: {
+        '/jobs': {
+          get: {
+            responses: {
+              '200': {
+                content: {
+                  'application/json': {
+                    schema: z.object({
+                      id: z.string().nullable(),
+                    }),
+                  },
+                },
+                description: '200 OK',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "info": {
+          "title": "My API",
+          "version": "1.0.0",
+        },
+        "openapi": "3.0.0",
+        "paths": {
+          "/jobs": {
+            "get": {
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "nullable": true,
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "id",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "200 OK",
+                },
+              },
+            },
+          },
+        },
+      }
+    `);
+  });
 });

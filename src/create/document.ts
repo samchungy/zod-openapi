@@ -248,7 +248,11 @@ export const createDocument = (
     document.webhooks = createdWebhooks;
   }
 
-  const createdComponents = createComponents(registry, opts);
+  const createdComponents = createComponents(
+    registry,
+    opts,
+    zodOpenApiObject.openapi,
+  );
 
   if (Object.keys(createdComponents).length > 0) {
     document.components = createdComponents;

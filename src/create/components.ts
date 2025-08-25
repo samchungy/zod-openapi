@@ -1,5 +1,6 @@
 import { type $ZodType, globalRegistry } from 'zod/v4/core';
 
+import type { OpenApiVersion } from '../openapi.js';
 import { isAnyZodType } from '../zod.js';
 
 import { createContent } from './content.js';
@@ -954,6 +955,7 @@ const createIOSchemas = (ctx: {
   registry: ComponentRegistry;
   io: 'input' | 'output';
   opts: CreateDocumentOptions;
+  openapiVersion?: OpenApiVersion;
 }) => {
   const { schemas, components, manual } = createSchemas(
     Object.fromEntries(ctx.registry.components.schemas[ctx.io]),
@@ -999,9 +1001,10 @@ const createManualSchemas = (registry: ComponentRegistry) => {
 export const createComponents = (
   registry: ComponentRegistry,
   opts: CreateDocumentOptions,
+  openapiVersion?: OpenApiVersion,
 ) => {
-  createIOSchemas({ registry, io: 'input', opts });
-  createIOSchemas({ registry, io: 'output', opts });
+  createIOSchemas({ registry, io: 'input', opts, openapiVersion });
+  createIOSchemas({ registry, io: 'output', opts, openapiVersion });
   createManualSchemas(registry);
 
   const components: oas31.ComponentsObject = {};
