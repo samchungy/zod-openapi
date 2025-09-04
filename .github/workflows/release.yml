@@ -3,19 +3,18 @@ name: Release
 on:
   push:
     branches:
-      - beta
       - master
+  workflow_dispatch:
 
 jobs:
   release:
+    name: Release
     permissions:
       contents: write
       id-token: write
       pull-requests: write
-    name: Release
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    env:
-      CI: true
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -32,9 +31,13 @@ jobs:
         with:
           node-version-file: package.json
           cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install latest npm
+        run: npm install -g npm@latest
 
       - name: Release
         uses: changesets/action@v1
@@ -43,4 +46,41 @@ jobs:
           version: pnpm changeset version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  snapshot:
+    name: Snapshot
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install latest npm
+        run: npm install -g npm@latest
+
+      - name: Publish to npm
+        uses: seek-oss/changesets-snapshot@v0
+        with:
+          pre-publish: pnpm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
