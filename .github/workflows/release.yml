@@ -3,16 +3,17 @@ name: Release
 on:
   push:
     branches:
-      - beta
       - master
+  workflow_dispatch:
 
 jobs:
   release:
+    name: Release
     permissions:
       contents: write
       id-token: write
       pull-requests: write
-    name: Release
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -46,11 +47,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   snapshot:
+    name: Release
     permissions:
       contents: write
       id-token: write
       pull-requests: write
-    name: Release
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
