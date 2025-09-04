@@ -47,7 +47,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   snapshot:
-    name: Release
+    name: Snapshot
     permissions:
       contents: write
       id-token: write
