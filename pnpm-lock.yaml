@@ -42,8 +42,8 @@ importers:
         specifier: 12.1.1
         version: 12.1.1(@babel/core@7.28.3)(@jest/transform@30.0.5)(@swc/core@1.11.29)(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/utils@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(babel-jest@30.0.5(@babel/core@7.28.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1)))(jest-util@30.0.5)(jiti@2.5.1)
       tsdown:
-        specifier: 0.14.1
-        version: 0.14.1(@arethetypeswrong/core@0.18.2)(typescript@5.9.2)
+        specifier: 0.14.2
+        version: 0.14.2(@arethetypeswrong/core@0.18.2)(typescript@5.9.2)
       vitest:
         specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.21)(jiti@2.5.1)(tsx@4.20.5)(yaml@2.8.1)
@@ -4467,8 +4467,8 @@ packages:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
 
-  rolldown-plugin-dts@0.15.7:
-    resolution: {integrity: sha512-BpdrnLaa+uyw0rPT47+4FUC7hQFazBFppeFT0ioW5Ybg0XCLeRohc3HHPlnCxI6LtzgSWT7Ot8ahn6ji10IQBg==}
+  rolldown-plugin-dts@0.15.10:
+    resolution: {integrity: sha512-8cPVAVQUo9tYAoEpc3jFV9RxSil13hrRRg8cHC9gLXxRMNtWPc1LNMSDXzjyD+5Vny49sDZH77JlXp/vlc4I3g==}
     engines: {node: '>=20.18.0'}
     peerDependencies:
       '@typescript/native-preview': '>=7.0.0-dev.20250601.1'
@@ -5029,8 +5029,8 @@ packages:
   tsconfig-seek@2.0.0:
     resolution: {integrity: sha512-pcKqW1I+CxGS6LI2QcNSdHGkJUWIP4VzcRzYAFH/LcQOlCBtD2q5w7RXZrIQxSANtcdN2RIT+o5pYEIPd81vRQ==}
 
-  tsdown@0.14.1:
-    resolution: {integrity: sha512-/nBuFDKZeYln9hAxwWG5Cm55/823sNIVI693iVi0xRFHzf9OVUq4b/lx9PH1TErFr/IQ0kd2hutFbJIPM0XQWA==}
+  tsdown@0.14.2:
+    resolution: {integrity: sha512-6ThtxVZoTlR5YJov5rYvH8N1+/S/rD/pGfehdCLGznGgbxz+73EASV1tsIIZkLw2n+SXcERqHhcB/OkyxdKv3A==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -10435,7 +10435,7 @@ snapshots:
 
   reusify@1.1.0: {}
 
-  rolldown-plugin-dts@0.15.7(rolldown@1.0.0-beta.34)(typescript@5.9.2):
+  rolldown-plugin-dts@0.15.10(rolldown@1.0.0-beta.34)(typescript@5.9.2):
     dependencies:
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.3
@@ -11194,7 +11194,7 @@ snapshots:
 
   tsconfig-seek@2.0.0: {}
 
-  tsdown@0.14.1(@arethetypeswrong/core@0.18.2)(typescript@5.9.2):
+  tsdown@0.14.2(@arethetypeswrong/core@0.18.2)(typescript@5.9.2):
     dependencies:
       ansis: 4.1.0
       cac: 6.7.14
@@ -11204,7 +11204,7 @@ snapshots:
       empathic: 2.0.0
       hookable: 5.5.3
       rolldown: 1.0.0-beta.34
-      rolldown-plugin-dts: 0.15.7(rolldown@1.0.0-beta.34)(typescript@5.9.2)
+      rolldown-plugin-dts: 0.15.10(rolldown@1.0.0-beta.34)(typescript@5.9.2)
       semver: 7.7.2
       tinyexec: 1.0.1
       tinyglobby: 0.2.14
