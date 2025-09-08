@@ -1,4 +1,10 @@
-import { type GlobalMeta, object, registry, toJSONSchema } from 'zod/v4';
+import {
+  type GlobalMeta,
+  globalRegistry,
+  object,
+  registry,
+  toJSONSchema,
+} from 'zod/v4';
 import type * as core from 'zod/v4/core';
 import type { $ZodType } from 'zod/v4/core';
 
@@ -19,10 +25,6 @@ export interface SchemaResult {
   schema: oas31.SchemaObject | oas31.ReferenceObject;
   components: Record<string, oas31.SchemaObject>;
 }
-
-type ZodTypeWithMeta = core.$ZodTypes & {
-  meta: () => GlobalMeta | undefined;
-};
 
 export const createSchema = (
   schema: core.$ZodType,
@@ -128,7 +130,7 @@ export const createSchemas = <
   const outputIds = new Map<string, string>();
   const jsonSchema = toJSONSchema(zodRegistry, {
     override(context) {
-      const meta = (context.zodSchema as ZodTypeWithMeta).meta();
+      const meta = globalRegistry.get(context.zodSchema);
       if (meta?.outputId && meta?.id) {
         // If the schema has an outputId, we need to replace it later
         outputIds.set(meta.id, meta.outputId);
