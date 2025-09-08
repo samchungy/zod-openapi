@@ -1,4 +1,4 @@
-import { type GlobalMeta, globalRegistry } from 'zod/v4';
+import { globalRegistry } from 'zod/v4';
 import type * as core from 'zod/v4/core';
 
 import type { CreateDocumentOptions } from '../../index.js';
