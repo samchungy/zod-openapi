@@ -18,8 +18,8 @@ importers:
         specifier: 2.29.6
         version: 2.29.6(@types/node@22.15.21)
       '@redocly/cli':
-        specifier: 2.0.7
-        version: 2.0.7(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.43.0)(encoding@0.1.13)
+        specifier: 2.0.8
+        version: 2.0.8(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.43.0)(encoding@0.1.13)
       '@types/node':
         specifier: 22.15.21
         version: 22.15.21
@@ -238,6 +238,10 @@ packages:
 
   '@babel/runtime@7.28.3':
     resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.28.4':
+    resolution: {integrity: sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.27.2':
@@ -1013,27 +1017,27 @@ packages:
   '@redocly/ajv@8.11.3':
     resolution: {integrity: sha512-4P3iZse91TkBiY+Dx5DUgxQ9GXkVJf++cmI0MOyLDxV9b5MUBI4II6ES8zA5JCbO72nKAJxWrw4PUPW+YP3ZDQ==}
 
-  '@redocly/cli@2.0.7':
-    resolution: {integrity: sha512-n4r3spiDwNetQ1TmIKaiIUO4d5rXhbzmz1PgOpupYIo6XmE7LQvrX5ncG0qhP6Wl6rKdLoyQZ1bOwbRz2ce3qg==}
+  '@redocly/cli@2.0.8':
+    resolution: {integrity: sha512-FWBhB2hvF8rXWViCVgbKT3AmQH9ChRDNCmN3SyLRaL0GQ5SLi10p9rV26/7GktcMAKetM9XC4ETQQJMup3CVQQ==}
     engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
     hasBin: true
 
   '@redocly/config@0.22.2':
     resolution: {integrity: sha512-roRDai8/zr2S9YfmzUfNhKjOF0NdcOIqF7bhf4MVC5UxpjIysDjyudvlAiVbpPHp3eDRWbdzUgtkK1a7YiDNyQ==}
 
-  '@redocly/config@0.28.0':
-    resolution: {integrity: sha512-IdY4bSX9bbjXkDX91oO1OVwCzB00UNF0ozoygacTpS5Exa3ewYCB/6BcbA0tGCAvKDIwSY9Jor2cWQ/ycQfBTg==}
+  '@redocly/config@0.29.0':
+    resolution: {integrity: sha512-AkP1Berx9GvD15aN6r0IcOo289ElHp52XgeFTxXCumJ4gaUXUmvzqfZTfFFJWDaGgZvUZvmQrs1UdaPjZEXeHA==}
 
   '@redocly/openapi-core@1.34.5':
     resolution: {integrity: sha512-0EbE8LRbkogtcCXU7liAyC00n9uNG9hJ+eMyHFdUsy9lB/WGqnEBgwjA9q2cyzAVcdTkQqTBBU1XePNnN3OijA==}
     engines: {node: '>=18.17.0', npm: '>=9.5.0'}
 
-  '@redocly/openapi-core@2.0.7':
-    resolution: {integrity: sha512-OKSqhvJXPu2s4s6xB5ykUYXvAuQNubZcexd9AEdWse6dz8Ke3EqCmMEuAZkpFWaiunBReu7Wam8kE0vh4CrLBg==}
+  '@redocly/openapi-core@2.0.8':
+    resolution: {integrity: sha512-ShnpeEgcQY0YxopFDH/m94PWiHgCuWGa9FIcHchdHMZGA0mgV/Eojhi46A/hi2KP7TaVsgZc6+8u7GxTTeTC5g==}
     engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
 
-  '@redocly/respect-core@2.0.7':
-    resolution: {integrity: sha512-a3zY4baRzhdgCdcBdzSKJzHmq8JudniSjEyX/mgwZrq8IWcCyQ7RlgBmtnT1cXp0ebq59Mh8UGp3Ec7gUo/NWg==}
+  '@redocly/respect-core@2.0.8':
+    resolution: {integrity: sha512-gKOjUn/UmoHYIDKHV7RanAvFkhQIgQh9oiA3qfYHMI/N4+tWGoJd03Soc+2bn3Zie8DTXjKwQIy0k5n2kZA7hw==}
     engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
 
   '@rolldown/binding-android-arm64@1.0.0-beta.35':
@@ -3620,6 +3624,10 @@ packages:
     resolution: {integrity: sha512-QIXZUBJUx+2zHUdQujWejBkcD9+cs94tLn0+YL8UrCh+D5sCXZ4c7LaEH48pNwRY3MLDgqUFyhlCyjJPf1WP0A==}
     engines: {node: 20 || >=22}
 
+  lru-cache@11.2.1:
+    resolution: {integrity: sha512-r8LA6i4LP4EeWOhqBaZZjDWwehd1xUJPCJd9Sv300H0ZmcUER4+JPh7bqqZeqs1o5pgtgvXm+d9UGrB5zZGDiQ==}
+    engines: {node: 20 || >=22}
+
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -5655,6 +5663,8 @@ snapshots:
 
   '@babel/runtime@7.28.3': {}
 
+  '@babel/runtime@7.28.4': {}
+
   '@babel/template@7.27.2':
     dependencies:
       '@babel/code-frame': 7.27.1
@@ -6600,14 +6610,14 @@ snapshots:
       require-from-string: 2.0.2
       uri-js-replace: 1.0.1
 
-  '@redocly/cli@2.0.7(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.43.0)(encoding@0.1.13)':
+  '@redocly/cli@2.0.8(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.43.0)(encoding@0.1.13)':
     dependencies:
       '@opentelemetry/exporter-trace-otlp-http': 0.202.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/resources': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-node': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.34.0
-      '@redocly/openapi-core': 2.0.7(ajv@8.17.1)
-      '@redocly/respect-core': 2.0.7(ajv@8.17.1)
+      '@redocly/openapi-core': 2.0.8(ajv@8.17.1)
+      '@redocly/respect-core': 2.0.8(ajv@8.17.1)
       abort-controller: 3.0.0
       chokidar: 3.6.0
       colorette: 1.4.0
@@ -6640,7 +6650,7 @@ snapshots:
 
   '@redocly/config@0.22.2': {}
 
-  '@redocly/config@0.28.0':
+  '@redocly/config@0.29.0':
     dependencies:
       json-schema-to-ts: 2.7.2
 
@@ -6658,10 +6668,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@redocly/openapi-core@2.0.7(ajv@8.17.1)':
+  '@redocly/openapi-core@2.0.8(ajv@8.17.1)':
     dependencies:
       '@redocly/ajv': 8.11.3
-      '@redocly/config': 0.28.0
+      '@redocly/config': 0.29.0
       ajv-formats: 2.1.1(ajv@8.17.1)
       colorette: 1.4.0
       js-levenshtein: 1.1.6
@@ -6672,12 +6682,12 @@ snapshots:
     transitivePeerDependencies:
       - ajv
 
-  '@redocly/respect-core@2.0.7(ajv@8.17.1)':
+  '@redocly/respect-core@2.0.8(ajv@8.17.1)':
     dependencies:
       '@faker-js/faker': 7.6.0
       '@noble/hashes': 1.8.0
       '@redocly/ajv': 8.11.2
-      '@redocly/openapi-core': 2.0.7(ajv@8.17.1)
+      '@redocly/openapi-core': 2.0.8(ajv@8.17.1)
       better-ajv-errors: 1.2.0(ajv@8.17.1)
       colorette: 2.0.20
       jest-diff: 29.7.0
@@ -9514,7 +9524,7 @@ snapshots:
 
   json-schema-to-ts@2.7.2:
     dependencies:
-      '@babel/runtime': 7.28.3
+      '@babel/runtime': 7.28.4
       '@types/json-schema': 7.0.15
       ts-algebra: 1.2.2
 
@@ -9622,6 +9632,8 @@ snapshots:
   lru-cache@10.4.3: {}
 
   lru-cache@11.1.0: {}
+
+  lru-cache@11.2.1: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -10135,7 +10147,7 @@ snapshots:
 
   path-scurry@2.0.0:
     dependencies:
-      lru-cache: 11.1.0
+      lru-cache: 11.2.1
       minipass: 7.1.2
 
   path-type@4.0.0: {}
@@ -10173,7 +10185,7 @@ snapshots:
 
   polished@4.3.1:
     dependencies:
-      '@babel/runtime': 7.28.3
+      '@babel/runtime': 7.28.4
 
   possible-typed-array-names@1.1.0: {}
 
