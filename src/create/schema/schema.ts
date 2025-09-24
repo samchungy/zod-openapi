@@ -41,11 +41,7 @@ export const createSchema = (
      */
     schemaRefPath?: string;
     openapiVersion?: OpenApiVersion;
-  } = {
-    registry: createRegistry(),
-    io: 'output',
-    opts: {},
-  },
+  } = {},
 ) => {
   ctx.registry ??= createRegistry({
     schemas: ctx.schemaComponents,
