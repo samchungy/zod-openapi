@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.1
+
+### Patch Changes
+
+- [#520](https://github.com/samchungy/zod-openapi/pull/520) [`8d08bd6`](https://github.com/samchungy/zod-openapi/commit/8d08bd6441998603c85e52c3d93eff04ce8f4664) Thanks [@GeKorm](https://github.com/GeKorm)! - Fix `zod/mini` compatibility
+
 ## 5.4.0
 
 ### Minor Changes

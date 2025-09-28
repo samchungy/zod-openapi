@@ -1,4 +1,4 @@
-import type { GlobalMeta } from 'zod/v4';
+import { globalRegistry } from 'zod/v4';
 import type * as core from 'zod/v4/core';
 
 import type { CreateDocumentOptions } from '../../index.js';
@@ -8,10 +8,6 @@ import type {
 } from '../../types.js';
 
 import type { oas31 } from '@zod-openapi/openapi3-ts';
-
-type ZodTypeWithMeta = core.$ZodTypes & {
-  meta: () => GlobalMeta | undefined;
-};
 
 export const override: ZodOpenApiOverride = (ctx) => {
   const def = ctx.zodSchema._zod.def;
@@ -68,7 +64,7 @@ export const override: ZodOpenApiOverride = (ctx) => {
           mapping;
       }
 
-      const meta = (ctx.zodSchema as ZodTypeWithMeta).meta();
+      const meta = globalRegistry.get(ctx.zodSchema);
 
       if (typeof meta?.unionOneOf === 'boolean') {
         if (meta.unionOneOf) {
