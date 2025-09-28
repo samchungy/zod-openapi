@@ -124,6 +124,11 @@ export const createSchemas = <
   }
 
   const outputIds = new Map<string, string>();
+
+  const defsName = satisfiesVersion(ctx.openapiVersion ?? '3.1.0', '3.1.0')
+    ? '$defs'
+    : ('definitions' as '$defs');
+
   const jsonSchema = toJSONSchema(zodRegistry, {
     override(context) {
       const meta = globalRegistry.get(context.zodSchema);
@@ -165,11 +170,12 @@ export const createSchemas = <
     uri: (id) =>
       id === '__shared'
         ? `#ZOD_OPENAPI/${id}`
-        : `#ZOD_OPENAPI/__shared#/$defs/${id}`,
+        : `#ZOD_OPENAPI/__shared#/${defsName}/${id}`,
   });
 
-  const components = jsonSchema.schemas.__shared?.$defs ?? {};
-  jsonSchema.schemas.__shared ??= { $defs: components };
+  const components = jsonSchema.schemas.__shared?.[defsName] ?? {};
+
+  jsonSchema.schemas.__shared ??= { [defsName]: components };
 
   const dynamicComponents = new Map<string, string>();
   for (const [key, value] of Object.entries(components)) {
@@ -195,7 +201,7 @@ export const createSchemas = <
   const manualUsed: Record<string, true> = {};
   const parsedJsonSchema = JSON.parse(
     JSON.stringify(jsonSchema).replace(
-      /"#ZOD_OPENAPI\/__shared#\/\$defs\/([^"]+)"/g,
+      /"#ZOD_OPENAPI\/__shared#\/(?:\$defs|definitions)\/([^"]+)"/g,
       (_, match: string) => {
         const dynamic = dynamicComponents.get(match);
         if (dynamic) {
@@ -211,8 +217,8 @@ export const createSchemas = <
     ),
   ) as typeof jsonSchema;
 
-  const parsedComponents = parsedJsonSchema.schemas.__shared?.$defs ?? {};
-  parsedJsonSchema.schemas.__shared ??= { $defs: parsedComponents };
+  const parsedComponents = parsedJsonSchema.schemas.__shared?.[defsName] ?? {};
+  parsedJsonSchema.schemas.__shared ??= { [defsName]: parsedComponents };
 
   for (const [key] of ctx.registry.components.schemas.manual) {
     const manualComponent = parsedJsonSchema.schemas[key];
@@ -270,7 +276,8 @@ export const createSchemas = <
 
   const renamedSchemas =
     renamedJsonSchema.schemas.zodOpenApiCreateSchema?.properties;
-  const renamedComponents = renamedJsonSchema.schemas.__shared?.$defs ?? {};
+  const renamedComponents =
+    renamedJsonSchema.schemas.__shared?.[defsName] ?? {};
   delete renamedJsonSchema.schemas.zodOpenApiCreateSchema;
   delete renamedJsonSchema.schemas.__shared;
 
