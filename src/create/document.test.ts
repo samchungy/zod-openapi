@@ -633,6 +633,7 @@ describe('createDocument', () => {
                   'application/json': {
                     schema: z.object({
                       id: z.string().nullable(),
+                      registered: z.string().meta({ id: 'manual-registered' }),
                     }),
                   },
                 },
@@ -646,6 +647,13 @@ describe('createDocument', () => {
 
     expect(result).toMatchInlineSnapshot(`
       {
+        "components": {
+          "schemas": {
+            "manual-registered": {
+              "type": "string",
+            },
+          },
+        },
         "info": {
           "title": "My API",
           "version": "1.0.0",
@@ -665,9 +673,13 @@ describe('createDocument', () => {
                             "nullable": true,
                             "type": "string",
                           },
+                          "registered": {
+                            "$ref": "#/components/schemas/manual-registered",
+                          },
                         },
                         "required": [
                           "id",
+                          "registered",
                         ],
                         "type": "object",
                       },
