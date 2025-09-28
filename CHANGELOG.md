@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.2
+
+### Patch Changes
+
+- [#535](https://github.com/samchungy/zod-openapi/pull/535) [`1bdce13`](https://github.com/samchungy/zod-openapi/commit/1bdce137cbe52a2aec9b47606bd49fc977043096) Thanks [@samchungy](https://github.com/samchungy)! - Fix component generation in OpenAPI 3.0.0
+
 ## 5.4.1
 
 ### Patch Changes
