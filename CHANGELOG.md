@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.3
+
+### Patch Changes
+
+- [#541](https://github.com/samchungy/zod-openapi/pull/541) [`fbdc363`](https://github.com/samchungy/zod-openapi/commit/fbdc3630e3d2517b9272dd991a5b777ea2480554) Thanks [@dependabot](https://github.com/apps/dependabot)! - Resolve error TS2304: Cannot find name 'oas31_d_exports'.
+
 ## 5.4.2
 
 ### Patch Changes
