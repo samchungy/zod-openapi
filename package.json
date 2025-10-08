@@ -64,7 +64,7 @@
     "ajv": "8.17.1",
     "eslint-plugin-import-zod": "1.2.0",
     "eslint-plugin-zod-openapi": "2.0.0",
-    "skuba": "12.2.0",
+    "skuba": "12.4.1",
     "tsdown": "0.15.6",
     "vitest": "3.2.4",
     "yaml": "2.8.1",
@@ -85,6 +85,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "12.1.1"
+    "version": "12.4.1"
   }
 }
