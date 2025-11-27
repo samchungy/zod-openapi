@@ -51,7 +51,8 @@
     "release": "pnpm build && changeset publish",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "validate:pack": "attw --pack ."
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.2",
