@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.4
+
+### Patch Changes
+
+- [#556](https://github.com/samchungy/zod-openapi/pull/556) [`2f8db8a`](https://github.com/samchungy/zod-openapi/commit/2f8db8a7b52747fdb0ba4526e77e0876ff8013ba) Thanks [@samchungy](https://github.com/samchungy)! - Fix crash when generating discriminated union schemas with Zod 4.1.13+
+
 ## 5.4.3
 
 ### Patch Changes
