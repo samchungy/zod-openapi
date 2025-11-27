@@ -19,7 +19,7 @@ export const override: ZodOpenApiOverride = (ctx) => {
     }
     case 'union': {
       if ('discriminator' in def && typeof def.discriminator === 'string') {
-        ctx.jsonSchema.oneOf = ctx.jsonSchema.anyOf;
+        ctx.jsonSchema.oneOf ??= ctx.jsonSchema.anyOf;
         delete ctx.jsonSchema.anyOf;
 
         ctx.jsonSchema.type = 'object';

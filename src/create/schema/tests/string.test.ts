@@ -225,14 +225,14 @@ describe('string', () => {
   );
 
   it('supports contentEncoding', () => {
-    const schema = z.string().base64();
+    const schema = z.base64();
 
     const result = createSchema(schema);
 
     expect(result).toEqual<SchemaResult>({
       schema: {
-        type: 'string',
         contentEncoding: 'base64',
+        type: 'string',
         format: 'base64',
         pattern:
           '^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$',
