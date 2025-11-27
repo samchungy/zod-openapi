@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.5
+
+### Patch Changes
+
+- [#558](https://github.com/samchungy/zod-openapi/pull/558) [`5f21e46`](https://github.com/samchungy/zod-openapi/commit/5f21e464e2c8f6178ffbedcc8d74e56d01ad2dca) Thanks [@samchungy](https://github.com/samchungy)! - Fix type declarations
+
 ## 5.4.4
 
 ### Patch Changes
