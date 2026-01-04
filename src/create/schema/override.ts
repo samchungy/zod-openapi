@@ -19,8 +19,15 @@ export const override: ZodOpenApiOverride = (ctx) => {
     }
     case 'union': {
       if ('discriminator' in def && typeof def.discriminator === 'string') {
-        ctx.jsonSchema.oneOf ??= ctx.jsonSchema.anyOf;
-        delete ctx.jsonSchema.anyOf;
+        // Handle both zod < 4.1.13 (anyOf) and zod >= 4.1.13 (oneOf)
+        // See: https://github.com/colinhacks/zod/pull/5453
+        if (!ctx.jsonSchema.oneOf && ctx.jsonSchema.anyOf) {
+          ctx.jsonSchema.oneOf = ctx.jsonSchema.anyOf;
+          delete ctx.jsonSchema.anyOf;
+        } else if (!ctx.jsonSchema.oneOf) {
+          // Neither oneOf nor anyOf exists - skip discriminator mapping
+          return;
+        }
 
         ctx.jsonSchema.type = 'object';
 
