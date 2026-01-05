@@ -5,15 +5,23 @@ import { validate } from './override.js';
 
 describe('validate', () => {
   it('should throw an error for a custom optional', () => {
+    const custom = z.custom();
     expect(() =>
       validate(
         {
-          zodSchema: z.custom().optional(),
+          zodSchema: custom.optional(),
           jsonSchema: {},
           io: 'input',
           path: ['properties', 'zodOpenApiCreateSchema'],
         },
         {},
+        {
+          context: {
+            jsonSchema: {},
+            zodSchema: custom,
+            path: ['properties', 'zodOpenApiCreateSchema'],
+          },
+        },
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `[Error: Zod schema of type \`custom\` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\`]`,
@@ -30,6 +38,7 @@ describe('validate', () => {
           path: ['properties', 'zodOpenApiCreateSchema'],
         },
         {},
+        {},
       ),
     ).toThrow(
       'Zod schema of type `void` at properties > zodOpenApiCreateSchema cannot be represented in OpenAPI. Please assign it metadata with `.meta()`',
@@ -45,6 +54,7 @@ describe('validate', () => {
           io: 'input',
           path: ['properties', 'zodOpenApiCreateSchema'],
         },
+        {},
         {},
       ),
     ).toThrow(
@@ -65,6 +75,7 @@ describe('validate', () => {
       {
         allowEmptySchema: { pipe: { output: true } },
       },
+      {},
     );
   });
 });
