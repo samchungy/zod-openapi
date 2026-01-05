@@ -7,6 +7,8 @@ import type {
   ZodOpenApiOverrideContext,
 } from '../../types.js';
 
+import type { PreviousContext } from './schema.js';
+
 import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export const override: ZodOpenApiOverride = (ctx) => {
@@ -95,7 +97,26 @@ export const override: ZodOpenApiOverride = (ctx) => {
 export const validate = (
   ctx: ZodOpenApiOverrideContext,
   opts: CreateDocumentOptions,
+  previousContext: PreviousContext,
 ) => {
+  if (
+    previousContext.context &&
+    ctx.zodSchema._zod.parent !== previousContext.context.zodSchema
+  ) {
+    if (previousContext.context.zodSchema._zod.def.type === 'pipe') {
+      // For some reason transform calls pipe and the meta ends up on the pipe instead of the transform
+      throw new Error(
+        `Zod transform found at ${previousContext.context.path.join(' > ')} are not supported in output schemas. Please use \`.overwrite()\` or wrap the schema in a \`.pipe()\` or assign it manual metadata with \`.meta()\``,
+      );
+    }
+
+    throw new Error(
+      `Zod schema of type \`${previousContext.context.zodSchema._zod.def.type}\` at ${previousContext.context?.path.join(' > ')} cannot be represented in OpenAPI. Please assign it metadata with \`.meta()\``,
+    );
+  }
+
+  previousContext.context = undefined;
+
   if (Object.keys(ctx.jsonSchema).length) {
     return;
   }
@@ -115,6 +136,7 @@ export const validate = (
           zodSchema: def.innerType,
         } as ZodOpenApiOverrideContext,
         opts,
+        previousContext,
       );
       return;
     }
@@ -126,10 +148,14 @@ export const validate = (
     }
     case 'pipe': {
       if (ctx.io === 'output') {
-        // For some reason transform calls pipe and the meta ends up on the pipe instead of the transform
-        throw new Error(
-          `Zod transform found at ${ctx.path.join(' > ')} are not supported in output schemas. Please use \`.overwrite()\` or wrap the schema in a \`.pipe()\` or assign it manual metadata with \`.meta()\``,
-        );
+        if (!ctx.zodSchema._zod.parent) {
+          previousContext.context = ctx;
+          return;
+        }
+        // // For some reason transform calls pipe and the meta ends up on the pipe instead of the transform
+        // throw new Error(
+        //   `Zod transform found at ${ctx.path.join(' > ')} are not supported in output schemas. Please use \`.overwrite()\` or wrap the schema in a \`.pipe()\` or assign it manual metadata with \`.meta()\``,
+        // );
       }
       return;
     }
@@ -146,6 +172,12 @@ export const validate = (
         );
       }
       return;
+    }
+    case 'custom': {
+      if (!ctx.zodSchema._zod.parent) {
+        previousContext.context = ctx;
+        return;
+      }
     }
   }
 
