@@ -9,5 +9,5 @@
     "customConditions": ["zod-openapi/source"]
   },
   "exclude": ["lib*/**/*", "tsdown.config.mjs", "dist", "api", "extend"],
-  "extends": "skuba/config/tsconfig.json",
+  "extends": "skuba/config/tsconfig.json"
 }
