@@ -55,8 +55,7 @@ export interface ZodOpenApiBaseMetadata {
 }
 
 export interface ZodOpenApiMetadata
-  extends ZodOpenApiBaseMetadata,
-    JSONSchemaMeta {
+  extends ZodOpenApiBaseMetadata, JSONSchemaMeta {
   examples?: unknown[];
   /**
    * @deprecated - Use `examples` instead.

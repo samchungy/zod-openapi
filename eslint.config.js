@@ -1,5 +1,4 @@
 import skuba from 'eslint-config-skuba';
-import importZod from 'eslint-plugin-import-zod';
 import zodOpenapi from 'eslint-plugin-zod-openapi';
 
 export default [
@@ -14,7 +13,6 @@ export default [
     ],
   },
   ...skuba,
-  ...importZod.configs.recommended,
   {
     plugins: {
       'zod-openapi': zodOpenapi,

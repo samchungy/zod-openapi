@@ -3,8 +3,8 @@
   "private": true,
   "exports": {
     ".": {
-      "zod-openapi/source": "./src/dist/index.ts",
       "types": "./lib-types/dist/index.d.ts",
+      "zod-openapi/source": "./src/dist/index.ts",
       "default": "./src/dist/index.ts"
     }
   },
@@ -14,6 +14,6 @@
   },
   "devDependencies": {
     "openapi3-ts": "4.5.0",
-    "skuba": "12.4.1"
+    "skuba": "13.1.1"
   }
 }
