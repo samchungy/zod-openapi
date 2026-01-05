@@ -14,6 +14,7 @@ import type {
   ZodOpenApiComponentsObject,
 } from '../../index.js';
 import { type OpenApiVersion, satisfiesVersion } from '../../openapi.js';
+import type { OverrideParameters } from '../../zod.js';
 import { type ComponentRegistry, createRegistry } from '../components.js';
 
 import { override, validate } from './override.js';
@@ -25,6 +26,10 @@ export interface SchemaResult {
   schema: oas31.SchemaObject | oas31.ReferenceObject;
   components: Record<string, oas31.SchemaObject>;
 }
+
+export type PreviousContext = {
+  context?: OverrideParameters;
+};
 
 export const createSchema = (
   schema: core.$ZodType,
@@ -129,6 +134,8 @@ export const createSchemas = <
     ? '$defs'
     : ('definitions' as '$defs');
 
+  const previousContext: PreviousContext = {};
+
   const jsonSchema = toJSONSchema(zodRegistry, {
     override(context) {
       const meta = globalRegistry.get(context.zodSchema);
@@ -158,7 +165,7 @@ export const createSchemas = <
 
       deleteInvalidJsonSchemaFields(context.jsonSchema);
       deleteZodOpenApiMeta(context.jsonSchema);
-      validate(enrichedContext, ctx.opts);
+      validate(enrichedContext, ctx.opts, previousContext);
     },
     io: ctx.io,
     unrepresentable: 'any',
@@ -175,7 +182,9 @@ export const createSchemas = <
 
   const components = jsonSchema.schemas.__shared?.[defsName] ?? {};
 
-  jsonSchema.schemas.__shared ??= { [defsName]: components };
+  jsonSchema.schemas.__shared ??= {
+    [defsName]: components,
+  } as core.ZodStandardJSONSchemaPayload<unknown>;
 
   const dynamicComponents = new Map<string, string>();
   for (const [key, value] of Object.entries(components)) {
@@ -218,7 +227,9 @@ export const createSchemas = <
   ) as typeof jsonSchema;
 
   const parsedComponents = parsedJsonSchema.schemas.__shared?.[defsName] ?? {};
-  parsedJsonSchema.schemas.__shared ??= { [defsName]: parsedComponents };
+  parsedJsonSchema.schemas.__shared ??= {
+    [defsName]: parsedComponents,
+  } as core.ZodStandardJSONSchemaPayload<unknown>;
 
   for (const [key] of ctx.registry.components.schemas.manual) {
     const manualComponent = parsedJsonSchema.schemas[key];

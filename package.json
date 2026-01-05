@@ -25,17 +25,17 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
     "./api": {
-      "import": "./dist/api.js",
+      "import": "./dist/api.mjs",
       "require": "./dist/api.cjs"
     },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
   "files": [
     "dist",
@@ -69,7 +69,7 @@
     "tsdown": "0.16.7",
     "vitest": "3.2.4",
     "yaml": "2.8.1",
-    "zod": "4.1.13"
+    "zod": "4.3.5"
   },
   "peerDependencies": {
     "zod": "^3.25.74 || ^4.0.0"

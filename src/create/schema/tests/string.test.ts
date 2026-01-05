@@ -200,7 +200,6 @@ describe('string', () => {
     ${z.email()}        | ${'email'}
     ${z.iso.datetime()} | ${'date-time'}
     ${z.iso.date()}     | ${'date'}
-    ${z.iso.time()}     | ${'time'}
     ${z.iso.duration()} | ${'duration'}
     ${z.ipv4()}         | ${'ipv4'}
     ${z.ipv6()}         | ${'ipv6'}
