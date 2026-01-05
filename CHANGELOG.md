@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 5.4.6
+
+### Patch Changes
+
+- [#568](https://github.com/samchungy/zod-openapi/pull/568) [`a89830a`](https://github.com/samchungy/zod-openapi/commit/a89830a366e10243bfe924a3472002f7c4df18bd) Thanks [@samchungy](https://github.com/samchungy)! - Address Zod 4.3+ "cannot be represented in OpenAPI" compatibility issues
+
 ## 5.4.5
 
 ### Patch Changes
