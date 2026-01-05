@@ -3,8 +3,8 @@
   "private": true,
   "exports": {
     ".": {
-      "zod-openapi/source": "./src/dist/index.ts",
       "types": "./lib-types/dist/index.d.ts",
+      "zod-openapi/source": "./src/dist/index.ts",
       "default": "./src/dist/index.ts"
     }
   },

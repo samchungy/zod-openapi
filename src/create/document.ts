@@ -8,8 +8,10 @@ import { createPaths } from './paths.js';
 
 import type { oas31 } from '@zod-openapi/openapi3-ts';
 
-export interface ZodOpenApiMediaTypeObject
-  extends Omit<oas31.MediaTypeObject, 'schema'> {
+export interface ZodOpenApiMediaTypeObject extends Omit<
+  oas31.MediaTypeObject,
+  'schema'
+> {
   schema?: $ZodType | oas31.SchemaObject | oas31.ReferenceObject;
 }
 
@@ -18,8 +20,10 @@ export interface ZodOpenApiContentObject {
   [mediatype: string]: ZodOpenApiMediaTypeObject | undefined;
 }
 
-export interface ZodOpenApiRequestBodyObject
-  extends Omit<oas31.RequestBodyObject, 'content'> {
+export interface ZodOpenApiRequestBodyObject extends Omit<
+  oas31.RequestBodyObject,
+  'content'
+> {
   content: ZodOpenApiContentObject;
   /** Use this field to auto register this request body as a component */
   id?: string;
@@ -27,8 +31,10 @@ export interface ZodOpenApiRequestBodyObject
 
 export type ZodOpenApiHeadersObject = ZodObjectInput | oas31.HeadersObject;
 
-export interface ZodOpenApiResponseObject
-  extends Omit<oas31.ResponseObject, 'content' | 'headers' | 'links'> {
+export interface ZodOpenApiResponseObject extends Omit<
+  oas31.ResponseObject,
+  'content' | 'headers' | 'links'
+> {
   content?: ZodOpenApiContentObject;
   headers?: ZodOpenApiHeadersObject;
   links?: ZodOpenApiLinksObject;
@@ -61,11 +67,10 @@ export interface ZodOpenApiCallbackObject
   [name: string]: ZodOpenApiPathItemObject | string | undefined;
 }
 
-export interface ZodOpenApiOperationObject
-  extends Omit<
-    oas31.OperationObject,
-    'requestBody' | 'responses' | 'parameters' | 'callbacks'
-  > {
+export interface ZodOpenApiOperationObject extends Omit<
+  oas31.OperationObject,
+  'requestBody' | 'responses' | 'parameters' | 'callbacks'
+> {
   parameters?: Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>;
   requestBody?: ZodOpenApiRequestBodyObject;
   requestParams?: ZodOpenApiParameters;
@@ -73,11 +78,10 @@ export interface ZodOpenApiOperationObject
   callbacks?: ZodOpenApiCallbacksObject;
 }
 
-export interface ZodOpenApiPathItemObject
-  extends Omit<
-    oas31.PathItemObject,
-    'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace'
-  > {
+export interface ZodOpenApiPathItemObject extends Omit<
+  oas31.PathItemObject,
+  'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace'
+> {
   get?: ZodOpenApiOperationObject;
   put?: ZodOpenApiOperationObject;
   post?: ZodOpenApiOperationObject;
@@ -140,19 +144,18 @@ export type ZodOpenApiExamplesObject = Record<
   ZodOpenApiExampleObject | oas31.ReferenceObject
 >;
 
-export interface ZodOpenApiComponentsObject
-  extends Omit<
-    oas31.ComponentsObject,
-    | 'schemas'
-    | 'responses'
-    | 'requestBodies'
-    | 'headers'
-    | 'parameters'
-    | 'pathItems'
-    | 'callbacks'
-    | 'securitySchemes'
-    | 'examples'
-  > {
+export interface ZodOpenApiComponentsObject extends Omit<
+  oas31.ComponentsObject,
+  | 'schemas'
+  | 'responses'
+  | 'requestBodies'
+  | 'headers'
+  | 'parameters'
+  | 'pathItems'
+  | 'callbacks'
+  | 'securitySchemes'
+  | 'examples'
+> {
   parameters?: Record<string, ZodOpenApiParameterObject>;
   schemas?: Record<string, ZodOpenApiSchemaObject>;
   requestBodies?: Record<string, ZodOpenApiRequestBodyObject>;
@@ -167,11 +170,10 @@ export interface ZodOpenApiComponentsObject
 
 export type ZodOpenApiVersion = OpenApiVersion;
 
-export interface ZodOpenApiObject
-  extends Omit<
-    oas31.OpenAPIObject,
-    'openapi' | 'paths' | 'webhooks' | 'components'
-  > {
+export interface ZodOpenApiObject extends Omit<
+  oas31.OpenAPIObject,
+  'openapi' | 'paths' | 'webhooks' | 'components'
+> {
   openapi: ZodOpenApiVersion;
   paths?: ZodOpenApiPathsObject;
   webhooks?: ZodOpenApiPathsObject;
