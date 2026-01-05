@@ -25,12 +25,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
     },
     "./api": {
-      "import": "./dist/api.mjs",
-      "require": "./dist/api.cjs"
+      "require": "./dist/api.cjs",
+      "import": "./dist/api.mjs"
     },
     "./package.json": "./package.json"
   },
