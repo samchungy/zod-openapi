@@ -33,7 +33,7 @@ pnpm install zod zod-openapi
 
 Use Zod's native `.meta()` method to add OpenAPI metadata to your schemas. This library leverages Zod's built-in metadata functionality - no monkey patching or additional setup is required. Simply call `.meta()` on any Zod schema and it accepts an object with the following options:
 
-> **Note:** To get full TypeScript support for the OpenAPI-specific properties in `.meta()`, you need to import `zod-openapi` somewhere in your project. This import provides TypeScript type definitions that extend Zod's `.meta()` interface at compile-time (no runtime changes), enabling your IDE and TypeScript compiler to recognize the additional properties (like `id`, `param`, `header`, etc.). In most cases this will be done where you call `createDocument` or other zod-openapi functions.
+> **Note:** For full TypeScript support of OpenAPI properties in `.meta()`, simply import `zod-openapi` in your project or add `/// <reference types="zod-openapi" />` anywhere in your project. This provides compile-time type definitions for properties like `id`, `param`, `header`, etc.
 
 | Option     | Description                                                                                                      |
 | ---------- | ---------------------------------------------------------------------------------------------------------------- |
