@@ -14,6 +14,6 @@
   },
   "devDependencies": {
     "openapi3-ts": "4.5.0",
-    "skuba": "13.1.1"
+    "skuba": "14.0.1"
   }
 }
