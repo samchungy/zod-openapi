@@ -287,8 +287,8 @@ createDocument(doc, {
       return;
     }
     if (def.type === 'union') {
-      jsonSchema.oneOf = jsonSchema.anyOf;
-      delete jsonSchema.anyOf;
+      ctx.jsonSchema.oneOf ??= ctx.jsonSchema.anyOf;
+      delete ctx.jsonSchema.anyOf;
       return;
     }
   },
