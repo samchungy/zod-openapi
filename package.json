@@ -64,7 +64,7 @@
     "@zod-openapi/openapi3-ts": "workspace:1.0.0",
     "ajv": "8.17.1",
     "eslint-plugin-zod-openapi": "2.0.0",
-    "skuba": "13.1.1",
+    "skuba": "14.1.0",
     "tsdown": "0.18.4",
     "vitest": "3.2.4",
     "yaml": "2.8.1",
