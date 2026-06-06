@@ -4,7 +4,7 @@ import * as z from 'zod/v4';
 import { createRegistry } from './components.js';
 import { createHeaders } from './headers.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createHeaders', () => {
   it('should create a header object with a schema', () => {
@@ -20,7 +20,7 @@ describe('createHeaders', () => {
       ['test'],
     );
 
-    expect(headers).toEqual<oas31.HeadersObject>({
+    expect(headers).toEqual<oas32.HeadersObject>({
       'X-Custom-Header': {
         required: true,
         schema: {},
@@ -37,7 +37,7 @@ describe('createHeader', () => {
 
     const header = registry.addHeader(zodSchema, ['test', 'header']);
 
-    expect(header).toEqual<oas31.HeaderObject>({
+    expect(header).toEqual<oas32.HeaderObject>({
       required: true,
       description: 'A custom header',
       schema: {},
@@ -53,7 +53,7 @@ describe('createHeader', () => {
 
     const header = registry.addHeader(zodSchema, ['test', 'header']);
 
-    expect(header).toEqual<oas31.HeaderObject>({
+    expect(header).toEqual<oas32.HeaderObject>({
       required: true,
       deprecated: true,
       schema: {},

@@ -8,13 +8,13 @@ import { createManualParameters, createParameters } from './parameters.js';
 import { createResponses } from './responses.js';
 import { isISpecificationExtension } from './specificationExtension.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const createOperation = (
   operation: ZodOpenApiOperationObject,
   registry: ComponentRegistry,
   path: string[],
-): oas31.OperationObject | undefined => {
+): oas32.OperationObject | undefined => {
   const {
     parameters,
     requestParams,
@@ -23,7 +23,7 @@ export const createOperation = (
     callbacks,
     ...rest
   } = operation;
-  const operationObject: oas31.OperationObject = rest;
+  const operationObject: oas32.OperationObject = rest;
 
   const maybeManualParameters = createManualParameters(parameters, registry, [
     ...path,
@@ -74,12 +74,12 @@ export const createPaths = (
   paths: ZodOpenApiPathsObject | undefined,
   registry: ComponentRegistry,
   path: string[],
-): oas31.PathsObject | undefined => {
+): oas32.PathsObject | undefined => {
   if (!paths) {
     return undefined;
   }
 
-  const pathsObject: oas31.PathsObject = {};
+  const pathsObject: oas32.PathsObject = {};
 
   for (const [singlePath, pathItemObject] of Object.entries(paths)) {
     if (isISpecificationExtension(singlePath)) {
@@ -90,7 +90,7 @@ export const createPaths = (
     pathsObject[singlePath] = registry.addPathItem(pathItemObject, [
       ...path,
       singlePath,
-    ]) as oas31.PathsObject;
+    ]) as oas32.PathsObject;
   }
 
   return pathsObject;

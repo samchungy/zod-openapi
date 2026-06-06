@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRegistry } from './components.js';
 import { createLinks } from './links.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createLinks', () => {
   it('should create a links object with a link', () => {
@@ -21,7 +21,7 @@ describe('createLinks', () => {
       ['test'],
     );
 
-    expect(links).toEqual<oas31.LinksObject>({
+    expect(links).toEqual<oas32.LinksObject>({
       link1: {
         operationId: 'getUser',
         parameters: {

@@ -4,7 +4,7 @@ import * as z from 'zod/v4';
 import { createRegistry } from './components.js';
 import { createContent } from './content.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createContent', () => {
   it('should create a content object with a media type', () => {
@@ -13,7 +13,7 @@ describe('createContent', () => {
       age: z.number(),
     });
     const registry = createRegistry();
-    const content: oas31.ContentObject = createContent(
+    const content: oas32.ContentObject = createContent(
       {
         'application/json': {
           schema: zodSchema,
@@ -26,7 +26,7 @@ describe('createContent', () => {
       ['test'],
     );
 
-    expect(content).toEqual<oas31.ContentObject>({
+    expect(content).toEqual<oas32.ContentObject>({
       'application/json': {
         schema: {},
       },
@@ -52,7 +52,7 @@ describe('createContent', () => {
       age: z.number(),
     });
     const registry = createRegistry();
-    const content: oas31.ContentObject = createContent(
+    const content: oas32.ContentObject = createContent(
       {
         'application/json': {
           schema: zodSchema,
@@ -71,7 +71,7 @@ describe('createContent', () => {
       ['test'],
     );
 
-    expect(content).toEqual<oas31.ContentObject>({
+    expect(content).toEqual<oas32.ContentObject>({
       'application/json': {
         schema: {},
         examples: {
@@ -86,7 +86,7 @@ describe('createContent', () => {
 
   it('should preserve non-Zod schema objects', () => {
     const registry = createRegistry();
-    const content: oas31.ContentObject = createContent(
+    const content: oas32.ContentObject = createContent(
       {
         'application/json': {
           schema: {
@@ -95,7 +95,7 @@ describe('createContent', () => {
               name: { type: 'string' },
               age: { type: 'integer' },
             },
-          } as oas31.SchemaObject,
+          } as oas32.SchemaObject,
         },
       },
       {
@@ -105,7 +105,7 @@ describe('createContent', () => {
       ['test'],
     );
 
-    expect(content).toEqual<oas31.ContentObject>({
+    expect(content).toEqual<oas32.ContentObject>({
       'application/json': {
         schema: {
           type: 'object',

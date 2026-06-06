@@ -16,7 +16,7 @@ import type {
 } from './document.js';
 import { createSchema } from './schema/schema.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createComponents', () => {
   it('should create a schema for dynamic input types', () => {
@@ -61,7 +61,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -71,7 +71,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(nestedRequestBody).toEqual<oas31.RequestBodyObject>({
+    expect(nestedRequestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -133,7 +133,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -182,7 +182,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -251,7 +251,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -267,7 +267,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(responseBody).toEqual<oas31.RequestBodyObject>({
+    expect(responseBody).toEqual<oas32.RequestBodyObject>({
       description: 'foo',
       content: {
         'application/json': {
@@ -386,7 +386,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -444,7 +444,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -454,7 +454,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(responseBody).toEqual<oas31.RequestBodyObject>({
+    expect(responseBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -526,7 +526,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -536,7 +536,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(responseBody).toEqual<oas31.ResponseObject>({
+    expect(responseBody).toEqual<oas32.ResponseObject>({
       description: 'foo',
       content: {
         'application/json': {
@@ -627,7 +627,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: { $ref: '#/components/schemas/__schema0' },
@@ -635,7 +635,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(response).toEqual<oas31.ResponseObject>({
+    expect(response).toEqual<oas32.ResponseObject>({
       description: 'A complex lazy schema',
       content: {
         'application/json': {
@@ -644,7 +644,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(components.schemas).toEqual<Record<string, oas31.SchemaObject>>({
+    expect(components.schemas).toEqual<Record<string, oas32.SchemaObject>>({
       __schema0: {
         type: 'object',
         properties: {
@@ -757,7 +757,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: { $ref: '#/components/schemas/LazyUser' },
@@ -765,7 +765,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(response).toEqual<oas31.ResponseObject>({
+    expect(response).toEqual<oas32.ResponseObject>({
       description: 'A complex lazy schema',
       content: {
         'application/json': {
@@ -774,7 +774,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(components.schemas).toEqual<Record<string, oas31.SchemaObject>>({
+    expect(components.schemas).toEqual<Record<string, oas32.SchemaObject>>({
       LazyUser: {
         type: 'object',
         properties: {
@@ -852,7 +852,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(responseBody).toEqual<oas31.ResponseObject>({
+    expect(responseBody).toEqual<oas32.ResponseObject>({
       description: 'A response with an auto registered schema',
       content: {
         'application/json': {
@@ -913,7 +913,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -923,7 +923,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(requestBody2).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody2).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -1040,7 +1040,7 @@ describe('createComponents', () => {
 
     const components = createComponents(registry, opts);
 
-    expect(requestBody).toEqual<oas31.RequestBodyObject>({
+    expect(requestBody).toEqual<oas32.RequestBodyObject>({
       content: {
         'application/json': {
           schema: {
@@ -1050,7 +1050,7 @@ describe('createComponents', () => {
       },
     });
 
-    expect(responseBody).toEqual<oas31.ResponseObject>({
+    expect(responseBody).toEqual<oas32.ResponseObject>({
       description: 'A response with a shared schema',
       content: {
         'application/json': {
@@ -1155,7 +1155,7 @@ describe('addCallback', () => {
   it('should register a callback with a manual ID', () => {
     const registry = createRegistry();
 
-    const manualCallback: oas31.CallbackObject = {
+    const manualCallback: oas32.CallbackObject = {
       '/path': {
         post: {
           summary: 'Example callback',
@@ -1216,7 +1216,7 @@ describe('addCallback', () => {
   });
 
   it('should register a callback with an id', () => {
-    const autoCallback: oas31.CallbackObject = {
+    const autoCallback: oas32.CallbackObject = {
       id: 'autoCallback',
       '/path': {
         post: {
@@ -1610,7 +1610,7 @@ describe('addSecurityScheme', () => {
   it('should register a security scheme with a manual ID', () => {
     const registry = createRegistry();
 
-    const manualSecurityScheme: oas31.SecuritySchemeObject = {
+    const manualSecurityScheme: oas32.SecuritySchemeObject = {
       type: 'apiKey',
       in: 'header',
       name: 'X-API-Key',
@@ -1678,7 +1678,7 @@ describe('addLink', () => {
   it('should register a link with a manual ID', () => {
     const registry = createRegistry();
 
-    const manualLink: oas31.LinkObject = {
+    const manualLink: oas32.LinkObject = {
       operationRef: '#/paths/~1test/get',
       description: 'A manual link',
       parameters: {
@@ -1739,7 +1739,7 @@ describe('addExample', () => {
   it('should register an example with a manual ID', () => {
     const registry = createRegistry();
 
-    const manualExample: oas31.ExampleObject = {
+    const manualExample: oas32.ExampleObject = {
       summary: 'A manual example',
       value: { message: 'Hello, world!' },
     };
@@ -1763,7 +1763,7 @@ describe('addExample', () => {
   });
 
   it('should register an example with an id', () => {
-    const autoExample: oas31.ExampleObject = {
+    const autoExample: oas32.ExampleObject = {
       id: 'autoExample',
       summary: 'An auto example',
       value: { message: 'Hello, world!' },

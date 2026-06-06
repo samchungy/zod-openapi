@@ -3,7 +3,7 @@ import type { JSONSchemaMeta } from 'zod/v4/core';
 
 import type { OverrideParameters, OverrideSchemaParameters } from './zod.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export type ZodOpenApiOverrideContext = OverrideParameters & {
   io: 'input' | 'output';
@@ -21,7 +21,7 @@ export interface ZodOpenApiBaseMetadata {
   /**
    * Used to set metadata for a parameter
    */
-  param?: Partial<oas31.ParameterObject> & {
+  param?: Partial<oas32.ParameterObject> & {
     /**
      * Used to output this Zod Schema in the components parameters section. Any usage of this Zod Schema will then be transformed into a $ref.
      */
@@ -30,7 +30,7 @@ export interface ZodOpenApiBaseMetadata {
   /**
    * Used to set metadata for a response header
    */
-  header?: Partial<oas31.HeaderObject> & {
+  header?: Partial<oas32.HeaderObject> & {
     /**
      * Used to output this Zod Schema in the components headers section. Any usage of this Zod Schema will then be transformed into a $ref.
      */
@@ -39,7 +39,7 @@ export interface ZodOpenApiBaseMetadata {
   /**
    * Use to override the rendered schema
    */
-  override?: oas31.SchemaObject | ZodOpenApiOverrideMeta;
+  override?: oas32.SchemaObject | ZodOpenApiOverrideMeta;
 
   /**
    * For use only if this Zod Schema is manually registered in the `components` section

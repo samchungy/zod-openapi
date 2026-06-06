@@ -7,7 +7,7 @@ import type {
 } from './document.js';
 import { createExamples } from './examples.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const createMediaTypeObject = (
   mediaType: ZodOpenApiMediaTypeObject,
@@ -16,10 +16,10 @@ export const createMediaTypeObject = (
     io: 'input' | 'output';
   },
   path: string[],
-): oas31.MediaTypeObject => {
-  const { schema, examples, ...rest } = mediaType;
+): oas32.MediaTypeObject => {
+  const { schema, itemSchema, examples, ...rest } = mediaType;
 
-  const mediaTypeObject: oas31.MediaTypeObject = rest;
+  const mediaTypeObject: oas32.MediaTypeObject = rest;
 
   if (isAnyZodType(schema)) {
     const schemaObject = ctx.registry.addSchema(schema, [...path, 'schema'], {
@@ -30,7 +30,17 @@ export const createMediaTypeObject = (
   } else {
     // If schema is not a Zod type, it might be an OpenAPI schema object
     // or a custom object. We assume it's already in the correct format.
-    mediaTypeObject.schema = schema as oas31.SchemaObject;
+    mediaTypeObject.schema = schema;
+  }
+
+  if (isAnyZodType(itemSchema)) {
+    const itemSchemaObject = ctx.registry.addSchema(itemSchema, [...path, 'itemSchema'], {
+      io: ctx.io,
+      source: { type: 'mediaType' },
+    });
+    mediaTypeObject.itemSchema = itemSchemaObject;
+  } else {
+    mediaTypeObject.itemSchema = itemSchema;
   }
 
   if (examples) {
@@ -50,8 +60,8 @@ export const createContent = (
     io: 'input' | 'output';
   },
   path: string[],
-): oas31.ContentObject => {
-  const contentObject: oas31.ContentObject = {};
+): oas32.ContentObject => {
+  const contentObject: oas32.ContentObject = {};
   for (const [mediaType, mediaTypeObject] of Object.entries(content)) {
     if (mediaTypeObject) {
       contentObject[mediaType] = createMediaTypeObject(mediaTypeObject, ctx, [

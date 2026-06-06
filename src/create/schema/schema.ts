@@ -20,11 +20,11 @@ import { type ComponentRegistry, createRegistry } from '../components.js';
 import { override, validate } from './override.js';
 import { renameComponents } from './rename.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export interface SchemaResult {
-  schema: oas31.SchemaObject | oas31.ReferenceObject;
-  components: Record<string, oas31.SchemaObject>;
+  schema: oas32.SchemaObject | oas32.ReferenceObject;
+  components: Record<string, oas32.SchemaObject>;
 }
 
 export type PreviousContext = {
@@ -111,9 +111,9 @@ export const createSchemas = <
     openapiVersion?: OpenApiVersion;
   },
 ): {
-  schemas: Record<keyof T, oas31.SchemaObject | oas31.ReferenceObject>;
-  components: Record<string, oas31.SchemaObject>;
-  manual: Record<string, oas31.SchemaObject>;
+  schemas: Record<keyof T, oas32.SchemaObject | oas32.ReferenceObject>;
+  components: Record<string, oas32.SchemaObject>;
+  manual: Record<string, oas32.SchemaObject>;
 } => {
   const refPath = ctx.opts.schemaRefPath ?? '#/components/schemas/';
   const entries: Record<string, $ZodType> = {};
@@ -264,10 +264,10 @@ export const createSchemas = <
     return {
       schemas: parsedSchemas as Record<
         keyof T,
-        oas31.SchemaObject | oas31.ReferenceObject
+        oas32.SchemaObject | oas32.ReferenceObject
       >,
-      components: parsedComponents as Record<string, oas31.SchemaObject>,
-      manual: parsedJsonSchema.schemas as Record<string, oas31.SchemaObject>,
+      components: parsedComponents as Record<string, oas32.SchemaObject>,
+      manual: parsedJsonSchema.schemas as Record<string, oas32.SchemaObject>,
     };
   }
 
@@ -295,9 +295,9 @@ export const createSchemas = <
   return {
     schemas: renamedSchemas as Record<
       keyof T,
-      oas31.SchemaObject | oas31.ReferenceObject
+      oas32.SchemaObject | oas32.ReferenceObject
     >,
-    components: renamedComponents as Record<string, oas31.SchemaObject>,
-    manual: renamedJsonSchema.schemas as Record<string, oas31.SchemaObject>,
+    components: renamedComponents as Record<string, oas32.SchemaObject>,
+    manual: renamedJsonSchema.schemas as Record<string, oas32.SchemaObject>,
   };
 };

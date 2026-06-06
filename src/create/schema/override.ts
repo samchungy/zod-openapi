@@ -9,7 +9,7 @@ import type {
 
 import type { PreviousContext } from './schema.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const override: ZodOpenApiOverride = (ctx) => {
   const def = ctx.zodSchema._zod.def;
@@ -30,7 +30,7 @@ export const override: ZodOpenApiOverride = (ctx) => {
           propertyName: def.discriminator,
         };
 
-        const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
+        const mapping: NonNullable<oas32.DiscriminatorObject['mapping']> = {};
         for (const [index, obj] of Object.entries(
           ctx.jsonSchema.oneOf as core.JSONSchema.BaseSchema[],
         )) {
@@ -62,7 +62,7 @@ export const override: ZodOpenApiOverride = (ctx) => {
           }
         }
 
-        (ctx.jsonSchema.discriminator as oas31.DiscriminatorObject).mapping =
+        (ctx.jsonSchema.discriminator as oas32.DiscriminatorObject).mapping =
           mapping;
       }
 
