@@ -510,8 +510,11 @@ export const createRegistry = (
         }
 
         if (key === 'additionalOperations') {
-          const additionalOperations: Record<string, oas32.OperationObject> = {};
-          for (const [method, operation] of Object.entries(value as Record<string, ZodOpenApiOperationObject>)) {
+          const additionalOperations: Record<string, oas32.OperationObject> =
+            {};
+          for (const [method, operation] of Object.entries(
+            value as Record<string, ZodOpenApiOperationObject>,
+          )) {
             additionalOperations[method] = createOperation(
               operation,
               registry,
@@ -796,10 +799,7 @@ const registerSchemas = (
       continue;
     }
 
-    registry.components.schemas.ids.set(
-      key,
-      schema,
-    );
+    registry.components.schemas.ids.set(key, schema);
   }
 };
 

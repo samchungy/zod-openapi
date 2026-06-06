@@ -20,7 +20,15 @@ export const createMediaTypeObject = (
   },
   path: string[],
 ): oas32.MediaTypeObject => {
-  const { schema, itemSchema, examples, encoding, itemEncoding, prefixEncoding, ...rest } = mediaType;
+  const {
+    schema,
+    itemSchema,
+    examples,
+    encoding,
+    itemEncoding,
+    prefixEncoding,
+    ...rest
+  } = mediaType;
 
   const mediaTypeObject: oas32.MediaTypeObject = rest;
 
@@ -37,10 +45,14 @@ export const createMediaTypeObject = (
   }
 
   if (isAnyZodType(itemSchema)) {
-    const itemSchemaObject = ctx.registry.addSchema(itemSchema, [...path, 'itemSchema'], {
-      io: ctx.io,
-      source: { type: 'mediaType' },
-    });
+    const itemSchemaObject = ctx.registry.addSchema(
+      itemSchema,
+      [...path, 'itemSchema'],
+      {
+        io: ctx.io,
+        source: { type: 'mediaType' },
+      },
+    );
     mediaTypeObject.itemSchema = itemSchemaObject;
   } else if (itemSchema) {
     mediaTypeObject.itemSchema = itemSchema;
@@ -54,15 +66,23 @@ export const createMediaTypeObject = (
   }
 
   if (encoding) {
-    mediaTypeObject.encoding = createEncodingObject(encoding, ctx, [...path, 'encoding']);
+    mediaTypeObject.encoding = createEncodingObject(encoding, ctx, [
+      ...path,
+      'encoding',
+    ]);
   }
 
   if (itemEncoding) {
-    mediaTypeObject.itemEncoding = createEncodingProperty(itemEncoding, ctx, [...path, 'itemEncoding']);
+    mediaTypeObject.itemEncoding = createEncodingProperty(itemEncoding, ctx, [
+      ...path,
+      'itemEncoding',
+    ]);
   }
 
   if (prefixEncoding) {
-    mediaTypeObject.prefixEncoding = prefixEncoding.map(encodingPrefix => createEncodingProperty(encodingPrefix, ctx, [...path, 'prefixEncoding']));
+    mediaTypeObject.prefixEncoding = prefixEncoding.map((encodingPrefix) =>
+      createEncodingProperty(encodingPrefix, ctx, [...path, 'prefixEncoding']),
+    );
   }
 
   return mediaTypeObject;
@@ -98,7 +118,10 @@ const createEncodingObject = (
 ): oas32.EncodingObject => {
   const encodingObject: oas32.EncodingObject = {};
   for (const [property, encodingProperty] of Object.entries(encoding)) {
-    encodingObject[property] = createEncodingProperty(encodingProperty, ctx, [...path, property]);
+    encodingObject[property] = createEncodingProperty(encodingProperty, ctx, [
+      ...path,
+      property,
+    ]);
   }
   return encodingObject;
 };
@@ -111,24 +134,41 @@ export const createEncodingProperty = (
   },
   path: string[],
 ): oas32.EncodingPropertyObject => {
-  const { headers, encoding, prefixEncoding, itemEncoding, ...rest } = encodingProperty;
+  const { headers, encoding, prefixEncoding, itemEncoding, ...rest } =
+    encodingProperty;
 
   const encodingPropertyObject: oas32.EncodingPropertyObject = rest;
 
   if (headers) {
-    encodingPropertyObject.headers = createHeaders(headers, ctx.registry, [...path, 'headers']);
+    encodingPropertyObject.headers = createHeaders(headers, ctx.registry, [
+      ...path,
+      'headers',
+    ]);
   }
 
   if (encoding) {
-    encodingPropertyObject.encoding = createEncodingObject(encoding, ctx, [...path, 'encoding']);
+    encodingPropertyObject.encoding = createEncodingObject(encoding, ctx, [
+      ...path,
+      'encoding',
+    ]);
   }
 
   if (prefixEncoding) {
-    encodingPropertyObject.prefixEncoding = prefixEncoding.map(encodingPrefix => createEncodingProperty(encodingPrefix, ctx, [...path, 'prefixEncoding']));
+    encodingPropertyObject.prefixEncoding = prefixEncoding.map(
+      (encodingPrefix) =>
+        createEncodingProperty(encodingPrefix, ctx, [
+          ...path,
+          'prefixEncoding',
+        ]),
+    );
   }
 
   if (itemEncoding) {
-    encodingPropertyObject.itemEncoding = createEncodingProperty(itemEncoding, ctx, [...path, 'itemEncoding']);
+    encodingPropertyObject.itemEncoding = createEncodingProperty(
+      itemEncoding,
+      ctx,
+      [...path, 'itemEncoding'],
+    );
   }
 
   return encodingPropertyObject;

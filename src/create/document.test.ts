@@ -696,7 +696,9 @@ describe('createDocument', () => {
                     file: {
                       contentType: 'application/octet-stream',
                       headers: z.object({
-                        'X-Upload-Token': z.string().describe('Auth token for the upload'),
+                        'X-Upload-Token': z
+                          .string()
+                          .describe('Auth token for the upload'),
                       }),
                     },
                   },

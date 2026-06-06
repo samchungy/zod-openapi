@@ -16,7 +16,7 @@ export const createCallbacks = (
   const callbacksObject: oas32.CallbacksObject = {};
   for (const [name, value] of Object.entries(callbacks)) {
     if (isISpecificationExtension(name)) {
-       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       callbacksObject[name] = value;
       continue;
     }

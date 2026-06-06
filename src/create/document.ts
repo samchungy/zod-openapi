@@ -20,10 +20,10 @@ export interface ZodOpenApiMediaTypeObject extends Omit<
 }
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-export interface ZodOpenApiEncodingObject extends oas32.ISpecificationExtension {
+export interface ZodOpenApiEncodingObject
+  extends oas32.ISpecificationExtension {
   [property: string]: ZodOpenApiEncodingPropertyObject;
 }
-
 
 export interface ZodOpenApiEncodingPropertyObject extends Omit<
   oas32.EncodingPropertyObject,
@@ -100,7 +100,17 @@ export interface ZodOpenApiOperationObject extends Omit<
 
 export interface ZodOpenApiPathItemObject extends Omit<
   oas32.PathItemObject,
-  'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace' | 'query' | 'additionalOperations' | 'parameters'
+  | 'get'
+  | 'put'
+  | 'post'
+  | 'delete'
+  | 'options'
+  | 'head'
+  | 'patch'
+  | 'trace'
+  | 'query'
+  | 'additionalOperations'
+  | 'parameters'
 > {
   get?: ZodOpenApiOperationObject;
   put?: ZodOpenApiOperationObject;
