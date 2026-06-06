@@ -1,1 +1,1 @@
-export * as default from 'skuba/config/prettier.js';
+export { default } from 'skuba/config/prettier.js';

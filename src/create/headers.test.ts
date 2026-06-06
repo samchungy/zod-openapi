@@ -1,9 +1,10 @@
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 
 import { createRegistry } from './components.js';
 import { createHeaders } from './headers.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createHeaders', () => {
   it('should create a header object with a schema', () => {

@@ -1,5 +1,4 @@
 /* eslint-disable no-restricted-syntax */
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 import type { ZodType } from 'zod/v4';
@@ -16,6 +15,8 @@ import type {
   ZodOpenApiSecuritySchemeObject,
 } from './document.js';
 import { createSchema } from './schema/schema.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createComponents', () => {
   it('should create a schema for dynamic input types', () => {

@@ -1,3 +1,7 @@
+trustPolicyExclude:
+  - semver@6.3.1 # Managed by skuba
+overrides:
+  '@arethetypeswrong/core@0.18.2>fflate': 0.8.2 # Managed by skuba
 packages:
   - packages/*
   - .
@@ -29,13 +33,14 @@ minimumReleaseAgeExclude:
   - tsconfig-seek # Managed by skuba
 packageManagerStrictVersion: true # Managed by skuba
 publicHoistPattern:
+  - '@vitest/*' # Managed by skuba
+  - vitest # Managed by skuba
   - '@arethetypeswrong/core' # Managed by skuba
   - '@eslint/*' # Managed by skuba
   - '@types*' # Managed by skuba
   - esbuild # Managed by skuba
   - eslint # Managed by skuba
   - eslint-config-skuba # Managed by skuba
-  - jest # Managed by skuba
   - prettier # Managed by skuba
   - publint # Managed by skuba
   - rolldown # Managed by skuba
@@ -45,5 +50,3 @@ publicHoistPattern:
   - '@skuba-lib/*'
 strictDepBuilds: false # Managed by skuba
 trustPolicy: off # Managed by skuba
-trustPolicyExclude:
-  - semver@5.7.2 || 6.3.1 # Managed by skuba

@@ -17,8 +17,7 @@
     "build": "skuba build-package"
   },
   "devDependencies": {
-    "openapi3-ts": "4.5.0",
-    "skuba": "15.3.0"
+    "openapi3-ts": "4.5.0"
   },
   "engines": {
     "node": ">=22.14.0"

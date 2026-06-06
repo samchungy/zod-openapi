@@ -51,9 +51,9 @@
     "lint": "skuba lint",
     "prepare": "pnpm copy:types && pnpm build",
     "release": "pnpm build && changeset publish",
-    "test": "vitest run",
-    "test:ci": "vitest run --coverage",
-    "test:watch": "vitest",
+    "test": "skuba test",
+    "test:ci": "skuba test --coverage",
+    "test:watch": "skuba test --watch",
     "validate:pack": "attw --pack ."
   },
   "devDependencies": {
@@ -66,8 +66,7 @@
     "@zod-openapi/openapi3-ts": "workspace:*",
     "ajv": "8.17.1",
     "eslint-plugin-zod-openapi": "2.0.0",
-    "skuba": "15.3.0",
-    "vitest": "3.2.4",
+    "skuba": "16.1.0",
     "yaml": "2.8.1",
     "zod": "4.3.5"
   },
@@ -97,6 +96,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "15.3.0"
+    "version": "16.1.0"
   }
 }

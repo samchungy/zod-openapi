@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 import type { JSONSchemaMeta } from 'zod/v4/core';
 
 import type { OverrideParameters, OverrideSchemaParameters } from './zod.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export type ZodOpenApiOverrideContext = OverrideParameters & {
   io: 'input' | 'output';

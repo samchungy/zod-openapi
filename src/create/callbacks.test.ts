@@ -1,9 +1,10 @@
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
 
 import { createCallbacks } from './callbacks.js';
 import { createRegistry } from './components.js';
+
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 describe('createCallbacks', () => {
   it('should create a callbacks object', () => {

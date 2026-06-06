@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "main": "../lib/api.cjs",
   "module": "../lib/api.js",
   "types": "./index.d.cts",
