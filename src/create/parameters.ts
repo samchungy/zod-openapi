@@ -1,3 +1,4 @@
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 import type { $ZodType, $ZodTypes } from 'zod/v4/core';
 
 import { isAnyZodType } from '../zod.js';
@@ -5,8 +6,6 @@ import { isAnyZodType } from '../zod.js';
 import type { ComponentRegistry } from './components.js';
 import type { ZodOpenApiParameters } from './document.js';
 import { unwrapZodObject } from './object.js';
-
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export const createManualParameters = (
   parameters:

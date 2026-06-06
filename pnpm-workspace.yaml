@@ -1,28 +1,49 @@
-# managed by skuba
-ignorePatchFailures: false
-minimumReleaseAge: 4320 # 3 days
-minimumReleaseAgeExclude:
-  - '@seek/*'
-  - '@skuba-lib/*'
-  - eslint-config-seek
-  - eslint-config-skuba
-  - eslint-plugin-skuba
-  - skuba
-  - skuba-dive
-  - tsconfig-seek
-packageManagerStrictVersion: true
-publicHoistPattern:
-  - '@eslint/*'
-  - '@types*'
-  - eslint
-  - eslint-config-skuba
-  - prettier
-  - esbuild
-  - jest
-  - tsconfig-seek
-  - typescript
-  # end managed by skuba
-
 packages:
-  - 'packages/*'
+  - packages/*
   - .
+
+allowBuilds:
+  '@ast-grep/lang-json': true # Managed by skuba
+  '@ast-grep/lang-yaml': true # Managed by skuba
+  '@datadog/native-appsec': true # Managed by skuba
+  '@datadog/native-iast-taint-tracking': true # Managed by skuba
+  '@datadog/native-metrics': true # Managed by skuba
+  '@datadog/pprof': true # Managed by skuba
+  dd-trace: true # Managed by skuba
+  esbuild: true # Managed by skuba
+  protobufjs: true # Managed by skuba
+  unix-dgram: true # Managed by skuba
+  unrs-resolver: true # Managed by skuba
+blockExoticSubdeps: true # Managed by skuba
+ignorePatchFailures: false # Managed by skuba
+minimumReleaseAge: 4320 # Managed by skuba
+minimumReleaseAgeExclude:
+  - '@seek/*' # Managed by skuba
+  - '@skuba-lib/*' # Managed by skuba
+  - eslint-config-seek # Managed by skuba
+  - eslint-config-skuba # Managed by skuba
+  - eslint-plugin-skuba # Managed by skuba
+  - pnpm-plugin-skuba # Managed by skuba
+  - skuba # Managed by skuba
+  - skuba-dive # Managed by skuba
+  - tsconfig-seek # Managed by skuba
+packageManagerStrictVersion: true # Managed by skuba
+publicHoistPattern:
+  - '@arethetypeswrong/core' # Managed by skuba
+  - '@eslint/*' # Managed by skuba
+  - '@types*' # Managed by skuba
+  - esbuild # Managed by skuba
+  - eslint # Managed by skuba
+  - eslint-config-skuba # Managed by skuba
+  - jest # Managed by skuba
+  - prettier # Managed by skuba
+  - publint # Managed by skuba
+  - rolldown # Managed by skuba
+  - tsconfig-seek # Managed by skuba
+  - tsdown # Managed by skuba
+  - typescript # Managed by skuba
+  - '@skuba-lib/*'
+strictDepBuilds: false # Managed by skuba
+trustPolicy: off # Managed by skuba
+trustPolicyExclude:
+  - semver@5.7.2 || 6.3.1 # Managed by skuba

@@ -1,3 +1,4 @@
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 import { globalRegistry } from 'zod/v4';
 import type * as core from 'zod/v4/core';
 
@@ -8,8 +9,6 @@ import type {
 } from '../../types.js';
 
 import type { PreviousContext } from './schema.js';
-
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export const override: ZodOpenApiOverride = (ctx) => {
   const def = ctx.zodSchema._zod.def;
@@ -28,7 +27,7 @@ export const override: ZodOpenApiOverride = (ctx) => {
 
         ctx.jsonSchema.discriminator = {
           propertyName: def.discriminator,
-        } as oas31.DiscriminatorObject;
+        };
 
         const mapping: NonNullable<oas31.DiscriminatorObject['mapping']> = {};
         for (const [index, obj] of Object.entries(

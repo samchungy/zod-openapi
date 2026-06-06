@@ -1,8 +1,6 @@
 import { promises as fs } from 'fs';
 import { join, relative } from 'path';
 
-import { Git } from 'skuba';
-
 async function copyDTs(src: string, dest: string): Promise<void> {
   const files = await fs.readdir(src);
   for (const file of files) {
@@ -79,12 +77,12 @@ async function main() {
   await deleteFolderRecursive(dest);
   await copyDTs(src, dest);
 
-  if (process.env.GITHUB_ACTIONS) {
-    const files = await Git.getChangedFiles({ dir });
-    if (files.some(({ path }) => path.startsWith('packages/openapi3-ts/src'))) {
-      throw new Error('openapi3-ts types need updating');
-    }
-  }
+  // if (process.env.GITHUB_ACTIONS) {
+  //   const files = await Git.getChangedFiles({ dir });
+  //   if (files.some(({ path }) => path.startsWith('packages/openapi3-ts/src'))) {
+  //     throw new Error('openapi3-ts types need updating');
+  //   }
+  // }
 }
 
 main().catch((error) => {

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "lib": ["ES2022"],
-    "moduleResolution": "node"
-  }
+    "skipLibCheck": true, // tsdown has optional peer deps
+    "lib": ["ES2023"]
+  },
+  "extends": "skuba/config/tsconfig.json"
 }

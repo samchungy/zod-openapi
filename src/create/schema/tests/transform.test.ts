@@ -4,8 +4,6 @@ import * as z from 'zod/v4';
 import { createInputContext } from '../../../testing/ctx.js';
 import { type SchemaResult, createSchema } from '../schema.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
-
 describe('transform', () => {
   describe('input', () => {
     it('creates a schema from transform', () => {
@@ -44,7 +42,7 @@ describe('transform', () => {
       expect(result).toEqual<SchemaResult>({
         schema: {
           type: 'number',
-        } as oas31.SchemaObject,
+        },
         components: {},
       });
     });

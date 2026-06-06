@@ -25,4 +25,4 @@ package-lock.json
 yarn-error.log
 # end managed by skuba
 
-packages/openapi3-ts/lib-*
+packages/openapi3-ts/lib

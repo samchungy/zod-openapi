@@ -1,5 +1,8 @@
 {
-  "main": "../dist/api.cjs",
-  "module": "../dist/api.js",
-  "types": "./index.d.cts"
+  "main": "../lib/api.cjs",
+  "module": "../lib/api.js",
+  "types": "./index.d.cts",
+  "engines": {
+    "node": ">=22.14.0"
+  }
 }

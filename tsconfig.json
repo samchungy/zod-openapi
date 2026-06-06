@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "lib": ["ES2022"],
+    "rootDir": ".",
+    "lib": ["ES2023"],
     "outDir": "lib",
     "removeComments": false,
-    "target": "ES2022",
+    "target": "ES2023",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "customConditions": ["zod-openapi/source"]
+    "customConditions": ["zod-openapi/source"],
+    "skipLibCheck": true
   },
-  "exclude": ["lib*/**/*", "tsdown.config.mjs", "dist", "api", "extend"],
+  "exclude": ["lib*/**/*", "tsdown.config.mts", "dist", "api", "extend"],
   "extends": "skuba/config/tsconfig.json"
 }

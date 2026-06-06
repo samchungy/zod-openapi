@@ -1,3 +1,5 @@
+import type { oas31 } from '@zod-openapi/openapi3-ts';
+
 import { createCallbacks } from './callbacks.js';
 import type { ComponentRegistry } from './components.js';
 import type {
@@ -7,8 +9,6 @@ import type {
 import { createManualParameters, createParameters } from './parameters.js';
 import { createResponses } from './responses.js';
 import { isISpecificationExtension } from './specificationExtension.js';
-
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export const createOperation = (
   operation: ZodOpenApiOperationObject,

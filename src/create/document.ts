@@ -1,3 +1,4 @@
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 import type { $ZodType, $ZodTypes } from 'zod/v4/core';
 
 import type { OpenApiVersion } from '../openapi.js';
@@ -5,8 +6,6 @@ import type { ZodOpenApiOverride } from '../types.js';
 
 import { createComponents, createRegistry } from './components.js';
 import { createPaths } from './paths.js';
-
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 export interface ZodOpenApiMediaTypeObject extends Omit<
   oas31.MediaTypeObject,

@@ -1,1 +1,1 @@
-export * from '../dist/api.cjs';
+export * from '../lib/api.cjs';

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { describe, expect, it } from 'vitest';
 import * as z from 'zod/v4';
-import type { ZodLazy, ZodType } from 'zod/v4';
+import type { ZodType } from 'zod/v4';
 
 import { createRegistry } from '../../components.js';
 import { type SchemaResult, createSchema } from '../schema.js';
@@ -44,7 +44,7 @@ describe('lazy', () => {
     type Lazy = Lazy[];
     const lazy: z.ZodType<Lazy> = z.lazy(() => lazy.array());
 
-    const result = createSchema(lazy as z.ZodLazy<any>);
+    const result = createSchema(lazy);
 
     expect(result).toEqual<SchemaResult>({
       schema: {
@@ -67,7 +67,7 @@ describe('lazy', () => {
       .lazy(() => lazy.array())
       .meta({ id: 'lazy' });
 
-    const result = createSchema(lazy as ZodLazy<any>);
+    const result = createSchema(lazy);
 
     expect(result).toEqual<SchemaResult>({
       schema: {

@@ -1,19 +1,35 @@
 {
   "name": "@zod-openapi/openapi3-ts",
+  "version": "0.0.0",
   "private": true,
   "exports": {
     ".": {
-      "types": "./lib-types/dist/index.d.ts",
       "zod-openapi/source": "./src/dist/index.ts",
-      "default": "./src/dist/index.ts"
-    }
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.cjs"
+    },
+    "./package.json": "./package.json"
   },
-  "main": "./src/dist/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.cts",
   "scripts": {
     "build": "skuba build-package"
   },
   "devDependencies": {
     "openapi3-ts": "4.5.0",
-    "skuba": "13.1.1"
+    "skuba": "15.3.0"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./lib/index.mjs",
+        "require": "./lib/index.cjs"
+      },
+      "./package.json": "./package.json"
+    }
   }
 }

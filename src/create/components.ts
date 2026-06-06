@@ -1,3 +1,4 @@
+import type { oas31 } from '@zod-openapi/openapi3-ts';
 import { type $ZodType, globalRegistry } from 'zod/v4/core';
 
 import type { OpenApiVersion } from '../openapi.js';
@@ -24,8 +25,6 @@ import { createManualParameters } from './parameters.js';
 import { createOperation } from './paths.js';
 import { createSchemas } from './schema/schema.js';
 import { isISpecificationExtension } from './specificationExtension.js';
-
-import type { oas31 } from '@zod-openapi/openapi3-ts';
 
 type SchemaSource =
   | {
@@ -276,7 +275,7 @@ export const createRegistry = (
     ): oas31.ParameterObject | oas31.ReferenceObject => {
       const seenParameter = registry.components.parameters.seen.get(parameter);
       if (seenParameter) {
-        return seenParameter as oas31.ParameterObject;
+        return seenParameter;
       }
 
       const meta = globalRegistry.get(parameter);
@@ -369,7 +368,7 @@ export const createRegistry = (
     ): oas31.HeaderObject | oas31.ReferenceObject => {
       const seenHeader = registry.components.headers.seen.get(header);
       if (seenHeader) {
-        return seenHeader as oas31.HeaderObject;
+        return seenHeader;
       }
 
       const meta = globalRegistry.get(header);
@@ -421,7 +420,7 @@ export const createRegistry = (
       const seenRequestBody =
         registry.components.requestBodies.seen.get(requestBody);
       if (seenRequestBody) {
-        return seenRequestBody as oas31.RequestBodyObject;
+        return seenRequestBody;
       }
 
       const { content, id: metaId, ...rest } = requestBody;
@@ -944,10 +943,7 @@ const registerExamples = (
   }
 
   for (const [key, schema] of Object.entries(examples)) {
-    registry.components.examples.ids.set(
-      key,
-      schema as oas31.ExampleObject | oas31.ReferenceObject,
-    );
+    registry.components.examples.ids.set(key, schema);
   }
 };
 
