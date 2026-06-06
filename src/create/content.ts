@@ -30,7 +30,7 @@ export const createMediaTypeObject = (
       source: { type: 'mediaType' },
     });
     mediaTypeObject.schema = schemaObject;
-  } else {
+  } else if (schema) {
     // If schema is not a Zod type, it might be an OpenAPI schema object
     // or a custom object. We assume it's already in the correct format.
     mediaTypeObject.schema = schema;
@@ -42,7 +42,7 @@ export const createMediaTypeObject = (
       source: { type: 'mediaType' },
     });
     mediaTypeObject.itemSchema = itemSchemaObject;
-  } else {
+  } else if (itemSchema) {
     mediaTypeObject.itemSchema = itemSchema;
   }
 
