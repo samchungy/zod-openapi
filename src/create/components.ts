@@ -487,7 +487,8 @@ export const createRegistry = (
           key === 'options' ||
           key === 'head' ||
           key === 'patch' ||
-          key === 'trace'
+          key === 'trace' ||
+          key === 'query'
         ) {
           pathItemObject[key] = createOperation(
             value as ZodOpenApiOperationObject,
@@ -508,6 +509,18 @@ export const createRegistry = (
           continue;
         }
 
+        if (key === 'additionalOperations') {
+          const additionalOperations: Record<string, oas32.OperationObject> = {};
+          for (const [method, operation] of Object.entries(value as Record<string, ZodOpenApiOperationObject>)) {
+            additionalOperations[method] = createOperation(
+              operation,
+              registry,
+              [...path, key, method],
+            );
+          }
+          pathItemObject.additionalOperations = additionalOperations;
+          continue;
+        }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         pathItemObject[key as keyof oas32.PathItemObject] = value;
       }

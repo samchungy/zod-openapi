@@ -10,10 +10,29 @@ import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export interface ZodOpenApiMediaTypeObject extends Omit<
   oas32.MediaTypeObject,
-  'schema' | 'itemSchema'
+  'schema' | 'itemSchema' | 'encoding' | 'prefixEncoding' | 'itemEncoding'
 > {
   schema?: $ZodType | oas32.SchemaObject | oas32.ReferenceObject;
   itemSchema?: $ZodType | oas32.SchemaObject | oas32.ReferenceObject;
+  encoding?: ZodOpenApiEncodingObject;
+  prefixEncoding?: ZodOpenApiEncodingPropertyObject[];
+  itemEncoding?: ZodOpenApiEncodingPropertyObject;
+}
+
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+export interface ZodOpenApiEncodingObject extends oas32.ISpecificationExtension {
+  [property: string]: ZodOpenApiEncodingPropertyObject;
+}
+
+
+export interface ZodOpenApiEncodingPropertyObject extends Omit<
+  oas32.EncodingPropertyObject,
+  'headers' | 'encoding' | 'prefixEncoding' | 'itemEncoding'
+> {
+  headers?: ZodOpenApiHeadersObject;
+  encoding?: ZodOpenApiEncodingObject;
+  prefixEncoding?: ZodOpenApiEncodingPropertyObject[];
+  itemEncoding?: ZodOpenApiEncodingPropertyObject;
 }
 
 export interface ZodOpenApiContentObject {
@@ -81,7 +100,7 @@ export interface ZodOpenApiOperationObject extends Omit<
 
 export interface ZodOpenApiPathItemObject extends Omit<
   oas32.PathItemObject,
-  'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace'
+  'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace' | 'query' | 'additionalOperations' | 'parameters'
 > {
   get?: ZodOpenApiOperationObject;
   put?: ZodOpenApiOperationObject;
@@ -91,6 +110,9 @@ export interface ZodOpenApiPathItemObject extends Omit<
   head?: ZodOpenApiOperationObject;
   patch?: ZodOpenApiOperationObject;
   trace?: ZodOpenApiOperationObject;
+  query?: ZodOpenApiOperationObject;
+  additionalOperations?: Record<string, ZodOpenApiOperationObject>;
+  parameters?: Array<$ZodType | oas32.ParameterObject | oas32.ReferenceObject>;
   /**
    * Used to register this path item as a component.
    */

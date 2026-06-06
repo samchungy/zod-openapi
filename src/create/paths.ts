@@ -14,7 +14,7 @@ export const createOperation = (
   operation: ZodOpenApiOperationObject,
   registry: ComponentRegistry,
   path: string[],
-): oas32.OperationObject | undefined => {
+): oas32.OperationObject => {
   const {
     parameters,
     requestParams,
