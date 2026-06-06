@@ -5,7 +5,9 @@ export default defineConfig({
   entry: ['src/index.ts', 'src/api.ts'],
   format: ['cjs', 'esm'],
   outDir: 'lib',
-  dts: true,
+  dts: {
+    eager: true,
+  },
   checks: {
     legacyCjs: false,
   },

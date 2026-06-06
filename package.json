@@ -44,7 +44,7 @@
     "api"
   ],
   "scripts": {
-    "build": "pnpm -r build && skuba build-package",
+    "build": "skuba build-package",
     "copy:types": "skuba node scripts/copyTypes.ts",
     "create:docs": " skuba node examples/simple/createSchema.ts && redocly build-docs examples/simple/openapi.yml --output=examples/simple/redoc-static.html",
     "format": "skuba format",
