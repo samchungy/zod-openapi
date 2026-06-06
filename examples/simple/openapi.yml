@@ -18,8 +18,8 @@ paths:
       operationId: getJob
       summary: Get Job
       parameters:
-        - name: id
-          in: query
+        - in: query
+          name: id
           schema:
             $ref: "#/components/schemas/jobId"
           required: true
@@ -30,7 +30,6 @@ paths:
           content:
             application/json:
               schema:
-                description: Get Job Response
                 type: object
                 properties:
                   id:
@@ -38,14 +37,15 @@ paths:
                   title:
                     $ref: "#/components/schemas/jobTitle"
                   userId:
+                    type: string
                     description: A unique identifier for a user
                     example: "60001234"
-                    type: string
                 required:
                   - id
                   - title
                   - userId
                 additionalProperties: false
+                description: Get Job Response
     post:
       operationId: createJob
       summary: Create Job
@@ -53,7 +53,6 @@ paths:
         content:
           application/json:
             schema:
-              description: Create Job Request
               type: object
               properties:
                 title:
@@ -61,29 +60,29 @@ paths:
               required:
                 - title
               additionalProperties: false
+              description: Create Job Request
       responses:
         "201":
           $ref: "#/components/responses/CreateJobResponse"
 components:
   schemas:
-    jobTitle:
-      description: A name that describes the job
-      example: Mid level developer
-      type: string
-      minLength: 1
     jobId:
-      description: A unique identifier for a job
-      example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
       type: string
       format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      description: A unique identifier for a job
+      example: 4dd643ff-7ec7-4666-9c88-50b7d3da34e4
+    jobTitle:
+      type: string
+      minLength: 1
+      description: A name that describes the job
+      example: Mid level developer
   responses:
     CreateJobResponse:
       description: Successful creation
       content:
         application/json:
           schema:
-            description: Create Job Response
             type: object
             properties:
               id:
@@ -91,3 +90,10 @@ components:
             required:
               - id
             additionalProperties: false
+            description: Create Job Response
+  securitySchemes:
+    s2sauth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: An s2s token issued by an allow listed consumer
