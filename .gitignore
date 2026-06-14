@@ -1,6 +1,4 @@
 # managed by skuba
-.npmrc
-
 .idea/*
 .vscode/*
 !.vscode/extensions.json
