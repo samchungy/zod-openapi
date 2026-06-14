@@ -620,7 +620,7 @@ describe('createDocument', () => {
   it('should resolve a Zod itemSchema in content', () => {
     const document = createDocument({
       info: { title: 'My API', version: '1.0.0' },
-      openapi: '3.1.0',
+      openapi: '3.2.0',
       paths: {
         '/items': {
           get: {
@@ -645,7 +645,7 @@ describe('createDocument', () => {
     "title": "My API",
     "version": "1.0.0",
   },
-  "openapi": "3.1.0",
+  "openapi": "3.2.0",
   "paths": {
     "/items": {
       "get": {
@@ -770,7 +770,7 @@ describe('createDocument', () => {
   it('should support the query HTTP method on path items', () => {
     const document = createDocument({
       info: { title: 'My API', version: '1.0.0' },
-      openapi: '3.1.0',
+      openapi: '3.2.0',
       paths: {
         '/search': {
           query: {
@@ -795,7 +795,7 @@ describe('createDocument', () => {
     "title": "My API",
     "version": "1.0.0",
   },
-  "openapi": "3.1.0",
+  "openapi": "3.2.0",
   "paths": {
     "/search": {
       "query": {
@@ -833,7 +833,7 @@ describe('createDocument', () => {
   it('should support additionalOperations on path items', () => {
     const document = createDocument({
       info: { title: 'My API', version: '1.0.0' },
-      openapi: '3.1.0',
+      openapi: '3.2.0',
       paths: {
         '/resources': {
           additionalOperations: {
@@ -858,7 +858,7 @@ describe('createDocument', () => {
     "title": "My API",
     "version": "1.0.0",
   },
-  "openapi": "3.1.0",
+  "openapi": "3.2.0",
   "paths": {
     "/resources": {
       "additionalOperations": {

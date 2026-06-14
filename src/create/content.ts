@@ -9,6 +9,7 @@ import type {
 } from './document.js';
 import { createExamples } from './examples.js';
 import { createHeaders } from './headers.js';
+import { isISpecificationExtension } from './specificationExtension.js';
 
 import type { oas32 } from '@zod-openapi/openapi3-ts';
 
@@ -118,6 +119,10 @@ const createEncodingObject = (
 ): oas32.EncodingObject => {
   const encodingObject: oas32.EncodingObject = {};
   for (const [property, encodingProperty] of Object.entries(encoding)) {
+    if (isISpecificationExtension(property)) {
+      encodingObject[property] = encodingProperty;
+      continue;
+    }
     encodingObject[property] = createEncodingProperty(encodingProperty, ctx, [
       ...path,
       property,
