@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": [
-    "@changesets/changelog-github",
+    "@skuba-lib/changesets-changelog",
     {
       "repo": "samchungy/zod-openapi"
     }

@@ -56,21 +56,19 @@
     "test:watch": "skuba test --watch"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "0.5.2",
-    "@changesets/cli": "2.29.8",
     "@redocly/cli": "2.14.3",
     "@types/node": "22.15.21",
     "@zod-openapi/openapi3-ts": "workspace:*",
     "ajv": "8.17.1",
     "eslint-plugin-zod-openapi": "2.0.0",
-    "skuba": "16.1.0",
+    "skuba": "16.2.0-hoist-changesets-20260614023310",
     "yaml": "2.8.1",
     "zod": "4.3.5"
   },
   "peerDependencies": {
     "zod": "^4.0.0"
   },
-  "packageManager": "pnpm@10.34.1",
+  "packageManager": "pnpm@10.34.0",
   "engines": {
     "node": ">=22.14.0"
   },
@@ -93,6 +91,6 @@
     "entryPoint": "src/index.ts",
     "template": "oss-npm-package",
     "type": "package",
-    "version": "16.1.0"
+    "version": "16.2.0-hoist-changesets-20260614023310"
   }
 }

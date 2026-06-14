@@ -1,7 +1,5 @@
 trustPolicyExclude:
   - semver@6.3.1 # Managed by skuba
-overrides:
-  '@arethetypeswrong/core@0.18.2>fflate': 0.8.2 # Managed by skuba
 packages:
   - packages/*
   - .
@@ -33,6 +31,7 @@ minimumReleaseAgeExclude:
   - tsconfig-seek # Managed by skuba
 packageManagerStrictVersion: true # Managed by skuba
 publicHoistPattern:
+  - '@changesets/cli' # Managed by skuba
   - '@vitest/*' # Managed by skuba
   - vitest # Managed by skuba
   - '@arethetypeswrong/core' # Managed by skuba
@@ -47,6 +46,6 @@ publicHoistPattern:
   - tsconfig-seek # Managed by skuba
   - tsdown # Managed by skuba
   - typescript # Managed by skuba
-  - '@skuba-lib/*'
+  - '@skuba-lib/*' # Managed by skuba
 strictDepBuilds: false # Managed by skuba
 trustPolicy: off # Managed by skuba
