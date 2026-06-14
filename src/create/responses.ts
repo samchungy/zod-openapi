@@ -5,7 +5,7 @@ import type {
 } from './document.js';
 import { isISpecificationExtension } from './specificationExtension.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const createResponses = (
   responses: ZodOpenApiResponsesObject | undefined,
@@ -16,7 +16,7 @@ export const createResponses = (
     return undefined;
   }
 
-  const responsesObject: oas31.ResponsesObject = {};
+  const responsesObject: oas32.ResponsesObject = {};
 
   for (const [statusCode, response] of Object.entries(responses)) {
     if (!response) {
@@ -31,7 +31,7 @@ export const createResponses = (
 
     if ('$ref' in response) {
       // If the response is a reference, we can just return it as is.
-      responsesObject[statusCode] = response as oas31.ReferenceObject;
+      responsesObject[statusCode] = response as oas32.ReferenceObject;
       continue;
     }
 

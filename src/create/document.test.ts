@@ -617,6 +617,332 @@ describe('createDocument', () => {
     `);
   });
 
+  it('should resolve a Zod itemSchema in content', () => {
+    const document = createDocument({
+      info: { title: 'My API', version: '1.0.0' },
+      openapi: '3.2.0',
+      paths: {
+        '/items': {
+          get: {
+            responses: {
+              '200': {
+                description: '200 OK',
+                content: {
+                  'application/json': {
+                    itemSchema: z.object({ id: z.string(), name: z.string() }),
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(document).toMatchInlineSnapshot(`
+{
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.2.0",
+  "paths": {
+    "/items": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "itemSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                    },
+                    "name": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "200 OK",
+          },
+        },
+      },
+    },
+  },
+}
+`);
+  });
+
+  it('should resolve Zod headers in encoding', () => {
+    const document = createDocument({
+      info: { title: 'My API', version: '1.0.0' },
+      openapi: '3.1.0',
+      paths: {
+        '/upload': {
+          post: {
+            requestBody: {
+              content: {
+                'multipart/form-data': {
+                  schema: z.object({ file: z.string() }),
+                  encoding: {
+                    file: {
+                      contentType: 'application/octet-stream',
+                      headers: z.object({
+                        'X-Upload-Token': z
+                          .string()
+                          .describe('Auth token for the upload'),
+                      }),
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': { description: 'Uploaded' },
+            },
+          },
+        },
+      },
+    });
+
+    expect(document).toMatchInlineSnapshot(`
+{
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/upload": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "encoding": {
+                "file": {
+                  "contentType": "application/octet-stream",
+                  "headers": {
+                    "X-Upload-Token": {
+                      "description": "Auth token for the upload",
+                      "required": true,
+                      "schema": {
+                        "description": "Auth token for the upload",
+                        "type": "string",
+                      },
+                    },
+                  },
+                },
+              },
+              "schema": {
+                "properties": {
+                  "file": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "file",
+                ],
+                "type": "object",
+              },
+            },
+          },
+        },
+        "responses": {
+          "200": {
+            "description": "Uploaded",
+          },
+        },
+      },
+    },
+  },
+}
+`);
+  });
+
+  it('should support the query HTTP method on path items', () => {
+    const document = createDocument({
+      info: { title: 'My API', version: '1.0.0' },
+      openapi: '3.2.0',
+      paths: {
+        '/search': {
+          query: {
+            responses: {
+              '200': {
+                description: 'Search results',
+                content: {
+                  'application/json': {
+                    schema: z.object({ results: z.array(z.string()) }),
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(document).toMatchInlineSnapshot(`
+{
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.2.0",
+  "paths": {
+    "/search": {
+      "query": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "results": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Search results",
+          },
+        },
+      },
+    },
+  },
+}
+`);
+  });
+
+  it('should support additionalOperations on path items', () => {
+    const document = createDocument({
+      info: { title: 'My API', version: '1.0.0' },
+      openapi: '3.2.0',
+      paths: {
+        '/resources': {
+          additionalOperations: {
+            subscribe: {
+              responses: {
+                '200': { description: 'Subscribed' },
+              },
+            },
+            unsubscribe: {
+              responses: {
+                '200': { description: 'Unsubscribed' },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(document).toMatchInlineSnapshot(`
+{
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.2.0",
+  "paths": {
+    "/resources": {
+      "additionalOperations": {
+        "subscribe": {
+          "responses": {
+            "200": {
+              "description": "Subscribed",
+            },
+          },
+        },
+        "unsubscribe": {
+          "responses": {
+            "200": {
+              "description": "Unsubscribed",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`);
+  });
+
+  it('should support OpenAPI 3.2.0', () => {
+    const document = createDocument({
+      info: { title: 'My API', version: '1.0.0' },
+      openapi: '3.2.0',
+      paths: {
+        '/jobs': {
+          get: {
+            responses: {
+              '200': {
+                description: '200 OK',
+                content: {
+                  'application/json': {
+                    schema: z.object({ id: z.string() }),
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(document).toMatchInlineSnapshot(`
+{
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+  },
+  "openapi": "3.2.0",
+  "paths": {
+    "/jobs": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "id",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "200 OK",
+          },
+        },
+      },
+    },
+  },
+}
+`);
+  });
+
   it('should support OpenAPI 3.0.0', () => {
     const result = createDocument({
       info: {

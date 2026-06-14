@@ -5,7 +5,7 @@ import { createRegistry } from './components.js';
 import type { ZodOpenApiResponsesObject } from './document.js';
 import { createResponses } from './responses.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createResponses', () => {
   it('creates a response', () => {
@@ -30,7 +30,7 @@ describe('createResponses', () => {
 
     const result = createResponses(responses, registry, ['test']);
 
-    expect(result).toEqual<oas31.ResponsesObject>({
+    expect(result).toEqual<oas32.ResponsesObject>({
       'x-test': 'foo',
       '200': {
         description: '200 OK',

@@ -4,11 +4,11 @@ import * as z from 'zod/v4';
 import { createCallbacks } from './callbacks.js';
 import { createRegistry } from './components.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createCallbacks', () => {
   it('should create a callbacks object', () => {
-    const callbacks: oas31.CallbackObject = {
+    const callbacks: oas32.CallbackObject = {
       exampleCallback: {
         '/path': {
           post: {

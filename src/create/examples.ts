@@ -1,20 +1,20 @@
 import type { ComponentRegistry } from './components.js';
 import type { ZodOpenApiExamplesObject } from './document.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const createExamples = (
   examples: ZodOpenApiExamplesObject | undefined,
   registry: ComponentRegistry,
   path: string[],
-): oas31.ExamplesObject | undefined => {
+): oas32.ExamplesObject | undefined => {
   if (!examples) {
     return undefined;
   }
 
   const examplesObject: Record<
     string,
-    oas31.ExampleObject | oas31.ReferenceObject
+    oas32.ExampleObject | oas32.ReferenceObject
   > = {};
 
   for (const [name, example] of Object.entries(examples)) {

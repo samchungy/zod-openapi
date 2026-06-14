@@ -5,7 +5,7 @@ import { createRegistry } from './components.js';
 import type { ZodOpenApiParameters } from './document.js';
 import { createManualParameters, createParameters } from './parameters.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 describe('createParameters', () => {
   it('should create a parameter object with a schema', () => {
@@ -28,7 +28,7 @@ describe('createParameters', () => {
 
     const parameters = createParameters(requestParams, registry, ['test']);
 
-    expect(parameters).toEqual<oas31.ParameterObject[]>([
+    expect(parameters).toEqual<oas32.ParameterObject[]>([
       {
         in: 'query',
         name: 'search',
@@ -73,7 +73,7 @@ describe('createParameter', () => {
       },
     });
 
-    expect(parameter).toEqual<oas31.ParameterObject>({
+    expect(parameter).toEqual<oas32.ParameterObject>({
       in: 'query',
       name: 'search',
       description: 'A custom parameter',
@@ -94,7 +94,7 @@ describe('createParameter', () => {
 
     const parameter = registry.addParameter(zodSchema, ['test', 'parameter']);
 
-    expect(parameter).toEqual<oas31.ParameterObject>({
+    expect(parameter).toEqual<oas32.ParameterObject>({
       in: 'query',
       name: 'search',
       schema: {},
@@ -126,7 +126,7 @@ describe('createManualParmaeters', () => {
       ['test'],
     );
 
-    expect(parameters).toEqual<oas31.ParameterObject[]>([
+    expect(parameters).toEqual<oas32.ParameterObject[]>([
       {
         in: 'query',
         name: 'test > parameters > 0',

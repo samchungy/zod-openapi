@@ -25,7 +25,7 @@ import { createOperation } from './paths.js';
 import { createSchemas } from './schema/schema.js';
 import { isISpecificationExtension } from './specificationExtension.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 type SchemaSource =
   | {
@@ -41,7 +41,7 @@ export interface ComponentRegistry {
         string,
         {
           zodType: $ZodType;
-          schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          schemaObject: oas32.SchemaObject | oas32.ReferenceObject;
           source: SchemaSource & { path: string[] };
         }
       >;
@@ -49,81 +49,81 @@ export interface ComponentRegistry {
         string,
         {
           zodType: $ZodType;
-          schemaObject: oas31.SchemaObject | oas31.ReferenceObject;
+          schemaObject: oas32.SchemaObject | oas32.ReferenceObject;
           source: SchemaSource & { path: string[] };
         }
       >;
-      ids: Map<string, oas31.SchemaObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.SchemaObject | oas32.ReferenceObject>;
       manual: Map<
         string,
         {
           input: {
             used?: true;
-            schemaObject: oas31.SchemaObject;
+            schemaObject: oas32.SchemaObject;
           };
           output: {
             used?: true;
-            schemaObject: oas31.SchemaObject;
+            schemaObject: oas32.SchemaObject;
           };
           zodType: $ZodType;
         }
       >;
     };
     headers: {
-      ids: Map<string, oas31.HeaderObject | oas31.ReferenceObject>;
-      seen: WeakMap<$ZodType, oas31.HeaderObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.HeaderObject | oas32.ReferenceObject>;
+      seen: WeakMap<$ZodType, oas32.HeaderObject | oas32.ReferenceObject>;
     };
     requestBodies: {
-      ids: Map<string, oas31.RequestBodyObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.RequestBodyObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiRequestBodyObject,
-        oas31.RequestBodyObject | oas31.ReferenceObject
+        oas32.RequestBodyObject | oas32.ReferenceObject
       >;
     };
     responses: {
-      ids: Map<string, oas31.ResponseObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.ResponseObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiResponseObject,
-        oas31.ResponseObject | oas31.ReferenceObject
+        oas32.ResponseObject | oas32.ReferenceObject
       >;
     };
     parameters: {
-      ids: Map<string, oas31.ParameterObject | oas31.ReferenceObject>;
-      seen: WeakMap<$ZodType, oas31.ParameterObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.ParameterObject | oas32.ReferenceObject>;
+      seen: WeakMap<$ZodType, oas32.ParameterObject | oas32.ReferenceObject>;
     };
     callbacks: {
-      ids: Map<string, ZodOpenApiCallbackObject | oas31.ReferenceObject>;
+      ids: Map<string, ZodOpenApiCallbackObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiCallbackObject,
-        ZodOpenApiCallbackObject | oas31.ReferenceObject
+        ZodOpenApiCallbackObject | oas32.ReferenceObject
       >;
     };
     pathItems: {
-      ids: Map<string, oas31.PathItemObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.PathItemObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiPathItemObject,
-        oas31.PathItemObject | oas31.ReferenceObject
+        oas32.PathItemObject | oas32.ReferenceObject
       >;
     };
     securitySchemes: {
-      ids: Map<string, oas31.SecuritySchemeObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.SecuritySchemeObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiSecuritySchemeObject,
-        oas31.SecuritySchemeObject | oas31.ReferenceObject
+        oas32.SecuritySchemeObject | oas32.ReferenceObject
       >;
     };
     links: {
-      ids: Map<string, oas31.LinkObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.LinkObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiLinkObject,
-        oas31.LinkObject | oas31.ReferenceObject
+        oas32.LinkObject | oas32.ReferenceObject
       >;
     };
     examples: {
-      ids: Map<string, oas31.ExampleObject | oas31.ReferenceObject>;
+      ids: Map<string, oas32.ExampleObject | oas32.ReferenceObject>;
       seen: WeakMap<
         ZodOpenApiExampleObject,
-        oas31.ExampleObject | oas31.ReferenceObject
+        oas32.ExampleObject | oas32.ReferenceObject
       >;
     };
   };
@@ -134,7 +134,7 @@ export interface ComponentRegistry {
       io: 'input' | 'output';
       source: SchemaSource;
     },
-  ) => oas31.SchemaObject | oas31.ReferenceObject;
+  ) => oas32.SchemaObject | oas32.ReferenceObject;
 
   addHeader: (
     header: $ZodType,
@@ -142,29 +142,29 @@ export interface ComponentRegistry {
     opts?: {
       manualId?: string;
     },
-  ) => oas31.HeaderObject | oas31.ReferenceObject;
+  ) => oas32.HeaderObject | oas32.ReferenceObject;
   addParameter: (
     parameter: $ZodType,
     path: string[],
     opts?: {
-      location?: { in: oas31.ParameterLocation; name: string };
+      location?: { in: oas32.ParameterLocation; name: string };
       manualId?: string;
     },
-  ) => oas31.ParameterObject | oas31.ReferenceObject;
+  ) => oas32.ParameterObject | oas32.ReferenceObject;
   addRequestBody: (
     requestBody: ZodOpenApiRequestBodyObject,
     path: string[],
     opts?: {
       manualId?: string;
     },
-  ) => oas31.RequestBodyObject | oas31.ReferenceObject;
+  ) => oas32.RequestBodyObject | oas32.ReferenceObject;
   addPathItem: (
     pathItem: ZodOpenApiPathItemObject,
     path: string[],
     opts?: {
       manualId?: string;
     },
-  ) => oas31.PathItemObject | oas31.ReferenceObject;
+  ) => oas32.PathItemObject | oas32.ReferenceObject;
 
   addResponse: (
     response: ZodOpenApiResponseObject,
@@ -172,35 +172,35 @@ export interface ComponentRegistry {
     opts?: {
       manualId?: string;
     },
-  ) => oas31.ResponseObject | oas31.ReferenceObject;
+  ) => oas32.ResponseObject | oas32.ReferenceObject;
   addCallback: (
     callback: ZodOpenApiCallbackObject,
     path: string[],
     opts?: {
       manualId?: string;
     },
-  ) => oas31.CallbackObject | oas31.ReferenceObject;
+  ) => oas32.CallbackObject | oas32.ReferenceObject;
   addSecurityScheme: (
     securityScheme: ZodOpenApiSecuritySchemeObject,
     path: string[],
     opts?: {
       manualId?: string;
     },
-  ) => oas31.SecuritySchemeObject | oas31.ReferenceObject;
+  ) => oas32.SecuritySchemeObject | oas32.ReferenceObject;
   addLink: (
     link: ZodOpenApiLinkObject,
     path: string[],
     opts?: {
       manualId?: string;
     },
-  ) => oas31.LinkObject | oas31.ReferenceObject;
+  ) => oas32.LinkObject | oas32.ReferenceObject;
   addExample: (
     example: ZodOpenApiExampleObject,
     path: string[],
     opts?: {
       manualId?: string;
     },
-  ) => oas31.ExampleObject | oas31.ReferenceObject;
+  ) => oas32.ExampleObject | oas32.ReferenceObject;
 }
 
 export const createRegistry = (
@@ -256,8 +256,8 @@ export const createRegistry = (
       schema,
       path,
       opts,
-    ): oas31.SchemaObject | oas31.ReferenceObject => {
-      const schemaObject: oas31.SchemaObject = {};
+    ): oas32.SchemaObject | oas32.ReferenceObject => {
+      const schemaObject: oas32.SchemaObject = {};
 
       registry.components.schemas[opts.io].set(path.join(' > '), {
         schemaObject,
@@ -273,7 +273,7 @@ export const createRegistry = (
       parameter,
       path,
       opts,
-    ): oas31.ParameterObject | oas31.ReferenceObject => {
+    ): oas32.ParameterObject | oas32.ReferenceObject => {
       const seenParameter = registry.components.parameters.seen.get(parameter);
       if (seenParameter) {
         return seenParameter;
@@ -310,7 +310,7 @@ export const createRegistry = (
 
       const { id: metaId, examples, ...rest } = meta?.param ?? {};
 
-      const parameterObject: oas31.ParameterObject = {
+      const parameterObject: oas32.ParameterObject = {
         in: inLocation,
         name,
         schema: schemaObject,
@@ -344,7 +344,7 @@ export const createRegistry = (
             `Schema "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/parameters/${id}`,
         };
         registry.components.parameters.seen.set(parameter, ref);
@@ -366,7 +366,7 @@ export const createRegistry = (
       header,
       path,
       opts,
-    ): oas31.HeaderObject | oas31.ReferenceObject => {
+    ): oas32.HeaderObject | oas32.ReferenceObject => {
       const seenHeader = registry.components.headers.seen.get(header);
       if (seenHeader) {
         return seenHeader;
@@ -377,7 +377,7 @@ export const createRegistry = (
       const { id: metaId, ...rest } = meta?.header ?? {};
       const id = metaId ?? opts?.manualId;
 
-      const headerObject: oas31.HeaderObject = rest;
+      const headerObject: oas32.HeaderObject = rest;
 
       if (isRequired(header, 'output')) {
         headerObject.required = true;
@@ -398,7 +398,7 @@ export const createRegistry = (
             `Schema "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/headers/${id}`,
         };
         registry.components.headers.ids.set(id, headerObject);
@@ -417,7 +417,7 @@ export const createRegistry = (
       requestBody,
       path,
       opts,
-    ): oas31.RequestBodyObject | oas31.ReferenceObject => {
+    ): oas32.RequestBodyObject | oas32.ReferenceObject => {
       const seenRequestBody =
         registry.components.requestBodies.seen.get(requestBody);
       if (seenRequestBody) {
@@ -426,7 +426,7 @@ export const createRegistry = (
 
       const { content, id: metaId, ...rest } = requestBody;
 
-      const requestBodyObject: oas31.RequestBodyObject = {
+      const requestBodyObject: oas32.RequestBodyObject = {
         ...rest,
         content: createContent(content, { registry, io: 'input' }, [
           ...path,
@@ -442,7 +442,7 @@ export const createRegistry = (
             `RequestBody "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/requestBodies/${id}`,
         };
         registry.components.requestBodies.ids.set(id, requestBodyObject);
@@ -466,7 +466,7 @@ export const createRegistry = (
         return seenPathItem;
       }
 
-      const pathItemObject: oas31.PathItemObject = {};
+      const pathItemObject: oas32.PathItemObject = {};
 
       const { id: metaId, ...rest } = pathItem;
 
@@ -487,7 +487,8 @@ export const createRegistry = (
           key === 'options' ||
           key === 'head' ||
           key === 'patch' ||
-          key === 'trace'
+          key === 'trace' ||
+          key === 'query'
         ) {
           pathItemObject[key] = createOperation(
             value as ZodOpenApiOperationObject,
@@ -500,7 +501,7 @@ export const createRegistry = (
         if (key === 'parameters') {
           pathItemObject[key] = createManualParameters(
             value as
-              | Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>
+              | Array<$ZodType | oas32.ParameterObject | oas32.ReferenceObject>
               | undefined,
             registry,
             [...path, key],
@@ -508,8 +509,23 @@ export const createRegistry = (
           continue;
         }
 
+        if (key === 'additionalOperations') {
+          const additionalOperations: Record<string, oas32.OperationObject> =
+            {};
+          for (const [method, operation] of Object.entries(
+            value as Record<string, ZodOpenApiOperationObject>,
+          )) {
+            additionalOperations[method] = createOperation(
+              operation,
+              registry,
+              [...path, key, method],
+            );
+          }
+          pathItemObject.additionalOperations = additionalOperations;
+          continue;
+        }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        pathItemObject[key as keyof oas31.PathItemObject] = value;
+        pathItemObject[key as keyof oas32.PathItemObject] = value;
       }
 
       if (id) {
@@ -518,7 +534,7 @@ export const createRegistry = (
             `PathItem "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/pathItems/${id}`,
         };
         registry.components.pathItems.ids.set(id, pathItemObject);
@@ -537,7 +553,7 @@ export const createRegistry = (
       response,
       path,
       opts,
-    ): oas31.ResponseObject | oas31.ReferenceObject => {
+    ): oas32.ResponseObject | oas32.ReferenceObject => {
       const seenResponse = registry.components.responses.seen.get(response);
       if (seenResponse) {
         return seenResponse;
@@ -545,7 +561,7 @@ export const createRegistry = (
 
       const { content, headers, links, id: metaId, ...rest } = response;
 
-      const responseObject: oas31.ResponseObject = rest;
+      const responseObject: oas32.ResponseObject = rest;
 
       const maybeHeaders = createHeaders(headers, registry, [
         ...path,
@@ -576,7 +592,7 @@ export const createRegistry = (
           );
         }
 
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/responses/${id}`,
         };
         registry.components.responses.ids.set(id, responseObject);
@@ -596,7 +612,7 @@ export const createRegistry = (
       callback,
       path,
       opts,
-    ): oas31.CallbackObject | oas31.ReferenceObject => {
+    ): oas32.CallbackObject | oas32.ReferenceObject => {
       const seenCallback = registry.components.callbacks.seen.get(callback);
       if (seenCallback) {
         return seenCallback;
@@ -604,7 +620,7 @@ export const createRegistry = (
 
       const { id: metaId, ...rest } = callback;
 
-      const callbackObject: oas31.CallbackObject = {};
+      const callbackObject: oas32.CallbackObject = {};
       for (const [name, pathItem] of Object.entries(rest)) {
         if (isISpecificationExtension(name)) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -626,7 +642,7 @@ export const createRegistry = (
             `Callback "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/callbacks/${id}`,
         };
         registry.components.callbacks.ids.set(id, callbackObject);
@@ -648,7 +664,7 @@ export const createRegistry = (
       }
 
       const { id: metaId, ...rest } = securityScheme;
-      const securitySchemeObject: oas31.SecuritySchemeObject = rest;
+      const securitySchemeObject: oas32.SecuritySchemeObject = rest;
 
       const id = metaId ?? opts?.manualId;
 
@@ -658,7 +674,7 @@ export const createRegistry = (
             `SecurityScheme "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/securitySchemes/${id}`,
         };
         registry.components.securitySchemes.ids.set(id, securitySchemeObject);
@@ -683,7 +699,7 @@ export const createRegistry = (
 
       const { id: metaId, ...rest } = link;
 
-      const linkObject: oas31.LinkObject = rest;
+      const linkObject: oas32.LinkObject = rest;
 
       const id = metaId ?? opts?.manualId;
 
@@ -693,7 +709,7 @@ export const createRegistry = (
             `Link "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/links/${id}`,
         };
         registry.components.links.ids.set(id, linkObject);
@@ -711,7 +727,7 @@ export const createRegistry = (
       example,
       path,
       opts,
-    ): oas31.ExampleObject | oas31.ReferenceObject => {
+    ): oas32.ExampleObject | oas32.ReferenceObject => {
       const seenExample = registry.components.examples.seen.get(example);
       if (seenExample) {
         return seenExample;
@@ -719,7 +735,7 @@ export const createRegistry = (
 
       const { id: metaId, ...rest } = example;
 
-      const exampleObject: oas31.ExampleObject = rest;
+      const exampleObject: oas32.ExampleObject = rest;
 
       const id = metaId ?? opts?.manualId;
 
@@ -729,7 +745,7 @@ export const createRegistry = (
             `Example "${id}" at ${path.join(' > ')} is already registered`,
           );
         }
-        const ref: oas31.ReferenceObject = {
+        const ref: oas32.ReferenceObject = {
           $ref: `#/components/examples/${id}`,
         };
         registry.components.examples.ids.set(id, exampleObject);
@@ -783,10 +799,7 @@ const registerSchemas = (
       continue;
     }
 
-    registry.components.schemas.ids.set(
-      key,
-      schema as oas31.SchemaObject | oas31.ReferenceObject,
-    );
+    registry.components.schemas.ids.set(key, schema);
   }
 };
 
@@ -810,7 +823,7 @@ const registerParameters = (
     // Raw OpenAPI Parameter we should just blindly insert into the components
     registry.components.parameters.ids.set(
       key,
-      schema as oas31.ParameterObject,
+      schema as oas32.ParameterObject,
     );
   }
 };
@@ -828,7 +841,7 @@ const registerHeaders = (
       registry.addHeader(schema, path, { manualId: key });
       continue;
     }
-    registry.components.headers.ids.set(key, schema as oas31.HeaderObject);
+    registry.components.headers.ids.set(key, schema as oas32.HeaderObject);
   }
 };
 
@@ -870,7 +883,7 @@ const registerRequestBodies = (
     // Raw OpenAPI Request Body we should just blindly insert into the components
     registry.components.requestBodies.ids.set(
       key,
-      schema as oas31.RequestBodyObject,
+      schema as oas32.RequestBodyObject,
     );
   }
 };
@@ -1004,7 +1017,7 @@ export const createComponents = (
   createIOSchemas({ registry, io: 'output', opts, openapiVersion });
   createManualSchemas(registry);
 
-  const components: oas31.ComponentsObject = {};
+  const components: oas32.ComponentsObject = {};
 
   if (registry.components.schemas.ids.size > 0) {
     components.schemas = Object.fromEntries(registry.components.schemas.ids);

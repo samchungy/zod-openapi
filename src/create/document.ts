@@ -6,13 +6,33 @@ import type { ZodOpenApiOverride } from '../types.js';
 import { createComponents, createRegistry } from './components.js';
 import { createPaths } from './paths.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export interface ZodOpenApiMediaTypeObject extends Omit<
-  oas31.MediaTypeObject,
-  'schema'
+  oas32.MediaTypeObject,
+  'schema' | 'itemSchema' | 'encoding' | 'prefixEncoding' | 'itemEncoding'
 > {
-  schema?: $ZodType | oas31.SchemaObject | oas31.ReferenceObject;
+  schema?: $ZodType | oas32.SchemaObject | oas32.ReferenceObject;
+  itemSchema?: $ZodType | oas32.SchemaObject | oas32.ReferenceObject;
+  encoding?: ZodOpenApiEncodingObject;
+  prefixEncoding?: ZodOpenApiEncodingPropertyObject[];
+  itemEncoding?: ZodOpenApiEncodingPropertyObject;
+}
+
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+export interface ZodOpenApiEncodingObject
+  extends oas32.ISpecificationExtension {
+  [property: string]: ZodOpenApiEncodingPropertyObject;
+}
+
+export interface ZodOpenApiEncodingPropertyObject extends Omit<
+  oas32.EncodingPropertyObject,
+  'headers' | 'encoding' | 'prefixEncoding' | 'itemEncoding'
+> {
+  headers?: ZodOpenApiHeadersObject;
+  encoding?: ZodOpenApiEncodingObject;
+  prefixEncoding?: ZodOpenApiEncodingPropertyObject[];
+  itemEncoding?: ZodOpenApiEncodingPropertyObject;
 }
 
 export interface ZodOpenApiContentObject {
@@ -21,7 +41,7 @@ export interface ZodOpenApiContentObject {
 }
 
 export interface ZodOpenApiRequestBodyObject extends Omit<
-  oas31.RequestBodyObject,
+  oas32.RequestBodyObject,
   'content'
 > {
   content: ZodOpenApiContentObject;
@@ -29,10 +49,10 @@ export interface ZodOpenApiRequestBodyObject extends Omit<
   id?: string;
 }
 
-export type ZodOpenApiHeadersObject = ZodObjectInput | oas31.HeadersObject;
+export type ZodOpenApiHeadersObject = ZodObjectInput | oas32.HeadersObject;
 
 export interface ZodOpenApiResponseObject extends Omit<
-  oas31.ResponseObject,
+  oas32.ResponseObject,
   'content' | 'headers' | 'links'
 > {
   content?: ZodOpenApiContentObject;
@@ -43,35 +63,35 @@ export interface ZodOpenApiResponseObject extends Omit<
 }
 
 export interface ZodOpenApiResponsesObject
-  extends oas31.ISpecificationExtension {
-  default?: ZodOpenApiResponseObject | oas31.ReferenceObject;
+  extends oas32.ISpecificationExtension {
+  default?: ZodOpenApiResponseObject | oas32.ReferenceObject;
   [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]:
     | ZodOpenApiResponseObject
-    | oas31.ReferenceObject;
+    | oas32.ReferenceObject;
 }
 
 export type ZodOpenApiParameters = Partial<
-  Record<oas31.ParameterLocation, ZodObjectInput>
+  Record<oas32.ParameterLocation, ZodObjectInput>
 >;
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface ZodOpenApiCallbacksObject
-  extends oas31.ISpecificationExtension {
+  extends oas32.ISpecificationExtension {
   [name: string]: ZodOpenApiCallbackObject;
 }
 
 export interface ZodOpenApiCallbackObject
-  extends oas31.ISpecificationExtension {
+  extends oas32.ISpecificationExtension {
   /** Use this field to auto register this callback object as a component */
   id?: string;
   [name: string]: ZodOpenApiPathItemObject | string | undefined;
 }
 
 export interface ZodOpenApiOperationObject extends Omit<
-  oas31.OperationObject,
+  oas32.OperationObject,
   'requestBody' | 'responses' | 'parameters' | 'callbacks'
 > {
-  parameters?: Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>;
+  parameters?: Array<$ZodType | oas32.ParameterObject | oas32.ReferenceObject>;
   requestBody?: ZodOpenApiRequestBodyObject;
   requestParams?: ZodOpenApiParameters;
   responses: ZodOpenApiResponsesObject;
@@ -79,8 +99,18 @@ export interface ZodOpenApiOperationObject extends Omit<
 }
 
 export interface ZodOpenApiPathItemObject extends Omit<
-  oas31.PathItemObject,
-  'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace'
+  oas32.PathItemObject,
+  | 'get'
+  | 'put'
+  | 'post'
+  | 'delete'
+  | 'options'
+  | 'head'
+  | 'patch'
+  | 'trace'
+  | 'query'
+  | 'additionalOperations'
+  | 'parameters'
 > {
   get?: ZodOpenApiOperationObject;
   put?: ZodOpenApiOperationObject;
@@ -90,6 +120,9 @@ export interface ZodOpenApiPathItemObject extends Omit<
   head?: ZodOpenApiOperationObject;
   patch?: ZodOpenApiOperationObject;
   trace?: ZodOpenApiOperationObject;
+  query?: ZodOpenApiOperationObject;
+  additionalOperations?: Record<string, ZodOpenApiOperationObject>;
+  parameters?: Array<$ZodType | oas32.ParameterObject | oas32.ReferenceObject>;
   /**
    * Used to register this path item as a component.
    */
@@ -97,55 +130,55 @@ export interface ZodOpenApiPathItemObject extends Omit<
 }
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-export interface ZodOpenApiPathsObject extends oas31.ISpecificationExtension {
+export interface ZodOpenApiPathsObject extends oas32.ISpecificationExtension {
   [path: string]: ZodOpenApiPathItemObject;
 }
 
 export type ZodOpenApiParameterObject =
   | $ZodType
-  | oas31.ParameterObject
-  | oas31.ReferenceObject;
+  | oas32.ParameterObject
+  | oas32.ReferenceObject;
 
 export type ZodOpenApiHeaderObject =
   | $ZodType
-  | oas31.HeaderObject
-  | oas31.ReferenceObject;
+  | oas32.HeaderObject
+  | oas32.ReferenceObject;
 
 export type ZodOpenApiSchemaObject =
   | $ZodType
-  | oas31.SchemaObject
-  | oas31.ReferenceObject;
+  | oas32.SchemaObject
+  | oas32.ReferenceObject;
 
 export interface ZodOpenApiSecuritySchemeObject
-  extends oas31.SecuritySchemeObject {
+  extends oas32.SecuritySchemeObject {
   /**
    * Used to register this security scheme as a component.
    */
   id?: string;
 }
 
-export interface ZodOpenApiLinkObject extends oas31.LinkObject {
+export interface ZodOpenApiLinkObject extends oas32.LinkObject {
   /** Use this field to auto register this link object as a component */
   id?: string;
 }
 
 export type ZodOpenApiLinksObject = Record<
   string,
-  ZodOpenApiLinkObject | oas31.ReferenceObject
+  ZodOpenApiLinkObject | oas32.ReferenceObject
 >;
 
-export interface ZodOpenApiExampleObject extends oas31.ExampleObject {
+export interface ZodOpenApiExampleObject extends oas32.ExampleObject {
   /** Use this field to auto register this example object as a component */
   id?: string;
 }
 
 export type ZodOpenApiExamplesObject = Record<
   string,
-  ZodOpenApiExampleObject | oas31.ReferenceObject
+  ZodOpenApiExampleObject | oas32.ReferenceObject
 >;
 
 export interface ZodOpenApiComponentsObject extends Omit<
-  oas31.ComponentsObject,
+  oas32.ComponentsObject,
   | 'schemas'
   | 'responses'
   | 'requestBodies'
@@ -171,7 +204,7 @@ export interface ZodOpenApiComponentsObject extends Omit<
 export type ZodOpenApiVersion = OpenApiVersion;
 
 export interface ZodOpenApiObject extends Omit<
-  oas31.OpenAPIObject,
+  oas32.OpenAPIObject,
   'openapi' | 'paths' | 'webhooks' | 'components'
 > {
   openapi: ZodOpenApiVersion;
@@ -233,10 +266,10 @@ export interface CreateDocumentOptions {
 export const createDocument = (
   zodOpenApiObject: ZodOpenApiObject,
   opts: CreateDocumentOptions = {},
-): oas31.OpenAPIObject => {
+): oas32.OpenAPIObject => {
   const { paths, webhooks, components, ...rest } = zodOpenApiObject;
 
-  const document: oas31.OpenAPIObject = rest;
+  const document: oas32.OpenAPIObject = rest;
 
   const registry = createRegistry(components);
 

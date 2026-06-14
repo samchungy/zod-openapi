@@ -1,7 +1,7 @@
 import type { ComponentRegistry } from './components.js';
 import type { ZodOpenApiLinksObject } from './document.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const createLinks = (
   links: ZodOpenApiLinksObject | undefined,
@@ -12,7 +12,7 @@ export const createLinks = (
     return undefined;
   }
 
-  const linksObject: Record<string, oas31.LinkObject | oas31.ReferenceObject> =
+  const linksObject: Record<string, oas32.LinkObject | oas32.ReferenceObject> =
     {};
 
   for (const [name, link] of Object.entries(links)) {

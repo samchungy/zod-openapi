@@ -6,11 +6,11 @@ import type { ComponentRegistry } from './components.js';
 import type { ZodOpenApiParameters } from './document.js';
 import { unwrapZodObject } from './object.js';
 
-import type { oas31 } from '@zod-openapi/openapi3-ts';
+import type { oas32 } from '@zod-openapi/openapi3-ts';
 
 export const createManualParameters = (
   parameters:
-    | Array<$ZodType | oas31.ParameterObject | oas31.ReferenceObject>
+    | Array<$ZodType | oas32.ParameterObject | oas32.ReferenceObject>
     | undefined,
   registry: ComponentRegistry,
   path: string[],
@@ -19,7 +19,7 @@ export const createManualParameters = (
     return undefined;
   }
 
-  const parameterObjects: Array<oas31.ParameterObject | oas31.ReferenceObject> =
+  const parameterObjects: Array<oas32.ParameterObject | oas32.ReferenceObject> =
     [];
 
   for (const parameter of parameters) {
@@ -32,7 +32,7 @@ export const createManualParameters = (
       parameterObjects.push(paramObject);
       continue;
     }
-    parameterObjects.push(parameter as oas31.ParameterObject);
+    parameterObjects.push(parameter as oas32.ParameterObject);
   }
 
   return parameterObjects;
@@ -42,11 +42,11 @@ export const createParameters = (
   requestParams: ZodOpenApiParameters | undefined,
   registry: ComponentRegistry,
   path: string[],
-): Array<oas31.ParameterObject | oas31.ReferenceObject> | undefined => {
+): Array<oas32.ParameterObject | oas32.ReferenceObject> | undefined => {
   if (!requestParams) {
     return undefined;
   }
-  const parameterObjects: Array<oas31.ParameterObject | oas31.ReferenceObject> =
+  const parameterObjects: Array<oas32.ParameterObject | oas32.ReferenceObject> =
     [];
   for (const [location, schema] of Object.entries(requestParams ?? {})) {
     const zodObject = unwrapZodObject(schema as $ZodTypes, 'input', path);
@@ -57,7 +57,7 @@ export const createParameters = (
         [...path, location, name],
         {
           location: {
-            in: location as oas31.ParameterLocation,
+            in: location as oas32.ParameterLocation,
             name,
           },
         },
