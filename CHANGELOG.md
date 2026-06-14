@@ -1,5 +1,25 @@
 # zod-openapi
 
+## 6.0.0
+
+### Major Changes
+
+- Add OpenAPI 3.2.0 support ([#585](https://github.com/samchungy/zod-openapi/pull/585))
+
+  **Breaking changes:**
+
+  - `createDocument` now returns `oas32.OpenAPIObject` instead of `oas31.OpenAPIObject`.
+
+  **New features:**
+
+  - Added `encoding`, `prefixEncoding`, and `itemEncoding` support to `ZodOpenApiMediaTypeObject` via the new `ZodOpenApiEncodingObject` and `ZodOpenApiEncodingPropertyObject` types.
+  - Added `query`, `additionalOperations`, and `parameters` support to `ZodOpenApiPathItemObject`.
+
+- Drop Zod 3 support and Node 20 support. ([#587](https://github.com/samchungy/zod-openapi/pull/587))
+
+  The minimum supported Zod version is now 4.0.0.
+  The minimum supported Node version is now 22.14.0.
+
 ## 5.4.6
 
 ### Patch Changes
