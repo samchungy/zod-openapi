@@ -16,15 +16,11 @@ export const createCallbacks = (
   const callbacksObject: oas32.CallbacksObject = {};
   for (const [name, value] of Object.entries(callbacks)) {
     if (isISpecificationExtension(name)) {
-       
       callbacksObject[name] = value;
       continue;
     }
 
-    callbacksObject[name] = registry.addCallback(
-      value,
-      [...path, name],
-    );
+    callbacksObject[name] = registry.addCallback(value, [...path, name]);
   }
 
   return callbacksObject;
