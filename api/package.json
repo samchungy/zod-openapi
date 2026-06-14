@@ -1,8 +1,8 @@
 {
   "type": "module",
   "main": "../lib/api.cjs",
-  "module": "../lib/api.js",
-  "types": "./index.d.cts",
+  "module": "../lib/api.mjs",
+  "types": "../lib/api.d.cts",
   "engines": {
     "node": ">=22.14.0"
   }
