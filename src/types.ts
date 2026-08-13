@@ -1,3 +1,6 @@
+/* eslint-disable-next-line spaced-comment */
+/// <reference types="zod" />
+
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import type { JSONSchemaMeta } from 'zod/v4/core';
 
@@ -65,5 +68,9 @@ export interface ZodOpenApiMetadata
 }
 
 declare module 'zod/v4' {
+  interface GlobalMeta extends ZodOpenApiMetadata {}
+}
+
+declare module 'zod' {
   interface GlobalMeta extends ZodOpenApiMetadata {}
 }

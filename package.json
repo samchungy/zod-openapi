@@ -63,7 +63,7 @@
     "eslint-plugin-zod-openapi": "2.0.0",
     "skuba": "16.2.0-hoist-changesets-20260614023310",
     "yaml": "2.8.1",
-    "zod": "4.3.5"
+    "zod": "4.4.3"
   },
   "peerDependencies": {
     "zod": "^4.0.0"
