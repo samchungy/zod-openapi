@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 6.0.1
+
+### Patch Changes
+
+- Fix type extension when importing from 'zod'; ([#590](https://github.com/samchungy/zod-openapi/pull/590))
+
 ## 6.0.0
 
 ### Major Changes
