@@ -67,4 +67,37 @@ describe('isRequired', () => {
     const result = isRequired(zodType, 'output');
     expect(result).toBe(false);
   });
+
+  it('should return true for a preprocess input type', () => {
+    const zodType = z.preprocess((val) => val, z.string());
+    const result = isRequired(zodType, 'input');
+    expect(result).toBe(true);
+  });
+
+  it('should return false for an optional preprocess input type', () => {
+    const zodType = z.preprocess((val) => val, z.string().optional());
+    const result = isRequired(zodType, 'input');
+    expect(result).toBe(false);
+  });
+
+  it('should return true for a nested preprocess input type', () => {
+    const zodType = z.preprocess(
+      (val) => val,
+      z.preprocess((val) => val, z.string()),
+    );
+    const result = isRequired(zodType, 'input');
+    expect(result).toBe(true);
+  });
+
+  it('should return true for a catch input type', () => {
+    const zodType = z.string().catch('default');
+    const result = isRequired(zodType, 'input');
+    expect(result).toBe(true);
+  });
+
+  it('should return false for an optional catch input type', () => {
+    const zodType = z.string().optional().catch('default');
+    const result = isRequired(zodType, 'input');
+    expect(result).toBe(false);
+  });
 });

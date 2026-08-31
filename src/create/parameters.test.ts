@@ -58,6 +58,56 @@ describe('createParameters', () => {
       },
     ]);
   });
+
+  it('should mark preprocess parameters as required', () => {
+    const requestParams: ZodOpenApiParameters = {
+      header: z.object({
+        h_a: z.string(),
+        h_b: z.preprocess((val) => val, z.string()),
+      }),
+      query: z.object({
+        q_a: z.string(),
+        q_b: z.preprocess((val) => val, z.string()),
+        q_c: z.preprocess((val) => val, z.string().optional()),
+      }),
+    };
+
+    const registry = createRegistry();
+
+    const parameters = createParameters(requestParams, registry, ['test']);
+
+    expect(parameters).toEqual<oas32.ParameterObject[]>([
+      {
+        in: 'header',
+        name: 'h_a',
+        schema: {},
+        required: true,
+      },
+      {
+        in: 'header',
+        name: 'h_b',
+        schema: {},
+        required: true,
+      },
+      {
+        in: 'query',
+        name: 'q_a',
+        schema: {},
+        required: true,
+      },
+      {
+        in: 'query',
+        name: 'q_b',
+        schema: {},
+        required: true,
+      },
+      {
+        in: 'query',
+        name: 'q_c',
+        schema: {},
+      },
+    ]);
+  });
 });
 
 describe('createParameter', () => {
