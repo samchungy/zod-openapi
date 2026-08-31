@@ -25,12 +25,27 @@ export const unwrapZodObject = (
   );
 };
 
+const inputOptin = (schema: $ZodType): 'optional' | undefined => {
+  const def = (schema as $ZodTypes)._zod.def;
+  // Transforms and catch set optin to "optional" at runtime so they can observe
+  // an absent key, but their declared input type stays required. Unwrap to the
+  // schema that actually carries optionality — same approach as Zod 4.5.4+
+  // toJSONSchema.
+  if (def.type === 'pipe' && def.in._zod.traits.has('$ZodTransform')) {
+    return inputOptin(def.out);
+  }
+  if (def.type === 'catch') {
+    return inputOptin(def.innerType);
+  }
+  return schema._zod.optin;
+};
+
 export const isRequired = (
   zodType: $ZodType,
   io: 'input' | 'output',
 ): boolean => {
   if (io === 'input') {
-    return zodType._zod.optin === undefined;
+    return inputOptin(zodType) === undefined;
   }
   return zodType._zod.optout === undefined;
 };
