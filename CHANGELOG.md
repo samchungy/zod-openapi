@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 6.0.2
+
+### Patch Changes
+
+- Treat `preprocess` and `catch` request parameters as required unless their inner schema is optional ([#593](https://github.com/samchungy/zod-openapi/pull/593))
+
 ## 6.0.1
 
 ### Patch Changes
