@@ -1,5 +1,11 @@
 # zod-openapi
 
+## 6.0.3
+
+### Patch Changes
+
+- Preserve discriminator mappings for fields with defaults ([#596](https://github.com/samchungy/zod-openapi/pull/596))
+
 ## 6.0.2
 
 ### Patch Changes
