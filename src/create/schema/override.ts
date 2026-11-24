@@ -42,15 +42,24 @@ export const override: ZodOpenApiOverride = (ctx) => {
             return;
           }
 
-          const discriminatorValues = (
-            def.options[Number(index)] as core.$ZodObject
-          )._zod.propValues?.[def.discriminator];
+          const option = def.options[Number(index)] as core.$ZodObject;
+          const discriminatorValues =
+            option._zod.propValues?.[def.discriminator];
 
           if (!discriminatorValues?.size) {
             return;
           }
 
-          for (const value of [...(discriminatorValues ?? [])]) {
+          const field = option._zod.def.shape?.[def.discriminator]?._zod;
+          for (const value of discriminatorValues) {
+            // Zod also records omission as undefined for defaulted fields.
+            if (
+              value === undefined &&
+              field?.optout !== 'optional' &&
+              field?.values?.has(undefined) === false
+            ) {
+              continue;
+            }
             if (
               typeof value !== 'string' &&
               typeof value !== 'number' &&

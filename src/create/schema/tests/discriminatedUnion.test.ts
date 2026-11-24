@@ -339,6 +339,28 @@ describe('discriminatedUnion', () => {
     });
   });
 
+  it('keeps discriminator mapping when the discriminator has a default', () => {
+    const schema = z.discriminatedUnion('type', [
+      z.object({ type: z.literal('cat').default('cat') }).meta({ id: 'Cat' }),
+      z.object({ type: z.literal('dog') }).meta({ id: 'Dog' }),
+    ]);
+
+    expect(createSchema(schema).schema).toEqual({
+      type: 'object',
+      oneOf: [
+        { $ref: '#/components/schemas/Cat' },
+        { $ref: '#/components/schemas/Dog' },
+      ],
+      discriminator: {
+        propertyName: 'type',
+        mapping: {
+          cat: '#/components/schemas/Cat',
+          dog: '#/components/schemas/Dog',
+        },
+      },
+    });
+  });
+
   it('handles a discriminated union with an optional type', () => {
     const schema = z.discriminatedUnion('type', [
       z
